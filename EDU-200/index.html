@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDU-200 Hands-On Lab Guide — Experience Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › EDU-200</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">EDU-200 · Hands-On Lab</span>
+  </div>
+  <h1>Zscaler for Users — <em>Administrator</em></h1>
+  <div class="motivation-banner">
+    <p>17 hands-on labs covering ZIA policies, ZPA private access, and ZDX digital experience monitoring — in a live Skytap environment with your own tenant.</p>
+  </div>
+</header>
+
+<div class="hub-main">
+<details class="zscaler-one-min">
+  <summary>&#9432; Zscaler in one minute — key terms</summary>
+  <div class="zom-body">
+    <div class="zom-term"><strong>ZIA</strong><span>Zscaler Internet Access — cloud-based secure web gateway. Inspects and enforces policy on all internet traffic from users and devices.</span></div>
+    <div class="zom-term"><strong>ZPA</strong><span>Zscaler Private Access — zero-trust network access for internal apps. Users connect to apps, never to the network.</span></div>
+    <div class="zom-term"><strong>ZDX</strong><span>Zscaler Digital Experience — end-to-end performance monitoring for users, devices, and SaaS applications.</span></div>
+    <div class="zom-term"><strong>ZCC</strong><span>Zscaler Client Connector — the endpoint agent (formerly Z-App) that routes traffic to ZIA/ZPA and collects ZDX telemetry.</span></div>
+    <div class="zom-term"><strong>ZTE</strong><span>Zscaler Tenant — your organisation's isolated Zscaler environment, accessed via a unique portal URL and admin credentials.</span></div>
+    <div class="zom-term"><strong>ZIdentity</strong><span>Zscaler's identity and authentication platform — manages IdP integration, MFA, and user provisioning across ZIA and ZPA.</span></div>
+  </div>
+</details>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">SETUP</span>
+      <div class="phase-title">Lab Setup</div>
+      <div class="phase-range">Labs 0–3 · Foundation: environment, users, and ZCC traffic forwarding</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab0.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 0</span>
+          
+          <span class="lab-card-time">~5 min</span>
+        </div>
+        <div class="lab-card-title">About the EDU-200 Hands-On Lab</div>
+        <div class="lab-card-desc">Explore the lab topology, three VMs, and credential structure. Learn how the Skytap environment is organised before you start configuring.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab1.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 1</span>
+          
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Connect to the Lab Environment</div>
+        <div class="lab-card-desc">Access the Skytap virtual environment, start the Corp: Client PC, and log into the Experience Center admin console for the first time.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab2.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 2</span>
+          
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">Users, Groups & Entitlements</div>
+        <div class="lab-card-desc">Create departments, groups, and lab users (Joe and Bev). Assign ZIA, ZPA, and ZDX service entitlements and validate login.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab3.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 3</span>
+          
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">ZCC Traffic Forwarding</div>
+        <div class="lab-card-desc">Configure a Forwarding Profile with Z-Tunnel 2.0 and a Windows App Profile. Verify ZCC shows ZIA, ZPA, and ZDX all active.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">ZIA POLICIES</span>
+      <div class="phase-title">ZIA Policies</div>
+      <div class="phase-range">Labs 4–8 · Firewall, SSL Inspection, Content Filtering, DNS Security, and DLP</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab4.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 4</span>
+          
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">Configure Firewall Filtering Policy</div>
+        <div class="lab-card-desc">Verify the default Block and Drop rule, add an Allow rule for ICMP and SSH above it, then block WhatsApp using Cloud App Control.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab5.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 5</span>
+          
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">Configure SSL Inspection Policies</div>
+        <div class="lab-card-desc">Enable Inspect All, verify the Zscaler CA is trusted, add a cert-pinning bypass for Threema, and confirm inspection in Web Insights logs.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab6.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 6</span>
+          
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">Configure Content Filtering & Access Control</div>
+        <div class="lab-card-desc">Review threat protection settings, block Gambling and Adult URL categories, test the block page, then allow YouTube via Cloud App Control.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab7.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 7</span>
+          
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Configure DNS Security</div>
+        <div class="lab-card-desc">Add a wildcard DNS domain to the App Profile for ZPA, create a DNS Control block rule for Gambling, verify with nslookup and DNS Insights.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab8.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 8</span>
+          
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Enforce Policy with Unified DLP</div>
+        <div class="lab-card-desc">Build a DLP Engine from credit card dictionary patterns, create a Block+Notify rule, then test with a file upload containing synthetic sensitive data.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">ZPA</span>
+      <div class="phase-title">ZPA Private Access</div>
+      <div class="phase-range">Labs 9–13 · App Connectors, App Segments, Troubleshooting, SIPA, and RDP</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab9.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 9</span>
+          
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">Provision ZPA Infrastructure</div>
+        <div class="lab-card-desc">Create an App Connector Group and Provisioning Key, then activate the Corp: App Connector VM using WinSCP and terminal commands.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab10.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 10</span>
+          
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">ZPA App Segments & Discovery</div>
+        <div class="lab-card-desc">Create a wildcard Discovery segment, view discovered apps in analytics, build the Intranet segment with access policy, then enable ICMP.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab11.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 11</span>
+          
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">Troubleshoot ZPA Access for Joe</div>
+        <div class="lab-card-desc">Login as Joe to find Private Access missing in ZCC, identify the missing ZPA service entitlement in ZIdentity, assign it, and verify access.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab12.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 12</span>
+          
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">Traffic Forwarding through SIPA</div>
+        <div class="lab-card-desc">Configure SIPA in ZPA and a forwarding rule in ZIA to route App Connector internet traffic through ZIA. Verify the egress IP changes to a Zscaler service edge.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab13.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 13</span>
+          <span class="lab-card-badge optional">Optional</span>
+          <span class="lab-card-time">~10 min</span>
+        </div>
+        <div class="lab-card-title">Access Internal App via RDP</div>
+        <div class="lab-card-desc">Add port 3389 to the Intranet app segment, connect via Remote Desktop through ZPA, and verify the session in netstat and ZPA analytics.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">ZDX</span>
+      <div class="phase-title">ZDX Digital Experience</div>
+      <div class="phase-range">Labs 14–16 · Dashboards, Wi-Fi troubleshooting, and DNS troubleshooting</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab14.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 14</span>
+          <span class="lab-card-badge sdc">SDC</span>
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Navigate ZDX Dashboards</div>
+        <div class="lab-card-desc">Using the Solutions Demo Center, explore the Performance, Incidents, Wi-Fi, Application Overview, and User Overview ZDX dashboards.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab15.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 15</span>
+          <span class="lab-card-badge sdc">SDC</span>
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Troubleshoot Poor Wi-Fi</div>
+        <div class="lab-card-desc">Find Curtis Hardwick in ZDX, analyse his ZDX score, confirm Wi-Fi as the root cause, view the Hop View, and trace a 5GHz→2.4GHz SSID change event.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab16.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 16</span>
+          <span class="lab-card-badge sdc">SDC</span>
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Troubleshoot Slow DNS</div>
+        <div class="lab-card-desc">Use ZDX Copilot to surface Linda Lucas, analyse her consistently poor all-apps score, isolate 3000ms DNS Time in web probe metrics, and confirm with Y-Engine.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
+  <span>Labs 0–16</span>
+</footer>
+
+<script>
+document.body.style.transition='opacity 0.3s ease';
+document.body.style.opacity='1';
+sessionStorage.setItem('pt','1');
+</script>
+</body>
+</html>
