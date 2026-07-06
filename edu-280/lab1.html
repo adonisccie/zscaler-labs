@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 1: Device Interface Configuration — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › Lab 1</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 1 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Zero Trust Branch Device Interface Configuration</h1>
+  <div class="motivation-banner">
+    <p>Provision your branch: add a Site, activate the active and standby ZTB devices for HA, configure site-level settings and the App Connector, then build every LAN VLAN and the secondary WAN interface.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD Number</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Portal Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Admin login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
+      <span><strong>App Connector:</strong> <code id="d-appc">pod##StudentAppC</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab1">
+      <h2>Lab 1: Zero Trust Branch Device Interface Configuration</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">PROVISIONING</div>
+        <p>Zero Trust Branch devices — physical or virtual — leverage the <strong>Zscaler Zero Trust Exchange (ZTE)</strong> to forward branch traffic to Zscaler services. In this lab you edit the configuration of two virtual ZTB devices through Experience Center. (Physical and virtual configuration is identical.)</p>
+        <p>You'll complete the Zero Trust Branch Provisioning Template:</p>
+        <ul style="margin-top:10px;">
+          <li><strong>Templates</strong> — the default template is cloned as <code>vm-ha-edu280</code> for all sites</li>
+          <li><strong>Sites</strong> — onboard the Active and Standby units</li>
+          <li><strong>Device Details</strong> — System Settings, WAN DNS, App Connector; configure the GE2 WAN interface and the GE6/GE7/GE8 LAN interfaces</li>
+          <li><strong>App Connector</strong> — partially pre-provisioned; a key already exists for your POD</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab1-hero.png" alt="Lab 1 — Device Interface Configuration" loading="lazy">
+        </figure>
+      </div>
+
+
+      <!-- ═══════════ 1.1 ADD SITE ═══════════ -->
+      <div class="task-collapsible open" id="tc-1-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.1</span>
+          <span class="task-collapsible-title">Add Site &amp; Enter Site Details</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate to <strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Sites</strong>, then click the <strong>Add Site</strong> button.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p018-a.png" alt="Sites page with Add Site button"><div class="screenshot-caption">Sites › <strong>Add Site</strong>.</div></div>
+          <h4 style="margin-top:14px;">1.1.1 · Enter Site details (in sequence)</h4>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>Name</strong> – <code class="d-site">POD##-Student-Lab</code> [1]</li>
+              <li><strong>Platform</strong> – <code>vm</code> [2]</li>
+              <li><strong>Template</strong> – <code>vm-ha-edu280</code> [3]</li>
+              <li><strong>Location</strong> – New Location [4]; <strong>Location Name</strong> – <code>POD##-Student-Location</code> [5]</li>
+              <li><strong>Country</strong> – based on your location [6]</li>
+              <li><strong>Gateway 1 · WAN Interface</strong> – <code>ge1|(wan)</code> [7]; <strong>Use DHCP for IP</strong> – Enabled [8]</li>
+              <li><strong>Gateway 2 · WAN Interface</strong> – <code>ge1|(wan)</code> [9]; <strong>Use DHCP for IP</strong> – Enabled [10]</li>
+              <li>Select <strong>Add</strong> [11]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p019-a.png" alt="Add Site dialog with all site detail fields numbered"><div class="screenshot-caption">The Add Site form — fill each numbered field, then <strong>Add</strong>.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.2 ACTIVE DEVICE ═══════════ -->
+      <div class="task-collapsible" id="tc-1-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.2</span>
+          <span class="task-collapsible-title">Activate the Active Device (ZTB-1)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Go to <strong>Sites</strong>, select your site <code class="d-site">POD##-Student-Lab</code>, then click the <strong>Envelope</strong> icon to copy the Activation code.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p020-a.png" alt="Site row with Envelope icon to copy activation code"><div class="screenshot-caption">Select your site → <strong>Envelope</strong> icon for the activation code.</div></div>
+          <ul class="step-list"><li>Copy the <strong>Activation Code</strong> and save it to Notepad — you'll need it shortly.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p021-a.png" alt="Activation code shown for copying"><div class="screenshot-caption">Save the activation code for the device console step.</div></div>
+          <ul class="step-list">
+            <li>In the Skytap VM dashboard, open the <strong>ZTB-1</strong> VM and log in — <code>localhost login: admin</code> / <code>a!rg@p</code>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p022-a.png" alt="Select ZTB-1 VM in Skytap"><div class="screenshot-caption">Open the ZTB-1 (primary) console.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p022-b.png" alt="ZTB-1 console login prompt"><div class="screenshot-caption">Log in with <code>admin</code> / <code>a!rg@p</code>.</div></div>
+          <ul class="step-list">
+            <li>Set the primary WAN to DHCP: select <strong>option 2</strong>.</li>
+            <li>Then select <strong>option 1 – Configure Network</strong>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p023-a.png" alt="Menu option 2 to set primary WAN to DHCP"><div class="screenshot-caption">Option 2 — configure the gateway WAN.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p023-b.png" alt="Menu option 1 Configure Network"><div class="screenshot-caption">Option 1 — Configure Network.</div></div>
+          <ul class="step-list">
+            <li>Enter the WAN details, then apply:
+              <ul class="sub-steps">
+                <li>WAN interface: <code>ge1</code></li>
+                <li>WAN VLAN ID (1..4092) [1]: <code>1</code></li>
+                <li>Use DHCP for WAN interface ge1 (Y/N): <code>y</code></li>
+                <li>Use DHCP to set WAN nameservers (Y/N): <code>y</code></li>
+                <li>Apply configuration? (y/n): <code>y</code></li>
+              </ul>
+            </li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p024-a.png" alt="WAN interface DHCP configuration entries"><div class="screenshot-caption">Enter ge1 / VLAN 1 / DHCP y / nameservers y, then apply.</div></div>
+          <ul class="step-list"><li>Validate the configuration shows <strong>OK</strong>, then press <strong>Enter</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p025-a.png" alt="Configuration OK validation screen"><div class="screenshot-caption">Configuration OK → press Enter.</div></div>
+          <ul class="step-list">
+            <li>Select <strong>4</strong> to return to the Main Menu.</li>
+            <li>Select <strong>1</strong> to Activate the Gateway.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p026-a.png" alt="Option 4 return to main menu"><div class="screenshot-caption">Option 4 — back to Main Menu.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p026-b.png" alt="Option 1 activate the gateway"><div class="screenshot-caption">Option 1 — Activate the Gateway.</div></div>
+          <ul class="step-list">
+            <li>Select <strong>1</strong> to Activate Airgap Gateway.</li>
+            <li>Enter the <strong>Activation Code</strong> you saved, then press Enter.</li>
+            <li>Select <strong>2</strong> to return to the Main Menu.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p027-a.png" alt="Option 1 activate airgap gateway"><div class="screenshot-caption">Option 1 — Activate Airgap Gateway.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p027-b.png" alt="Enter activation code prompt"><div class="screenshot-caption">Paste the saved activation code.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p027-c.png" alt="Option 2 return to main menu"><div class="screenshot-caption">Option 2 — return to Main Menu.</div></div>
+          <ul class="step-list"><li>Confirm the Gateway Name and Management System appear on the Main Menu, then exit the VM with <strong>8</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p028-a.png" alt="Main menu showing gateway name and management system"><div class="screenshot-caption">Gateway Name + Management System populated → exit with 8.</div></div>
+          <ul class="step-list"><li>Validate the active device status as <strong>Post-update</strong>. After ~15 minutes it changes to <strong>Active</strong>. Then activate the Standby device.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p029-a.png" alt="Active device status Post-update in portal"><div class="screenshot-caption">Status <strong>Post-update</strong> → becomes <strong>Active</strong> after ~15 min.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.3 STANDBY DEVICE ═══════════ -->
+      <div class="task-collapsible" id="tc-1-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.3</span>
+          <span class="task-collapsible-title">Activate the Standby Device (ZTB-2)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="callout callout-note"><p><strong>Note:</strong> The standby flow mirrors the active device exactly — same menus, same DHCP WAN answers — but on the <strong>ZTB-2</strong> VM.</p></div>
+          <ul class="step-list">
+            <li>In <strong>Sites</strong>, select <code class="d-site">POD##-Student-Lab</code> and click the <strong>Envelope</strong> icon to copy the Activation code; save it to Notepad.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p030-a.png" alt="Envelope icon to copy standby activation code"><div class="screenshot-caption">Copy the activation code for the standby unit.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p031-a.png" alt="Standby activation code shown"><div class="screenshot-caption">Save the standby activation code.</div></div>
+          <ul class="step-list"><li>Open the <strong>ZTB-2</strong> VM and log in — <code>admin</code> / <code>a!rg@p</code>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p032-a.png" alt="Select ZTB-2 VM"><div class="screenshot-caption">Open the ZTB-2 (secondary) console.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p032-b.png" alt="ZTB-2 login prompt"><div class="screenshot-caption">Log in with <code>admin</code> / <code>a!rg@p</code>.</div></div>
+          <ul class="step-list">
+            <li>Select <strong>option 2</strong>, then <strong>option 1 – Configure Network</strong>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p033-a.png" alt="Option 2 on standby"><div class="screenshot-caption">Option 2 — configure gateway WAN.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p033-b.png" alt="Option 1 Configure Network on standby"><div class="screenshot-caption">Option 1 — Configure Network.</div></div>
+          <ul class="step-list">
+            <li>Enter the same WAN details: <code>ge1</code>, VLAN <code>1</code>, DHCP <code>y</code>, nameservers <code>y</code>, apply <code>y</code>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p034-a.png" alt="Standby WAN DHCP entries"><div class="screenshot-caption">Same ge1 DHCP WAN configuration on ZTB-2.</div></div>
+          <ul class="step-list"><li>Validate <strong>OK</strong>, press Enter.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p035-a.png" alt="Standby configuration OK"><div class="screenshot-caption">Configuration OK → Enter.</div></div>
+          <ul class="step-list">
+            <li>Select <strong>4</strong> → Main Menu, then <strong>1</strong> to Activate the Gateway.</li>
+            <li>Select <strong>1</strong> to Activate Airgap Gateway, enter the saved Activation Code, then <strong>2</strong> to return.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p036-a.png" alt="Option 4 return main menu standby"><div class="screenshot-caption">Option 4 — Main Menu.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p036-b.png" alt="Option 1 activate gateway standby"><div class="screenshot-caption">Option 1 — Activate the Gateway.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p037-a.png" alt="Option 1 activate airgap standby"><div class="screenshot-caption">Option 1 — Activate Airgap Gateway.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p037-b.png" alt="Enter activation code standby"><div class="screenshot-caption">Paste the standby activation code.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p037-c.png" alt="Option 2 return main menu standby"><div class="screenshot-caption">Option 2 — return to Main Menu.</div></div>
+          <ul class="step-list"><li>Confirm the Gateway Name / Management System on the Main Menu, then exit with <strong>8</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p038-a.png" alt="Standby main menu populated"><div class="screenshot-caption">Gateway populated → exit with 8.</div></div>
+          <ul class="step-list"><li>Validate the standby status as <strong>Post-update</strong>; after ~15 minutes it becomes <strong>Standby</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p039-a.png" alt="Standby device Post-update status"><div class="screenshot-caption">Status <strong>Post-update</strong> → becomes <strong>Standby</strong>.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p039-b.png" alt="Both devices status in portal"><div class="screenshot-caption">Both units now onboarded (Active + Standby).</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.4 SITE-LEVEL SETTINGS ═══════════ -->
+      <div class="task-collapsible" id="tc-1-4">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.4</span>
+          <span class="task-collapsible-title">Validate &amp; Configure Site-Level Settings (NAT, DNS, VRRP, App Connector)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate <strong>Infrastructure</strong> [1] › <strong>Connectors</strong> [2] › <strong>Edge</strong> [3] › Zero Trust Branch › <strong>Sites</strong> [4].</li>
+            <li>Select your site <code class="d-site">POD##-Student-Lab</code>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p040-a.png" alt="Navigation to Sites"><div class="screenshot-caption">Infrastructure › Connectors › Edge › Zero Trust Branch › Sites.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p041-a.png" alt="Select your site"><div class="screenshot-caption">Open your POD site.</div></div>
+          <ul class="step-list">
+            <li>Under <strong>Settings › Debug Options</strong>, enable <strong>Debug Logs</strong> and ensure <strong>SSH is disabled</strong> for the WAN interfaces on both gateways.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p042-a.png" alt="Debug Options tab with Debug Logs enabled and SSH disabled"><div class="screenshot-caption">Enable Debug Logs; disable SSH on WAN for both gateways.</div></div>
+          <ul class="step-list">
+            <li>Ensure <strong>WAN DNS Servers</strong> are <code>1.1.1.1</code> and <code>8.8.8.8</code>; set <strong>Private DNS Servers</strong> to <code>10.73.51.20</code> and <code>10.73.51.21</code>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p043-a.png" alt="WAN and Private DNS server settings"><div class="screenshot-caption">WAN DNS 1.1.1.1 / 8.8.8.8 · Private DNS 10.73.51.20 / .21.</div></div>
+          <ul class="step-list"><li>On the <strong>NAT</strong> tab, toggle NAT to <strong>Enable</strong> [1] and select <strong>Confirm</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p044-a.png" alt="NAT tab enable and confirm"><div class="screenshot-caption">Enable NAT → Confirm.</div></div>
+          <ul class="step-list"><li>Configure <strong>VRRP</strong> for the HA (<code>ge4</code>) interface on both devices.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p045-a.png" alt="VRRP configuration for HA ge4 interface"><div class="screenshot-caption">VRRP on the HA (ge4) interface — the mechanism behind active/standby failover.</div></div>
+          <ul class="step-list"><li>Ensure the <strong>DHCP Server</strong> option is selected under the <strong>DHCP Service</strong> tab.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p046-a.png" alt="DHCP Service tab with DHCP Server selected"><div class="screenshot-caption">DHCP Service → DHCP Server enabled.</div></div>
+          <ul class="step-list"><li>Confirm the <strong>IPSec Tunnel</strong> status is <strong>Established/Up</strong> under <strong>ZIA</strong> [1] › <strong>IPSec Tunnels</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p047-a.png" alt="ZIA IPSec Tunnels status Established"><div class="screenshot-caption">ZIA › IPSec Tunnels → status Established/Up.</div></div>
+          <ul class="step-list">
+            <li>Integrate the App Connector: <strong>Infrastructure</strong> [1] › <strong>Private Access</strong> [2] › <strong>App Connector Keys</strong> [3] › enter your POD ID (e.g. <code>pod01</code>) [4] › <strong>Apply</strong> [5].</li>
+            <li>Copy the <strong>Provisioning Key</strong>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p048-a.png" alt="App Connector Keys filtered by POD ID"><div class="screenshot-caption">Infrastructure › Private Access › App Connector Keys → enter POD ID → Apply.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p048-b.png" alt="Copy provisioning key"><div class="screenshot-caption">Copy the Provisioning Key.</div></div>
+          <ul class="step-list">
+            <li>Back in your site, go to <strong>Settings</strong> [1] › <strong>ZPA</strong> [2] and select <strong>Add</strong> [3].</li>
+            <li>Name it <code class="d-appc">pod##StudentAppC</code> [1], paste the provisioning key [2], and click <strong>Save</strong> [3].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p049-a.png" alt="Site Settings ZPA Add"><div class="screenshot-caption">Site › Settings › ZPA › Add.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p050-a.png" alt="Name App Connector and paste key"><div class="screenshot-caption">Name <code class="d-appc">pod##StudentAppC</code>, paste key, Save.</div></div>
+          <ul class="step-list"><li>After a few minutes, verify the App Connector status shows <strong>Connected</strong> in the ZPA tab.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p051-a.png" alt="App Connector Connected status"><div class="screenshot-caption">App Connector → <strong>Connected</strong>.</div></div>
+          <ul class="step-list"><li>Validate the preconfigured interfaces by opening the <strong>VLANs</strong> [1] tab.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p052-a.png" alt="VLANs tab showing preconfigured interfaces"><div class="screenshot-caption">VLANs tab — the preconfigured interfaces before you add the LAN/WAN ones.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.5 EDIT SITES CONFIG ═══════════ -->
+      <div class="task-collapsible" id="tc-1-5">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.5</span>
+          <span class="task-collapsible-title">Edit the Sites Configuration (open VLAN editor)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate to <strong>Sites</strong> and select <code class="d-site">POD##-Student-Lab</code>.</li>
+            <li>Select <strong>VLANs</strong> [1], then click <strong>Add Airgap VLAN</strong> [2].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p053-a.png" alt="Select site to edit"><div class="screenshot-caption">Open your POD site.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p054-a.png" alt="VLANs tab Add Airgap VLAN button"><div class="screenshot-caption">VLANs › <strong>Add Airgap VLAN</strong> — you'll repeat this for GE6/7/8 and GE2.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.6 GE6 / VLAN10 ═══════════ -->
+      <div class="task-collapsible" id="tc-1-6">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.6</span>
+          <span class="task-collapsible-title">Configure LAN GE6 — VLAN 10 (Windows Server)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>POD##-VLAN10</code> [1]</li>
+              <li><strong>VLAN Tag</strong> – <code>1</code> [2] · <strong>Zone</strong> – LAN Zone [3]</li>
+              <li><strong>Gateway (Primary)</strong> – <code>ge6(lan)</code> [4] · <strong>(Secondary)</strong> – <code>ge6(lan)</code> [5]</li>
+              <li><strong>Interface IP</strong> – <code>10.1.10.1/24</code> [6]</li>
+              <li><strong>DHCP Service</strong> – ON (Airgap) [7]</li>
+              <li><strong>DHCP Range</strong> – <code>10.1.10.20</code> [8] to <code>10.1.10.30</code> [9]</li>
+              <li><strong>Private DNS Servers</strong> – <code>8.8.8.8</code> [10] › Add [11] › <strong>Add</strong> [12]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p055-a.png" alt="VLAN10 configuration form"><div class="screenshot-caption">GE6 / VLAN10 — interface IP 10.1.10.1/24, DHCP 10.1.10.20–30.</div></div>
+          <ul class="step-list">
+            <li>Select <strong>Agree</strong> to confirm the VLAN10 configuration.</li>
+            <li>Toggle the switch to <strong>Enable</strong> [1] VLAN10, then <strong>Agree</strong> [2].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p056-a.png" alt="Agree to confirm VLAN10"><div class="screenshot-caption">Agree to confirm.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p057-a.png" alt="Enable VLAN10 and agree"><div class="screenshot-caption">Enable → Agree.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p058-a.png" alt="VLAN10 operational"><div class="screenshot-caption">VLAN10 becomes operational within a few minutes.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.7 GE7 / VLAN20 ═══════════ -->
+      <div class="task-collapsible" id="tc-1-7">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.7</span>
+          <span class="task-collapsible-title">Configure LAN GE7 — VLAN 20 (IoT)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>POD##-VLAN20</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> LAN Zone [3]</li>
+              <li><strong>Gateway (Primary/Secondary)</strong> – <code>ge7(lan)</code> [4][5]</li>
+              <li><strong>Interface IP</strong> – <code>10.1.20.1/24</code> [6]</li>
+              <li><strong>DHCP Service</strong> ON (Airgap) [7] · <strong>Range</strong> <code>10.1.20.20</code>–<code>10.1.20.30</code> [8][9]</li>
+              <li><strong>Private DNS</strong> <code>8.8.8.8</code> [10] › Add [11] › <strong>Add</strong> [12]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p059-a.png" alt="VLAN20 configuration form"><div class="screenshot-caption">GE7 / VLAN20 — interface IP 10.1.20.1/24.</div></div>
+          <ul class="step-list"><li>Select <strong>Agree</strong>, toggle <strong>Enable</strong> [1], then <strong>Agree</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p060-a.png" alt="Agree VLAN20"><div class="screenshot-caption">Agree to confirm.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p061-a.png" alt="Enable VLAN20 agree"><div class="screenshot-caption">Enable → Agree.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p062-a.png" alt="VLAN20 operational"><div class="screenshot-caption">VLAN20 operational within a few minutes.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.8 GE8 / VLAN30 ═══════════ -->
+      <div class="task-collapsible" id="tc-1-8">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.8</span>
+          <span class="task-collapsible-title">Configure LAN GE8 — VLAN 30 (OT ×2)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>POD##-VLAN30</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> LAN Zone [3]</li>
+              <li><strong>Gateway (Primary/Secondary)</strong> – <code>ge8(lan)</code> [4][5]</li>
+              <li><strong>Interface IP</strong> – <code>10.1.30.1/24</code> [6]</li>
+              <li><strong>DHCP Service</strong> ON (Airgap) [7] · <strong>Range</strong> <code>10.1.30.20</code>–<code>10.1.30.30</code> [8][9]</li>
+              <li><strong>Private DNS</strong> <code>8.8.8.8</code> [10] › Add [11] › <strong>Add</strong> [12]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p063-a.png" alt="VLAN30 configuration form"><div class="screenshot-caption">GE8 / VLAN30 — interface IP 10.1.30.1/24 (hosts OT1 &amp; OT2).</div></div>
+          <ul class="step-list"><li>Select <strong>Agree</strong>, toggle <strong>Enable</strong> [1], then <strong>Agree</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p064-a.png" alt="Agree VLAN30"><div class="screenshot-caption">Agree to confirm.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p065-a.png" alt="Enable VLAN30 agree"><div class="screenshot-caption">Enable → Agree.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p066-a.png" alt="VLAN30 operational"><div class="screenshot-caption">VLAN30 operational; next configure the secondary WAN.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.9.1 WAN GE2 PRIMARY ═══════════ -->
+      <div class="task-collapsible" id="tc-1-9-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.9.1</span>
+          <span class="task-collapsible-title">Configure WAN GE2 — Primary Device</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>Select <strong>Add Airgap VLAN</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p067-a.png" alt="Add Airgap VLAN for WAN GE2 primary"><div class="screenshot-caption">Add Airgap VLAN for the primary GE2 WAN.</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>wan2-ZTB-##-1</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> WAN Zone [3]</li>
+              <li><strong>Gateway</strong> – <code>pod##-student-lab-gw-01</code> [4]</li>
+              <li><strong>Interface for Gateway</strong> – <code>ge2(wan)</code> [5]</li>
+              <li>Enable <strong>DHCP Client</strong> [6] › Click <strong>Add</strong> [7]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p068-a.png" alt="Primary WAN GE2 configuration form"><div class="screenshot-caption">Primary GE2 — gw-01, ge2(wan), DHCP client.</div></div>
+          <ul class="step-list"><li>Select <strong>Agree</strong>, toggle <strong>Enable</strong> [1] the <code>wan2-ZTB-##-1</code> interface, then <strong>Agree</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p069-a.png" alt="Agree primary WAN GE2"><div class="screenshot-caption">Agree to confirm.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p070-a.png" alt="Enable primary WAN GE2 agree"><div class="screenshot-caption">Enable → Agree. Next, the secondary WAN.</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.9.2 WAN GE2 SECONDARY ═══════════ -->
+      <div class="task-collapsible" id="tc-1-9-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.9.2</span>
+          <span class="task-collapsible-title">Configure WAN GE2 — Secondary Device &amp; Validate</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>Select <strong>Add Airgap VLAN</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p071-a.png" alt="Add Airgap VLAN for WAN GE2 secondary"><div class="screenshot-caption">Add Airgap VLAN for the secondary GE2 WAN.</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>wan2-ZTB-##-2</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> WAN Zone [3]</li>
+              <li><strong>Gateway</strong> – <code>pod##-student-lab-gw-02</code> [4]</li>
+              <li><strong>Interface for Gateway</strong> – <code>ge2(wan)</code> [5]</li>
+              <li>Enable <strong>DHCP Client</strong> [6] › Click <strong>Add</strong> [7]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p072-a.png" alt="Secondary WAN GE2 configuration form"><div class="screenshot-caption">Secondary GE2 — gw-02, ge2(wan), DHCP client.</div></div>
+          <ul class="step-list"><li>Select <strong>Agree</strong>, toggle <strong>Enable</strong> [1] the <code>wan2-ZTB-##-2</code> interface, then <strong>Agree</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p073-a.png" alt="Agree secondary WAN GE2"><div class="screenshot-caption">Agree to confirm.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p074-a.png" alt="Enable secondary WAN GE2 agree"><div class="screenshot-caption">Enable → Agree.</div></div>
+          <ul class="step-list">
+            <li>View the GE2 interface IPs by selecting <strong>WAN Zone</strong> [1] from the dropdown. If an address is missing, wait a minute, refresh, and retry.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p075-a.png" alt="WAN Zone showing GE2 interface IPs"><div class="screenshot-caption">WAN Zone → GE2 interface IPs for both devices.</div></div>
+          <ul class="step-list"><li>Validate interfaces are configured correctly with <code>arp -a</code> from the <strong>Console</strong> tab.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p076-a.png" alt="arp -a output in console tab"><div class="screenshot-caption">Console › <code>arp -a</code> confirms the configured interfaces.</div></div>
+          <div class="callout callout-success"><p><strong>Done:</strong> All required interfaces for the lab are configured. Next, proceed to Lab 2 to validate inter-VLAN traffic filtering.</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text">HA pair = <strong>ZTB-1 (Active)</strong> + <strong>ZTB-2 (Standby)</strong>, failover via <strong>VRRP on ge4</strong>. Device console login: <code>admin</code> / <code>a!rg@p</code>. WAN = DHCP on <code>ge1</code>/<code>ge2</code>. LAN gateways: <strong>VLAN10 = 10.1.10.1</strong> (ge6), <strong>VLAN20 = 10.1.20.1</strong> (ge7), <strong>VLAN30 = 10.1.30.1</strong> (ge8) — each /24 with an on-box DHCP range .20–.30. Status flows <strong>Post-update → Active/Standby</strong> after ~15 min. App Connector = <code class="d-appc">pod##StudentAppC</code>.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab1" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab1','Lab 1: Device Interface Config')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab1" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab1')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab1a" onchange="toggleDone(this)"><label for="chk-lab1a">Site added &amp; both devices activated</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1b" onchange="toggleDone(this)"><label for="chk-lab1b">Site settings + App Connector connected</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1c" onchange="toggleDone(this)"><label for="chk-lab1c">All LAN VLANs + WAN GE2 configured</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Site</div><div class="qr-def">Experience Center object for your branch (POD##-Student-Lab) — holds the ZTB devices, interfaces, and policy.</div></div>
+      <div class="qr-item"><div class="qr-term">Template (vm-ha-edu280)</div><div class="qr-def">Cloned provisioning template applied to all sites; defines the HA VM device layout.</div></div>
+      <div class="qr-item"><div class="qr-term">Activation Code</div><div class="qr-def">Per-device code (Envelope icon) pasted into the ZTB console to activate the Airgap Gateway.</div></div>
+      <div class="qr-item"><div class="qr-term">Active / Standby</div><div class="qr-def">ZTB-1 forwards traffic; ZTB-2 waits to take over. Status goes Post-update → Active/Standby (~15 min).</div></div>
+      <div class="qr-item"><div class="qr-term">VRRP (ge4)</div><div class="qr-def">Virtual Router Redundancy on the HA interface — lets the standby assume the gateway IP on failover.</div></div>
+      <div class="qr-item"><div class="qr-term">GE1 / GE2 (WAN)</div><div class="qr-def">The two DIA WAN uplinks, both using DHCP for IP and nameservers.</div></div>
+      <div class="qr-item"><div class="qr-term">GE6 / GE7 / GE8 (LAN)</div><div class="qr-def">LAN ports mapped to VLAN10 / VLAN20 / VLAN30 respectively.</div></div>
+      <div class="qr-item"><div class="qr-term">VLAN IPs</div><div class="qr-def">10.1.10.1 (VLAN10), 10.1.20.1 (VLAN20), 10.1.30.1 (VLAN30) — each /24, on-box DHCP .20–.30.</div></div>
+      <div class="qr-item"><div class="qr-term">NAT</div><div class="qr-def">Enabled at the site so LAN subnets egress to the Internet via the WAN uplinks.</div></div>
+      <div class="qr-item"><div class="qr-term">App Connector Key</div><div class="qr-def">Pre-created provisioning key for your POD; pasted when adding pod##StudentAppC under Settings › ZPA.</div></div>
+      <div class="qr-item"><div class="qr-term">IPSec Tunnel</div><div class="qr-def">ZIA forwarding tunnel from the branch; must show Established/Up under ZIA › IPSec Tunnels.</div></div>
+      <div class="qr-item"><div class="qr-term">arp -a</div><div class="qr-def">Console command to confirm the configured interfaces are live on the device.</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab0.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 0: Access</span>
+  </a>
+  <div class="page-nav-message">Two devices up, three VLANs live. The branch is real now.</div>
+  <a class="page-nav-btn page-nav-next" href="lab2.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 2: Inter-VLAN Filtering</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
+  <span>Lab 1: Device Interface Config</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
+function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
+  document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
+  var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<Student FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+  var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var appc=slug?slug+'StudentAppC':'pod##StudentAppC';document.querySelectorAll('.d-appc').forEach(function(el){el.textContent=appc;});var da=document.getElementById('d-appc');if(da)da.textContent=appc;
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-280-lab-lab1';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

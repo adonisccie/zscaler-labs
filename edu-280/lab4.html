@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 4: Configure Microsegmentation Policy — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › Lab 4</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 4 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Configure Microsegmentation Policy</h1>
+  <div class="motivation-banner">
+    <p>Go one layer deeper than macrosegmentation: two OT devices share VLAN30 and talk freely by default. Find OT2's DHCP address, then write a Reject rule that blocks OT1 → OT2 — stopping lateral movement inside a single segment.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD Number</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Portal Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Admin login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
+      <span><strong>Block rule:</strong> <code id="d-blockrule">POD##-Block-OT1-to-OT2-Traffic</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab4">
+      <h2>Lab 4: Configure Microsegmentation Policy</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">MICROSEGMENTATION</div>
+        <p>Zero Trust Branch enables <strong>microsegmentation</strong> — granular access control that isolates applications, workloads, and devices <em>within</em> the branch, so communication is authenticated and authorised even between hosts on the same VLAN. This prevents lateral movement and limits the blast radius of a compromise.</p>
+        <ul style="margin-top:10px;">
+          <li>Confirm two OT endpoints on VLAN30 can reach each other by default</li>
+          <li>Locate OT2's DHCP-assigned /32 address via Assets (or the console)</li>
+          <li>Create a <strong>Reject</strong> rule blocking OT1 → OT2 and validate the block</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab4-hero.png" alt="Lab 4 — Microsegmentation Policy" loading="lazy">
+        </figure>
+      </div>
+
+
+      <!-- 4.1 -->
+      <div class="task-collapsible open" id="tc-4-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 4.1</span>
+          <span class="task-collapsible-title">Validate Default OT ↔ OT Connectivity &amp; Find OT2's IP</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Go to <strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Assets</strong> [1], filter for your site [2], and identify the <code>10.1.30.x</code> host with a DHCP-assigned IP [3]. Record it — you'll ping it from OT1. (It may be <code>10.1.30.20</code>, <code>10.1.30.21</code>, etc.)</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> If OT2 isn't on the Assets page, run in the POD console: <code>ip neighbour | grep 'ge8' | awk '{print $1}'</code>, or list everything with <code>arp -a</code>.</p></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p118-a.png" alt="Assets tab filtered by site showing OT2 DHCP IP"><div class="screenshot-caption">Assets › filter your site → find OT2's DHCP <code>10.1.30.x</code> address.</div></div>
+          <ul class="step-list"><li>Validate OT2's IP and subnet mask with <code>ifconfig</code> — note the <strong>/32</strong> (255.255.255.255) netmask.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p119-a.png" alt="ifconfig showing OT2 /32 netmask"><div class="screenshot-caption"><code>ifconfig</code> — OT2 has a /32 netmask, the basis for host-level microsegmentation.</div></div>
+          <ul class="step-list">
+            <li>In Skytap, open <strong>OT1</strong> (VLAN30).</li>
+            <li>Ping the secondary OT endpoint (<code>10.1.30.x</code>) — by default the packets succeed, confirming east-west connectivity.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p120-a.png" alt="Select OT1 in Skytap"><div class="screenshot-caption">Open OT1 (VLAN30).</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p121-a.png" alt="Ping OT1 to OT2 succeeds by default"><div class="screenshot-caption">Default: OT1 → OT2 ping succeeds.</div></div>
+        </div>
+      </div>
+
+      <!-- 4.2 -->
+      <div class="task-collapsible" id="tc-4-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 4.2</span>
+          <span class="task-collapsible-title">Block Connectivity Between OT Endpoints</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Go to <strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Sites</strong> and select <code class="d-site">POD##-Student-Lab</code>.</li>
+            <li>Select <strong>Policies</strong> [1] › <strong>Configure</strong> [2], then <strong>Add Policy</strong>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p122-a.png" alt="Select your site"><div class="screenshot-caption">Open your POD site.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p123-a.png" alt="Policies Configure"><div class="screenshot-caption">Policies › Configure.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p124-a.png" alt="Add Policy"><div class="screenshot-caption">Add Policy.</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>Action</strong>: Reject [1]</li>
+              <li><strong>Name</strong>: <code class="d-blockrule">POD##-Block-OT1-to-OT2-Traffic</code> [2]</li>
+              <li><strong>Source Zone</strong>: LAN_ZONE | LAN Zone [3] · <strong>Destination Zone</strong>: LAN_ZONE | LAN Zone [4]</li>
+              <li><strong>Source</strong>: Network › Subnet/Host [5] › <code>10.1.30.10/24</code> [6] › Add [7]</li>
+              <li><strong>Destination</strong>: Network › Subnet/Host [8] › <code>10.1.30.20/24</code> [9] › Add [10] <em>(use OT2's actual IP from 4.1)</em></li>
+              <li><strong>Ports</strong>: All [11] › click <strong>Add</strong> [12] to save.</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p125-a.png" alt="Reject policy OT1 to OT2 configuration"><div class="screenshot-caption">Reject rule: OT1 (10.1.30.10) → OT2 (10.1.30.20), all ports.</div></div>
+          <ul class="step-list">
+            <li>Click <strong>Commit</strong> to apply.</li>
+            <li>Confirm the Hit Count initialises to <code>0</code>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p126-a.png" alt="Commit policy"><div class="screenshot-caption">Commit the policy changes.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p127-a.png" alt="Hit count 0"><div class="screenshot-caption">Hit Count resets to 0.</div></div>
+        </div>
+      </div>
+
+      <!-- 4.3 -->
+      <div class="task-collapsible" id="tc-4-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 4.3</span>
+          <span class="task-collapsible-title">Validate the Blocked Connectivity</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>In Skytap, select <strong>OT1</strong> (VLAN30).</li>
+            <li>From the terminal, ping <code>10.1.30.20</code> (OT2) — you'll observe <strong>packet loss</strong>: the Reject rule is working.</li>
+            <li>Confirm the policy <strong>Hit Count</strong> increased from 0.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p128-a.png" alt="Select OT1 in Skytap"><div class="screenshot-caption">Open OT1 (VLAN30).</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p129-a.png" alt="Ping OT1 to OT2 shows packet loss"><div class="screenshot-caption">OT1 → OT2 ping now fails — microsegmentation blocks same-VLAN traffic.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab4-p130-a.png" alt="Hit count increased on reject rule"><div class="screenshot-caption">Hit Count climbs on the Reject rule, confirming the match.</div></div>
+          <div class="callout callout-success"><p><strong>Done:</strong> Host-to-host microsegmentation verified within VLAN30. Next, configure DNS Policies.</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Microsegmentation</strong> = control traffic <em>within</em> a VLAN (host-to-host), vs macro = between VLANs. Each OT host gets a <strong>/32</strong> so its flows route through the ZT800 and hit policy. Find OT2's DHCP IP via <strong>Assets</strong> or <code>ip neighbour | grep 'ge8'</code> / <code>arp -a</code>. Rule action <strong>Reject</strong> actively refuses (vs Drop which silently discards). Same Commit → Hit-Count-0 → validate flow as Lab 2.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab4" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab4','Lab 4: Microsegmentation')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab4" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab4')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 Lab Hub</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab4a" onchange="toggleDone(this)"><label for="chk-lab4a">OT2 IP found &amp; default OT↔OT verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4b" onchange="toggleDone(this)"><label for="chk-lab4b">Reject rule OT1 → OT2 created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4c" onchange="toggleDone(this)"><label for="chk-lab4c">Block validated (packet loss + hit count)</label></li>
+      </ul>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Microsegmentation</div><div class="qr-def">Host-to-host access control within a VLAN — isolates individual devices to stop lateral movement.</div></div>
+      <div class="qr-item"><div class="qr-term">OT1 / OT2</div><div class="qr-def">Two OT Linux endpoints on VLAN30 (10.1.30.x) used to demonstrate same-segment blocking.</div></div>
+      <div class="qr-item"><div class="qr-term">/32 netmask</div><div class="qr-def">255.255.255.255 — each endpoint is its own single-host subnet, so flows route through the ZT800 for policy.</div></div>
+      <div class="qr-item"><div class="qr-term">Assets tab</div><div class="qr-def">Infrastructure › … › Zero Trust Branch › Assets — lists discovered hosts and their DHCP IPs per site.</div></div>
+      <div class="qr-item"><div class="qr-term">ip neighbour / arp -a</div><div class="qr-def">Console commands to find endpoint IPs (e.g. filter ge8 for VLAN30) if not shown in Assets.</div></div>
+      <div class="qr-item"><div class="qr-term">Action: Reject</div><div class="qr-def">Actively refuses the connection (sender sees an error), unlike Drop which silently discards.</div></div>
+      <div class="qr-item"><div class="qr-term">Hit Count</div><div class="qr-def">Per-rule match counter; resets to 0 on commit, rises as blocked pings hit the rule.</div></div>
+      <div class="qr-item"><div class="qr-term">LAN_ZONE</div><div class="qr-def">Source/destination zone scope used in the rule (both OT hosts are in the LAN zone).</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab3.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 3: PBR Policies</span>
+  </a>
+  <div class="page-nav-message">Same VLAN, still isolated. That&rsquo;s microsegmentation.</div>
+  <a class="page-nav-btn page-nav-next" href="lab5.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 5: DNS Policies</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
+  <span>Lab 4: Microsegmentation</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
+function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
+  document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
+  var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<Student FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+  var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var br=up?up+'-Block-OT1-to-OT2-Traffic':'POD##-Block-OT1-to-OT2-Traffic';document.querySelectorAll('.d-blockrule').forEach(function(el){el.textContent=br;});var db=document.getElementById('d-blockrule');if(db)db.textContent=br;
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-280-lab-lab4';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

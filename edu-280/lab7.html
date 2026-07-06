@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 7: Logs and Monitoring — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › Lab 7</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 7 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Logs and Monitoring</h1>
+  <div class="motivation-banner">
+    <p>See what the branch sees: filter Packet Logs and Flow Logs to your POD, expand a record to read every field, review real-time Alarms by severity, and run a Web Insights query scoped to your POD location.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD Number</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Portal Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Log filter value:</strong> <code id="d-podid">pod##</code></span>
+      <span><strong>POD location:</strong> <code id="d-loc">pod##-student-location</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab7">
+      <h2>Lab 7: Logs and Monitoring</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">MONITORING</div>
+        <p>Explore the monitoring and troubleshooting capabilities of the Zero Trust Branch platform. You'll analyse <strong>packet logs</strong>, <strong>flow logs</strong>, and real-time <strong>alarms</strong> to understand traffic patterns and validate policy enforcement, then review <strong>Web Insights</strong> for your POD.</p>
+        <ul style="margin-top:10px;">
+          <li>View and filter Packet Logs and Flow Logs scoped to your POD</li>
+          <li>Expand a log record to read all fields (tabular or JSON)</li>
+          <li>Review Alarms filtered by severity</li>
+          <li>Run a Web Insights query for your POD location</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab7-hero.png" alt="Lab 7 — Logs and Monitoring" loading="lazy">
+        </figure>
+      </div>
+
+
+      <!-- 7.1 -->
+      <div class="task-collapsible open" id="tc-7-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 7.1</span>
+          <span class="task-collapsible-title">View Packet Logs</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate to <strong>Logs</strong> [1] › <strong>Packet Logs</strong> [2]. Click the <strong>Calendar</strong> icon [3], set the time frame to <strong>3 hours</strong>, and click <strong>Apply</strong> [4].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p185-a.png" alt="Packet Logs with 3-hour time filter"><div class="screenshot-caption">Logs › Packet Logs › Calendar → last 3 hours → Apply.</div></div>
+          <ul class="step-list">
+            <li>Click the <strong>+</strong> icon [1] and add a filter — Field: <strong>Policy</strong>, Operator: <strong>is</strong>, Value: <code class="d-podid">pod##</code> [2] — then <strong>Add Filter</strong> [3].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p186-a.png" alt="Add filter Policy is pod##"><div class="screenshot-caption">Filter: Policy <em>is</em> <code class="d-podid">pod##</code>.</div></div>
+          <ul class="step-list"><li>Click the toggle/dialog icon on any log to view its details.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p187-a.png" alt="Expand a packet log record"><div class="screenshot-caption">Expand a record to inspect it.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p188-a.png" alt="Packet log detail pane tabular/JSON"><div class="screenshot-caption">The detail pane shows all fields in tabular or JSON format.</div></div>
+        </div>
+      </div>
+
+      <!-- 7.2 -->
+      <div class="task-collapsible" id="tc-7-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 7.2</span>
+          <span class="task-collapsible-title">View Flow Logs</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate to <strong>Logs</strong> [1] › <strong>Flow Logs</strong> [2]. Click the <strong>Calendar</strong> [3], set <strong>3 hours</strong>, and <strong>Apply</strong> [4].</li>
+            <li>Click <strong>+</strong> [1] and add the same filter — Policy <em>is</em> <code class="d-podid">pod##</code> [2] — then <strong>Add Filter</strong> [3].</li>
+            <li>Expand any flow log to view its details (tabular or JSON).</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p189-a.png" alt="Flow Logs with 3-hour filter"><div class="screenshot-caption">Logs › Flow Logs › last 3 hours.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p190-a.png" alt="Flow Logs filter Policy is pod##"><div class="screenshot-caption">Filter: Policy <em>is</em> <code class="d-podid">pod##</code>.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p191-a.png" alt="Expand a flow log record"><div class="screenshot-caption">Expand a flow record.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p192-a.png" alt="Flow log detail pane"><div class="screenshot-caption">All flow fields in tabular or JSON.</div></div>
+        </div>
+      </div>
+
+      <!-- 7.3 -->
+      <div class="task-collapsible" id="tc-7-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 7.3</span>
+          <span class="task-collapsible-title">View Alarms</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate to <strong>Administration › Alerts › Zero Trust Branch › Alarms</strong>. A list of warning alarms appears (if none, check your filter settings).</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p193-a.png" alt="Alarms list under Administration Alerts"><div class="screenshot-caption">Administration › Alerts › Zero Trust Branch › Alarms.</div></div>
+          <ul class="step-list">
+            <li>Filter by severity — <strong>Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debug</strong>. Here, <strong>Warning</strong> alarms are selected.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p194-a.png" alt="Alarms filtered by Warning severity"><div class="screenshot-caption">Warning-severity alarms — informative signals for administrators.</div></div>
+        </div>
+      </div>
+
+      <!-- 7.4 -->
+      <div class="task-collapsible" id="tc-7-4">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 7.4</span>
+          <span class="task-collapsible-title">View Web Logs (Web Insights)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>In Experience Center, navigate to <strong>Logs</strong> [1] › <strong>Web Insights</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p195-a.png" alt="Logs Web Insights"><div class="screenshot-caption">Logs › Web Insights.</div></div>
+          <ul class="step-list">
+            <li>Select the <strong>Logs</strong> tab [1], click <strong>Add Filter</strong> [2], and choose <strong>User</strong> by typing "user" [3].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p196-a.png" alt="Web Insights Logs tab add filter User"><div class="screenshot-caption">Logs tab › Add Filter › User.</div></div>
+          <ul class="step-list">
+            <li>From the drop-down [1], choose your POD location (e.g. <code class="d-loc">pod##-student-location</code>) [2], then click <strong>Done</strong> [3].</li>
+            <li>Select <strong>Run Query</strong>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p197-a.png" alt="Choose POD location in filter"><div class="screenshot-caption">Select your POD location → Done.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p198-a.png" alt="Run Query button"><div class="screenshot-caption">Run Query.</div></div>
+          <ul class="step-list"><li>After a few seconds the log events for your POD appear — scroll horizontally for more fields, vertically for more events.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p199-a.png" alt="Web Insights log events for the POD"><div class="screenshot-caption">Web log events scoped to your POD.</div></div>
+          <div class="callout callout-note"><p><strong>Note:</strong> You can also analyse the <strong>Insights</strong> tab for your POD using the same filter.</p></div>
+          <div class="screenshot-embed"><img src="screenshots/lab7-p200-a.png" alt="Web Insights tab analysis"><div class="screenshot-caption">The Insights tab offers aggregate analysis with the same POD filter.</div></div>
+          <div class="callout callout-success"><p><strong>Done:</strong> You can now find and read branch telemetry across packet, flow, alarm, and web logs. Next, troubleshoot and debug the environment.</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Packet logs</strong> = per-packet detail (why one packet was dropped); <strong>flow logs</strong> = per-session summary (traffic patterns). Both under <strong>Logs › Insights › Zero Trust Branch</strong>; filter <strong>Policy is <code>pod##</code></strong> + 3-hour window, then expand a record (tabular/JSON). <strong>Alarms</strong>: Administration › Alerts, triage by severity (Emergency→Debug). <strong>Web Insights</strong>: Logs tab → filter User → your POD location → Run Query. Always scope to your POD.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab7" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab7','Lab 7: Logs & Monitoring')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab7" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab7')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 Lab Hub</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab7a" onchange="toggleDone(this)"><label for="chk-lab7a">Packet Logs viewed &amp; filtered</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7b" onchange="toggleDone(this)"><label for="chk-lab7b">Flow Logs viewed &amp; filtered</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7c" onchange="toggleDone(this)"><label for="chk-lab7c">Alarms reviewed by severity</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7d" onchange="toggleDone(this)"><label for="chk-lab7d">Web Insights query run for POD</label></li>
+      </ul>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Packet Logs</div><div class="qr-def">Per-packet events showing which policy acted on traffic — use to confirm a specific drop/reject.</div></div>
+      <div class="qr-item"><div class="qr-term">Flow Logs</div><div class="qr-def">Per-session (5-tuple) summaries — use to see overall traffic patterns and matched flows.</div></div>
+      <div class="qr-item"><div class="qr-term">Policy filter (pod##)</div><div class="qr-def">Field: Policy, Operator: is, Value: pod## — scopes logs to your POD in the shared tenant.</div></div>
+      <div class="qr-item"><div class="qr-term">Detail pane</div><div class="qr-def">Expand a record to see all fields in tabular or JSON format.</div></div>
+      <div class="qr-item"><div class="qr-term">Alarms</div><div class="qr-def">Administration › Alerts › Zero Trust Branch — real-time events, filterable by severity.</div></div>
+      <div class="qr-item"><div class="qr-term">Severity levels</div><div class="qr-def">Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debug — triage highest first.</div></div>
+      <div class="qr-item"><div class="qr-term">Web Insights</div><div class="qr-def">Logs › Web Insights — ZIA web log events; filter by User / POD location and Run Query.</div></div>
+      <div class="qr-item"><div class="qr-term">POD location</div><div class="qr-def">pod##-student-location — the location value used to scope Web Insights to your POD.</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab6.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 6: Validation</span>
+  </a>
+  <div class="page-nav-message">If it moved through the branch, the logs remember it.</div>
+  <a class="page-nav-btn page-nav-next" href="lab8.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 8: Troubleshoot &amp; Debug</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
+  <span>Lab 7: Logs &amp; Monitoring</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();
+  document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
+  var pid=slug||'pod##';document.querySelectorAll('.d-podid').forEach(function(el){el.textContent=pid;});var dpid=document.getElementById('d-podid');if(dpid)dpid.textContent=pid;
+  var loc=slug?slug+'-student-location':'pod##-student-location';document.querySelectorAll('.d-loc').forEach(function(el){el.textContent=loc;});var dloc=document.getElementById('d-loc');if(dloc)dloc.textContent=loc;
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-280-lab-lab7';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

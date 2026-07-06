@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 9: Ransomware Kill Switch Policy — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › Lab 9</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 9 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Configure Ransomware Kill Switch Policy</h1>
+  <div class="motivation-banner">
+    <p>Contain an attack with one click: build an Allow-SSH policy (green mode) and a cloned Block-SSH policy (orange mode), then flip the Kill Switch to orange and watch SSH between private subnets get cut — even though the block rule sits second in the list.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD Number</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Portal Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
+      <span><strong>Allow rule:</strong> <code id="d-allow">POD##-Allow-ssh</code></span>
+      <span><strong>Block rule:</strong> <code id="d-block">POD##-Block-ssh</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab9">
+      <h2>Lab 9: Configure Ransomware Kill Switch Policy</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">RANSOMWARE KILL SWITCH</div>
+        <p>The Zscaler <strong>Ransomware Kill Switch</strong> is a one-click attack-surface-reduction tool built into Zero Trust Device Segmentation. It instantly blocks vulnerable protocols and access to critical networks with pre-set severity levels — acting as a multi-layer enforcement point that halts lateral movement when a machine is infected, using escalation paths like "virtual fuses" (Defcon levels).</p>
+        <p>You'll create two policies and flip between modes:</p>
+        <ul style="margin-top:10px;">
+          <li><strong>Allow SSH</strong> from Windows Server (VLAN10) to OT (VLAN30) — <strong>Green</strong> mode</li>
+          <li><strong>Block SSH</strong> for the same source/destination — <strong>Orange</strong> mode — then validate</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab9-hero.png" alt="Lab 9 — Ransomware Kill Switch" loading="lazy">
+        </figure>
+      </div>
+
+      <div class="screenshot-embed">
+        <img src="screenshots/lab9-p211-a.png" alt="Ransomware Kill Switch modes / severity levels overview">
+        <div class="screenshot-caption">The Kill Switch acts as a tiered enforcement point — flipping modes (e.g. green → orange) changes which pre-staged policies are enforced.</div>
+      </div>
+
+
+      <!-- 9.1 -->
+      <div class="task-collapsible open" id="tc-9-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 9.1</span>
+          <span class="task-collapsible-title">Configure the Allow-SSH Policy (Green mode)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Go to <strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Sites</strong> and select <code class="d-site">POD##-Student-Lab</code>.</li>
+            <li>Select <strong>Policies</strong> [1] › <strong>Configure</strong> [2], then <strong>Add Policy</strong>.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p212-a.png" alt="Select your site"><div class="screenshot-caption">Open your POD site.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p213-a.png" alt="Policies Configure"><div class="screenshot-caption">Policies › Configure.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p213-b.png" alt="Add Policy"><div class="screenshot-caption">Add Policy.</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>Action</strong>: Accept [1]</li>
+              <li><strong>Name</strong>: <code class="d-allow">POD##-Allow-ssh</code> [2]</li>
+              <li><strong>Source Zone</strong>: LAN_ZONE | LAN Zone [3] · <strong>Destination Zone</strong>: LAN_ZONE | LAN Zone [4]</li>
+              <li><strong>Source</strong>: Network › Private Subnets [5] · <strong>Destination</strong>: Network › Private Subnets [6]</li>
+              <li><strong>Ports</strong>: Custom Port [7] · Value <code>tcp:22</code> [8] (search tcp:22 → select <strong>ssh</strong> → Add)</li>
+              <li><strong>Ransomware Kill Switch</strong>: <strong>Green</strong> [9]</li>
+              <li>Click <strong>Add</strong> [10] to save.</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p214-a.png" alt="Allow SSH policy form green mode"><div class="screenshot-caption">Accept rule: Private Subnets, tcp:22 (ssh), Kill Switch = <strong>Green</strong>.</div></div>
+          <ul class="step-list">
+            <li>Click <strong>Commit</strong> (takes effect in a few seconds).</li>
+            <li>Validate: in the Student Portal open the <strong>Windows Server</strong> (VLAN10).</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p215-a.png" alt="Commit allow policy"><div class="screenshot-caption">Commit the Allow-ssh policy.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p215-b.png" alt="Select Windows Server to validate"><div class="screenshot-caption">Open the Windows Server (VLAN10).</div></div>
+          <ul class="step-list">
+            <li>From Command Prompt: <code>ssh zscaler@10.1.30.10</code>, password <code>Zscaler123!</code>. After authentication you're logged into the VLAN30 host — close the window. (If prompted to trust the host, type <code>yes</code>.)</li>
+            <li>Confirm the policy <strong>Hit Count</strong> increased from 0. Now clone this policy to build the block.</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p216-a.png" alt="ssh into 10.1.30.10 success"><div class="screenshot-caption"><code>ssh zscaler@10.1.30.10</code> succeeds under the green Allow rule.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p217-a.png" alt="Allow policy hit count increased"><div class="screenshot-caption">Hit Count climbs on the Allow-ssh rule.</div></div>
+        </div>
+      </div>
+
+      <!-- 9.2 -->
+      <div class="task-collapsible" id="tc-9-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 9.2</span>
+          <span class="task-collapsible-title">Configure the Block-SSH Policy (Orange mode) &amp; Reorder</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>Select the <strong>gear icon</strong> [1] of the Allow-ssh policy and choose <strong>Clone</strong> [2].</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p218-a.png" alt="Gear icon Clone the allow policy"><div class="screenshot-caption">Clone the Allow-ssh policy as a starting point.</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>Action</strong>: Reject [1]</li>
+              <li><strong>Name</strong>: <code class="d-block">POD##-Block-ssh</code> [2]</li>
+              <li>Source/Destination Zone: LAN_ZONE · Source/Destination: Network › Private Subnets</li>
+              <li><strong>Ports</strong>: Custom Port › <code>tcp:22</code> (select <strong>ssh</strong> → Add)</li>
+              <li><strong>Ransomware Kill Switch</strong>: <strong>Orange</strong> [3]</li>
+              <li>Click <strong>Clone</strong> [4] to create the policy.</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p219-a.png" alt="Block SSH policy form orange mode"><div class="screenshot-caption">Reject rule: same source/dest/port, Kill Switch = <strong>Orange</strong>.</div></div>
+          <ul class="step-list"><li>Click <strong>Commit</strong> (takes effect in a few seconds).</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p220-a.png" alt="Commit block policy"><div class="screenshot-caption">Commit the Block-ssh policy.</div></div>
+          <ul class="step-list">
+            <li>Click <strong>Reorder</strong>, drag <code class="d-block">POD##-Block-ssh</code> to position <strong>2</strong> [1], then <strong>Save Policy Order</strong> [2].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p221-a.png" alt="Reorder button"><div class="screenshot-caption">Click Reorder.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p222-a.png" alt="Drag block to position 2 save order"><div class="screenshot-caption">Block-ssh moved to #2 → Save Policy Order.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p223-a.png" alt="SSH policies reordered"><div class="screenshot-caption">Policies reordered — note the block is second, below the allow.</div></div>
+        </div>
+      </div>
+
+      <!-- 9.3 -->
+      <div class="task-collapsible" id="tc-9-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 9.3</span>
+          <span class="task-collapsible-title">Validate the Kill Switch in Action (flip to Orange)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Navigate to <strong>Policies › Access Control › Segmentation › Zero Trust Branch › Kill Switch</strong> [1]. Ensure your POD is selected [2], click the <strong>Switch</strong> [3], type <code>orange</code> [4], then <strong>Confirm</strong> [5].</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p224-a.png" alt="Kill Switch change mode to orange"><div class="screenshot-caption">Kill Switch → select POD → type <code>orange</code> → Confirm.</div></div>
+          <ul class="step-list"><li>Validate the mode via <strong>Sites › your site › Overview</strong> — a pop-up indicates the Ransomware Kill Switch is <strong>ON</strong>.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p225-a.png" alt="Site overview showing Kill Switch ON"><div class="screenshot-caption">Site Overview confirms the Kill Switch is ON (orange).</div></div>
+          <ul class="step-list">
+            <li>Open the Windows Server Command Prompt and retry <code>ssh zscaler@10.1.30.10</code> — the connection is now <strong>refused</strong>. The block is effective even though it's in position 2, because the Kill Switch mode changes enforcement/precedence.</li>
+          </ul>
+          <div class="callout callout-caution"><p><strong>Recommended:</strong> switch back to the normal <strong>Green</strong> Kill Switch mode once you've completed this task.</p></div>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p226-a.png" alt="ssh connection refused under orange mode"><div class="screenshot-caption"><code>ssh zscaler@10.1.30.10</code> → connection refused. Orange mode enforces the block.</div></div>
+          <ul class="step-list"><li>Confirm the Block-ssh policy <strong>Hit Count</strong> increased above 0.</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab9-p227-a.png" alt="Block policy hit count increased"><div class="screenshot-caption">Hit Count climbs on the Block-ssh rule — the Kill Switch works.</div></div>
+          <div class="callout callout-success"><p><strong>🎉 End of lab — EDU-280 complete!</strong> You've deployed a Zero Trust Branch with HA, secured east-west traffic with macro- and micro-segmentation, steered traffic with PBR, controlled DNS, validated end-to-end, monitored and troubleshot the environment, and contained a simulated attack with the Ransomware Kill Switch.</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Ransomware Kill Switch</strong> = one-click, tiered containment. Rules are tagged with a mode: <strong>Green</strong> Allow-ssh, <strong>Orange</strong> Block-ssh (both tcp:22, Private Subnets, VLAN10→VLAN30). Flipping the switch to <strong>orange</strong> (Kill Switch › select POD › type orange › Confirm) enforces the block <em>regardless of list order</em> — position 2 still wins. Validate: <code>ssh zscaler@10.1.30.10</code> goes from success → connection refused. Cutting SSH between private subnets stops lateral movement. Switch back to green when done.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab9" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab9','Lab 9: Ransomware Kill Switch')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab9" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab9')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 Lab Hub</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab9a" onchange="toggleDone(this)"><label for="chk-lab9a">Allow-ssh (green) created &amp; SSH works</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab9b" onchange="toggleDone(this)"><label for="chk-lab9b">Block-ssh (orange) cloned &amp; reordered</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab9c" onchange="toggleDone(this)"><label for="chk-lab9c">Orange mode → SSH refused (validated)</label></li>
+      </ul>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Ransomware Kill Switch</div><div class="qr-def">One-click attack-surface reduction in Zero Trust Device Segmentation — blocks vulnerable protocols by mode.</div></div>
+      <div class="qr-item"><div class="qr-term">Green mode</div><div class="qr-def">Normal operation — the Allow-ssh policy is enforced.</div></div>
+      <div class="qr-item"><div class="qr-term">Orange mode</div><div class="qr-def">Elevated containment — the Block-ssh policy is enforced regardless of rule position.</div></div>
+      <div class="qr-item"><div class="qr-term">Virtual fuses / Defcon</div><div class="qr-def">Escalation tiers of pre-staged policies you switch between during an incident.</div></div>
+      <div class="qr-item"><div class="qr-term">tcp:22 (ssh)</div><div class="qr-def">The SSH port matched by both policies; search tcp:22 and pick the ssh service object.</div></div>
+      <div class="qr-item"><div class="qr-term">Private Subnets</div><div class="qr-def">Source/destination object covering the branch's internal subnets.</div></div>
+      <div class="qr-item"><div class="qr-term">Clone</div><div class="qr-def">Gear icon action to copy a policy — used to make Block-ssh from Allow-ssh.</div></div>
+      <div class="qr-item"><div class="qr-term">Reorder</div><div class="qr-def">Drag-and-drop policy ordering; here Block-ssh is placed at #2 to prove the mode overrides order.</div></div>
+      <div class="qr-item"><div class="qr-term">ssh zscaler@10.1.30.10</div><div class="qr-def">Validation command (password Zscaler123!) — succeeds in green, refused in orange.</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab8.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 8: Troubleshoot &amp; Debug</span>
+  </a>
+  <div class="page-nav-message">One switch, lateral movement stopped. Course complete.</div>
+  <a class="page-nav-btn page-nav-next" href="index.html">
+    <span class="page-nav-label">FINISH →</span>
+    <span class="page-nav-title">Back to Lab Hub</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
+  <span>Lab 9: Ransomware Kill Switch</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var up=podUpper();
+  document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
+  var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var al=up?up+'-Allow-ssh':'POD##-Allow-ssh';document.querySelectorAll('.d-allow').forEach(function(el){el.textContent=al;});var da=document.getElementById('d-allow');if(da)da.textContent=al;
+  var bl=up?up+'-Block-ssh':'POD##-Block-ssh';document.querySelectorAll('.d-block').forEach(function(el){el.textContent=bl;});var db=document.getElementById('d-block');if(db)db.textContent=bl;
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-280-lab-lab9';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

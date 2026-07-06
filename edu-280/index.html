@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDU-280 Hands-On Lab Guide — Zero Trust Branch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › EDU-280</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">EDU-280 · Hands-On Lab</span>
+  </div>
+  <h1>Zscaler <em>Zero Trust Branch</em></h1>
+  <div class="motivation-banner">
+    <p>Hands-on labs deploying Zero Trust Branch devices with High Availability — segmentation, policy-based routing, DNS security, monitoring, and a ransomware kill switch</p>
+  </div>
+</header>
+
+<div class="hub-main">
+<details class="zscaler-one-min">
+  <summary>&#9432; Zero Trust Branch in one minute — key terms</summary>
+  <div class="zom-body">
+    <div class="zom-term"><strong>ZTB</strong><span>Zscaler Zero Trust Branch device — brings Zero Trust segmentation and secure Direct Internet Access to a branch. Deployed as an active/standby HA pair.</span></div>
+    <div class="zom-term"><strong>DIA</strong><span>Direct Internet Access — the WAN uplinks each ZTB device uses to reach the Internet via the Zero Trust Exchange.</span></div>
+    <div class="zom-term"><strong>Macrosegmentation</strong><span>Policy controlling traffic between VLANs/segments (east-west) — e.g. block VLAN10 → VLAN20.</span></div>
+    <div class="zom-term"><strong>Microsegmentation</strong><span>Policy controlling traffic within a VLAN — e.g. block OT1 → OT2 on VLAN30.</span></div>
+    <div class="zom-term"><strong>PBR</strong><span>Policy-Based Routing — steers selected traffic (SaaS, ICMP) down a specific path instead of the default.</span></div>
+    <div class="zom-term"><strong>Ransomware Kill Switch</strong><span>Rapid block mode (e.g. SSH between private subnets) to contain lateral movement during an incident.</span></div>
+  </div>
+</details>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">SETUP</span>
+      <div class="phase-title">Access &amp; Device Configuration</div>
+      <div class="phase-range">Labs 0–1 · Reach the POD, then deploy the ZTB site with HA and all interfaces</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab0.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 0</span>
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Lab Access Details</div>
+        <div class="lab-card-desc">Access your POD via the Experience Center admin portal, log into the Skytap console VMs, and learn the three navigation paths used across the course.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab1.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 1</span>
+          <span class="lab-card-time">~45 min</span>
+        </div>
+        <div class="lab-card-title">Device Interface Configuration</div>
+        <div class="lab-card-desc">Add a Site, activate the active and standby ZT800 devices, validate site-level settings, and configure the LAN VLANs (10/20/30) and WAN (GE2) interfaces.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label amber">SEGMENTATION &amp; TRAFFIC POLICY</span>
+      <div class="phase-title">Segmentation, Routing &amp; DNS</div>
+      <div class="phase-range">Labs 2–5 · East-west filtering, policy-based routing, microsegmentation, and DNS security</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab2.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 2</span>
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">Secure Internal Communication</div>
+        <div class="lab-card-desc">Verify default inter-VLAN forwarding, then apply macrosegmentation to block VLAN10 → VLAN20 and a site-level policy to allow OT → IoT.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab3.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 3</span>
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Policy-Based Routing (PBR)</div>
+        <div class="lab-card-desc">Validate traffic through ZIA-IPSec, create a SaaS application object (Adobe), then configure PBR to send direct ICMP traffic and verify the change.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab4.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 4</span>
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Microsegmentation Policy</div>
+        <div class="lab-card-desc">Validate microsegmentation for an OT endpoint, block connectivity between OT endpoints on VLAN30, and confirm the traffic is blocked.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab5.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 5</span>
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">Configure DNS Policies</div>
+        <div class="lab-card-desc">Redirect google.com and block web.whatsapp.com using branch DNS policies with domain objects, validating traffic before and after each rule.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label green">VALIDATION</span>
+      <div class="phase-title">End-to-End Validation</div>
+      <div class="phase-range">Lab 6 · Prove the internal and external communication policies across every VLAN</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab6.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 6</span>
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">Validate Securing Communication</div>
+        <div class="lab-card-desc">From the OT, IoT, and Windows hosts, confirm cloud routing, Internet access, blocked gambling/gaming sites, VLAN restrictions, and RDP into a Windows server over ZPA.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label purple">OPERATIONS &amp; PROTECTION</span>
+      <div class="phase-title">Monitor, Troubleshoot &amp; Protect</div>
+      <div class="phase-range">Labs 7–9 · Logs and insights, diagnostics, and the ransomware kill switch</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab7.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 7</span>
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Logs and Monitoring</div>
+        <div class="lab-card-desc">View Packet logs, Flow logs, and Alarms for the Zero Trust Branch, and review Web logs in the Experience Center portal.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab8.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 8</span>
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Troubleshoot &amp; Debug</div>
+        <div class="lab-card-desc">Analyse and manage network interfaces and run network and systems diagnostics on the Zero Trust Branch environment.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab9.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 9</span>
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Ransomware Kill Switch Policy</div>
+        <div class="lab-card-desc">Configure Allow then Block SSH policies between private subnets, and validate the Ransomware Kill Switch containing lateral movement in action.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
+  <span>Labs 0–9</span>
+</footer>
+
+<script>
+document.body.style.transition='opacity 0.3s ease';
+document.body.style.opacity='1';
+sessionStorage.setItem('pt','1');
+</script>
+</body>
+</html>
