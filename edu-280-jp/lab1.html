@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ラボ1: デバイスインターフェース構成 — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › ラボ1</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">ラボ1 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Zero Trust Branch デバイスインターフェース構成</h1>
+  <div class="motivation-banner">
+    <p>支社をプロビジョニングします。Site を追加し、HA のためにアクティブとスタンバイの ZTB デバイスをアクティベートし、サイトレベル設定と App Connector を構成して、すべての LAN VLAN とセカンダリ WAN インターフェースを構築します。</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ ラボ設定</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> 折りたたむ
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD番号</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">受講者FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">ポータルパスワード</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(メール記載)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytapパスコード</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(メール記載)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">保存</button>
+        <button class="config-btn secondary" onclick="clearConfig()">クリア</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>管理者ログイン:</strong> <code id="d-login">pod##-student@&lt;受講者FQDN&gt;</code></span>
+      <span><strong>サイト名:</strong> <code id="d-site">POD##-Student-Lab</code></span>
+      <span><strong>App Connector:</strong> <code id="d-appc">pod##StudentAppC</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">自分の質問</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— クリックで展開</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="すべての質問をコピー">⎘ すべてコピー</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">自分のメモ</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— クリックで展開</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="すべてのメモをコピー">⎘ すべてコピー</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab1">
+      <h2>ラボ1: Zero Trust Branch デバイスインターフェース構成</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">プロビジョニング</div>
+        <p>Zero Trust Branch デバイス（物理／仮想）は、<strong>Zscaler Zero Trust Exchange (ZTE)</strong> を活用して支社トラフィックを Zscaler サービスへ転送します。このラボでは、Experience Center を通じて2台の仮想 ZTB デバイスの構成を編集します。（物理と仮想の構成は同一です。）</p>
+        <p>Zero Trust Branch プロビジョニングテンプレートを完成させます。</p>
+        <ul style="margin-top:10px;">
+          <li><strong>Templates</strong> — デフォルトテンプレートは全サイト用に <code>vm-ha-edu280</code> としてクローンされています</li>
+          <li><strong>Sites</strong> — アクティブ／スタンバイユニットをオンボードします</li>
+          <li><strong>Device Details</strong> — System Settings、WAN DNS、App Connector。GE2 WAN インターフェースと GE6/GE7/GE8 LAN インターフェースを構成します</li>
+          <li><strong>App Connector</strong> — 一部事前プロビジョニング済み。POD 用のキーが既に存在します</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>コース:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>版:</strong> 2.2 · 2026年2月</div>
+          <div class="lab-meta-item"><strong>プラットフォーム:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab1-hero.png" alt="ラボ1 — デバイスインターフェース構成" loading="lazy">
+        </figure>
+      </div>
+
+
+      <!-- ═══════════ 1.1 ADD SITE ═══════════ -->
+      <div class="task-collapsible open" id="tc-1-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.1</span>
+          <span class="task-collapsible-title">Site の追加とサイト詳細の入力</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li><strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Sites</strong> に移動し、<strong>Add Site</strong> ボタンをクリックします。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p018-a.png" alt="Add Site ボタンのある Sites ページ"><div class="screenshot-caption">Sites › <strong>Add Site</strong>。</div></div>
+          <h4 style="margin-top:14px;">1.1.1 · サイト詳細を入力（順番に）</h4>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>Name</strong> – <code class="d-site">POD##-Student-Lab</code> [1]</li>
+              <li><strong>Platform</strong> – <code>vm</code> [2]</li>
+              <li><strong>Template</strong> – <code>vm-ha-edu280</code> [3]</li>
+              <li><strong>Location</strong> – New Location [4]; <strong>Location Name</strong> – <code>POD##-Student-Location</code> [5]</li>
+              <li><strong>Country</strong> – 自分の所在地に基づいて選択 [6]</li>
+              <li><strong>Gateway 1 · WAN Interface</strong> – <code>ge1|(wan)</code> [7]; <strong>Use DHCP for IP</strong> – Enabled [8]</li>
+              <li><strong>Gateway 2 · WAN Interface</strong> – <code>ge1|(wan)</code> [9]; <strong>Use DHCP for IP</strong> – Enabled [10]</li>
+              <li><strong>Add</strong> [11] を選択</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p019-a.png" alt="番号付きのサイト詳細フィールドを持つ Add Site ダイアログ"><div class="screenshot-caption">Add Site フォーム — 番号付きの各フィールドを入力してから <strong>Add</strong>。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.2 ACTIVE DEVICE ═══════════ -->
+      <div class="task-collapsible" id="tc-1-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.2</span>
+          <span class="task-collapsible-title">アクティブデバイス (ZTB-1) のアクティベート</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li><strong>Sites</strong> に移動し、自分のサイト <code class="d-site">POD##-Student-Lab</code> を選択して、<strong>Envelope</strong>（封筒）アイコンをクリックして Activation code をコピーします。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p020-a.png" alt="Activation code をコピーする Envelope アイコンのあるサイト行"><div class="screenshot-caption">自分のサイトを選択 → Activation code の <strong>Envelope</strong> アイコン。</div></div>
+          <ul class="step-list"><li><strong>Activation Code</strong> をコピーして Notepad に保存します。まもなく使用します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p021-a.png" alt="コピー用に表示された Activation code"><div class="screenshot-caption">デバイスコンソール手順のために Activation code を保存します。</div></div>
+          <ul class="step-list">
+            <li>Skytap VM ダッシュボードで <strong>ZTB-1</strong> VM を開いてログインします — <code>localhost login: admin</code> / <code>a!rg@p</code>。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p022-a.png" alt="Skytap で ZTB-1 VM を選択"><div class="screenshot-caption">ZTB-1（プライマリ）コンソールを開きます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p022-b.png" alt="ZTB-1 コンソールのログインプロンプト"><div class="screenshot-caption"><code>admin</code> / <code>a!rg@p</code> でログインします。</div></div>
+          <ul class="step-list">
+            <li>プライマリ WAN を DHCP に設定: <strong>option 2</strong> を選択します。</li>
+            <li>次に <strong>option 1 – Configure Network</strong> を選択します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p023-a.png" alt="プライマリ WAN を DHCP にするメニュー option 2"><div class="screenshot-caption">Option 2 — ゲートウェイ WAN を構成。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p023-b.png" alt="メニュー option 1 Configure Network"><div class="screenshot-caption">Option 1 — Configure Network。</div></div>
+          <ul class="step-list">
+            <li>WAN の詳細を入力してから適用します:
+              <ul class="sub-steps">
+                <li>WAN interface: <code>ge1</code></li>
+                <li>WAN VLAN ID (1..4092) [1]: <code>1</code></li>
+                <li>Use DHCP for WAN interface ge1 (Y/N): <code>y</code></li>
+                <li>Use DHCP to set WAN nameservers (Y/N): <code>y</code></li>
+                <li>Apply configuration? (y/n): <code>y</code></li>
+              </ul>
+            </li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p024-a.png" alt="WAN インターフェースの DHCP 構成入力"><div class="screenshot-caption">ge1 / VLAN 1 / DHCP y / nameservers y を入力してから適用。</div></div>
+          <ul class="step-list"><li>構成が <strong>OK</strong> と表示されることを確認し、<strong>Enter</strong> を押します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p025-a.png" alt="Configuration OK の検証画面"><div class="screenshot-caption">Configuration OK → Enter を押します。</div></div>
+          <ul class="step-list">
+            <li><strong>4</strong> を選択して Main Menu に戻ります。</li>
+            <li><strong>1</strong> を選択して Gateway をアクティベートします。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p026-a.png" alt="Main Menu に戻る option 4"><div class="screenshot-caption">Option 4 — Main Menu に戻る。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p026-b.png" alt="Gateway をアクティベートする option 1"><div class="screenshot-caption">Option 1 — Activate the Gateway。</div></div>
+          <ul class="step-list">
+            <li><strong>1</strong> を選択して Activate Airgap Gateway。</li>
+            <li>保存した <strong>Activation Code</strong> を入力し、Enter を押します。</li>
+            <li><strong>2</strong> を選択して Main Menu に戻ります。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p027-a.png" alt="Activate airgap gateway の option 1"><div class="screenshot-caption">Option 1 — Activate Airgap Gateway。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p027-b.png" alt="Activation code 入力プロンプト"><div class="screenshot-caption">保存した Activation code を貼り付けます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p027-c.png" alt="Main Menu に戻る option 2"><div class="screenshot-caption">Option 2 — Main Menu に戻る。</div></div>
+          <ul class="step-list"><li>Gateway Name と Management System が Main Menu に表示されることを確認し、<strong>8</strong> で VM を終了します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p028-a.png" alt="Gateway name と management system を表示する main menu"><div class="screenshot-caption">Gateway Name + Management System が表示 → 8 で終了。</div></div>
+          <ul class="step-list"><li>アクティブデバイスのステータスが <strong>Post-update</strong> であることを確認します。約15分後に <strong>Active</strong> に変わります。次にスタンバイデバイスをアクティベートします。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p029-a.png" alt="ポータルでアクティブデバイスのステータス Post-update"><div class="screenshot-caption">ステータス <strong>Post-update</strong> → 約15分後に <strong>Active</strong> になります。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.3 STANDBY DEVICE ═══════════ -->
+      <div class="task-collapsible" id="tc-1-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.3</span>
+          <span class="task-collapsible-title">スタンバイデバイス (ZTB-2) のアクティベート</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="callout callout-note"><p><strong>注意:</strong> スタンバイの流れはアクティブデバイスとまったく同じです（同じメニュー、同じ DHCP WAN の回答）。ただし対象は <strong>ZTB-2</strong> VM です。</p></div>
+          <ul class="step-list">
+            <li><strong>Sites</strong> で <code class="d-site">POD##-Student-Lab</code> を選択し、<strong>Envelope</strong> アイコンをクリックして Activation code をコピーし、Notepad に保存します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p030-a.png" alt="スタンバイの activation code をコピーする Envelope アイコン"><div class="screenshot-caption">スタンバイユニットの Activation code をコピーします。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p031-a.png" alt="表示されたスタンバイの activation code"><div class="screenshot-caption">スタンバイの Activation code を保存します。</div></div>
+          <ul class="step-list"><li><strong>ZTB-2</strong> VM を開いてログインします — <code>admin</code> / <code>a!rg@p</code>。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p032-a.png" alt="ZTB-2 VM を選択"><div class="screenshot-caption">ZTB-2（セカンダリ）コンソールを開きます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p032-b.png" alt="ZTB-2 ログインプロンプト"><div class="screenshot-caption"><code>admin</code> / <code>a!rg@p</code> でログインします。</div></div>
+          <ul class="step-list">
+            <li><strong>option 2</strong>、次に <strong>option 1 – Configure Network</strong> を選択します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p033-a.png" alt="スタンバイの option 2"><div class="screenshot-caption">Option 2 — ゲートウェイ WAN を構成。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p033-b.png" alt="スタンバイの option 1 Configure Network"><div class="screenshot-caption">Option 1 — Configure Network。</div></div>
+          <ul class="step-list">
+            <li>同じ WAN の詳細を入力します: <code>ge1</code>、VLAN <code>1</code>、DHCP <code>y</code>、nameservers <code>y</code>、apply <code>y</code>。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p034-a.png" alt="スタンバイの WAN DHCP 入力"><div class="screenshot-caption">ZTB-2 でも同じ ge1 DHCP WAN 構成。</div></div>
+          <ul class="step-list"><li><strong>OK</strong> を確認し、Enter を押します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p035-a.png" alt="スタンバイの Configuration OK"><div class="screenshot-caption">Configuration OK → Enter。</div></div>
+          <ul class="step-list">
+            <li><strong>4</strong> → Main Menu、次に <strong>1</strong> で Gateway をアクティベート。</li>
+            <li><strong>1</strong> で Activate Airgap Gateway、保存した Activation Code を入力し、<strong>2</strong> で戻ります。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p036-a.png" alt="スタンバイの Main Menu に戻る option 4"><div class="screenshot-caption">Option 4 — Main Menu。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p036-b.png" alt="スタンバイの Gateway をアクティベート option 1"><div class="screenshot-caption">Option 1 — Activate the Gateway。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p037-a.png" alt="スタンバイの activate airgap option 1"><div class="screenshot-caption">Option 1 — Activate Airgap Gateway。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p037-b.png" alt="スタンバイの activation code 入力"><div class="screenshot-caption">スタンバイの Activation code を貼り付けます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p037-c.png" alt="スタンバイの Main Menu に戻る option 2"><div class="screenshot-caption">Option 2 — Main Menu に戻る。</div></div>
+          <ul class="step-list"><li>Main Menu で Gateway Name / Management System を確認し、<strong>8</strong> で終了します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p038-a.png" alt="スタンバイの main menu が表示"><div class="screenshot-caption">Gateway が表示 → 8 で終了。</div></div>
+          <ul class="step-list"><li>スタンバイのステータスが <strong>Post-update</strong> であることを確認します。約15分後に <strong>Standby</strong> になります。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p039-a.png" alt="スタンバイデバイスの Post-update ステータス"><div class="screenshot-caption">ステータス <strong>Post-update</strong> → <strong>Standby</strong> になります。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p039-b.png" alt="ポータルの両デバイスのステータス"><div class="screenshot-caption">両ユニットがオンボード完了（Active + Standby）。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.4 SITE-LEVEL SETTINGS ═══════════ -->
+      <div class="task-collapsible" id="tc-1-4">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.4</span>
+          <span class="task-collapsible-title">サイトレベル設定の検証と構成（NAT、DNS、VRRP、App Connector）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li><strong>Infrastructure</strong> [1] › <strong>Connectors</strong> [2] › <strong>Edge</strong> [3] › Zero Trust Branch › <strong>Sites</strong> [4] に移動します。</li>
+            <li>自分のサイト <code class="d-site">POD##-Student-Lab</code> を選択します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p040-a.png" alt="Sites へのナビゲーション"><div class="screenshot-caption">Infrastructure › Connectors › Edge › Zero Trust Branch › Sites。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p041-a.png" alt="サイトを選択"><div class="screenshot-caption">自分の POD サイトを開きます。</div></div>
+          <ul class="step-list">
+            <li><strong>Settings › Debug Options</strong> で <strong>Debug Logs</strong> を有効にし、両ゲートウェイの WAN インターフェースで <strong>SSH が無効</strong>になっていることを確認します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p042-a.png" alt="Debug Logs 有効、SSH 無効の Debug Options タブ"><div class="screenshot-caption">Debug Logs を有効化。両ゲートウェイの WAN で SSH を無効化。</div></div>
+          <ul class="step-list">
+            <li><strong>WAN DNS Servers</strong> が <code>1.1.1.1</code> と <code>8.8.8.8</code> であることを確認し、<strong>Private DNS Servers</strong> を <code>10.73.51.20</code> と <code>10.73.51.21</code> に設定します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p043-a.png" alt="WAN と Private DNS サーバー設定"><div class="screenshot-caption">WAN DNS 1.1.1.1 / 8.8.8.8 · Private DNS 10.73.51.20 / .21。</div></div>
+          <ul class="step-list"><li><strong>NAT</strong> タブで NAT を <strong>Enable</strong> [1] に切り替え、<strong>Confirm</strong> [2] を選択します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p044-a.png" alt="NAT タブで enable と confirm"><div class="screenshot-caption">NAT を有効化 → Confirm。</div></div>
+          <ul class="step-list"><li>両デバイスで HA（<code>ge4</code>）インターフェースの <strong>VRRP</strong> を構成します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p045-a.png" alt="HA ge4 インターフェースの VRRP 構成"><div class="screenshot-caption">HA（ge4）インターフェースの VRRP — アクティブ／スタンバイのフェイルオーバーの仕組み。</div></div>
+          <ul class="step-list"><li><strong>DHCP Service</strong> タブで <strong>DHCP Server</strong> オプションが選択されていることを確認します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p046-a.png" alt="DHCP Server が選択された DHCP Service タブ"><div class="screenshot-caption">DHCP Service → DHCP Server を有効化。</div></div>
+          <ul class="step-list"><li><strong>ZIA</strong> [1] › <strong>IPSec Tunnels</strong> [2] で <strong>IPSec Tunnel</strong> のステータスが <strong>Established/Up</strong> であることを確認します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p047-a.png" alt="ZIA IPSec Tunnels ステータス Established"><div class="screenshot-caption">ZIA › IPSec Tunnels → ステータス Established/Up。</div></div>
+          <ul class="step-list">
+            <li>App Connector を統合します: <strong>Infrastructure</strong> [1] › <strong>Private Access</strong> [2] › <strong>App Connector Keys</strong> [3] › POD ID（例: <code>pod01</code>）を入力 [4] › <strong>Apply</strong> [5]。</li>
+            <li><strong>Provisioning Key</strong> をコピーします。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p048-a.png" alt="POD ID でフィルタした App Connector Keys"><div class="screenshot-caption">Infrastructure › Private Access › App Connector Keys → POD ID を入力 → Apply。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p048-b.png" alt="Provisioning key をコピー"><div class="screenshot-caption">Provisioning Key をコピーします。</div></div>
+          <ul class="step-list">
+            <li>自分のサイトに戻り、<strong>Settings</strong> [1] › <strong>ZPA</strong> [2] に移動して <strong>Add</strong> [3] を選択します。</li>
+            <li>名前を <code class="d-appc">pod##StudentAppC</code> [1] とし、Provisioning key を貼り付け [2]、<strong>Save</strong> [3] をクリックします。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p049-a.png" alt="Site Settings ZPA Add"><div class="screenshot-caption">Site › Settings › ZPA › Add。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p050-a.png" alt="App Connector に名前を付けてキーを貼り付け"><div class="screenshot-caption">名前 <code class="d-appc">pod##StudentAppC</code>、キーを貼り付け、Save。</div></div>
+          <ul class="step-list"><li>数分後、ZPA タブで App Connector のステータスが <strong>Connected</strong> と表示されることを確認します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p051-a.png" alt="App Connector Connected ステータス"><div class="screenshot-caption">App Connector → <strong>Connected</strong>。</div></div>
+          <ul class="step-list"><li><strong>VLANs</strong> [1] タブを開いて、事前構成済みのインターフェースを検証します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p052-a.png" alt="事前構成済みインターフェースを表示する VLANs タブ"><div class="screenshot-caption">VLANs タブ — LAN/WAN を追加する前の事前構成済みインターフェース。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.5 EDIT SITES CONFIG ═══════════ -->
+      <div class="task-collapsible" id="tc-1-5">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.5</span>
+          <span class="task-collapsible-title">サイト構成の編集（VLAN エディタを開く）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li><strong>Sites</strong> に移動し、<code class="d-site">POD##-Student-Lab</code> を選択します。</li>
+            <li><strong>VLANs</strong> [1] を選択し、<strong>Add Airgap VLAN</strong> [2] をクリックします。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p053-a.png" alt="編集するサイトを選択"><div class="screenshot-caption">自分の POD サイトを開きます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p054-a.png" alt="VLANs タブの Add Airgap VLAN ボタン"><div class="screenshot-caption">VLANs › <strong>Add Airgap VLAN</strong> — GE6/7/8 と GE2 についてこれを繰り返します。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.6 GE6 / VLAN10 ═══════════ -->
+      <div class="task-collapsible" id="tc-1-6">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.6</span>
+          <span class="task-collapsible-title">LAN GE6 の構成 — VLAN 10（Windows Server）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>POD##-VLAN10</code> [1]</li>
+              <li><strong>VLAN Tag</strong> – <code>1</code> [2] · <strong>Zone</strong> – LAN Zone [3]</li>
+              <li><strong>Gateway (Primary)</strong> – <code>ge6(lan)</code> [4] · <strong>(Secondary)</strong> – <code>ge6(lan)</code> [5]</li>
+              <li><strong>Interface IP</strong> – <code>10.1.10.1/24</code> [6]</li>
+              <li><strong>DHCP Service</strong> – ON (Airgap) [7]</li>
+              <li><strong>DHCP Range</strong> – <code>10.1.10.20</code> [8] 〜 <code>10.1.10.30</code> [9]</li>
+              <li><strong>Private DNS Servers</strong> – <code>8.8.8.8</code> [10] › Add [11] › <strong>Add</strong> [12]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p055-a.png" alt="VLAN10 構成フォーム"><div class="screenshot-caption">GE6 / VLAN10 — interface IP 10.1.10.1/24、DHCP 10.1.10.20–30。</div></div>
+          <ul class="step-list">
+            <li><strong>Agree</strong> を選択して VLAN10 構成を確定します。</li>
+            <li>スイッチを <strong>Enable</strong> [1] に切り替えて VLAN10 を有効化し、<strong>Agree</strong> [2] します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p056-a.png" alt="VLAN10 を確定する Agree"><div class="screenshot-caption">Agree で確定。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p057-a.png" alt="VLAN10 を有効化して agree"><div class="screenshot-caption">Enable → Agree。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p058-a.png" alt="VLAN10 が稼働"><div class="screenshot-caption">VLAN10 は数分で稼働します。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.7 GE7 / VLAN20 ═══════════ -->
+      <div class="task-collapsible" id="tc-1-7">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.7</span>
+          <span class="task-collapsible-title">LAN GE7 の構成 — VLAN 20（IoT）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>POD##-VLAN20</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> LAN Zone [3]</li>
+              <li><strong>Gateway (Primary/Secondary)</strong> – <code>ge7(lan)</code> [4][5]</li>
+              <li><strong>Interface IP</strong> – <code>10.1.20.1/24</code> [6]</li>
+              <li><strong>DHCP Service</strong> ON (Airgap) [7] · <strong>Range</strong> <code>10.1.20.20</code>–<code>10.1.20.30</code> [8][9]</li>
+              <li><strong>Private DNS</strong> <code>8.8.8.8</code> [10] › Add [11] › <strong>Add</strong> [12]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p059-a.png" alt="VLAN20 構成フォーム"><div class="screenshot-caption">GE7 / VLAN20 — interface IP 10.1.20.1/24。</div></div>
+          <ul class="step-list"><li><strong>Agree</strong> を選択し、<strong>Enable</strong> [1] に切り替えてから <strong>Agree</strong> [2]。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p060-a.png" alt="VLAN20 を Agree"><div class="screenshot-caption">Agree で確定。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p061-a.png" alt="VLAN20 を有効化して agree"><div class="screenshot-caption">Enable → Agree。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p062-a.png" alt="VLAN20 が稼働"><div class="screenshot-caption">VLAN20 は数分で稼働します。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.8 GE8 / VLAN30 ═══════════ -->
+      <div class="task-collapsible" id="tc-1-8">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.8</span>
+          <span class="task-collapsible-title">LAN GE8 の構成 — VLAN 30（OT ×2）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>POD##-VLAN30</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> LAN Zone [3]</li>
+              <li><strong>Gateway (Primary/Secondary)</strong> – <code>ge8(lan)</code> [4][5]</li>
+              <li><strong>Interface IP</strong> – <code>10.1.30.1/24</code> [6]</li>
+              <li><strong>DHCP Service</strong> ON (Airgap) [7] · <strong>Range</strong> <code>10.1.30.20</code>–<code>10.1.30.30</code> [8][9]</li>
+              <li><strong>Private DNS</strong> <code>8.8.8.8</code> [10] › Add [11] › <strong>Add</strong> [12]</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p063-a.png" alt="VLAN30 構成フォーム"><div class="screenshot-caption">GE8 / VLAN30 — interface IP 10.1.30.1/24（OT1 &amp; OT2 を収容）。</div></div>
+          <ul class="step-list"><li><strong>Agree</strong> を選択し、<strong>Enable</strong> [1] に切り替えてから <strong>Agree</strong> [2]。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p064-a.png" alt="VLAN30 を Agree"><div class="screenshot-caption">Agree で確定。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p065-a.png" alt="VLAN30 を有効化して agree"><div class="screenshot-caption">Enable → Agree。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p066-a.png" alt="VLAN30 が稼働"><div class="screenshot-caption">VLAN30 が稼働。次はセカンダリ WAN を構成します。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.9.1 WAN GE2 PRIMARY ═══════════ -->
+      <div class="task-collapsible" id="tc-1-9-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.9.1</span>
+          <span class="task-collapsible-title">WAN GE2 の構成 — プライマリデバイス</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li><strong>Add Airgap VLAN</strong> を選択します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p067-a.png" alt="プライマリ WAN GE2 用の Add Airgap VLAN"><div class="screenshot-caption">プライマリ GE2 WAN 用に Add Airgap VLAN。</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>wan2-ZTB-##-1</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> WAN Zone [3]</li>
+              <li><strong>Gateway</strong> – <code>pod##-student-lab-gw-01</code> [4]</li>
+              <li><strong>Interface for Gateway</strong> – <code>ge2(wan)</code> [5]</li>
+              <li><strong>DHCP Client</strong> を有効化 [6] › <strong>Add</strong> [7] をクリック</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p068-a.png" alt="プライマリ WAN GE2 構成フォーム"><div class="screenshot-caption">プライマリ GE2 — gw-01、ge2(wan)、DHCP client。</div></div>
+          <ul class="step-list"><li><strong>Agree</strong> を選択し、<code>wan2-ZTB-##-1</code> インターフェースを <strong>Enable</strong> [1] に切り替えてから <strong>Agree</strong> [2]。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p069-a.png" alt="プライマリ WAN GE2 を Agree"><div class="screenshot-caption">Agree で確定。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p070-a.png" alt="プライマリ WAN GE2 を有効化して agree"><div class="screenshot-caption">Enable → Agree。次はセカンダリ WAN。</div></div>
+        </div>
+      </div>
+
+      <!-- ═══════════ 1.9.2 WAN GE2 SECONDARY ═══════════ -->
+      <div class="task-collapsible" id="tc-1-9-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 1.9.2</span>
+          <span class="task-collapsible-title">WAN GE2 の構成 — セカンダリデバイスと検証</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li><strong>Add Airgap VLAN</strong> を選択します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p071-a.png" alt="セカンダリ WAN GE2 用の Add Airgap VLAN"><div class="screenshot-caption">セカンダリ GE2 WAN 用に Add Airgap VLAN。</div></div>
+          <div class="task-block">
+            <ul class="step-list">
+              <li><strong>VLAN Name</strong> – <code>wan2-ZTB-##-2</code> [1] · <strong>Tag</strong> <code>1</code> [2] · <strong>Zone</strong> WAN Zone [3]</li>
+              <li><strong>Gateway</strong> – <code>pod##-student-lab-gw-02</code> [4]</li>
+              <li><strong>Interface for Gateway</strong> – <code>ge2(wan)</code> [5]</li>
+              <li><strong>DHCP Client</strong> を有効化 [6] › <strong>Add</strong> [7] をクリック</li>
+            </ul>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p072-a.png" alt="セカンダリ WAN GE2 構成フォーム"><div class="screenshot-caption">セカンダリ GE2 — gw-02、ge2(wan)、DHCP client。</div></div>
+          <ul class="step-list"><li><strong>Agree</strong> を選択し、<code>wan2-ZTB-##-2</code> インターフェースを <strong>Enable</strong> [1] に切り替えてから <strong>Agree</strong> [2]。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p073-a.png" alt="セカンダリ WAN GE2 を Agree"><div class="screenshot-caption">Agree で確定。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p074-a.png" alt="セカンダリ WAN GE2 を有効化して agree"><div class="screenshot-caption">Enable → Agree。</div></div>
+          <ul class="step-list">
+            <li>ドロップダウンから <strong>WAN Zone</strong> [1] を選択して GE2 のインターフェース IP を表示します。アドレスが表示されない場合は、1分待ってから更新して再試行します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p075-a.png" alt="GE2 インターフェース IP を表示する WAN Zone"><div class="screenshot-caption">WAN Zone → 両デバイスの GE2 インターフェース IP。</div></div>
+          <ul class="step-list"><li><strong>Console</strong> タブから <code>arp -a</code> でインターフェースが正しく構成されていることを検証します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab1-p076-a.png" alt="console タブの arp -a 出力"><div class="screenshot-caption">Console › <code>arp -a</code> で構成済みインターフェースを確認します。</div></div>
+          <div class="callout callout-success"><p><strong>完了:</strong> ラボに必要なすべてのインターフェースが構成されました。次はラボ2に進み、VLAN 間トラフィックフィルタリングを検証します。</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">覚えておこう</div>
+          <div class="mental-note-block-text">HA ペア = <strong>ZTB-1 (Active)</strong> + <strong>ZTB-2 (Standby)</strong>、フェイルオーバーは <strong>ge4 の VRRP</strong> 経由。デバイスコンソールログイン: <code>admin</code> / <code>a!rg@p</code>。WAN = <code>ge1</code>/<code>ge2</code> で DHCP。LAN ゲートウェイ: <strong>VLAN10 = 10.1.10.1</strong> (ge6)、<strong>VLAN20 = 10.1.20.1</strong> (ge7)、<strong>VLAN30 = 10.1.30.1</strong> (ge8) — いずれも /24、オンボックス DHCP レンジ .20–.30。ステータスは約15分後に <strong>Post-update → Active/Standby</strong> と遷移。App Connector = <code class="d-appc">pod##StudentAppC</code>。</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">質問する</div>
+            <textarea class="tool-textarea" id="q-lab1" placeholder="わからない点は何ですか？" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab1','ラボ1: デバイスインターフェース構成')">質問を追加</button></div>
+          </div>
+          <div>
+            <div class="tool-label">メモを追加</div>
+            <textarea class="tool-textarea" id="note-lab1" placeholder="このセクションのメモを書く…" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab1')">+ メモを追加</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 ラボハブ</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">ラボの進捗</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab1a" onchange="toggleDone(this)"><label for="chk-lab1a">Site 追加と両デバイスのアクティベート</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1b" onchange="toggleDone(this)"><label for="chk-lab1b">サイト設定 + App Connector 接続</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1c" onchange="toggleDone(this)"><label for="chk-lab1c">全 LAN VLAN + WAN GE2 の構成</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">クイックリファレンス <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Site</div><div class="qr-def">支社用の Experience Center オブジェクト（POD##-Student-Lab）— ZTB デバイス・インターフェース・ポリシーを保持。</div></div>
+      <div class="qr-item"><div class="qr-term">Template (vm-ha-edu280)</div><div class="qr-def">全サイトに適用されるクローン済みプロビジョニングテンプレート。HA VM デバイス構成を定義。</div></div>
+      <div class="qr-item"><div class="qr-term">Activation Code</div><div class="qr-def">デバイスごとのコード（Envelope アイコン）。ZTB コンソールに貼り付けて Airgap Gateway をアクティベート。</div></div>
+      <div class="qr-item"><div class="qr-term">Active / Standby</div><div class="qr-def">ZTB-1 がトラフィックを転送、ZTB-2 は引き継ぎを待機。ステータスは Post-update → Active/Standby（約15分）。</div></div>
+      <div class="qr-item"><div class="qr-term">VRRP (ge4)</div><div class="qr-def">HA インターフェースの Virtual Router Redundancy — フェイルオーバー時にスタンバイがゲートウェイ IP を引き継ぐ。</div></div>
+      <div class="qr-item"><div class="qr-term">GE1 / GE2 (WAN)</div><div class="qr-def">2本の DIA WAN アップリンク。いずれも IP とネームサーバーに DHCP を使用。</div></div>
+      <div class="qr-item"><div class="qr-term">GE6 / GE7 / GE8 (LAN)</div><div class="qr-def">それぞれ VLAN10 / VLAN20 / VLAN30 にマッピングされた LAN ポート。</div></div>
+      <div class="qr-item"><div class="qr-term">VLAN IP</div><div class="qr-def">10.1.10.1 (VLAN10)、10.1.20.1 (VLAN20)、10.1.30.1 (VLAN30) — いずれも /24、オンボックス DHCP .20–.30。</div></div>
+      <div class="qr-item"><div class="qr-term">NAT</div><div class="qr-def">サイトで有効化し、LAN サブネットが WAN アップリンク経由でインターネットに送出されるようにする。</div></div>
+      <div class="qr-item"><div class="qr-term">App Connector Key</div><div class="qr-def">POD 用に事前作成されたプロビジョニングキー。Settings › ZPA で pod##StudentAppC を追加する際に貼り付け。</div></div>
+      <div class="qr-item"><div class="qr-term">IPSec Tunnel</div><div class="qr-def">支社からの ZIA 転送トンネル。ZIA › IPSec Tunnels で Established/Up と表示される必要がある。</div></div>
+      <div class="qr-item"><div class="qr-term">arp -a</div><div class="qr-def">構成済みインターフェースがデバイス上で有効であることを確認する Console コマンド。</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab0.html">
+    <span class="page-nav-label">← 前へ</span>
+    <span class="page-nav-title">ラボ0: アクセス</span>
+  </a>
+  <div class="page-nav-message">2台のデバイスが起動し、3つの VLAN が稼働。支社が現実になった。</div>
+  <a class="page-nav-btn page-nav-next" href="lab2.html">
+    <span class="page-nav-label">次へ →</span>
+    <span class="page-nav-title">ラボ2: VLAN間フィルタリング</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · ハンズオンラボガイド · Experience Center</span>
+  <span>ラボ1: デバイスインターフェース構成</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> 展開':'<span class="chevron">▲</span> 折りたたむ';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
+function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> 展開';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ 保存しました';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
+  document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<受講者FQDN>';el.classList.remove('filled');}});
+  var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<受講者FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+  var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var appc=slug?slug+'StudentAppC':'pod##StudentAppC';document.querySelectorAll('.d-appc').forEach(function(el){el.textContent=appc;});var da=document.getElementById('d-appc');if(da)da.textContent=appc;
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-280-lab-lab1';
+const SECTIONS={'lab0':'ラボ0: アクセス','lab1':'ラボ1: デバイスインターフェース構成','lab2':'ラボ2: VLAN間フィルタリング','lab3':'ラボ3: PBR ポリシー','lab4':'ラボ4: マイクロセグメンテーション','lab5':'ラボ5: DNS ポリシー','lab6':'ラボ6: 検証','lab7':'ラボ7: ログと監視','lab8':'ラボ8: トラブルシューティングとデバッグ','lab9':'ラボ9: Ransomware Kill Switch'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ 回答を保存しました';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 模範解答を見る';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ 模範解答を隠す':'💡 模範解答を見る';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+'件の質問、クリックで展開':'— クリックで展開';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">まだ質問はありません。各セクションの下から追加できます。</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="削除">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+'件のメモ、クリックで展開':'— クリックで展開';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">まだメモはありません。各セクションの下から追加できます。</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="削除">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='コピー';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="閉じる (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ 回答を保存しました';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 模範解答を見る';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDU-280 ハンズオンラボガイド — Zero Trust Branch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › EDU-280</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">EDU-280 · ハンズオンラボ</span>
+  </div>
+  <h1>Zscaler <em>Zero Trust Branch</em></h1>
+  <div class="motivation-banner">
+    <p>高可用性を備えた Zero Trust Branch デバイスを展開するハンズオンラボ — セグメンテーション、ポリシーベースルーティング、DNS セキュリティ、監視、そして Ransomware Kill Switch</p>
+  </div>
+</header>
+
+<div class="hub-main">
+<details class="zscaler-one-min">
+  <summary>&#9432; Zero Trust Branch を1分で — 主要用語</summary>
+  <div class="zom-body">
+    <div class="zom-term"><strong>ZTB</strong><span>Zscaler Zero Trust Branch デバイス — 支社に Zero Trust セグメンテーションとセキュアな Direct Internet Access をもたらす。アクティブ／スタンバイの HA ペアで展開。</span></div>
+    <div class="zom-term"><strong>DIA</strong><span>Direct Internet Access — 各 ZTB デバイスが Zero Trust Exchange 経由でインターネットに到達するための WAN アップリンク。</span></div>
+    <div class="zom-term"><strong>Macrosegmentation</strong><span>VLAN／セグメント間のトラフィックを制御するポリシー（東西方向）— 例: VLAN10 → VLAN20 をブロック。</span></div>
+    <div class="zom-term"><strong>Microsegmentation</strong><span>VLAN 内のトラフィックを制御するポリシー — 例: VLAN30 上で OT1 → OT2 をブロック。</span></div>
+    <div class="zom-term"><strong>PBR</strong><span>Policy-Based Routing — 選択したトラフィック（SaaS、ICMP）を既定ではなく特定の経路に誘導する。</span></div>
+    <div class="zom-term"><strong>Ransomware Kill Switch</strong><span>インシデント時に横方向の拡散を封じ込める迅速なブロックモード（例: プライベートサブネット間の SSH）。</span></div>
+  </div>
+</details>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">セットアップ</span>
+      <div class="phase-title">アクセスとデバイス構成</div>
+      <div class="phase-range">ラボ0〜1 · POD にアクセスし、HA とすべてのインターフェースを備えた ZTB サイトを展開</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab0.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ0</span>
+          <span class="lab-card-time">約15分</span>
+        </div>
+        <div class="lab-card-title">ラボアクセス情報</div>
+        <div class="lab-card-desc">Experience Center 管理ポータル経由で POD にアクセスし、Skytap コンソール VM にログインして、コース全体で使う3つのナビゲーションパスを学びます。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+      <a class="lab-card" href="lab1.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ1</span>
+          <span class="lab-card-time">約45分</span>
+        </div>
+        <div class="lab-card-title">デバイスインターフェース構成</div>
+        <div class="lab-card-desc">Site を追加し、アクティブ／スタンバイの ZT800 デバイスをアクティベートし、サイトレベル設定を検証して、LAN VLAN（10/20/30）と WAN（GE2）インターフェースを構成します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label amber">セグメンテーションとトラフィックポリシー</span>
+      <div class="phase-title">セグメンテーション、ルーティング、DNS</div>
+      <div class="phase-range">ラボ2〜5 · 東西方向のフィルタリング、ポリシーベースルーティング、マイクロセグメンテーション、DNS セキュリティ</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab2.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ2</span>
+          <span class="lab-card-time">約25分</span>
+        </div>
+        <div class="lab-card-title">内部通信のセキュア化</div>
+        <div class="lab-card-desc">デフォルトの VLAN 間フォワーディングを確認し、マクロセグメンテーションで VLAN10 → VLAN20 をブロックし、サイトレベルポリシーで OT → IoT を許可します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+      <a class="lab-card" href="lab3.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ3</span>
+          <span class="lab-card-time">約20分</span>
+        </div>
+        <div class="lab-card-title">ポリシーベースルーティング (PBR)</div>
+        <div class="lab-card-desc">ZIA-IPSec 経由のトラフィックを検証し、SaaS アプリケーションオブジェクト（Adobe）を作成して、ICMP トラフィックを直接送出する PBR を構成し、変化を確認します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+      <a class="lab-card" href="lab4.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ4</span>
+          <span class="lab-card-time">約15分</span>
+        </div>
+        <div class="lab-card-title">マイクロセグメンテーションポリシー</div>
+        <div class="lab-card-desc">OT エンドポイントのマイクロセグメンテーションを検証し、VLAN30 上の OT エンドポイント間の接続をブロックして、トラフィックが遮断されることを確認します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+      <a class="lab-card" href="lab5.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ5</span>
+          <span class="lab-card-time">約25分</span>
+        </div>
+        <div class="lab-card-title">DNS ポリシーの構成</div>
+        <div class="lab-card-desc">ドメインオブジェクトを用いた支社 DNS ポリシーで google.com をリダイレクトし web.whatsapp.com をブロックし、各ルールの前後でトラフィックを検証します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label green">検証</span>
+      <div class="phase-title">エンドツーエンド検証</div>
+      <div class="phase-range">ラボ6 · すべての VLAN で内部・外部通信ポリシーを実証</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab6.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ6</span>
+          <span class="lab-card-time">約30分</span>
+        </div>
+        <div class="lab-card-title">通信セキュリティの検証</div>
+        <div class="lab-card-desc">OT・IoT・Windows の各ホストから、クラウドルーティング、インターネットアクセス、ギャンブル／ゲームサイトのブロック、VLAN 制限、ZPA 経由の Windows サーバーへの RDP を確認します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label purple">運用と保護</span>
+      <div class="phase-title">監視・トラブルシューティング・保護</div>
+      <div class="phase-range">ラボ7〜9 · ログとインサイト、診断、Ransomware Kill Switch</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab7.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ7</span>
+          <span class="lab-card-time">約20分</span>
+        </div>
+        <div class="lab-card-title">ログと監視</div>
+        <div class="lab-card-desc">Zero Trust Branch の Packet ログ、Flow ログ、Alarms を表示し、Experience Center ポータルで Web ログを確認します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+      <a class="lab-card" href="lab8.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ8</span>
+          <span class="lab-card-time">約15分</span>
+        </div>
+        <div class="lab-card-title">トラブルシューティングとデバッグ</div>
+        <div class="lab-card-desc">Zero Trust Branch 環境でネットワークインターフェースを分析・管理し、ネットワークおよびシステム診断を実行します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+      <a class="lab-card" href="lab9.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">ラボ9</span>
+          <span class="lab-card-time">約20分</span>
+        </div>
+        <div class="lab-card-title">Ransomware Kill Switch ポリシー</div>
+        <div class="lab-card-desc">プライベートサブネット間で SSH の許可→ブロックのポリシーを構成し、横方向の拡散を封じ込める Ransomware Kill Switch の動作を検証します。</div>
+        <div class="lab-card-cta">ラボを開始 →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · ハンズオンラボガイド · Experience Center</span>
+  <span>ラボ 0〜9</span>
+</footer>
+
+<script>
+document.body.style.transition='opacity 0.3s ease';
+document.body.style.opacity='1';
+sessionStorage.setItem('pt','1');
+</script>
+</body>
+</html>

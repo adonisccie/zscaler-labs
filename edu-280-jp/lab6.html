@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ラボ6: 通信セキュリティの検証 — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › ラボ6</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">ラボ6 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>内部・外部通信セキュリティポリシーの検証</h1>
+  <div class="motivation-banner">
+    <p>設計全体が機能することを実証します。OT・IoT・Windows Server から、トラフィックが Zscaler 経由で送出されること、インターネットが稼働していること、ギャンブルサイトがブロックされること、データセンターの Web アプリが ZPA 経由で読み込まれることを確認し、最後に Off-Trusted-Network の ZCC ホストから ZPA 経由で Windows サーバーに RDP します。</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ ラボ設定</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> 折りたたむ
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD番号</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">受講者FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">ポータルパスワード</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(メール記載)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytapパスコード</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(メール記載)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">保存</button>
+        <button class="config-btn secondary" onclick="clearConfig()">クリア</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>ZCC ログイン:</strong> <code id="d-login">pod##-student@&lt;受講者FQDN&gt;</code></span>
+      <span><strong>Win Server (RDP):</strong> <code>10.1.10.10</code> · administrator / Zscaler123!</span>
+      <span><strong>DC Web アプリ:</strong> <code>http://dcweb.ztwan.lab/</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">自分の質問</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— クリックで展開</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="すべての質問をコピー">⎘ すべてコピー</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">自分のメモ</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— クリックで展開</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="すべてのメモをコピー">⎘ すべてコピー</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab6">
+      <h2>ラボ6: 内部・外部通信セキュリティポリシーの検証</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">検証</div>
+        <p>構築したすべてを確認するときです。各エンドポイントから4つの項目を検証し、最後に Zero Trust リモートアクセスのシナリオで締めくくります。</p>
+        <ul style="margin-top:10px;">
+          <li>トラフィックが <strong>Zscaler クラウド</strong> 経由でルーティングされる（<code>ip.zscaler.com</code>）</li>
+          <li><strong>インターネットが稼働</strong>している（ゲートウェイ・8.8.8.8・cnn.com への ping）</li>
+          <li><strong>ギャンブル／ゲームサイトがブロック</strong>される（例: <code>888.com</code>）</li>
+          <li>VLAN 間フォワーディングと ZPA 経由のデータセンター Web アプリが想定どおり動作する</li>
+          <li>Off-Trusted-Network の ZCC ホストから <strong>ZPA 経由で Windows サーバーに RDP</strong> する</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>コース:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>版:</strong> 2.2 · 2026年2月</div>
+          <div class="lab-meta-item"><strong>プラットフォーム:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab6-hero.png" alt="ラボ6 — 通信セキュリティの検証" loading="lazy">
+        </figure>
+      </div>
+
+
+      <!-- 6.1 -->
+      <div class="task-collapsible open" id="tc-6-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 6.1</span>
+          <span class="task-collapsible-title">OT を検証 — VLAN30（Ubuntu）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>Skytap で <strong>OT1</strong>（VLAN30）を開きます。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p154-a.png" alt="Skytap で OT1 ホストを選択"><div class="screenshot-caption">OT1（VLAN30）を開きます。</div></div>
+          <ul class="step-list"><li><strong>6.1.1 · クラウドルーティング:</strong> ブラウザを開いて <code>ip.zscaler.com</code> にアクセスします。最寄りの Zscaler サービスロケーションが表示され、正しくルーティングされていることを確認できます。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p155-a.png" alt="OT の ip.zscaler.com サービスロケーション"><div class="screenshot-caption"><code>ip.zscaler.com</code> でトラフィックが Zscaler 経由で送出されることを確認。</div></div>
+          <ul class="step-list">
+            <li><strong>6.1.2 · インターネット稼働:</strong> ターミナルで <code>ping 10.1.30.1</code>、<code>ping 8.8.8.8</code>、<code>ping cnn.com</code>（または <code>wget cnn.com</code>）をテストします。</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>注意:</strong> ping を止めるには <strong>Ctrl+C</strong>、一時停止するには <strong>Ctrl+Z</strong> を押します。</p></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p156-a.png" alt="OT からの ping テスト"><div class="screenshot-caption">ゲートウェイ・8.8.8.8・cnn.com すべてに到達可能。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p157-a.png" alt="OT からの ping/wget cnn.com"><div class="screenshot-caption">VLAN30 からインターネットが稼働。</div></div>
+          <ul class="step-list"><li><strong>6.1.3 · URL フィルタリング:</strong> <code>http://888.com/</code> にアクセスします。ブロックページが表示されるはずです。表示されない場合は Chrome のセーフブラウジングを確認します。他のテスト URL: <code>http://lottery.com</code>、<code>http://casino.com</code>。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p158-a.png" alt="OT からの 888.com ブロックページ"><div class="screenshot-caption">ギャンブルサイト 888.com は ZIA の URL フィルタリングでブロックされます。</div></div>
+          <ul class="step-list"><li><strong>6.1.4 · VLAN 間:</strong> OT から <code>10.1.10.10</code>（Server、VLAN10）に ping します。成功します（この経路には制限が構成されていません）。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p159-a.png" alt="OT から VLAN10 サーバーへの ping が成功"><div class="screenshot-caption">OT → Windows Server (10.1.10.10) が成功。</div></div>
+        </div>
+      </div>
+
+      <!-- 6.2 -->
+      <div class="task-collapsible" id="tc-6-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 6.2</span>
+          <span class="task-collapsible-title">IoT を検証 — VLAN20（Ubuntu）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>Skytap で <strong>IoT</strong> ホスト（VLAN20）を開きます。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p160-a.png" alt="Skytap で IoT ホストを選択"><div class="screenshot-caption">IoT ホスト（VLAN20）を開きます。</div></div>
+          <ul class="step-list"><li><strong>6.2.1 · クラウドルーティング:</strong> <code>wget http://ip.zscaler.com</code> を実行します。応答に Zscaler サービスロケーションが表示されます。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p161-a.png" alt="IoT からの wget ip.zscaler.com"><div class="screenshot-caption">IoT のトラフィックが Zscaler 経由で送出。</div></div>
+          <ul class="step-list"><li><strong>6.2.2 · インターネット稼働:</strong> <code>ping 10.1.20.1</code>、<code>ping 8.8.8.8</code>、<code>wget cnn.com</code>。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p162-a.png" alt="IoT からの ping テスト"><div class="screenshot-caption">ゲートウェイ + 8.8.8.8 に到達可能。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p163-a.png" alt="IoT からの wget cnn.com"><div class="screenshot-caption">VLAN20 からインターネットが稼働。</div></div>
+          <ul class="step-list"><li><strong>6.2.3 · URL フィルタリング:</strong> <code>wget http://www.888.com</code> でブロックされることを確認します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p164-a.png" alt="IoT から wget で 888.com がブロック"><div class="screenshot-caption">VLAN20 から 888.com がブロック。</div></div>
+          <ul class="step-list"><li><strong>6.2.4 · VLAN 間:</strong> IoT から <code>10.1.10.10</code>（Server）に ping します。成功します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p165-a.png" alt="IoT から VLAN10 サーバーへの ping が成功"><div class="screenshot-caption">IoT → Windows Server (10.1.10.10) が成功。</div></div>
+        </div>
+      </div>
+
+      <!-- 6.3 -->
+      <div class="task-collapsible" id="tc-6-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 6.3</span>
+          <span class="task-collapsible-title">Windows Server を検証 — VLAN10（+ ZPA 経由の DC Web アプリ）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list"><li>Skytap で <strong>Server</strong>（VLAN10）を開きます。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p166-a.png" alt="Skytap で Windows Server を選択"><div class="screenshot-caption">Windows Server（VLAN10）を開きます。</div></div>
+          <ul class="step-list"><li><strong>6.3.1 · クラウドルーティング:</strong> <code>ip.zscaler.com</code> にアクセスします。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p167-a.png" alt="Windows Server からの ip.zscaler.com"><div class="screenshot-caption">サーバーのトラフィックが Zscaler 経由で送出。</div></div>
+          <ul class="step-list"><li><strong>6.3.2 · インターネット稼働:</strong> コマンドプロンプトから: <code>ping 10.1.10.1</code>、<code>ping 8.8.8.8</code>、<code>ping cnn.com</code>。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p168-a.png" alt="Windows Server からの ping テスト"><div class="screenshot-caption">ゲートウェイ + 8.8.8.8 に到達可能。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p169-a.png" alt="Windows Server からの ping cnn.com"><div class="screenshot-caption">VLAN10 からインターネットが稼働。</div></div>
+          <ul class="step-list"><li><strong>6.3.3 · URL フィルタリング:</strong> <code>http://www.888.com</code> にアクセスし、ブロックされることを確認します。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p170-a.png" alt="Windows Server から 888.com がブロック"><div class="screenshot-caption">VLAN10 から 888.com がブロック。</div></div>
+          <ul class="step-list"><li><strong>6.3.4 · ZPA アウトバウンド:</strong> ブラウザを開いて <code>http://dcweb.ztwan.lab/</code> を読み込みます。データセンターにホストされたページが ZPA 経由で読み込まれます。</li></ul>
+          <div class="callout callout-caution"><p><strong>注意:</strong> <code>http://</code>（<code>https://</code> ではない）付きの完全な URL を使用してください。そうしないと接続に失敗します。</p></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p171-a.png" alt="dcweb.ztwan.lab が ZPA 経由で読み込まれる"><div class="screenshot-caption">DC Web アプリ <code>dcweb.ztwan.lab</code> が ZPA 経由で読み込まれます（アウトバウンドのユースケース）。</div></div>
+        </div>
+      </div>
+
+      <!-- 6.4 -->
+      <div class="task-collapsible" id="tc-6-4">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">タスク 6.4</span>
+          <span class="task-collapsible-title">ZPA 経由で Windows サーバーに RDP（インターネット上の ZCC ホスト）</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <ul class="step-list">
+            <li>Skytap で <strong>ZCC Lab Machine</strong> VM を開きます。</li>
+            <li>Zscaler Client Connector にログインします: ユーザー名 <code class="d-login">pod##-student@&lt;FQDN&gt;</code> [1] › <strong>Login</strong> [2]、続いてメールのパスワード [1] › <strong>Sign In</strong> [2]。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p172-a.png" alt="ZCC Lab Machine を選択"><div class="screenshot-caption">ZCC Lab Machine を開きます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p173-a.png" alt="ZCC ユーザー名ログイン"><div class="screenshot-caption">POD 受講者ログインを入力 → Login。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p174-a.png" alt="ZCC パスワード sign in"><div class="screenshot-caption">メールのパスワードを入力 → Sign In。</div></div>
+          <ul class="step-list">
+            <li>ZCC は Windows のトレイに最小化されます。再度開きます。</li>
+            <li><strong>Private Access</strong> と <strong>Internet Security</strong> = ON、<strong>Authentication</strong> = Authenticated、<strong>Network Type</strong> = Off-Trusted Network を確認します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p175-a.png" alt="トレイから ZCC を再度開く"><div class="screenshot-caption">トレイから ZCC を再度開きます。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p176-a.png" alt="ZCC ステータス Private Access ON Authenticated Off-Trusted"><div class="screenshot-caption">ZCC: Private Access + Internet Security ON、Authenticated、Off-Trusted Network。</div></div>
+          <ul class="step-list"><li>Web トラフィックが Zscaler に転送されていることを確認します: <code>http://ip.zscaler.com</code> にアクセスすると、公開 IP が Zscaler のデータセンターを示します（実際の身元は隠されます）。</li></ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p177-a.png" alt="ZCC 向けに ip.zscaler.com が Zscaler データセンター IP を表示"><div class="screenshot-caption">ユーザーは Zscaler データセンター経由で送出 — 企業の身元は露出しません。</div></div>
+          <ul class="step-list">
+            <li><strong>6.4.1 · Ping テスト:</strong> コマンドプロンプトから <code>ping 8.8.8.8</code> と <code>ping cnn.com</code> でインターネットを確認します。</li>
+            <li><strong>6.4.2 · Win10 クライアントを確認:</strong> <code>ping 10.1.10.10</code>。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p178-a.png" alt="ZCC ホストからの ping 8.8.8.8"><div class="screenshot-caption">ZCC ホストからインターネットに到達可能。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p178-b.png" alt="ZCC ホストからの ping cnn.com"><div class="screenshot-caption">cnn.com に到達可能。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p179-a.png" alt="ZCC ホストからの ping 10.1.10.10"><div class="screenshot-caption">プライベートサーバー 10.1.10.10 に ZPA 経由で到達可能。</div></div>
+          <ul class="step-list">
+            <li><strong>6.4.3 · ZPA 経由の RDP:</strong> <strong>Remote Desktop</strong> を開き、コンピューター <code>10.1.10.10</code>、ユーザー <code>administrator</code>、パスワード <code>Zscaler123!</code>、そして <strong>Yes</strong> で接続します。Windows 10 VM に到達します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p180-a.png" alt="Remote Desktop computer 10.1.10.10"><div class="screenshot-caption">Remote Desktop → 10.1.10.10。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p181-a.png" alt="RDP 認証情報で接続"><div class="screenshot-caption">administrator / Zscaler123! → ZPA 経由で接続。</div></div>
+          <ul class="step-list">
+            <li><strong>6.4.4 · セッションを確認:</strong> Experience Center で <strong>Logs</strong> [1] › <strong>Diagnostics</strong> [2] に移動し、<strong>&gt;</strong> アイコン [3] でセッションを展開して、ユーザー名・ポリシー名・アプリケーションポートなどを確認します。</li>
+          </ul>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p182-a.png" alt="Logs Diagnostics でリモートセッションを展開"><div class="screenshot-caption">Logs › Diagnostics › リモートセッションを展開。</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab6-p183-a.png" alt="RDP セッション詳細 ユーザー名 ポリシー ポート"><div class="screenshot-caption">セッション詳細が RDP-over-ZPA 接続を確認します。</div></div>
+          <div class="callout callout-success"><p><strong>完了:</strong> すべてのエンドポイントを検証し、プライベート RDP を ZPA 経由で仲介しました。次は Logs and Monitoring を探索します。</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">覚えておこう</div>
+          <div class="mental-note-block-text">エンドポイントごとのチェックリスト: <strong>ip.zscaler.com</strong>（クラウドルーティング）→ <strong>ping</strong> ゲートウェイ/8.8.8.8/cnn.com（インターネット）→ <strong>888.com</strong> ブロック（ZIA URL フィルタ = 転送の証拠）→ VLAN 間 + ZPA 経由の <code>http://dcweb.ztwan.lab/</code>。<strong>ZPA RDP:</strong> ZCC（Off-Trusted、Authenticated）→ RDP <code>10.1.10.10</code>（administrator / Zscaler123!）→ <strong>Logs › Diagnostics</strong> で確認。ZPA = アプリ単位のアクセスで、サーバーはインターネットに露出しない — VPN とは異なる。</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">質問する</div>
+            <textarea class="tool-textarea" id="q-lab6" placeholder="わからない点は何ですか？" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab6','ラボ6: 検証')">質問を追加</button></div>
+          </div>
+          <div>
+            <div class="tool-label">メモを追加</div>
+            <textarea class="tool-textarea" id="note-lab6" placeholder="このセクションのメモを書く…" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab6')">+ メモを追加</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 ラボハブ</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">ラボの進捗</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab6a" onchange="toggleDone(this)"><label for="chk-lab6a">OT（VLAN30）を検証済み</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6b" onchange="toggleDone(this)"><label for="chk-lab6b">IoT（VLAN20）を検証済み</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6c" onchange="toggleDone(this)"><label for="chk-lab6c">Windows Server（VLAN10）+ DC Web アプリ</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6d" onchange="toggleDone(this)"><label for="chk-lab6d">ZPA 経由の RDP を Diagnostics で検証済み</label></li>
+      </ul>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">クイックリファレンス <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">ip.zscaler.com</div><div class="qr-def">ホストが送出する Zscaler サービスロケーションを表示 — トラフィックがクラウドへ転送されていることを確認。</div></div>
+      <div class="qr-item"><div class="qr-term">888.com ブロック</div><div class="qr-def">ZIA URL フィルタリング（Gambling）のブロックページ — 支社がインターネットトラフィックを ZIA へ転送している証拠にもなる。</div></div>
+      <div class="qr-item"><div class="qr-term">VLAN ゲートウェイ</div><div class="qr-def">10.1.30.1 (OT)、10.1.20.1 (IoT)、10.1.10.1 (Server) — 「インターネット稼働」チェックの最初の ping 先。</div></div>
+      <div class="qr-item"><div class="qr-term">dcweb.ztwan.lab</div><div class="qr-def">ZPA 経由で到達するデータセンターホストの Web アプリ — http://（https:// ではない）を使用しないと失敗。</div></div>
+      <div class="qr-item"><div class="qr-term">ZCC</div><div class="qr-def">Zscaler Client Connector — エンドポイントエージェント。ここではホストを Off-Trusted にして ZPA/ZIA へ転送。</div></div>
+      <div class="qr-item"><div class="qr-term">Off-Trusted Network</div><div class="qr-def">ホストが社内 LAN の外にあることを示す ZCC のネットワークタイプ — トラフィックは Zscaler クラウドを通る。</div></div>
+      <div class="qr-item"><div class="qr-term">ZPA 経由の RDP</div><div class="qr-def">ZPA が仲介する 10.1.10.10 へのリモートデスクトップ（administrator / Zscaler123!）— インバウンド露出なし。</div></div>
+      <div class="qr-item"><div class="qr-term">Logs › Diagnostics</div><div class="qr-def">ZPA リモートセッション（ユーザー・ポリシー・アプリケーションポート）を確認する Experience Center のビュー。</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab5.html">
+    <span class="page-nav-label">← 前へ</span>
+    <span class="page-nav-title">ラボ5: DNS ポリシー</span>
+  </a>
+  <div class="page-nav-message">すべてのエンドポイント、すべてのルールを実証。次はログで確認しよう。</div>
+  <a class="page-nav-btn page-nav-next" href="lab7.html">
+    <span class="page-nav-label">次へ →</span>
+    <span class="page-nav-title">ラボ7: ログと監視</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · ハンズオンラボガイド · Experience Center</span>
+  <span>ラボ6: 検証</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> 展開':'<span class="chevron">▲</span> 折りたたむ';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> 展開';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ 保存しました';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();
+  document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<受講者FQDN>';el.classList.remove('filled');}});
+  var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<受講者FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-280-lab-lab6';
+const SECTIONS={'lab0':'ラボ0: アクセス','lab1':'ラボ1: デバイスインターフェース構成','lab2':'ラボ2: VLAN間フィルタリング','lab3':'ラボ3: PBR ポリシー','lab4':'ラボ4: マイクロセグメンテーション','lab5':'ラボ5: DNS ポリシー','lab6':'ラボ6: 検証','lab7':'ラボ7: ログと監視','lab8':'ラボ8: トラブルシューティングとデバッグ','lab9':'ラボ9: Ransomware Kill Switch'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ 回答を保存しました';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 模範解答を見る';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ 模範解答を隠す':'💡 模範解答を見る';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+'件の質問、クリックで展開':'— クリックで展開';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">まだ質問はありません。各セクションの下から追加できます。</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="削除">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+'件のメモ、クリックで展開':'— クリックで展開';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">まだメモはありません。各セクションの下から追加できます。</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="削除">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='コピー';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="閉じる (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ 回答を保存しました';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 模範解答を見る';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

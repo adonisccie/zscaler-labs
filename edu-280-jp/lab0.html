@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ラボ0: ラボアクセス情報 — EDU-280</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+/* Screenshot thumbnails + lightbox (per-page) */
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-280</a> › ラボ0</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">ラボ0 · EDU-280</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>ラボアクセス情報</h1>
+  <div class="motivation-banner">
+    <p>ラボPODにアクセスします。Experience Center 管理ポータルに接続し、Skytap コンソールにログインして、すべての Zero Trust Branch タスクで使用する3つのナビゲーションパスを習得します。</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ ラボ設定</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> 折りたたむ
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="pod-input">POD番号</label>
+        <div class="config-field-row">
+          <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">受講者FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">ポータルパスワード</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(メール記載)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytapパスコード</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(メール記載)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="コピー">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">保存</button>
+        <button class="config-btn secondary" onclick="clearConfig()">クリア</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>管理者ログイン:</strong> <code id="d-login">pod##-student@&lt;受講者FQDN&gt;</code></span>
+      <span><strong>Experience Center:</strong> <code>https://console.zscaler.com/</code></span>
+      <span><strong>Skytap:</strong> <code>https://zscaler.skytap-portal.com/</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">自分の質問</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— クリックで展開</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllQs()" title="すべての質問をコピー">⎘ すべてコピー</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">自分のメモ</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— クリックで展開</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+  <button class="copy-all-btn" onclick="copyAllNs()" title="すべてのメモをコピー">⎘ すべてコピー</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab0">
+      <h2>ラボ0: ラボアクセス情報</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">概要</div>
+        <p><strong>Zscaler Zero Trust Branch (EDU-280)</strong> ハンズオンラボへようこそ。このラボでは、支社拠点に高可用性 (High Availability) を備えた <strong>Zero Trust Branch (ZTB) デバイス</strong> を展開・管理します。各デバイスは最大2本の Direct Internet Access (DIA) 接続を持ちます。最初のこのラボでは、環境へのアクセス方法を学びます。完了すると、次のことができるようになります。</p>
+        <ul style="margin-top:10px;">
+          <li>Experience Center 管理ポータル経由で割り当てられた <strong>POD</strong> を特定してアクセスする</li>
+          <li><strong>Skytap</strong> ポータルにログインしてラボ VM を起動する</li>
+          <li>コース全体で使用する Zscaler Experience Center のナビゲーションパスにログインする</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>コース:</strong> EDU-280</div>
+          <div class="lab-meta-item"><strong>版:</strong> 2.2 · 2026年2月</div>
+          <div class="lab-meta-item"><strong>プラットフォーム:</strong> Skytap + Zscaler Experience Center</div>
+        </div>
+        <figure class="lab-hero">
+          <img src="images/lab0-hero.png" alt="ラボ0 — ラボアクセス情報" loading="lazy">
+        </figure>
+      </div>
+
+
+
+      <h3>ラボの説明とシナリオ</h3>
+      <p>あなたの組織には複数の支社拠点があり、各拠点には <strong>IoT および OT デバイス</strong> が存在し、WAN アップリンク経由で本社に接続されています。目標は、<strong>高可用性・セグメンテーション・負荷分散・セキュリティ</strong> を実現するよう支社ネットワークを構成し最適化することです。あなたはネットワーク管理者として、WAN インターフェースを構成し、VLAN と DHCP を備えたレイヤー3の LAN インターフェースをセットアップし、マクロセグメンテーションとマイクロセグメンテーションを実装します。</p>
+      <p>各ラボを通じた目標には次が含まれます。</p>
+      <ul>
+        <li>VM テンプレートを使用して <strong>Zero Trust Branch (ZTB)</strong> サイトを、アクティブ／スタンバイの HA ペアで展開する</li>
+        <li><strong>マクロセグメンテーション</strong> によるトラフィックフィルタリングで東西方向のセキュリティを構成し、OT デバイス向けに <strong>マイクロセグメンテーション</strong> を実装する</li>
+        <li>SaaS および ICMP トラフィック向けに <strong>Policy-Based Routing (PBR)</strong> を構成する</li>
+        <li>支社ネットワーク向けに <strong>DNS セキュリティポリシー</strong> を構成する</li>
+        <li>Experience Center で ZTB・ZIA・ZPA のログを表示・分析する</li>
+        <li>プライベートサブネット間の SSH をブロックする <strong>Ransomware Kill Switch</strong> を構成する</li>
+      </ul>
+
+      <h3>ラボのセットアップ</h3>
+      <p>このハンズオンラボは、Zscaler Web 環境上のクラウドベースのリソースを使用します。各受講者は <strong>Experience Center Portal</strong> 経由で Zero Trust Exchange のアカウントを持ち、<strong>POD</strong> にアクセスできます。各 POD では次が提供されます。</p>
+      <div class="task-block">
+        <ul class="step-list">
+          <li><strong>2台の仮想 ZTB デバイス</strong>（アクティブ + スタンバイ）の管理コンソール</li>
+          <li><strong>4つの LAN</strong> インターフェースと <strong>2つの WAN</strong> インターフェース</li>
+          <li>1つの <strong>Management</strong> インターフェースと1つの <strong>HA</strong> インターフェース</li>
+          <li><strong>Zero Trust Exchange</strong> 経由のインターネット接続、1台の基本スイッチ、および <strong>ESXi 7.0</strong> サーバー</li>
+        </ul>
+      </div>
+
+      <h3>ラボトポロジー</h3>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p009-a.png" alt="EDU-280 ラボトポロジー — Zero Trust Exchange、ルーター、VLAN10/20/30 エンドポイント、ESXi、App Connector">
+        <div class="screenshot-caption">ラボトポロジー: Zero Trust Exchange (ZTE) がトラフィックを検査しポリシーを適用します。ルーターが共有 DIA 接続を終端し、VLAN10 は Windows Server、VLAN20 は IoT Ubuntu ホスト、VLAN30 は2台の OT Linux ホストを収容します。App Connector がリソースへの Zero Trust アクセスを提供します。</div>
+      </div>
+
+      <h4>VLAN / エンドポイントの役割</h4>
+      <div class="task-block">
+        <ul class="step-list">
+          <li><strong>VLAN10</strong> — Windows Server VM（Server コンソール）</li>
+          <li><strong>VLAN20</strong> — IoT Ubuntu ホスト VM（IoT コンソール）</li>
+          <li><strong>VLAN30</strong> — 2台の OT Linux ベース VM（OT1、OT2 コンソール）</li>
+          <li><strong>ZCC Lab Machine</strong> — Zscaler Client Connector を実行する Windows 10 クライアント</li>
+          <li><strong>ZTB-1 / ZTB-2</strong> — Zero Trust Branch 管理コンソール（プライマリ + セカンダリユニット）</li>
+        </ul>
+      </div>
+
+      <h3>タスク 1.1 — 管理ポータルへのアクセスとログイン情報</h3>
+      <p><strong>Experience Center</strong> ポータルには、インターネット接続のある任意のマシンからアクセスできます。ほとんどのタスクでは、ここで Zero Trust Branch / ZIA / ZPA のセクションを構成します。アクセス情報はセッション前にメールで送付され、次が含まれます。</p>
+      <div class="task-block">
+        <h4><span class="task-num">情報</span> 提供される内容</h4>
+        <ul class="step-list">
+          <li>自分の <strong>POD 番号</strong> — 例: <code>POD06</code>、<code>POD20</code>、<code>POD45</code></li>
+          <li>Experience Center URL: <code>https://console.zscaler.com/</code></li>
+          <li>ログイン ID: <code class="d-login">pod##-student@&lt;FQDN&gt;</code> — 例: <code>pod01-student@zs2115.safemarch.com</code></li>
+          <li>ポータルパスワード — メールで送付</li>
+          <li>Skytap URL: <code>https://zscaler.skytap-portal.com/</code> と Skytap パスコード（メールで送付）</li>
+        </ul>
+      </div>
+      <div class="callout callout-note">
+        <p><strong>ヒント:</strong> このページ上部の <strong>ラボ設定</strong> バーに、POD 番号・FQDN・パスワード・Skytap パスコードを一度入力しておくと、ガイド全体で導出される管理者ログインが自動的に補完されます。</p>
+      </div>
+
+      <h3>タスク 1.2 — Skytap ポータルへの接続</h3>
+      <p>Experience Center で構成した設定やポリシーを検証するには、クライアント PC から Skytap ポータルにログインします。</p>
+      <div class="task-block">
+        <h4><span class="task-num">タスク 1.2</span> Skytap にログイン</h4>
+        <ul class="step-list">
+          <li>ブラウザを開いて <code>https://zscaler.skytap-portal.com/</code> [1] にアクセスし、メールで提供された<strong>パスコード</strong>を入力して <strong>Go</strong> [2] を選択します。</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p011-a.png" alt="Skytap Course Manager のウェルカムページ、URL [1] とパスコード欄 + Go ボタン [2]">
+        <div class="screenshot-caption">Skytap Course Manager: URL [1] を入力し、メールのパスコードを入力して <strong>Go</strong> [2] をクリックします。</div>
+      </div>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>ログインに成功すると、ホームページに POD で利用可能なコンソールの種類が表示されます。
+            <ul class="sub-steps">
+              <li><strong>IoT</strong> — VLAN20 IoT Ubuntu ホスト VM</li>
+              <li><strong>OT1 / OT2</strong> — VLAN30 OT Ubuntu ホスト VM</li>
+              <li><strong>Server</strong> — VLAN10 Windows Server</li>
+              <li><strong>ZCC Lab Machine</strong> — Zscaler Client Connector ラボマシン</li>
+              <li><strong>ZTB-1 / ZTB-2</strong> — Zero Trust Branch 管理コンソール（プライマリ／セカンダリ）</li>
+            </ul>
+          </li>
+          <li>任意の VM を起動するには、その名前（例: <strong>IoT</strong>）をクリックします。別タブで開きます。</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p012-a.png" alt="POD の7種類のコンソールを表示する Skytap ホームページ">
+        <div class="screenshot-caption">Skytap ホームページには POD 内の7つのコンソールがすべて一覧表示されます。名前をクリックすると、その VM が新しいタブで開きます。</div>
+      </div>
+      <div class="callout callout-note">
+        <p><strong>注意:</strong> VM が自動的にログインしない場合は、ハイライトされた <strong>コピー／貼り付け</strong> アイコンをクリックしてパスワード欄に貼り付け、続行してください。</p>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p013-a.png" alt="パスワードを貼り付けるためのコピー／貼り付けアイコンがハイライトされた VM コンソール">
+        <div class="screenshot-caption">自動ログインしない場合は、VM コンソールツールバーのコピー／貼り付けアイコンで認証情報を貼り付けます。</div>
+      </div>
+
+      <h3>タスク 1.3 — Experience Center Portal への接続</h3>
+      <p>すべての受講者ラボは同一構成のため、Experience Center へのログインはセットアップ手順の必須ステップです。ノート PC またはクライアント PC から次を行います。</p>
+      <div class="task-block">
+        <h4><span class="task-num">タスク 1.3</span> Experience Center にログイン</h4>
+        <ul class="step-list">
+          <li>ブラウザを開いて <code>https://console.zscaler.com/</code> にアクセスし、<strong>Enter</strong> を押します。</li>
+          <li>ユーザー名／メールとして <code class="d-login">pod##-student@&lt;FQDN&gt;</code> [1]（例: <code>pod25-student@zs2115.safemarch.com</code>）を入力し、<strong>Next</strong> [2] を選択します。</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p014-a.png" alt="Experience Center ログイン — ユーザー名／メール入力 [1] と Next ボタン [2]">
+        <div class="screenshot-caption">Experience Center サインイン: POD の受講者ログイン [1] を入力して <strong>Next</strong> [2] をクリックします。</div>
+      </div>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>メールで共有された<strong>パスワード</strong> [1] を入力し、<strong>Sign in</strong> [2] を選択します。</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p015-a.png" alt="Experience Center パスワード入力 [1] と Sign in ボタン [2]">
+        <div class="screenshot-caption">メールのパスワード [1] を入力し、<strong>Sign in</strong> [2] をクリックしてダッシュボードに進みます。</div>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p016-a.png" alt="ログイン後の Experience Center ダッシュボード">
+        <div class="screenshot-caption">正しい認証情報を入力すると、Experience Center ダッシュボードが表示されます。</div>
+      </div>
+      <div class="callout callout-note">
+        <p><strong>注意:</strong> Zero Trust Branch のラボ全体を通して、主に次の3つのナビゲーションパスを使用します。</p>
+      </div>
+      <div class="task-block">
+        <h4><span class="task-num">ナビ</span> よく使う3つのパス</h4>
+        <ul class="step-list">
+          <li><strong>サイト構成、統合、ダッシュボード、テンプレート:</strong> Infrastructure › Connectors › Edge › Zero Trust Branch</li>
+          <li><strong>グローバル／テンプレート／サイトポリシー、Kill Switch、Objects &amp; Groups:</strong> Policies › Access Control › Segmentation › Zero Trust Branch</li>
+          <li><strong>Packet ログと Flow ログ:</strong> Logs › Insights › Zero Trust Branch</li>
+        </ul>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">覚えておこう</div>
+          <div class="mental-note-block-text">2つのポータル: <strong>Experience Center</strong>（<code>console.zscaler.com</code>）= 構成する、<strong>Skytap</strong>（<code>zscaler.skytap-portal.com</code>）= VM を実行・検証する。ログイン = <code class="d-login">pod##-student@&lt;FQDN&gt;</code>。VLAN10 = Server、VLAN20 = IoT、VLAN30 = OT1/OT2。3つのナビパスを覚える: <strong>Infrastructure › Connectors › Edge</strong>、<strong>Policies › Access Control › Segmentation</strong>、<strong>Logs › Insights</strong> — すべて Zero Trust Branch 配下。</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">質問する</div>
+            <textarea class="tool-textarea" id="q-lab0" placeholder="わからない点は何ですか？" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab0','ラボ0: アクセス')">質問を追加</button></div>
+          </div>
+          <div>
+            <div class="tool-label">メモを追加</div>
+            <textarea class="tool-textarea" id="note-lab0" placeholder="このセクションのメモを書く…" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab0')">+ メモを追加</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-280 ラボハブ</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">ラボの進捗</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab0" onchange="toggleDone(this)"><label for="chk-lab0">ラボ0: アクセス確認済み</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">クイックリファレンス <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Zero Trust Branch (ZTB)</div><div class="qr-def">支社拠点に Zero Trust セグメンテーションとセキュアな DIA をもたらす Zscaler 支社アプライアンス (ZT800)。</div></div>
+      <div class="qr-item"><div class="qr-term">ZT800</div><div class="qr-def">本ラボで使用する仮想 Zero Trust Branch デバイスのモデル。アクティブ／スタンバイの HA ペアで展開。</div></div>
+      <div class="qr-item"><div class="qr-term">POD</div><div class="qr-def">ZTB デバイスと各 VLAN のエンドポイント VM を含む、分離された自分専用のラボ環境（例: POD06）。</div></div>
+      <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com — Zero Trust Branch・ZIA・ZPA・Insights の統合管理ポータル。</div></div>
+      <div class="qr-item"><div class="qr-term">Skytap</div><div class="qr-def">zscaler.skytap-portal.com — 支社 VM（ZTB コンソール + VLAN エンドポイント）をホストし、実機検証を行う。</div></div>
+      <div class="qr-item"><div class="qr-term">DIA</div><div class="qr-def">Direct Internet Access — 各 ZTB デバイスがインターネット／Zero Trust Exchange に到達するための WAN アップリンク。</div></div>
+      <div class="qr-item"><div class="qr-term">HA（アクティブ／スタンバイ）</div><div class="qr-def">2台の ZT800 による高可用性ペア。アクティブ機が障害時にスタンバイ機が引き継ぐ。</div></div>
+      <div class="qr-item"><div class="qr-term">Site</div><div class="qr-def">支社拠点とその ZTB デバイス・インターフェース・ポリシーを表す Experience Center オブジェクト。</div></div>
+      <div class="qr-item"><div class="qr-term">VLAN10 / 20 / 30</div><div class="qr-def">Windows Server / IoT Ubuntu / OT Linux（×2）— 支社内のセグメント化されたエンドポイントの役割。</div></div>
+      <div class="qr-item"><div class="qr-term">マクロセグメンテーション</div><div class="qr-def">VLAN／セグメント間のトラフィックを制御するポリシー（東西方向）— 例: VLAN10 → VLAN20 をブロック。</div></div>
+      <div class="qr-item"><div class="qr-term">マイクロセグメンテーション</div><div class="qr-def">VLAN 内のトラフィックを制御するポリシー — 例: VLAN30 上で OT1 → OT2 をブロック。</div></div>
+      <div class="qr-item"><div class="qr-term">PBR</div><div class="qr-def">Policy-Based Routing — 選択したトラフィック（SaaS、ICMP 等）を既定とは別の特定経路に誘導する。</div></div>
+      <div class="qr-item"><div class="qr-term">DNS ポリシー</div><div class="qr-def">特定ドメインの名前解決をリダイレクトまたはブロックする支社 DNS セキュリティルール。</div></div>
+      <div class="qr-item"><div class="qr-term">Ransomware Kill Switch</div><div class="qr-def">横方向の侵害拡大を封じ込めるための迅速なブロックモード（例: プライベートサブネット間の SSH）。</div></div>
+      <div class="qr-item"><div class="qr-term">Insights</div><div class="qr-def">Logs › Insights › Zero Trust Branch — 支社トラフィックを監視する Packet ログと Flow ログ。</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <span class="page-nav-btn page-nav-prev page-nav-disabled">
+    <span class="page-nav-label">← 前へ</span>
+    <span class="page-nav-title">ラボガイドの最初</span>
+  </span>
+  <div class="page-nav-message">すべての支社はログインから始まる。あなたはもう中にいる。</div>
+  <a class="page-nav-btn page-nav-next" href="lab1.html">
+    <span class="page-nav-label">次へ →</span>
+    <span class="page-nav-title">ラボ1: デバイスインターフェース構成</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-280 · Zscaler Zero Trust Branch · ハンズオンラボガイド · Experience Center</span>
+  <span>ラボ0: アクセス</span>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG PANEL
+══════════════════════════════════════════════════ */
+const CONFIG_KEY='edu280-ztb-lab-config';
+const COLLAPSE_KEY='edu280-config-collapsed';
+
+function updateSidebarOffset(){
+  var h=document.getElementById('config-panel').offsetHeight;
+  document.documentElement.style.setProperty('--config-h',(h+16)+'px');
+}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){
+  var panel=document.getElementById('config-panel');
+  var btn=document.getElementById('config-toggle-btn');
+  var collapsed=panel.classList.toggle('collapsed');
+  btn.innerHTML=collapsed
+    ?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> 展開'
+    :'<span class="chevron">▲</span> 折りたたむ';
+  try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}
+}
+
+function updateToggleSummary(){
+  var pod=document.getElementById('pod-input').value.trim();
+  var fqdn=document.getElementById('fqdn-input').value.trim();
+  var s=document.getElementById('config-toggle-summary');
+  var bits=[pod,fqdn].filter(Boolean).join(' · ');
+  s.textContent=bits?' — '+bits:'';
+}
+
+function podSlug(){
+  var raw=document.getElementById('pod-input').value.trim();
+  var m=raw.match(/\d+/);
+  if(!m)return '';
+  return 'pod'+m[0].padStart(2,'0');
+}
+
+function loadConfig(){
+  try{
+    var saved=localStorage.getItem(CONFIG_KEY);
+    if(saved){
+      var cfg=JSON.parse(saved);
+      document.getElementById('pod-input').value=cfg.pod||'';
+      document.getElementById('fqdn-input').value=cfg.fqdn||'';
+      document.getElementById('pass-input').value=cfg.pass||'';
+      document.getElementById('skytap-input').value=cfg.skytap||'';
+    }
+    if(localStorage.getItem(COLLAPSE_KEY)==='1'){
+      var panel=document.getElementById('config-panel');
+      var btn=document.getElementById('config-toggle-btn');
+      panel.classList.add('collapsed');
+      btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> 展開';
+    }
+  }catch(e){}
+  applyConfig();
+}
+
+function saveConfig(){
+  var cfg={
+    pod:document.getElementById('pod-input').value.trim(),
+    fqdn:document.getElementById('fqdn-input').value.trim(),
+    pass:document.getElementById('pass-input').value.trim(),
+    skytap:document.getElementById('skytap-input').value.trim()
+  };
+  try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}
+  applyConfig();
+  updateToggleSummary();
+  var btn=document.querySelector('.config-btn');
+  var orig=btn.textContent;
+  btn.textContent='✓ 保存しました';btn.style.background='var(--green)';
+  setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);
+}
+
+function clearConfig(){
+  ['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});
+  try{localStorage.removeItem(CONFIG_KEY);}catch(e){}
+  applyConfig();
+  updateToggleSummary();
+}
+
+function applyConfig(){
+  var pod=document.getElementById('pod-input').value.trim();
+  var fqdn=document.getElementById('fqdn-input').value.trim();
+  var pass=document.getElementById('pass-input').value.trim();
+  var skytap=document.getElementById('skytap-input').value.trim();
+  var slug=podSlug();
+
+  document.querySelectorAll('.var-pod').forEach(function(el){
+    if(pod){el.textContent=pod;el.classList.add('filled');}
+    else{el.textContent='<POD>';el.classList.remove('filled');}
+  });
+  document.querySelectorAll('.var-fqdn').forEach(function(el){
+    if(fqdn){el.textContent=fqdn;el.classList.add('filled');}
+    else{el.textContent='<受講者FQDN>';el.classList.remove('filled');}
+  });
+  document.querySelectorAll('.var-pass').forEach(function(el){
+    if(pass){el.textContent=pass;el.classList.add('filled');}
+    else{el.textContent='<ポータルパスワード>';el.classList.remove('filled');}
+  });
+  document.querySelectorAll('.var-skytap').forEach(function(el){
+    if(skytap){el.textContent=skytap;el.classList.add('filled');}
+    else{el.textContent='<Skytapパスコード>';el.classList.remove('filled');}
+  });
+
+  // Derived admin login: pod##-student@FQDN
+  var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<受講者FQDN>';
+  document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});
+  var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+}
+
+function copyConfigField(id,btn){
+  var val=document.getElementById(id).value.trim();
+  if(!val)return;
+  navigator.clipboard.writeText(val).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);
+  }).catch(function(){});
+}
+
+['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',applyConfig);
+});
+
+const PAGE_KEY='edu-280-lab-lab0';
+const SECTIONS={
+  'lab0':'ラボ0: アクセス',
+  'lab1':'ラボ1: デバイスインターフェース構成',
+  'lab2':'ラボ2: VLAN間フィルタリング',
+  'lab3':'ラボ3: PBR ポリシー',
+  'lab4':'ラボ4: マイクロセグメンテーション',
+  'lab5':'ラボ5: DNS ポリシー',
+  'lab6':'ラボ6: 検証',
+  'lab7':'ラボ7: ログと監視',
+  'lab8':'ラボ8: トラブルシューティングとデバッグ',
+  'lab9':'ラボ9: Ransomware Kill Switch'
+};
+
+// Socratic collapse
+document.querySelectorAll('.socratic-header').forEach(function(h){
+  h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});
+});
+
+function saveSocAnswer(btn){
+  var area=btn.closest('.answer-area');
+  var ta=area.querySelector('.answer-textarea');
+  if(!ta.value.trim()){ta.focus();return;}
+  var key=PAGE_KEY+'-socans-'+area.dataset.section;
+  try{localStorage.setItem(key,ta.value);}catch(e){}
+  ta.disabled=true;
+  btn.textContent='✓ 回答を保存しました';btn.disabled=true;
+  var sb=area.querySelector('.btn-see-answer');
+  sb.disabled=false;sb.textContent='💡 模範解答を見る';
+}
+function revealSocAnswer(btn){
+  if(btn.disabled)return;
+  var ans=btn.closest('.answer-area').querySelector('.model-answers');
+  var hidden=ans.style.display==='none'||!ans.style.display;
+  ans.style.display=hidden?'block':'none';
+  btn.textContent=hidden?'▲ 模範解答を隠す':'💡 模範解答を見る';
+}
+
+// Q Panel
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){
+  var ta=document.getElementById('q-'+key);
+  var text=ta.value.trim();if(!text){ta.focus();return;}
+  var qs=getQArr();
+  qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});
+  saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});
+  if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();
+}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){
+  var body=document.getElementById('qpanel-body');
+  var header=document.getElementById('qpanel-header');
+  var chevron=document.getElementById('qpanel-chevron');
+  var open=body.classList.toggle('open');
+  header.classList.toggle('open',open);
+  chevron.textContent=open?'▴':'▾';
+  localStorage.setItem(PAGE_KEY+'-qpanel-open',open);
+}
+function renderQPanel(){
+  var qs=getQArr();
+  var count=document.getElementById('qpanel-count');
+  if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}
+  var hint=document.querySelector('.qpanel-hint');
+  if(hint)hint.textContent=qs.length?'— '+qs.length+'件の質問、クリックで展開':'— クリックで展開';
+  var body=document.getElementById('qpanel-body');if(!body)return;
+  if(!qs.length){body.innerHTML='<p class="panel-empty">まだ質問はありません。各セクションの下から追加できます。</p>';return;}
+  var groups={};
+  Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});
+  qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});
+  var html='';var num=0;
+  Object.entries(groups).forEach(function(e){
+    var key=e[0];var items=e[1];
+    if(!items.length)return;
+    html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';
+    items.forEach(function(q){
+      num++;
+      html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="削除">−</button></div>';
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+
+// Notes Panel
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){
+  var ta=document.getElementById('note-'+key);
+  var text=ta.value.trim();if(!text){ta.focus();return;}
+  var ns=getNotesArr();
+  var name=SECTIONS[key]||key;
+  ns.push({id:Date.now(),section:key,sectionName:name,text:text});
+  saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});
+  if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();
+}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){
+  var body=document.getElementById('notes-panel-body');
+  var header=document.getElementById('notes-panel-header');
+  var chevron=document.getElementById('notes-panel-chevron');
+  var open=body.classList.toggle('open');
+  header.classList.toggle('open',open);
+  chevron.textContent=open?'▴':'▾';
+  localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);
+}
+function renderNotesPanel(){
+  var ns=getNotesArr();
+  var count=document.getElementById('notes-panel-count');
+  if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}
+  var hint=document.querySelector('.notes-panel-hint');
+  if(hint)hint.textContent=ns.length?'— '+ns.length+'件のメモ、クリックで展開':'— クリックで展開';
+  var body=document.getElementById('notes-panel-body');if(!body)return;
+  if(!ns.length){body.innerHTML='<p class="panel-empty">まだメモはありません。各セクションの下から追加できます。</p>';return;}
+  var groups={};
+  Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});
+  ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});
+  var html='';var num=0;
+  Object.entries(groups).forEach(function(e){
+    var key=e[0];var items=e[1];
+    if(!items.length)return;
+    html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';
+    items.forEach(function(n){
+      num++;
+      html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="削除">−</button></div>';
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+
+// Progress checklist
+function toggleDone(cb){
+  localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);
+  cb.closest('.progress-item').classList.toggle('done',cb.checked);
+}
+function initChecks(){
+  document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){
+    var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);
+    if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}
+  });
+}
+
+// Copy buttons on inline code
+function copyToClipboard(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    btn.classList.add('copied');btn.textContent='✓';
+    setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);
+  }).catch(function(){});
+}
+function injectCopyButtons(){
+  var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];
+  document.querySelectorAll(selectors.join(',')).forEach(function(code){
+    if(code.closest('.callout'))return;
+    if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;
+    var text=code.textContent.trim();
+    if(text.length<2)return;
+    if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;
+    var btn=document.createElement('button');
+    btn.className='copy-inline';btn.title='コピー';btn.textContent='⎘';
+    btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});
+    code.after(btn);
+  });
+}
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="閉じる (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Section highlight observer
+(function(){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      var lnk=document.querySelector('.ssnav-item[href="#'+e.target.id+'"]');
+      if(lnk)lnk.classList.toggle('active',e.isIntersecting);
+    });
+  },{rootMargin:'-10% 0% -70% 0%'});
+  document.querySelectorAll('.section-block[id]').forEach(function(el){obs.observe(el);});
+})();
+
+// Init
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
+    document.getElementById('qpanel-body').classList.add('open');
+    document.getElementById('qpanel-header').classList.add('open');
+    document.getElementById('qpanel-chevron').textContent='▴';
+  }
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){
+    document.getElementById('notes-panel-body').classList.add('open');
+    document.getElementById('notes-panel-header').classList.add('open');
+    document.getElementById('notes-panel-chevron').textContent='▴';
+  }
+  document.querySelectorAll('.answer-area').forEach(function(area){
+    var key=PAGE_KEY+'-socans-'+area.dataset.section;
+    try{
+      var saved=localStorage.getItem(key);
+      if(saved){
+        var ta=area.querySelector('.answer-textarea');
+        ta.value=saved;ta.disabled=true;
+        var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ 回答を保存しました';ab.disabled=true;
+        var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 模範解答を見る';
+      }
+    }catch(e){}
+  });
+  document.body.style.transition='opacity 0.3s ease';
+  document.body.style.opacity='1';
+  sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>
