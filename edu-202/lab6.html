@@ -147,23 +147,14 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">DVWA runs in a Docker container at <code>10.0.0.128</code>. Before creating the App Segment, you need to add a DNS A record on the Corp: Win Svr so the ZPA connector can resolve the app hostname.</p>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Step 1 — Add DNS Record on Corp: Win Svr</h4>
+            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">DVWA runs in a Docker container on the <strong>Corp: Docker Server</strong> (<code>10.0.0.2</code>), published on TCP port <code>8081</code>. Before creating the App Segment, you need to spin up the container and add a DNS A record on the Corp: Win Svr so the ZPA connector can resolve the app hostname.</p>
+            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Step 1 — Spin Up the DVWA Docker Container</h4>
             <ol class="step-list">
-              <li>On <strong>Corp: Win Svr</strong>, open <strong>DNS Manager</strong> (Server Manager → Tools → DNS).</li>
-              <li>Navigate to <strong>Forward Lookup Zones &gt; patraining.safemarch.com</strong>.</li>
-              <li>Right-click and select <strong>New Host (A or AAAA)…</strong></li>
-              <li>Configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>dvwa-&lt;StudentID&gt;</code> — replace &lt;StudentID&gt; with the last three digits of your tenant ID (e.g. if your FQDN is <span class="var var-fqdn">&lt;Student FQDN&gt;</span>, and your Student ID is <code class="d-id">&lt;Student ID&gt;</code>, the hostname is <code>dvwa-<span class="d-id-short">&lt;last3digits&gt;</span></code>)</li>
-                  <li><strong>IP Address:</strong> <code>10.0.0.128</code></li>
-                </ul>
+              <li>Log in to the <strong>Corp: Docker Server</strong> (<code>10.0.0.2</code>).</li>
+              <li>Open a terminal and run:
+                <div style="margin:8px 0;"><code>docker run --rm -it -p 8081:80 vulnerables/web-dvwa:latest</code></div>
               </li>
-              <li>Select <strong>Add Host</strong>, then <strong>Done</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p113-img1.png" alt="DNS Manager on Win Svr showing Forward Lookup Zones with New Host (A or AAAA) context menu open for patraining.safemarch.com" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
+              <li>Confirm the container starts and DVWA is listening — the <code>-p 8081:80</code> flag maps container port 80 to host port <code>8081</code>, so the app is reachable at <code>http://10.0.0.2:8081</code>.</li>
             </ol>
             <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 2 — Create the DVWA App Segment</h4>
             <ol class="step-list">
@@ -171,18 +162,16 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <li>Select <strong>Add Application Segment</strong> and configure:
                 <ul class="sub-steps">
                   <li><strong>Name:</strong> <code>DVWA</code></li>
-                  <li><strong>Applications:</strong> <code>dvwa-&lt;StudentID&gt;.patraining.safemarch.com</code> (the hostname you added to DNS)</li>
-                  <li><strong>Access Type:</strong> Check both <strong>Browser Access</strong> and <strong>AppProtection</strong></li>
-                  <li><strong>Certificate Type:</strong> Managed</li>
-                  <li><strong>External URL prefix:</strong> <code>dvwa</code></li>
-                  <li><strong>Internal URL:</strong> <code>HTTP://dvwa-&lt;StudentID&gt;.patraining.safemarch.com:80</code></li>
+                  <li><strong>Applications:</strong><code>10.0.0.2:8081</code></li>
+                  <li><strong>Access Type:</strong> Check <strong>AppProtection</strong></li>
+    
                 </ul>
               </li>
               <li>Under <strong>Client Connector Access</strong>, configure Web Server ports (keep defaults for HTTP traffic).</li>
               <li>Select <strong>Next</strong>, choose Segment Group <strong>CorpApps</strong>, select <strong>Next</strong>, choose Server Group <strong>CorpServers</strong>, select <strong>Next</strong>.</li>
               <li>Review and select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p106-img1.png" alt="Add Application Segment form for DVWA: hostname dvwa-xxx.patraining.safemarch.com, Access Type showing Browser Access and AppProtection both checked" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab6/lab6-p106-img1a.png" alt="Add Application Segment form for DVWA: hostname dvwa-xxx.patraining.safemarch.com, Access Type showing Browser Access and AppProtection both checked" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
               <li>Create the Access Policy rule for DVWA. Navigate to <strong>Policies &gt; Access Policy</strong> and select <strong>Add</strong>:
@@ -195,7 +184,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <li>Select <strong>Save</strong>.</li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> The Browser Access URL for DVWA will be <code>https://dvwa-&lt;studentid&gt;.labtenant.com.clientless.two.zscalerportal.net</code> (or similar — it is shown in the App Segment details after saving). You will use this URL in Task 6.4.</p>
+              <p><strong>Note:</strong> The Access URL for DVWA will be <code>http://10.0.0.2:8081</code>. You will use this URL in Task 6.4.</p>
             </div>
           </div>
 
@@ -359,8 +348,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <div class="task-block">
             <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Step 1 — Access DVWA via Browser Access</h4>
             <ol class="step-list">
-              <li>Log out of Zscaler Client Connector on <strong>Corp: Client PC 1</strong> to simulate a Browser Access session.</li>
-              <li>Open Chrome and navigate to the DVWA Browser Access URL. You can find this URL in the App Segment details — it resembles <code>https://dvwa-&lt;studentid&gt;.labtenant.com.clientless.two.zscalerportal.net</code>.</li>
+              <li>Make sure you have login Zscaler Client Connector on <strong>Corp: Client PC 1</strong> to simulate the DVWAsession.</li>
+              <li>Open Chrome and navigate to the DVWA Browser Access URL. You can find this URL in the App Segment details — it resembles <code>http://10.0.0.2:8081</code>.</li>
               <li>Log in to DVWA using:
                 <ul class="sub-steps">
                   <li><strong>Username:</strong> <code>admin</code></li>
