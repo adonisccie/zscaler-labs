@@ -214,7 +214,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="task-block">
         <h4><span class="task-num">1</span> Connect to the App Connector VM using WinSCP</h4>
         <ol class="step-list">
-          <li>On the Corp: Client PC, open <strong>WinSCP</strong> from the desktop.</li>
+          <li>On the Corp: WIN SRV 2016, open <strong>WinSCP</strong> from the desktop.</li>
           <li>Connect to the Corp: App Connector VM using the IP address and credentials from the lab topology.</li>
           <li>Accept any SSH host key prompt.</li>
         </ol>
@@ -231,22 +231,22 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="task-block">
         <h4><span class="task-num">2</span> Upload the provisioning key</h4>
         <ol class="step-list">
-          <li>In WinSCP, navigate to <code>/tmp/</code> on the remote VM.</li>
+          <li>In WinSCP, navigate to <code>/home/admin</code> on the remote VM.</li>
           <li>Create a file named <code>provision_key</code> and paste the provisioning key value into it, or upload the saved key file.</li>
         </ol>
       </div>
       <div class="screenshot-embed">
-        <img src="screenshots/lab9-winscp-provision-key-upload.png" alt="WinSCP showing provision_key file uploaded to /tmp/ on the App Connector VM">
-        <div class="screenshot-caption">Provisioning key uploaded to /tmp/ on the connector VM — the activation script will read it from this location.</div>
+        <img src="screenshots/lab9-winscp-provision-key-upload.png" alt="WinSCP showing provision_key file uploaded to /home/admin on the App Connector VM">
+        <div class="screenshot-caption">Provisioning key uploaded to /home/admin on the connector VM — the activation script will read it from this location.</div>
       </div>
 
       <div class="task-block">
         <h4><span class="task-num">3</span> Run activation commands in terminal</h4>
         <ol class="step-list">
-          <li>In WinSCP, open an SSH terminal session (press <strong>Ctrl+P</strong> or click <strong>Open in PuTTY</strong>).</li>
-          <li>Run: <code>cp /tmp/provision_key /opt/zscaler/var/provision_key</code></li>
+          <li>Go to the console of the App Connector VM.</li>
+          <li>Use the command to copy the file: <code>cp provision_key /opt/zscaler/var/</code></li>
           <li>Verify the file is present: <code>ls /opt/zscaler/var/</code></li>
-          <li>Start the ZPA connector service: <code>/opt/zscaler/bin/zsproxy start</code></li>
+          <li>Start the ZPA connector service: <code>systemctl start zpa-connector</code></li>
           <li>Check service status: <code>systemctl status zpa-connector</code></li>
         </ol>
       </div>
@@ -268,7 +268,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="callout callout-troubleshoot">
         <strong>Troubleshoot — service fails to start</strong>
-        <p>If <code>systemctl status zpa-connector</code> shows <strong>failed</strong> or <strong>inactive</strong>: run <code>ls /opt/zscaler/var/</code> and confirm <code>provision_key</code> is present and non-empty. If missing or empty, re-copy it: <code>cp /tmp/provision_key /opt/zscaler/var/provision_key</code>, then start the service again. If the key is present but the service still fails, check the journalctl log: <code>journalctl -u zpa-connector -n 50 --no-pager</code> — look for "invalid key" or "registration timeout" messages indicating the key was already consumed or network access to the ZPA cloud is blocked.</p>
+        <p>If <code>systemctl status zpa-connector</code> shows <strong>failed</strong> or <strong>inactive</strong>: run <code>ls /opt/zscaler/var/</code> and confirm <code>provision_key</code> is present and non-empty and has no extension (NO .TXT). If missing or empty, re-copy it: <code>cp provision_key /opt/zscaler/var/provision_key</code>, then start the service again. If the key is present but the service still fails, check the log
       </div>
 
       <div class="task-block">
