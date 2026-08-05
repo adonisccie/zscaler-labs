@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 0: Access the Solutions Demo Center — EDU-112</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-112</a> › Lab 0</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 0 · EDU-112</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Access the Solutions Demo Center</h1>
+  <div class="motivation-banner">
+    <p>Before you can investigate what happened — or how to prevent it — you need access to the Solutions Demo Center (SDC), where your organization's AI security posture is monitored.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="firstname-input">First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="firstname-input" placeholder="Jane" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('firstname-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="lastname-input">Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="lastname-input" placeholder="Doe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('lastname-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Login ID:</strong> <code class="d-login">&lt;firstname&gt;.&lt;lastname&gt;-ADMIN@thezerotrustexchange.com</code></span>
+      <span><strong>SDC Portal:</strong> <code>https://sdc.zslogin.net/portal</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab0">
+      <h2>Lab 0: Access the Solutions Demo Center (SDC)</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p><strong>Scenario:</strong> You are the AI security analyst pulled into an urgent review after a well-meaning intern pasted sensitive business strategy into a public AI tool and asked it to "make this sound more professional." There was no malware, no stolen password, and no traditional breach pattern — which is exactly what makes this incident challenging to investigate. Before you can find out what happened, you need access to the <strong>Solutions Demo Center (SDC)</strong>, where your organization's AI security posture is monitored.</p>
+        <ul style="margin-top:10px;">
+          <li>Access the SDC environment</li>
+          <li>Navigate to the <strong>AI Security</strong> (AI Protect) and <strong>AI Guard</strong> portals</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-112</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 1.0 · Jun 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Solutions Demo Center (SDC) · Zidentity</div>
+          <div class="lab-meta-item"><strong>Prerequisites:</strong> Solutions Demo Center Access Email</div>
+          <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
+        </div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab0">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · GETTING INTO THE INVESTIGATION</span>
+        </div>
+        <p class="socratic-insight">The incident that brought you here left no malware and no stolen credentials — just a prompt and a response. Before you touch a single dashboard, it's worth thinking about why that changes how you investigate.</p>
+        <ul class="socratic-questions">
+          <li>The incident has no malware and no stolen password — so why does an AI security analyst still need dedicated portal access at all?
+            <div class="answer-area" data-section="lab0-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Because the "attack" here isn't a network intrusion — it's a data-handling event that only shows up in application-layer telemetry: what was typed into a Gen AI app, and what came back. Portal access gets you to the dashboards that log prompts and responses and the app inventory behind them. A traditional firewall or EDR view wouldn't show any of this, since nothing left the browser looking like malware traffic.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Why does the lab route you through two separate consoles — AI Security (AI Protect) and Zguard (AI Guard) — instead of one unified dashboard?
+            <div class="answer-area" data-section="lab0-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">They answer different questions. AI Protect is about visibility — what AI is being used, by whom, and how risky the discovered assets are. AI Guard is about real-time enforcement — what happened to one specific prompt/response and why. Splitting them mirrors the actual investigative flow: scope the problem first (Protect), then examine the specific policy decision (Guard).</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Task 0.1: Access the Lab Environment</h3>
+      <p>In this task, you access the Solutions Demo Center (SDC) and navigate to the AI Protect and AI Guard portals.</p>
+
+      <div class="task-block">
+        <h4><span class="task-num">TASK 0.1</span> Access the SDC</h4>
+        <ul class="step-list">
+          <li>In a browser, go to <code>https://sdc.zslogin.net/portal</code>.</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p005-a.png" alt="ZIdentity welcome screen with a Login ID field and Next button">
+        <div class="screenshot-caption">The ZIdentity login screen — this is the single sign-on hub for every console you'll use across the labs.</div>
+      </div>
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> Your ZIA Admin Login ID and Password are provided in an email.</p>
+      </div>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>Log in using the SDC credentials provided in your lab access email:
+            <ul class="sub-steps">
+              <li>Login ID: <code class="d-login">&lt;firstname&gt;.&lt;lastname&gt;-ADMIN@thezerotrustexchange.com</code></li>
+              <li>Password: <span class="var var-pass">&lt;password&gt;</span></li>
+            </ul>
+          </li>
+          <li>Select the <strong>AI Security</strong> icon on the Zidentity dashboard to access <strong>AI Protect</strong>.</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p006-a.png" alt="Zidentity dashboard grid of tiles with the AI Security tile highlighted">
+        <div class="screenshot-caption">From the Zidentity dashboard, select <strong>AI Security</strong> to open AI Protect — the discovery and visibility console.</div>
+      </div>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>Select the <strong>Zguard</strong> icon on the Zidentity dashboard to access <strong>AI Guard</strong>.</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p007-a.png" alt="Zidentity dashboard grid of tiles with the Zguard tile highlighted">
+        <div class="screenshot-caption">Selecting <strong>Zguard</strong> opens AI Guard — the real-time enforcement console you'll use in Lab 2.</div>
+      </div>
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> Return to the Zidentity dashboard to access either application throughout the labs.</p>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text">One hub, two consoles: <strong>Zidentity</strong> (<code>sdc.zslogin.net/portal</code>) launches <strong>AI Security</strong> (AI Protect — discovery) and <strong>Zguard</strong> (AI Guard — enforcement). Login format: <code class="d-login">&lt;firstname&gt;.&lt;lastname&gt;-ADMIN@thezerotrustexchange.com</code>. Remember: this incident left no malware and no stolen password — the evidence you need lives in prompts and responses, not packet captures.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab0" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab0','Lab 0: Access the SDC')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab0" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab0')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-112 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab0" onchange="toggleDone(this)"><label for="chk-lab0">Lab 0: Access verified</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center — the shared demo tenant used throughout these labs.</div></div>
+        <div class="qr-item"><div class="qr-term">Zidentity</div><div class="qr-def">Zscaler's single sign-on hub; launches every console you'll use, including AI Security and Zguard.</div></div>
+        <div class="qr-item"><div class="qr-term">AI Protect</div><div class="qr-def">The discovery &amp; visibility module inside AI Security — Public AI usage, App Inventory, AI Assets.</div></div>
+        <div class="qr-item"><div class="qr-term">AI Guard</div><div class="qr-def">The real-time enforcement module (opened via the Zguard tile) — inspects prompts/responses and applies policy.</div></div>
+        <div class="qr-item"><div class="qr-term">AI Red Teaming</div><div class="qr-def">The adversarial-testing module — runs simulated attacks against AI assets to measure resilience.</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <span class="page-nav-btn page-nav-prev page-nav-disabled">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Start of Lab Guide</span>
+  </span>
+  <div class="page-nav-message">No malware, no stolen password — just a prompt. Let's go find out what happened.</div>
+  <a class="page-nav-btn page-nav-next" href="lab1.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 1: Discover &amp; Analyze AI Usage</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-112 · Introduction to AI Security Platform · Hands-On Lab Guide</span>
+  <span>Lab 0: Access the SDC</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu112-sdc-lab-config';
+const COLLAPSE_KEY='edu112-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var first=document.getElementById('firstname-input').value.trim();var last=document.getElementById('lastname-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[first,last].filter(Boolean).join(' ');s.textContent=bits?' — '+bits:'';}
+function slugify(str){return str.trim().toLowerCase().replace(/\s+/g,'');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('firstname-input').value=cfg.first||'';document.getElementById('lastname-input').value=cfg.last||'';document.getElementById('pass-input').value=cfg.pass||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={first:document.getElementById('firstname-input').value.trim(),last:document.getElementById('lastname-input').value.trim(),pass:document.getElementById('pass-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['firstname-input','lastname-input','pass-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var first=document.getElementById('firstname-input').value.trim();var last=document.getElementById('lastname-input').value.trim();var pass=document.getElementById('pass-input').value.trim();
+  var login=(first&&last)?slugify(first)+'.'+slugify(last)+'-ADMIN@thezerotrustexchange.com':'<firstname>.<lastname>-ADMIN@thezerotrustexchange.com';
+  document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;el.classList.toggle('filled',!!(first&&last));});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<password>';el.classList.remove('filled');}});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['firstname-input','lastname-input','pass-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-112-lab-lab0';
+const SECTIONS={'lab0':'Lab 0: Access the SDC','lab1':'Lab 1: Discover & Analyze AI Usage','lab2':'Lab 2: Review Enforced Policies & Outcomes','lab3':'Lab 3: Review Test Runs & Harden AI Assets'};
+
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

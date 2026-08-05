@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 1: Discover and Analyze AI Usage — EDU-112</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-112</a> › Lab 1</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 1 · EDU-112</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Discover and Analyze AI Usage</h1>
+  <div class="motivation-banner">
+    <p>Leadership assumes AI usage is mostly a browser problem. AI Protect quickly shows a broader reality: public AI activity spans browser-based Gen AI apps and endpoint-based Desktop AI apps.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="firstname-input">First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="firstname-input" placeholder="Jane" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('firstname-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="lastname-input">Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="lastname-input" placeholder="Doe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('lastname-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Login ID:</strong> <code class="d-login">&lt;firstname&gt;.&lt;lastname&gt;-ADMIN@thezerotrustexchange.com</code></span>
+      <span><strong>SDC Portal:</strong> <code>https://sdc.zslogin.net/portal</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab1">
+      <h2>Lab 1: Discover and Analyze AI Usage (AI Protect)</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">LAB 1</div>
+        <p><strong>Scenario:</strong> Now that you have access to the SDC, your first job is to understand the scope of AI usage across your organization. Leadership assumes this is mostly a browser problem, but the AI Security Platform quickly shows a broader reality: public AI activity spans browser-based <strong>Gen AI</strong> apps and endpoint-based <strong>Desktop AI</strong> apps. Explore <strong>AI Protect</strong> to build a baseline of where AI is being used before deciding how risk should be managed.</p>
+        <ul style="margin-top:10px;">
+          <li>Navigate the AI security dashboard and identify major reporting zones</li>
+          <li>Review the App Inventory page to evaluate risk posture for discovered AI applications</li>
+          <li>Inspect AI assets, model risk, and workload drilldowns</li>
+          <li>Use usage insights to establish an AI adoption baseline</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Prerequisites:</strong> Complete Lab 0</div>
+          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
+        </div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab1">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · MAPPING AI USAGE</span>
+        </div>
+        <p class="socratic-insight">Before you dive into dashboards, consider what "AI usage" actually means once you look past the browser — and what a risk number does and doesn't tell you.</p>
+        <ul class="socratic-questions">
+          <li>Leadership assumes AI usage is "mostly a browser problem." What does the Desktop AI / Gen AI split in App Inventory prove wrong about that assumption?
+            <div class="answer-area" data-section="lab1-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Desktop AI apps are discovered through endpoint telemetry, not browser traffic — meaning employees are running AI tools (installed clients, OS-level assistants) that never touch a proxy log. If leadership only watched web traffic, an entire category of AI usage — and its risk — would be invisible.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>A model's Risk bucket (Critical/High/Medium/Low) measures how likely it is to be exploited by adversarial attacks. Why is that a different question from "how sensitive is the data this model touches"?
+            <div class="answer-area" data-section="lab1-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">One measures attack surface (can this model be jailbroken or prompt-injected); the other measures blast radius (what happens if it is). A low-exploit-risk model that touches no sensitive data is a minor concern; the same exploit risk sitting on a workload full of PII or SSNs is a much bigger one — you need both numbers, not just one.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Why trace a model like gpt-5-pro down to its Workloads and then to Sensitive Data, instead of stopping at "this model is Unsanctioned"?
+            <div class="answer-area" data-section="lab1-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">"Unsanctioned" tells you a policy gap exists, but not what's at stake. Following the graph to the workload and its DLP hits (SSNs, tax IDs, CCPA-flagged files) turns an abstract inventory finding into a concrete, prioritizable risk — the same document trail an auditor or incident responder would need.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="task-collapsible open" id="tc-1-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.1</span>
+          <span class="task-collapsible-title">Explore AI Traffic Patterns and Model Risks</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>In this task, you get your first view of AI Protect. You start at the dashboard to see how Public AI usage is summarized and how AI applications are grouped into Gen AI and Desktop AI, so you can understand the overall shape of AI activity before you dive into details.</p>
+          <ul class="step-list">
+            <li>Navigate to the <strong>AI Dashboard</strong>: select the <strong>AI Security</strong> icon on the Zidentity dashboard to access AI Protect.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p009-a.png" alt="AI Dashboard with Public AI Traffic Overview, AI Application by Categories, AI Assets by Categories panels, and a Public AI Usage bubble chart">
+            <div class="screenshot-caption">The AI Dashboard: three summary panels up top, then Public AI / AI Infrastructure / AI Red Teaming usage tabs below.</div>
+          </div>
+          <ul class="step-list">
+            <li>Review the top three panels on the AI Dashboard: <strong>Public AI Traffic Overview</strong>, <strong>AI Application by Categories</strong>, <strong>AI Assets by Categories</strong>.</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> Each panel includes a <strong>Details</strong> link that opens a more detailed view of the underlying data.</p></div>
+          <ul class="step-list">
+            <li>Explore the details of each panel to observe which AI tools are in use and how AI assets are organized:
+              <ul class="sub-steps">
+                <li>Navigate to the Public AI Traffic Overview panel's <strong>Details</strong> to see how AI traffic is summarized</li>
+                <li>Select <strong>Dashboard</strong> from the left navigation to return</li>
+                <li>Select <strong>Details</strong> for AI Application Categories and AI Assets by Categories to gain further insight</li>
+              </ul>
+            </li>
+            <li>Explore the Public AI Overview: go to <strong>Public AI &gt; Overview</strong>, and set the <strong>Date Range filter</strong> to <strong>Last 15 days</strong>.</li>
+            <li>Review high-level AI usage panels: <strong>Total Volume</strong> of AI traffic, <strong>Total Users</strong>, <strong>Sensitive Data</strong> events, and <strong>Files Uploaded</strong>.</li>
+            <li>Examine AI application inventory tiles: select <strong>See All</strong> in the Desktop AI Apps panel to view the full list.</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> Notice the number of versions of Microsoft Copilot M365 detected in the inventory, so you understand how many different builds of a single AI tool may actually be in use. When you scale that across the entire organization, the numbers are staggering.</p></div>
+          <ul class="step-list">
+            <li>Analyze <strong>App Usage Trends</strong> to see which Gen AI apps are most active — change the filter on the Public AI &gt; Overview dashboard to see which apps generate the most traffic by <strong>Volume</strong>, <strong>Transactions</strong>, or <strong>Users</strong>.</li>
+          </ul>
+          <div class="callout callout-success"><p><strong>Verify:</strong> You have opened the AI Security dashboard, identified the three major panels that summarize Public AI usage, drilled into their details, and explored the Public AI overview. You now have a high-level picture of AI traffic volume, user activity, sensitive data events, and key applications that will guide deeper investigation.</p></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-1-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.2</span>
+          <span class="task-collapsible-title">Explore the App Inventory Page</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>In this task, you move from the high-level overview to a granular view. Here, you shift to the endpoint perspective to see which AI applications are detected through endpoint telemetry, not just through browser traffic. This helps you understand how AI usage extends beyond chatbot usage.</p>
+          <ul class="step-list">
+            <li>Explore the <strong>Top Desktop AI Apps</strong> panel:
+              <ul class="sub-steps">
+                <li>Go to <strong>Public AI &gt; App Inventory</strong> from the left-side navigation panel</li>
+                <li>Select the <strong>Desktop AI</strong> tab</li>
+                <li>Review the list of AI applications identified through endpoint telemetry, then select an application to inspect its detected versions and inventory metadata</li>
+              </ul>
+            </li>
+            <li>Explore the Top Gen AI Apps:
+              <ul class="sub-steps">
+                <li>Select the <strong>Gen AI</strong> tab</li>
+                <li>Select a Gen AI application to inspect its <strong>General Information</strong>, <strong>Hosting Information</strong>, <strong>Security Information</strong>, and <strong>Risk Index</strong> metadata</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="callout callout-success"><p><strong>Verify:</strong> You have navigated to Public AI &gt; App Inventory, reviewed Desktop AI and Gen AI applications, and inspected inventory details. You now see how endpoint-based Desktop AI apps extend visibility beyond browser traffic and how application metadata supports risk assessment.</p></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-1-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 1.3</span>
+          <span class="task-collapsible-title">Explore AI Assets</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>In this task, you move from applications to AI assets. You explore how AI models and workloads are organized and assessed for risk, so you can connect high-level usage back to the specific AI components that process data.</p>
+          <ul class="step-list">
+            <li>Explore AI Resources: Models:
+              <ul class="sub-steps">
+                <li>Go to <strong>AI Infrastructure &gt; AI Assets</strong> from the left-side navigation panel</li>
+                <li>Confirm that the <strong>Models</strong> tab is selected</li>
+                <li>In the <strong>Models By Risk</strong> panel, review how models are grouped into risk buckets: Critical, High, Medium, Low, Unknown</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> Risk here reflects how likely a model is to be exploited by adversarial attacks (such as prompt injection, jailbreaks, and data extraction). It is distinct from the Risk Level used on other assets, where the score measures the severity of open issues rather than attack resistance.</p></div>
+          <ul class="step-list">
+            <li>In the <strong>Models By Subtype</strong> panel, review how models are classified by subtype — for example, <strong>Foundation</strong>: a pretrained base model shipped by a provider such as GPT-4.0, Claude, or Llama.</li>
+            <li>In the models table, review core identification details about the model, such as <strong>type</strong>, <strong>environment</strong>, and <strong>source</strong>.</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> As you review subtypes, connect them back to the kinds of AI applications you saw earlier — this helps you see which foundational models may sit behind high-traffic apps.</p></div>
+          <ul class="step-list">
+            <li>Explore the <strong>Model Details View</strong>:
+              <ul class="sub-steps">
+                <li>In the Search box, type <code>deep</code> and press Enter</li>
+                <li>Select <strong>DeepSeek-V3</strong> to open its detail view and review the General Information</li>
+                <li>Explore the <strong>Graph View</strong> toward the bottom of the Model Details View</li>
+                <li>Select the icon for <strong>Access</strong>, <strong>AI model</strong>, or <strong>Workloads</strong> to expand a card with more detail about the asset</li>
+                <li>Trace how the model connects to access paths and workloads — this prepares you to think about how a single model can affect multiple parts of your AI landscape</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p014-a.png" alt="Model Details Graph View for gpt-5-pro showing Access, AI Model, and Workloads nodes with a detail panel listing region, type, source, subscription, and risk score">
+            <div class="screenshot-caption">Graph View for a model (gpt-5-pro shown as an example): select any node — Access, the model itself, or Workloads — to expand its detail panel on the right.</div>
+          </div>
+          <ul class="step-list">
+            <li>Explore AI Resources: Workloads:
+              <ul class="sub-steps">
+                <li>Go to <strong>AI Infrastructure &gt; AI Resources</strong> from the left-side navigation panel</li>
+                <li>Select the <strong>Workloads</strong> tab</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p015-a.png" alt="AI Resources panel with Workloads By Risk Level, Workloads By Status, and Workloads with Public Exposure donut charts">
+            <div class="screenshot-caption">AI Resources — Workloads tab: 85 workloads total, 22 with public exposure, 20 encrypted with PMK.</div>
+          </div>
+          <ul class="step-list">
+            <li>Narrow the Workloads Table results with the <strong>Risk Level</strong> filter by selecting <strong>Critical</strong>.</li>
+            <li>Select the <code>acme-corp-dev-mcp-server-01</code> workload.</li>
+            <li>In the <strong>General information</strong> panel, note the sensitive data exposed for this workload. Consider how this exposure relates to the AI usage patterns you saw earlier.</li>
+            <li>Observe the <strong>Graph View</strong> for the workload, then select the <strong>Sensitive Data</strong> node — a details pane appears on the right.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p016-a.png" alt="Graph View for acme-corp-dev-mcp-server-01 workload with a Sensitive Data node selected, showing 5 DLP engines and 20 total files including DPDPA, CCPA, and SSN matches">
+            <div class="screenshot-caption">Selecting the Sensitive Data node on a workload's Graph View surfaces the DLP engines that matched — here, DPDPA, CCPA-High Volume, and predefined SSN/Tax ID dictionaries.</div>
+          </div>
+          <ul class="step-list">
+            <li>Select <strong>View Data Security</strong> on the bottom right of the details pane, then observe the matched <strong>files</strong>, number of <strong>triggers</strong>, DLP engines, DLP dictionaries, document categories, document types, and the file table.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p017-a.png" alt="Data Security detail view with 15 matched files, 5804 triggers, DLP engine and dictionary breakdowns, and a searchable file table">
+            <div class="screenshot-caption">The full Data Security view for the workload: 15 matched files and 5,804 triggers across DLP engines, dictionaries, document categories, and types — down to individual file paths.</div>
+          </div>
+          <div class="callout callout-note"><p><strong>Note:</strong> You can use this information to connect workloads to the kinds of sensitive data they handle, as well as the policies that are violated. In a production environment this is important when you evaluate controls and enforcement.</p></div>
+          <div class="callout callout-success"><p><strong>Verify:</strong> You have explored AI assets by reviewing models grouped by risk and subtype, opened a model's details and Graph View, and examined a high-risk workload's exposure of sensitive data, including data security details. You now understand how AI Protect links abstract models and workloads to concrete data risk.</p></div>
+        </div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text">AI Protect = visibility. Three reporting zones: <strong>Public AI</strong> (Gen AI + Desktop AI usage), <strong>AI Infrastructure</strong> (AI Assets — Models / Workloads / Data Stores), and <strong>AI Red Teaming</strong> (coverage). Model Risk buckets (Critical/High/Medium/Low/Unknown) measure exploitability, not sensitivity — always follow the graph from model → workload → Sensitive Data to see what's actually at stake.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab1" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab1','Lab 1: Discover & Analyze AI Usage')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab1" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab1')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-112 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab1-1" onchange="toggleDone(this)"><label for="chk-lab1-1">Task 1.1: Traffic &amp; model risk explored</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1-2" onchange="toggleDone(this)"><label for="chk-lab1-2">Task 1.2: App Inventory reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1-3" onchange="toggleDone(this)"><label for="chk-lab1-3">Task 1.3: AI Assets &amp; workloads explored</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Gen AI app</div><div class="qr-def">A browser-based public generative AI tool (ChatGPT, Claude, etc.) seen in Public AI traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Desktop AI app</div><div class="qr-def">An AI application detected via endpoint telemetry rather than browser traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">AI Asset</div><div class="qr-def">A discovered model, agent, or app that AI Security tracks and risk-scores.</div></div>
+        <div class="qr-item"><div class="qr-term">Model Risk buckets</div><div class="qr-def">Critical / High / Medium / Low / Unknown — how likely a model is to be exploited by adversarial attacks, not how sensitive its data is.</div></div>
+        <div class="qr-item"><div class="qr-term">Foundation model</div><div class="qr-def">A pretrained base model subtype shipped by a provider, e.g. GPT-4.0, Claude, or Llama.</div></div>
+        <div class="qr-item"><div class="qr-term">Workload</div><div class="qr-def">An AI-related compute resource (e.g. an MCP server) tracked for public exposure, encryption, and sensitive-data handling.</div></div>
+        <div class="qr-item"><div class="qr-term">DLP engine / dictionary</div><div class="qr-def">Data-loss-prevention rule sets (DPDPA, CCPA, SSN, etc.) that match sensitive content inside files or workloads.</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab0.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 0: Access the SDC</span>
+  </a>
+  <div class="page-nav-message">You've mapped where AI lives. Now see how it's actually enforced.</div>
+  <a class="page-nav-btn page-nav-next" href="lab2.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 2: Review Enforced Policies &amp; Outcomes</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-112 · Introduction to AI Security Platform · Hands-On Lab Guide</span>
+  <span>Lab 1: Discover &amp; Analyze AI Usage</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu112-sdc-lab-config';
+const COLLAPSE_KEY='edu112-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var first=document.getElementById('firstname-input').value.trim();var last=document.getElementById('lastname-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[first,last].filter(Boolean).join(' ');s.textContent=bits?' — '+bits:'';}
+function slugify(str){return str.trim().toLowerCase().replace(/\s+/g,'');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('firstname-input').value=cfg.first||'';document.getElementById('lastname-input').value=cfg.last||'';document.getElementById('pass-input').value=cfg.pass||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={first:document.getElementById('firstname-input').value.trim(),last:document.getElementById('lastname-input').value.trim(),pass:document.getElementById('pass-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['firstname-input','lastname-input','pass-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var first=document.getElementById('firstname-input').value.trim();var last=document.getElementById('lastname-input').value.trim();var pass=document.getElementById('pass-input').value.trim();
+  var login=(first&&last)?slugify(first)+'.'+slugify(last)+'-ADMIN@thezerotrustexchange.com':'<firstname>.<lastname>-ADMIN@thezerotrustexchange.com';
+  document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;el.classList.toggle('filled',!!(first&&last));});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<password>';el.classList.remove('filled');}});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['firstname-input','lastname-input','pass-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-112-lab-lab1';
+const SECTIONS={'lab0':'Lab 0: Access the SDC','lab1':'Lab 1: Discover & Analyze AI Usage','lab2':'Lab 2: Review Enforced Policies & Outcomes','lab3':'Lab 3: Review Test Runs & Harden AI Assets'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

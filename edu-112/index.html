@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDU-112: Introduction to AI Security Platform — Hands-On Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › EDU-112</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">EDU-112 · Hands-On Lab</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Introduction to <em>AI Security Platform</em></h1>
+  <div class="motivation-banner">
+    <p>An intern's one prompt to a public AI tool becomes a full investigation — no malware, no stolen password, just a data-handling event that only shows up in prompts and responses. Trace it through AI Protect, AI Guard, and AI Red Teaming to see how Zscaler discovers, enforces, and hardens against AI risk.</p>
+  </div>
+</header>
+
+<div class="hub-main">
+
+  <details class="zscaler-one-min">
+    <summary>&#9432; AI Security Platform in one minute — key terms</summary>
+    <div class="zom-body">
+      <div class="zom-term"><strong>AI Protect</strong><span>Discovery &amp; visibility: Public AI usage, App Inventory, and AI Assets (models, agents, workloads).</span></div>
+      <div class="zom-term"><strong>AI Guard</strong><span>Real-time enforcement: inspects prompts and responses, applies Detector-based policy, maps to compliance.</span></div>
+      <div class="zom-term"><strong>AI Red Teaming</strong><span>Adversarial testing: runs simulated attacks (probes) against AI assets and scores their resilience.</span></div>
+      <div class="zom-term"><strong>Detector</strong><span>An inspection rule (PII, Secrets, Toxicity, Prompt Injection, etc.) that drives an Allow/Block/Detect decision.</span></div>
+      <div class="zom-term"><strong>Health Score</strong><span>0–100 resilience score for a Red-Teamed AI asset; below 75 keeps it out of "Secured" status.</span></div>
+    </div>
+  </details>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">SETUP</span>
+      <div class="phase-title">Get Into the Environment</div>
+      <div class="phase-range">Lab 0 · Reach the Solutions Demo Center and open both consoles you'll live in</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab0.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 0</span>
+          <span class="lab-card-badge sdc">SDC</span>
+          <span class="lab-card-time">~10 min</span>
+        </div>
+        <div class="lab-card-title">Access the Solutions Demo Center</div>
+        <div class="lab-card-desc">Log into the SDC via Zidentity and open both AI Security (AI Protect) and Zguard (AI Guard) from the same launcher.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label amber">DISCOVER</span>
+      <div class="phase-title">Map Where AI Is Actually Used</div>
+      <div class="phase-range">Lab 1 · AI Protect — Public AI usage, App Inventory, AI Assets and model risk</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab1.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 1</span>
+          <span class="lab-card-time">~15 min</span>
+        </div>
+        <div class="lab-card-title">Discover and Analyze AI Usage</div>
+        <div class="lab-card-desc">Build a baseline of Gen AI and Desktop AI usage, then trace a model's risk down to its workloads and the sensitive data they touch.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label green">ENFORCE</span>
+      <div class="phase-title">Read the Enforcement Decisions</div>
+      <div class="phase-range">Lab 2 · AI Guard — transactions, Detector outcomes, and compliance mapping</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab2.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 2</span>
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Review Enforced Policies and Explain Outcomes</div>
+        <div class="lab-card-desc">Inspect application and user transactions, understand Detector outcomes, and connect a single Detector across a live event, its configuration, and HIPAA coverage.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label purple">HARDEN</span>
+      <div class="phase-title">Prove Resilience, Not Just Coverage</div>
+      <div class="phase-range">Lab 3 · AI Red Teaming — test runs, failed probes, and remediation guidance</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab3.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 3</span>
+          <span class="lab-card-time">~20 min</span>
+        </div>
+        <div class="lab-card-title">Review Test Runs and Harden AI Assets</div>
+        <div class="lab-card-desc">Review Red Teaming coverage and Health Scores, open a completed test run, and use a failed probe's evidence to apply remediation guidance.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>EDU-112 · Introduction to AI Security Platform · Hands-On Lab Guide</span>
+  <span>Labs 0–3</span>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

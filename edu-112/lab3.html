@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 3: Review Test Runs and Harden AI Assets — EDU-112</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-112</a> › Lab 3</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 3 · EDU-112</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Review Test Runs and Harden AI Assets</h1>
+  <div class="motivation-banner">
+    <p>Security leadership isn't asking you to run a new test today. Instead, review Red Teaming results to determine what has already been tested, where risk remains, and what remediation guidance the application owner should review before treating an application as managed.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="firstname-input">First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="firstname-input" placeholder="Jane" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('firstname-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="lastname-input">Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="lastname-input" placeholder="Doe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('lastname-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Login ID:</strong> <code class="d-login">&lt;firstname&gt;.&lt;lastname&gt;-ADMIN@thezerotrustexchange.com</code></span>
+      <span><strong>SDC Portal:</strong> <code>https://sdc.zslogin.net/portal</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab3">
+      <h2>Lab 3: Review Test Runs and Harden AI Assets (AI Red Teaming)</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">LAB 3</div>
+        <p><strong>Scenario:</strong> After you map AI usage in AI Protect and review how AI Guard evaluates prompts and responses, you need to know whether the organization's AI applications can withstand adversarial behavior. Security leadership isn't asking you to run a new test today — instead, review <strong>Red Teaming</strong> results to determine what has already been tested, where risk remains, and what remediation guidance the application owner should review before treating an application as managed.</p>
+        <ul style="margin-top:10px;">
+          <li>Review the Red Teaming coverage for onboarded AI assets</li>
+          <li>Inspect Health Score, lifecycle status, and availability for tested AI assets</li>
+          <li>Open a completed Red Teaming Test Run</li>
+          <li>Review failed probe results and remediation guidance</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Prerequisites:</strong> Complete Labs 1 &amp; 2</div>
+          <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
+        </div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab3">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · TRUSTING RED TEAM RESULTS</span>
+        </div>
+        <p class="socratic-insight">Being tested and being safe are not the same thing. Before you open a single test run, think about what a "Finished" status and a passing score actually guarantee — and what they don't.</p>
+        <ul class="socratic-questions">
+          <li>An asset can be "Connected" and "Tested" for a long time without ever reaching "Secured." Why is that gap itself a risk worth flagging?
+            <div class="answer-area" data-section="lab3-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Being tested only proves you found the weaknesses — it doesn't fix them. An asset that's been Tested but not Secured is one where leadership might assume "we already checked this" while the actual vulnerabilities (failed probes) remain open. The Lifecycle gap is exactly where false confidence creeps in.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Health Score and Category Score both come from the same failed test cases, weighted by severity and risk priority. Why look at both instead of just the single Health Score number?
+            <div class="answer-area" data-section="lab3-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Health Score gives you the headline (is this asset generally okay), but Category Score tells you where the risk actually lives — an asset can have a decent overall score while still being weak specifically in Security (e.g. Context Leakage) even though it's strong in Safety. You need the breakdown to know which remediation to prioritize.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>A "Failed" probe result and remediation guidance still marked "Not Applied" sit right next to each other in the tool. What does that combination mean for an application owner who assumes their app is production-ready?
+            <div class="answer-area" data-section="lab3-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">It means the vulnerability is documented but not yet fixed — the tool has done its job (finding the Context Leakage weakness and prescribing input/output scanning, canary words, system-prompt hardening) but a human still has to act on it. "Tested" and "hardened" are not the same state, and this is the evidence trail that proves which one you're actually in.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="task-collapsible open" id="tc-3-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 3.1</span>
+          <span class="task-collapsible-title">Explore Red Teaming and the Probe Catalog</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>Review which AI assets have already been tested to see how Red Teaming coverage is distributed across your environment.</p>
+          <ul class="step-list">
+            <li>Open the AI Security dashboard from the Zidentity dashboard: go to <code>https://sdc.zslogin.net/portal</code> and select <strong>AI Security</strong>.</li>
+            <li>In the left navigation, go to <strong>AI Infrastructure &gt; AI Red Teaming &gt; Overview</strong>.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p031-a.png" alt="AI Red Teaming Overview page with Insights, Tested AI Assets by Health Score, AI Assets by Availability panels, and a Tested AI Assets table listing four AI apps">
+            <div class="screenshot-caption">AI Red Teaming Overview: 3 test runs in the last 7 days, 4/4 (100%) assets tested/onboarded, and a table of tested assets with their Health Scores.</div>
+          </div>
+          <ul class="step-list">
+            <li>In the <strong>Insights</strong> panel, review the total number of runs in the last 7 days and the tested/onboarded coverage of AI assets.</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> Together, these metrics tell you how active your testing has been and how much of your estate it covers.</p></div>
+          <ul class="step-list">
+            <li>Review the <strong>Tested AI Assets by Health Score</strong> panel — this donut chart shows how tested AI assets are distributed by Health Score. A cluster at the low end shows where to focus first.</li>
+            <li>Review the <strong>AI Assets by Availability</strong> panel — see how many tested assets are internal, customer-facing, or both. Customer-facing assets usually carry the most exposure, so weigh their results accordingly.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p032-a.png" alt="Zoomed Insights, Tested AI Assets by Health Score, and AI Assets by Availability panels">
+            <div class="screenshot-caption">A closer look: 4 tested assets split Critical/Low on Health Score, and evenly split Internal/Customer-Facing on availability.</div>
+          </div>
+          <div class="callout callout-note"><p><strong>Note:</strong> If a tab appears dimmed, it isn't available in the current view.</p></div>
+          <ul class="step-list">
+            <li>In the <strong>Search</strong> box, find a tested asset — enter <code>multi</code> to find <strong>Multi-model Travel Demo Target</strong>.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p033-a.png" alt="Tested AI Assets table listing Customer Sales Assistant and BedrockNova rows before filtering">
+            <div class="screenshot-caption">The full Tested AI Assets table before filtering — 4 assets, each with a Last Test Run, Health Score, Environment, and Availability.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p033-b.png" alt="Tested AI Assets table filtered by search term multi, showing a single row for Multi-model Travel Demo Target">
+            <div class="screenshot-caption">Searching <code>multi</code> narrows the table to a single row: Multi-model Travel Demo Target, Health Score 82 – High.</div>
+          </div>
+          <ul class="step-list">
+            <li>Narrow the Tested AI Assets table results with the <strong>Environment</strong>, <strong>Availability</strong>, <strong>Supported Modes</strong>, and <strong>Hardened Prompt</strong> filters. Select <strong>Clear</strong> to return to the full table.</li>
+            <li>Select a tested asset row, such as <strong>Multi-model Travel Demo Target</strong>.</li>
+            <li>On the asset detail page, confirm that the <strong>Red Teaming</strong> tab is selected.</li>
+            <li>Review the top sections of the page: <strong>General Information</strong>, <strong>Health Score</strong>, <strong>Lifecycle</strong>.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p034-a.png" alt="Multi-model Travel Demo Target detail page with General Information, a Health Score gauge showing 82 High, and a Lifecycle panel showing Connected, Tested, and Secured all checked">
+            <div class="screenshot-caption">General Information, Health Score (82 – High), and Lifecycle (Connected → Tested → Secured) for Multi-model Travel Demo Target.</div>
+          </div>
+          <ul class="step-list">
+            <li>In the General Information section, note the <strong>Connection Type</strong>, <strong>Environment</strong>, <strong>Availability</strong>, <strong>Supported Modes</strong>, and <strong>Integration Type</strong>. These are the same asset attributes you first saw in Lab 1.</li>
+            <li>Read the <strong>Lifecycle</strong> status, which moves through three stages:
+              <ul class="sub-steps">
+                <li><strong>Connected</strong> — the AI application is onboarded</li>
+                <li><strong>Tested</strong> — Red Teaming has run against it</li>
+                <li><strong>Secured</strong> — protective controls are in place</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="callout callout-warning"><p><strong>Caution:</strong> Onboarding alone does not mean secured. An asset can remain at Connected or Tested for an extended period, and that gap represents the risk you are evaluating.</p></div>
+          <ul class="step-list">
+            <li>Review the <strong>Health Score</strong> value. The score ranges 0–100, where lower numbers mean higher risk, grouped into four risk bands:
+              <ul class="sub-steps">
+                <li><strong>Critical: &lt; 30</strong> — severe risk, immediate action required</li>
+                <li><strong>High: 30–59.9</strong> — elevated risk, prioritize mitigation</li>
+                <li><strong>Medium: 60–79.9</strong> — moderate risk, monitor closely and address issues</li>
+                <li><strong>Low: ≥ 80</strong> — low risk, routine monitoring and improvements</li>
+              </ul>
+            </li>
+            <li>On the Red Teaming tab, note the <strong>Category Score</strong>. Category Scores group into <strong>Security</strong>, <strong>Safety</strong>, <strong>Hallucination &amp; Trustworthiness</strong>, <strong>Business Alignment</strong>, and <strong>Custom</strong>.</li>
+          </ul>
+          <div class="callout callout-note"><p><strong>Note:</strong> Similar to the Health Score, each Category Score is calculated based on the number of failed test cases, their severity, and their expected probability, taking into account the risk priority set for each probe within that category. Higher scores indicate better performance.</p></div>
+          <ul class="step-list">
+            <li>Review the <strong>Category Overview</strong>. Every <strong>Probe Card</strong> represents a probe from a category, and shows the probe's name, the date and time of the last run, and a summary of the results.</li>
+            <li>Observe the category Probe Cards for the Multi-model Travel Demo Target asset — select the <strong>Context Leakage</strong> probe card to open the Probe Run View for that probe. Each card shows <strong>Passed</strong>, <strong>Failed</strong>, and <strong>Error</strong> counts and whether the status is <strong>Finished</strong> or <strong>Error</strong>.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p038-a.png" alt="Category Overview with Security (78.00) and Safety (100.00) tabs showing Context Leakage Finished with 183 passed 13 failed, and Data Exfiltration Error with 122 passed 4 failed">
+            <div class="screenshot-caption">Category Overview for the Security category: the Context Leakage probe finished with 183 passed / 13 failed; Data Exfiltration shows an Error status.</div>
+          </div>
+          <div class="callout callout-note"><p><strong>Note:</strong> You can access the Probe Run View by selecting a Probe Card on the Category Overview page or by selecting a relevant row in the Probe Run Table on the Test Run page. You explore the Probe Run View and Test Run page in detail in Task 3.3.</p></div>
+          <div class="callout callout-success"><p><strong>Verify:</strong> You have opened the AI Red Teaming Overview, reviewed insights and availability for tested AI assets, filtered and selected a tested asset, and examined its lifecycle, Health Score, Category Scores, and Probe Cards, including the Context Leakage probe.</p></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-3-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 3.2</span>
+          <span class="task-collapsible-title">Review Scheduled Test Runs and Completed Test Runs</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>Review a completed test run to explore a single asset at a specific point in time.</p>
+          <ul class="step-list">
+            <li>Review the Test Run Scheduler: go to <strong>AI Infrastructure &gt; Red Teaming &gt; Test Runs</strong>, then select the <strong>Scheduled</strong> tab. This view allows you to see scheduled test runs.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p036-a.png" alt="AI Red Teaming Test Runs page on the Scheduled tab showing no data">
+            <div class="screenshot-caption">The Scheduled tab lists recurring test runs — none are configured for this asset yet.</div>
+          </div>
+          <ul class="step-list">
+            <li>Open a completed test run: if not already there, go to <strong>AI Infrastructure &gt; AI Red Teaming &gt; Test Runs</strong>, confirm that the <strong>History</strong> tab is selected, type <code>AI Test</code> in the Search box and press Enter, set the Status filter to <strong>Finished</strong>, then select <strong>AI Test</strong>.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p037-a.png" alt="AI Test run overview with 624 total test cases, 14 failed, 2.24% failure rate, Finished status, and a Sankey diagram from Security/Safety to Data Exfiltration, Context Leakage, Bias, and Profanity to Passed/Failed">
+            <div class="screenshot-caption">The completed "AI Test" run: 624 total test cases, a 2.24% failure rate, Finished status, and a Sankey diagram of category → probe → outcome.</div>
+          </div>
+          <ul class="step-list">
+            <li>Explore the <strong>Test Run View</strong>. Every test run can have one of the following statuses:
+              <ul class="sub-steps">
+                <li><strong>Pending</strong> — the test run starts when the queue is clear</li>
+                <li><strong>Running</strong> — the test run is in progress</li>
+                <li><strong>Finished</strong> — all scheduled probes and their attacks are completed</li>
+                <li><strong>Canceled</strong> — the test run was canceled by the user before completion</li>
+                <li><strong>Error</strong> — the test run was aborted due to target misconfiguration</li>
+              </ul>
+              Confirm that the Status is <strong>Finished</strong> before you rely on the reported numbers.
+            </li>
+            <li>Explore Test Run results — a <strong>Sankey diagram</strong> visualizes the flow of data from one category to the associated probes and their results. The width of the flow between nodes corresponds to the number of test cases. The color gradient represents the percentage of <strong>failed</strong>, <strong>errored</strong>, and <strong>passed</strong> tests: flows with fewer failed/errored cases appear greener, flows with more failed cases appear redder.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p039-a.png" alt="Detailed Sankey diagram showing Delayed attack and One Shot w/ Retry strategies flowing through Data Exfiltration attack variants to Default language and Multilanguage, then to Passed or Failed">
+            <div class="screenshot-caption">A more granular Sankey example: strategy → attack variant → language variation → Passed/Failed. Wider, redder flows mark where failures concentrate.</div>
+          </div>
+          <ul class="step-list">
+            <li>Explore the <strong>Probes Table</strong>. Switch between the category tabs <strong>Security</strong> and <strong>Safety</strong> at the top of the table, and use the <strong>Risk Priority</strong> and <strong>Results</strong> filter options to narrow the results. The panel contains columns for reviewing probe completion status and summary statistics.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p040-a.png" alt="Executed Probes table with Security (2) and Safety (2) tabs showing Context Leakage High priority 196 test cases 186 passed 10 failed, and Data Exfiltration High priority 126 test cases 122 passed 4 failed">
+            <div class="screenshot-caption">Executed Probes for the Security category: Context Leakage (High priority, 196 test cases, 10 failed) and Data Exfiltration (High priority, 126 test cases, 4 failed).</div>
+          </div>
+          <div class="callout callout-success"><p><strong>Verify:</strong> You have opened a completed test run, confirmed its status, interpreted the Sankey diagram for category and probe results, and used the Probes table filters to focus on specific probe outcomes.</p></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-3-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 3.3</span>
+          <span class="task-collapsible-title">Explore Failed Probe Evidence</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>Review a probe failure to examine evidence for a specific asset and understand how the attack was executed and evaluated.</p>
+          <ul class="step-list">
+            <li>Open the Probe Result Table: if not already there, in the left navigation go to <strong>AI Infrastructure &gt; AI Red Teaming &gt; Test Runs</strong>, confirm the <strong>History</strong> tab is selected, search <code>AI Test</code> and press Enter, then select <strong>AI Test</strong>.</li>
+            <li>Observe Probe Cards for the Multi-model Travel Demo Target asset — select the <strong>Context Leakage</strong> Probe Card to open the Probe Run View for that probe.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p041-a.png" alt="Context Leakage Probe Run View with High risk priority, 196 total test cases, 10 failed, 5.10% failure rate, a Sankey diagram of attack variations to Passed/Failed, and a Simulated Test Cases table">
+            <div class="screenshot-caption">The Context Leakage Probe Run View: 196 test cases, a 5.10% failure rate, and a Simulated Test Cases table listing each attack attempt.</div>
+          </div>
+          <ul class="step-list">
+            <li>Under <strong>Simulated Test Cases</strong>, choose one whose result is <strong>Failed</strong>. Review the Test Case Details.</li>
+          </ul>
+          <p>At the bottom of the Probe Run View page, review the <strong>Probe Result</strong> table, which displays all test cases executed against your asset. The table contains:</p>
+          <ul class="step-list">
+            <li><strong>ID:</strong> Unique identifier of the test case.</li>
+            <li><strong>Test Case:</strong> Unique identifier of the attack.</li>
+            <li><strong>Strategy:</strong> Determines which messages are available to the test generator, Detectors, and assets, and the order in which each element of the probe is used.</li>
+            <li><strong>Red Teamer:</strong> Instruction to the LLM on how to modify or craft prompts from the provided context.</li>
+            <li><strong>Variation:</strong> Additional algorithmic or stochastic (with LLM) changes to the prompt before passing it to the asset.</li>
+            <li><strong>Detection Time:</strong> The timestamp when the automated decision was made on whether the test case passed or failed.</li>
+            <li><strong>In Report:</strong> Indicates whether the test case is flagged for inclusion in the report.</li>
+            <li><strong>Actions Icon:</strong> Indicates the actions taken on the test case (accepting risk or changing the result status).</li>
+            <li><strong>Result:</strong> Outcome of the executed test case —
+              <ul class="sub-steps">
+                <li><strong>Passed:</strong> The test did not detect the vulnerability on your application</li>
+                <li><strong>Failed:</strong> The attack found the targeted vulnerability</li>
+                <li><strong>Error:</strong> An error occurred while communicating with the target</li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="step-list">
+            <li>Expand the conversation that <strong>failed</strong> (in this example, Conversation 2) and review the results.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p043-a.png" alt="Test Case Details for ID 108541 with Result Failed, Attack Scenarios Conversation 1 and Conversation 2 collapsed, and an explanation of a level 3 leakage">
+            <div class="screenshot-caption">Test Case 108541: One Shot w/ Retry strategy, Default language variation — Result: Failed. Two conversations recorded; Conversation 2 is flagged.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p044-a.png" alt="Expanded Conversation 2 showing the red team task instruction and the Multi-model Travel Demo Target's full system prompt reproduced verbatim, with an explanation of the leakage">
+            <div class="screenshot-caption">Conversation 2 expanded: the red team prompt asked the assistant to "emulate the system setup" — and the target reproduced its entire system prompt (the SPLX GPT insurance-assistant instructions) verbatim, a near-complete configuration dump.</div>
+          </div>
+          <ul class="step-list">
+            <li>In the upper-right corner, select <strong>Actions</strong> to reveal the share option.</li>
+            <li>In the Simulated Test Cases panel, select <strong>Export</strong> to view the available export format options.</li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p045-a.png" alt="Simulated Test Cases table with the Export button highlighted, listing several passed one-shot-with-retry attack variants">
+            <div class="screenshot-caption">The Simulated Test Cases table with the <strong>Export</strong> option highlighted — useful for handing evidence off to an application owner or auditor.</div>
+          </div>
+          <ul class="step-list">
+            <li>In the <strong>Remediation</strong> section, review the targeted suggestions for reducing risk, such as:
+              <ul class="sub-steps">
+                <li>Scanning both user inputs and LLM outputs</li>
+                <li>Employing canary word detection techniques</li>
+                <li>Strengthening system prompts through additional hardening</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab3-p045-b.png" alt="Remediation tab with three cards: Implement scanning of user input and LLM output, Add additional system prompt hardening, and Use canary word detection — all Status Not Applied">
+            <div class="screenshot-caption">Remediation guidance for the Context Leakage probe — all three suggestions are still <strong>Not Applied</strong>, meaning the fix is prescribed but not yet actioned.</div>
+          </div>
+          <div class="callout callout-success"><p><strong>Verify - Lab 3 Complete:</strong> You reviewed available Red Teaming probe categories and opened the details for a security probe; reviewed risk priority and coverage settings for at least one probe; opened a completed security run and reviewed the overall execution summary; inspected a failed test case, including the conversation and failure reasoning; and reviewed remediation guidance to harden the target application.</p></div>
+        </div>
+      </div>
+
+      <div class="recap-block">
+        <span class="recap-label">LAB REVIEW AND SUMMARY</span>
+        <p class="recap-item"><strong>Lab 1:</strong> You used AI Security to understand where AI is being used across the organization — Public AI activity, App Inventory, AI assets, model risk, and category benchmarks.</p>
+        <p class="recap-item"><strong>Lab 2:</strong> You used AI Guard to move from visibility to enforcement — inspecting user transactions, reviewing Detector outcomes, and correlating Detector activity to policy configuration and external governance coverage.</p>
+        <p class="recap-item"><strong>Lab 3:</strong> You used AI Red Teaming evidence to evaluate resilience — reviewing test run results, AI assets, category scores, probe results, and failed test cases.</p>
+        <p class="recap-item">Together, these tasks move you beyond basic monitoring and support continuous validation of your organization's AI security posture: <strong>AI Security</strong> to discover usage and manage assets, <strong>AI Guard</strong> to enforce policy and governance, and <strong>AI Red Teaming</strong> to test whether your AI applications are resilient to adversarial behavior — hardened against risk before it results in a security incident.</p>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text">AI Red Teaming = resilience testing. Lifecycle: <strong>Connected → Tested → Secured</strong> (Health Score above 75 required). Health Score (0–100: Critical &lt;30, High-risk 30–59.9, Medium 60–79.9, Low-risk ≥80) is the headline; Category Scores (Security/Safety/Hallucination &amp; Trustworthiness/Business Alignment) show where risk concentrates. A Failed probe + remediation guidance still "Not Applied" means the app is Tested but not yet Secured.</div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab3" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab3','Lab 3: Review Test Runs & Harden AI Assets')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab3" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab3')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-112 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab3-1" onchange="toggleDone(this)"><label for="chk-lab3-1">Task 3.1: Red Teaming &amp; probe catalog explored</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3-2" onchange="toggleDone(this)"><label for="chk-lab3-2">Task 3.2: Test runs reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3-3" onchange="toggleDone(this)"><label for="chk-lab3-3">Task 3.3: Failed probe evidence reviewed</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Health Score</div><div class="qr-def">0–100 resilience score. Critical &lt;30, High-risk 30–59.9, Medium 60–79.9, Low-risk ≥80.</div></div>
+        <div class="qr-item"><div class="qr-term">Lifecycle</div><div class="qr-def">Connected (onboarded) → Tested (Red Teamed) → Secured (Health Score above 75 + controls in place).</div></div>
+        <div class="qr-item"><div class="qr-term">Category Score</div><div class="qr-def">Security / Safety / Hallucination &amp; Trustworthiness / Business Alignment / Custom — based on failed test cases, severity, and risk priority.</div></div>
+        <div class="qr-item"><div class="qr-term">Probe</div><div class="qr-def">A named category of simulated attack (e.g. Context Leakage, Data Exfiltration) run against an AI asset.</div></div>
+        <div class="qr-item"><div class="qr-term">Sankey diagram</div><div class="qr-def">Flow visualization: category → probe/strategy → Passed/Failed. Width = volume, color = failure rate.</div></div>
+        <div class="qr-item"><div class="qr-term">Test Run status</div><div class="qr-def">Pending / Running / Finished / Canceled / Error — only trust the numbers when Finished.</div></div>
+        <div class="qr-item"><div class="qr-term">Remediation guidance</div><div class="qr-def">Suggested hardening actions (input/output scanning, canary words, system-prompt hardening) attached to a failed probe.</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab2.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 2: Review Enforced Policies &amp; Outcomes</span>
+  </a>
+  <div class="page-nav-message">From an intern's prompt to a full evidence trail — discovered, enforced, and hardened.</div>
+  <span class="page-nav-btn page-nav-next page-nav-disabled">
+    <span class="page-nav-label">END →</span>
+    <span class="page-nav-title">End of Lab Guide</span>
+  </span>
+</div>
+
+<footer>
+  <span>EDU-112 · Introduction to AI Security Platform · Hands-On Lab Guide</span>
+  <span>Lab 3: Review Test Runs &amp; Harden AI Assets</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu112-sdc-lab-config';
+const COLLAPSE_KEY='edu112-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var first=document.getElementById('firstname-input').value.trim();var last=document.getElementById('lastname-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[first,last].filter(Boolean).join(' ');s.textContent=bits?' — '+bits:'';}
+function slugify(str){return str.trim().toLowerCase().replace(/\s+/g,'');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('firstname-input').value=cfg.first||'';document.getElementById('lastname-input').value=cfg.last||'';document.getElementById('pass-input').value=cfg.pass||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={first:document.getElementById('firstname-input').value.trim(),last:document.getElementById('lastname-input').value.trim(),pass:document.getElementById('pass-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['firstname-input','lastname-input','pass-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var first=document.getElementById('firstname-input').value.trim();var last=document.getElementById('lastname-input').value.trim();var pass=document.getElementById('pass-input').value.trim();
+  var login=(first&&last)?slugify(first)+'.'+slugify(last)+'-ADMIN@thezerotrustexchange.com':'<firstname>.<lastname>-ADMIN@thezerotrustexchange.com';
+  document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;el.classList.toggle('filled',!!(first&&last));});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<password>';el.classList.remove('filled');}});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['firstname-input','lastname-input','pass-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-112-lab-lab3';
+const SECTIONS={'lab0':'Lab 0: Access the SDC','lab1':'Lab 1: Discover & Analyze AI Usage','lab2':'Lab 2: Review Enforced Policies & Outcomes','lab3':'Lab 3: Review Test Runs & Harden AI Assets'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>
