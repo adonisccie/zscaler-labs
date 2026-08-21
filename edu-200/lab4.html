@@ -60,8 +60,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -107,62 +107,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
         </div>
       </div>
-
-<div class="socratic-block" id="soc-lab4">
-      <div class="socratic-header">
-        <span class="socratic-icon">💭</span>
-        <span class="socratic-label">THINK FIRST · FIREWALL FILTERING</span>
-      </div>
-      <p class="socratic-insight">ZIA's Cloud Firewall operates at the network layer and inspects all traffic forwarded via Z-Tunnel 2.0. Rules are evaluated top-down and the first match wins — making rule order a security decision, not just an organisational preference.</p>
-      <ul class="socratic-questions">
-    <li>Why does a default Block and Drop rule sit at the bottom of every Firewall Filtering policy, and what would happen to unmatched traffic if it didn't exist?
-      <div class="answer-area" data-section="lab4-firewall-q1">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-            <div class="model-answer-text">The Block and Drop rule is the implicit-deny that keeps the firewall a closed system. Without it, unmatched traffic would be forwarded by default, reversing the security posture. With it, any new protocol or port that lacks an explicit allow rule is blocked automatically — exceptions must be made deliberately, not accidentally inherited.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>If you create an Allow rule for ICMP and SSH, where must it sit relative to the default Block and Drop — and what breaks if the order is wrong?
-      <div class="answer-area" data-section="lab4-firewall-q2">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-            <div class="model-answer-text">The Allow rule must be placed above Block and Drop. Rules are evaluated top-down and the first match terminates evaluation. If Block and Drop is first, ICMP/SSH traffic matches it and is dropped before the Allow rule is checked. By placing Allow above, matching traffic exits the chain at the first rule; everything else falls through to the implicit deny.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>WhatsApp uses port 443 like normal HTTPS. Why does blocking it require a Cloud App Control rule rather than a Firewall Filtering rule?
-      <div class="answer-area" data-section="lab4-firewall-q3">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-            <div class="model-answer-text">A port-based firewall rule blocking 443 would also block all other HTTPS — unacceptable collateral damage. Cloud App Control works at the application layer, using deep packet inspection to identify WhatsApp's specific traffic signature even when it shares port 443 with HTTPS. Application-aware control is the only way to make targeted decisions on apps that blend in with legitimate traffic.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-      </ul>
-
-    </div>
 
       <h3>Task 4.1 — Verify the Default Block and Drop Rule</h3>
       <div class="task-block">
@@ -276,14 +220,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="screenshot-embed">
         <img src="screenshots/lab4-firewall-policy-both-rules.png" alt="Firewall Filtering Policy showing Allow ICMP SSH above Block and Drop">
         <div class="screenshot-caption">Final policy: Allow ICMP and SSH above Block and Drop — explicit permit over implicit deny.</div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">ZIA Cloud Firewall has two complementary layers: (1) <strong>Firewall Filtering</strong> — network/transport layer, port and protocol based, top-down first-match, implicit Block and Drop at the bottom; (2) <strong>Cloud App Control</strong> — application layer, identifies apps by DPI regardless of port. Blocking WhatsApp requires Cloud App Control specifically because it shares port 443 with HTTPS — a port-based rule would block all web traffic.</div>
-        </div>
       </div>
 
       <div class="lesson-tools">
@@ -507,8 +443,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
-  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
+  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
+  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});

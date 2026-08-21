@@ -60,8 +60,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -116,62 +116,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </figure>
       </div>
 
-<div class="socratic-block" id="soc-lab0">
-      <div class="socratic-header">
-        <span class="socratic-icon">💭</span>
-        <span class="socratic-label">THINK FIRST · LAB SETUP</span>
-      </div>
-      <p class="socratic-insight">The lab runs inside a Skytap virtual environment with three pre-configured VMs. Each student gets a unique pod with its own FQDN. Before you can configure anything, you need to know exactly who can log in and how traffic is meant to flow.</p>
-      <ul class="socratic-questions">
-    <li>Why does each student need a unique FQDN (e.g., zs9901.labtenant.com) rather than a shared domain? What problems would a shared domain create in a multi-tenant lab?
-      <div class="answer-area" data-section="lab0-setup-q1">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-            <div class="model-answer-text">Each student pod needs an isolated FQDN so that user accounts, policies, and Zscaler cloud configuration don't collide between students. A shared domain would mean Joe in one student's pod could inherit policies or entitlements set by another student, making validation impossible and breaking the lab reset mechanism.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>The lab has three VMs: Corp: Client PC, Corp: Win Svr 2016, and Corp: App Connector. Which VM acts as the endpoint being protected by ZCC, and which enables ZPA private access — and why does that distinction matter?
-      <div class="answer-area" data-section="lab0-setup-q2">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-            <div class="model-answer-text">The Corp: Client PC is the endpoint being protected — it's the Windows 10 machine where ZCC is installed to forward traffic through ZIA and connect to private apps via ZPA. The Corp: App Connector is the ZPA component that sits in the data center and creates the outbound tunnel to the ZPA cloud, allowing the Client PC to reach private resources without inbound firewall rules.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>The SyncZPA attribute is set on lab users. What would happen in later ZPA labs if you forgot to set it, and what does that tell you about how identity sync works between ZIdentity and ZPA?
-      <div class="answer-area" data-section="lab0-setup-q3">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-            <div class="model-answer-text">Without SyncZPA set to "Zscaler", the lab automation scripts won't sync the user into ZPA's identity store. This means the user won't appear as a valid ZPA identity, and ZPA access policies based on user identity would fail. It reveals that ZPA maintains its own identity directory that must be populated from ZIdentity — it isn't automatic unless explicitly triggered by this attribute.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-      </ul>
-
-    </div>
-
       <h3>Lab Description and Scenario</h3>
       <p>Your organization (<strong>Labtenant</strong>) has deployed the <strong>Zscaler Zero Trust Exchange</strong> to protect against Internet security threats, control Internet access, and provide secure access to private resources. You will deploy the <strong>Zscaler Client Connector (ZCC)</strong> to end-user devices to control Internet access, provide access to private applications, and probe, benchmark, and measure digital experiences.</p>
       <p>Your tasks include:</p>
@@ -222,14 +166,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="screenshot-embed">
         <img src="screenshots/lab0-experience-center-search.png" alt="Experience Center search bar activated with Ctrl+K shortcut">
         <div class="screenshot-caption">Use Ctrl+K in the Experience Center to quickly navigate to any feature — faster than drilling through menus.</div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">Three VMs: Client PC (ZCC endpoint, 192.168.1.1), Win Svr 2016 (AD + apps, 10.0.0.0/24), App Connector (ZPA, 10.0.0.4). Admin login format: <code class="d-username-student">student@&lt;Student FQDN&gt;</code>. SyncZPA must be set to "Zscaler" on users who need ZPA access — lab resets depend on it.</div>
-        </div>
       </div>
 
       <div class="lesson-tools">
@@ -450,8 +386,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
-  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
+  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
+  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});

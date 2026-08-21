@@ -60,8 +60,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -108,68 +108,12 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
       </div>
 
-<div class="socratic-block" id="soc-lab11">
-      <div class="socratic-header">
-        <span class="socratic-icon">💭</span>
-        <span class="socratic-label">THINK FIRST · ZPA TROUBLESHOOTING</span>
-      </div>
-      <p class="socratic-insight">ZPA access requires two independent grants: a Service Entitlement (does the user have permission to use ZPA at all?) and an Access Policy (does the user have permission to access this specific app segment?). Troubleshooting begins by separating these two layers.</p>
-      <ul class="socratic-questions">
-    <li>A user logs into ZCC but the Private Access tab is not visible. What is the most likely cause — an Access Policy issue or a Service Entitlement issue — and how would you confirm which one it is?
-      <div class="answer-area" data-section="lab11-zpa-troubleshoot-q1">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-            <div class="model-answer-text">If Private Access is not visible in ZCC at all, the most likely cause is a missing ZPA Service Entitlement — the user simply doesn't have the right to use ZPA. An Access Policy issue would manifest differently: the user would have the Private Access tab, ZPA would show as active, but accessing the specific app would fail. To confirm, check the user's profile in ZIdentity under Service Entitlements and look for ZPA in the assigned services list.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>If the ZPA service entitlement is assigned but the user still can't reach a specific private app, where should you look next, and what information would you need?
-      <div class="answer-area" data-section="lab11-zpa-troubleshoot-q2">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-            <div class="model-answer-text">If the entitlement is present but the app is unreachable, check: (1) Does the Access Policy exist and is it activated? (2) Does the policy's user criteria match this user's login name or group? (3) Is the App Segment correctly configured with the right domain and port? (4) Is the App Connector for that segment currently Connected? ZPA Diagnostics (per segment, per user) can surface which of these is failing.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>Why must a ZPA Service Entitlement be assigned in ZIdentity rather than directly in the ZPA Admin Console — and what does this design reveal about the relationship between ZIdentity and ZPA?
-      <div class="answer-area" data-section="lab11-zpa-troubleshoot-q3">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-            <div class="model-answer-text">ZIdentity is the identity provider for the Zscaler platform — it manages which services a user can access and what their identity attributes are. ZPA inherits user and entitlement data from ZIdentity rather than maintaining its own user database. This design means a single place (ZIdentity) controls who gets which Zscaler services, keeping user lifecycle management centralised. Adding a ZPA entitlement in ZIdentity triggers a sync that makes the user ZPA-eligible without any action needed in the ZPA Admin Console.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-      </ul>
-
-    </div>
-
       <h3>Task 11.1 — Log in as Joe and Identify the Issue</h3>
       <div class="task-block">
         <h4><span class="task-num">1</span> Switch ZCC account to Joe</h4>
         <ol class="step-list">
           <li>On the Corp: Client PC, open <strong>ZCC</strong>.</li>
-          <li>Switch the account to <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code> with the session password.</li>
+          <li>Switch the account to <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code> with the session password.</li>
           <li>Log into ZCC and observe the ZCC dashboard.</li>
           <li>Note: <strong>Internet Security</strong> shows ON but the <strong>Private Access</strong> section is missing or not available.</li>
         </ol>
@@ -215,7 +159,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <h4><span class="task-num">2</span> Assign Joe to ZPA</h4>
         <ol class="step-list">
           <li>In the ZPA service, click <strong>Assign Users</strong>.</li>
-          <li>Search for and select <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code>.</li>
+          <li>Search for and select <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code>.</li>
           <li>Click <strong>Save</strong>.</li>
         </ol>
       </div>
@@ -246,14 +190,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="screenshot-embed">
         <img src="screenshots/lab11-browser-intranet-accessible.png" alt="Browser showing intranet.labtenant.com loading successfully for Joe">
         <div class="screenshot-caption">Intranet accessible as Joe — ZPA service entitlement + access policy together enable private application access.</div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">ZPA access requires two separate grants: (1) <strong>ZPA Service Entitlement</strong> in ZIdentity — controls whether the user can use ZPA at all (Private Access visible in ZCC); (2) <strong>ZPA Access Policy</strong> — controls which specific app segments the user can reach. If Private Access doesn't show in ZCC, check the Service Entitlement first. If it shows but the app is unreachable, check the Access Policy and App Segment configuration.</div>
-        </div>
       </div>
 
       <div class="lesson-tools">
@@ -476,8 +412,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
-  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
+  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
+  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});

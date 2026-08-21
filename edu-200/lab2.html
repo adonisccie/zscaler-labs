@@ -82,8 +82,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,7 +122,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 2</div>
-        <p><strong>Scenario:</strong> You've secured the Zscaler console and now need to establish a clean foundation for who can sign in and what they can access in Labtenant.com. You can create any username as you like,such as your name (Adonis). In the following example, two new users — <strong>Joe (Support/helpdesk)</strong> and <strong>Bev (IT/admin)</strong> — must be onboarded with the right departments and groups so they inherit the correct entitlements, but you should avoid to use joe or bev as usernames.</p>
+        <p><strong>Scenario:</strong> You've secured the Zscaler console and now need to establish a clean foundation for who can sign in and what they can access in Labtenant.com. You can create any username you like — your own name, a pet's name, even your wife's name — it doesn't have to match this guide. In the following example, two new users — <strong>Joe (Support/helpdesk)</strong> and <strong>Bev (IT/admin)</strong> — must be onboarded with the right departments and groups so they inherit the correct entitlements, but you may use <code>JoeSupport</code> or <code>BevIT</code> or your own username.</p>
         <figure class="lab-hero">
           <img src="images/lab2-hero.png" alt="Lab 2 — hero illustration" loading="lazy">
         </figure>
@@ -130,62 +130,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="lab-meta-item"><strong>Time:</strong> ~40 minutes</div>
         </div>
       </div>
-
-<div class="socratic-block" id="soc-lab2">
-      <div class="socratic-header">
-        <span class="socratic-icon">💭</span>
-        <span class="socratic-label">THINK FIRST · USER ENTITLEMENTS</span>
-      </div>
-      <p class="socratic-insight">Entitlements in Zscaler determine what services a user can access (service entitlements) and what they can configure in the admin console (administrative entitlements). Getting the identity hierarchy right — department → user group → user — is what makes policies and role-based access work at scale.</p>
-      <ul class="socratic-questions">
-    <li>Bev is placed in the built-in "Zscaler Global Administrators" group rather than a custom group. What is the risk of always granting full super-admin access, even to trusted IT staff?
-      <div class="answer-area" data-section="lab2-entitlements-q1">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-            <div class="model-answer-text">Super-admin access means Bev can change any policy, delete rules, or reconfigure the entire tenant — with no guardrails. In production this violates separation of duties (e.g., someone who configures firewall rules shouldn't also have access to DLP policies). The principle of least privilege requires even IT admins to receive only the access their role demands, not blanket super-admin.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>Joe receives the "Executive Insights App" role for ZIA — a predefined read-only role. Why might Zscaler provide pre-built roles rather than requiring admins to always create custom ones?
-      <div class="answer-area" data-section="lab2-entitlements-q2">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-            <div class="model-answer-text">Pre-built roles represent common use cases (read-only analyst, helpdesk, SOC) without requiring every organization to reinvent the permission matrix. They also encode Zscaler's own recommended permission boundaries, reducing the risk of over-permissioning by accident. Custom roles are still available when a pre-built role doesn't fit the exact job function.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-    <li>A service entitlement (ZIA) is assigned to Helpdesk L1 group, while an administrative entitlement (ZIA read-only) is also assigned. What is the difference between these two types, and could you have one without the other?
-      <div class="answer-area" data-section="lab2-entitlements-q3">
-        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-        <div class="answer-buttons">
-          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-        </div>
-        <div class="model-answers" style="display:none;">
-          <div class="model-answer-item">
-            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-            <div class="model-answer-text">A service entitlement grants access to use a Zscaler service (ZIA forwards your traffic). An administrative entitlement grants access to configure that service in the admin console. Yes, you can have one without the other: Joe has both — he uses ZIA (service) and can view-only its analytics (admin). A regular end-user would only have the service entitlement with no admin console access at all.</div>
-          </div>
-        </div>
-      </div>
-    </li>
-      </ul>
-
-    </div>
 
       <p>The table below summarizes what you'll configure:</p>
       <table class="creds-table">
@@ -277,10 +221,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
               <li>From the left navigation panel, go to <strong>Users</strong>.</li>
               <li>Click <strong>Add User</strong> and set:
                 <ul class="sub-steps">
-                  <li>Login ID: <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code></li>
+                  <li>Login ID: <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code></li>
                   <li>Name: <strong>Joe</strong> | First Name: <strong>Joe</strong></li>
                   <li>Same As Login ID: <strong>Enabled</strong></li>
-                  <li>Primary Email: <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code></li>
+                  <li>Primary Email: <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code></li>
                   <li>Department: <strong>Support</strong></li>
                   <li>Additional Attributes: <strong>SyncZPA</strong></li>
                   <li>SyncZPA: <strong>1234</strong></li>
@@ -321,10 +265,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <ol class="step-list">
               <li>Click <strong>Add User</strong> and set:
                 <ul class="sub-steps">
-                  <li>Login ID: <code class="d-username-bev">bev@&lt;Student FQDN&gt;</code></li>
+                  <li>Login ID: <code class="d-username-bev">BevIT@&lt;Student FQDN&gt;</code></li>
                   <li>Name / First Name: <strong>Bev</strong></li>
                   <li>Same As Login ID: <strong>Enabled</strong></li>
-                  <li>Primary Email: <code class="d-username-bev">bev@&lt;Student FQDN&gt;</code></li>
+                  <li>Primary Email: <code class="d-username-bev">BevIT@&lt;Student FQDN&gt;</code></li>
                   <li>Department: <strong>IT</strong></li>
                    <li>Additional Attributes: <strong>SyncZPA</strong></li>
                   <li>SyncZPA: <strong>1234</strong></li>
@@ -452,7 +396,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <ol class="step-list">
               <li>On the <strong>Corp: Client PC</strong>, open a <strong>new incognito window</strong> in Chrome.</li>
               <li>Navigate to the Experience Center: <code>https://console.zscaler.com/</code></li>
-              <li>Authenticate as Joe: Username <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code> | Password: <strong>Admin-123!</strong></li>
+              <li>Authenticate as Joe: Username <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code> | Password: <strong>Admin-123!</strong></li>
               <li>Confirm that the <strong>Administration</strong> and <strong>Policy</strong> tabs are restricted compared to the Student admin user — Joe cannot access Admin Management or Sign-On Policies.</li>
               <li>Confirm Joe can only view existing Digital Experience data and cannot create or modify objects.</li>
               <li>Click the <strong>Account settings icon</strong> (top right) to <strong>Sign out</strong>.</li>
@@ -474,7 +418,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <h4><span class="task-num">3</span> Validate Bev's full admin access</h4>
             <ol class="step-list">
               <li>In the same incognito window, navigate to <code>https://console.zscaler.com/</code></li>
-              <li>Authenticate as Bev: Username <code class="d-username-bev">bev@&lt;Student FQDN&gt;</code> | Password: <strong>Admin-123!</strong></li>
+              <li>Authenticate as Bev: Username <code class="d-username-bev">BevIT@&lt;Student FQDN&gt;</code> | Password: <strong>Admin-123!</strong></li>
               <li>Navigate to <strong>Administration &gt; Admin Management &gt; Sign-On Policies</strong>.</li>
               <li>Confirm the <strong>Add Rule</strong> button is enabled — Bev has full admin access as a member of Zscaler Global Administrators.</li>
               <li>Sign out via the Account settings icon.</li>
@@ -494,7 +438,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <ol class="step-list">
               <li>On the <strong>Corp: Client PC</strong>, in the Windows taskbar (bottom-right corner), click the <strong>Show hidden icons arrow ^</strong>.</li>
               <li>Select the <strong>Zscaler Client Connector</strong> icon, then click <strong>Open Zscaler</strong>.</li>
-              <li>Authenticate with Joe's account: <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code> / <strong>Admin-123!</strong></li>
+              <li>Authenticate with Joe's account: <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code> / <strong>Admin-123!</strong></li>
               <li>Click <strong>Sign in</strong>.</li>
               <li>In the ZCC console, verify that <strong>Internet Security</strong> is <strong>ON</strong> for user Joe.</li>
               <li>After verifying, <strong>log out of Zscaler Client Connector</strong>.</li>
@@ -515,14 +459,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-2-4 -->
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">Identity hierarchy: Department → User Group → User. Entitlement types: (1) <strong>Administrative</strong> — controls what you can configure in the admin console; (2) <strong>Service</strong> — controls what Zscaler services your traffic flows through. Joe needs both: ZIA service entitlement (so ZCC forwards his traffic) and ZIA/ZDX admin entitlements (so he can view analytics). Always set SyncZPA on users who need ZPA.</div>
-        </div>
-      </div>
 
       <div class="lesson-tools">
         <div class="lesson-tools-grid">
@@ -746,8 +682,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
-  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
+  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
+  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
