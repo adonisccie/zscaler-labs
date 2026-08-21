@@ -83,46 +83,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab12">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · INCIDENT MANAGEMENT &amp; WORKFLOW AUTOMATION</span>
-        </div>
-        <p class="socratic-insight">A DLP incident is the enforcement layer's signal that a policy was triggered — but the incident itself is just a data point. The value comes from what happens next: classification, notification, escalation, and resolution. Before you work through the manual steps in this lab, consider what automation can replace.</p>
-        <ul class="socratic-questions">
-          <li>When a DLP incident is set to "Investigating" and the originator is notified to provide justification, there is a gap: what if they never respond? What lifecycle states would you design into an automated workflow to ensure every incident reaches a terminal state (Resolved or Dismissed) without manual follow-up?
-            <div class="answer-area" data-section="lab12-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">A robust lifecycle would include: (1) New → auto-acknowledge after creation with a timestamp; (2) Investigating → notify user with a response deadline (e.g. 48 hours); (3) if no response → auto-escalate to the user's manager or the security team; (4) if escalation is not actioned within an SLA window → auto-resolve as "No Response — Suspicious" or create a high-priority ticket in the ITSM system; (5) if the user provides a valid justification → auto-close as Dismissed with the justification recorded. The goal is zero abandoned incidents: every alert either gets a human decision or triggers a defined automated consequence. Workflow templates in ZWA encode this logic so it applies consistently without analyst involvement on every routine incident.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>Workflow Mappings define when a template triggers based on incident attributes (policy, severity, user department, etc.). Why is it important to match workflow templates to specific incident types rather than applying a single universal workflow to all DLP incidents?
-            <div class="answer-area" data-section="lab12-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Different DLP violations carry different risk profiles and require different responses. A high-severity PCI data egress incident from the Finance department warrants immediate auto-escalation to the CISO and legal team with a 4-hour SLA. A low-severity keyword match from an intern might only warrant a coaching notification with no escalation. Applying a single heavy-handed workflow to all incidents would: (1) overwhelm approvers with low-severity noise; (2) delay critical incidents that need faster escalation; (3) create alert fatigue where analysts start ignoring notifications. Mapping specific templates to specific incident attributes (policy type, data classification, user department, severity) ensures proportional response — each incident gets the right amount of attention and automation, not a one-size-fits-all treatment.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 12.1 -->
       <div class="task-collapsible open" id="task-12-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -529,18 +489,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Incident Lifecycle:</strong> ZWA transforms DLP alerts into managed cases with tracked status — New → Investigating → Escalated → Resolved — with every change recorded in State Changes for audit.</li>
-            <li><strong>Automation Logic:</strong> Workflow Templates define the automation; Workflow Mappings fire the right template based on incident attributes (policy, severity, department).</li>
-            <li><strong>Directory Integration:</strong> SAML/SCIM populates the approver list automatically from your directory — no manual admin required.</li>
-          </ul></div>
         </div>
       </div>
 

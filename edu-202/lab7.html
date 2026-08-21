@@ -83,61 +83,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab7">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · ZERO TRUST BROWSER</span>
-        </div>
-        <p class="socratic-insight">ZPA Browser Isolation renders the application in a cloud browser — only pixels travel to the endpoint. Before configuring it, think about the security model it enforces and how isolation policies differ from access policies.</p>
-        <ul class="socratic-questions">
-          <li>In a render-only session, the application UI is streamed as pixels to the user's browser. No files, DOM content, or clipboard data leave the cloud browser. Why is this a stronger control than blocking specific file-download MIME types at a proxy?
-            <div class="answer-area" data-section="lab7-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">MIME-type blocking is a list-based control — it can be bypassed by renaming file extensions, using base64 inline encoding, or exploiting unknown MIME types. Render-only isolation is a <em>structural</em> control: there is no file to block because the rendering engine never sends the application's raw data to the endpoint at all. Only the visual output (pixel stream) leaves the cloud browser. Attackers cannot bypass a control that operates at the architecture level — there is no path for data exfiltration regardless of file type or encoding.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The Isolation Profile controls copy/paste, upload, download, and printing. The Isolation Policy controls <em>which sessions</em> get isolated. What happens if a user matches the Isolation Policy criteria but you set Rule Action = "Bypass Isolation" instead of "Allow Isolation"?
-            <div class="answer-area" data-section="lab7-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">"Bypass Isolation" explicitly removes the isolation requirement for sessions that match that rule's criteria — the user connects to the app directly via Browser Access without a cloud browser intermediary. This is useful for exceptions: for example, if most contractors are isolated but a specific privileged user group needs full copy/paste (e.g. to paste credentials into a legacy app), you can add a Bypass rule with higher priority that matches their user group and bypasses isolation. The Isolation Policy is evaluated top-down, so rule order matters — a Bypass rule above a general Allow Isolation rule will be matched first.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>You set Watermark = Disabled in the Isolation Experience. In what operational scenario would you enable the watermark, and what does it protect against?
-            <div class="answer-area" data-section="lab7-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Watermarking embeds the logged-in user's email or ID as a visible overlay on the rendered screen. Even though users cannot download files or copy data from the cloud browser, they could photograph the screen with a phone or camera. The watermark deters screen-capture exfiltration because any leaked screenshot can be traced back to the user whose session was compromised or who leaked the image. This is valuable for applications that display highly sensitive data (PII, financial records, customer data) where even a pixel-for-pixel screenshot represents a data breach risk.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 7.1 -->
       <div class="task-collapsible open" id="task-7-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -335,18 +280,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Pixels Only:</strong> ZPA Browser Isolation separates the rendering engine from the endpoint — only pixels reach the user's browser, enforcing data-loss controls without a client agent.</li>
-            <li><strong>Profile vs Policy:</strong> The Isolation Profile defines <em>what</em> is restricted; the Isolation Policy defines <em>which sessions</em> are isolated.</li>
-            <li><strong>Strictest Posture:</strong> Render-only mode (all transfer controls disabled) — users can view and interact but cannot exfiltrate data in any direction.</li>
-          </ul></div>
         </div>
       </div>
 

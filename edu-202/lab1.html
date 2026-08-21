@@ -82,61 +82,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab1">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · LAB SETUP</span>
-        </div>
-        <p class="socratic-insight">A few minutes of orientation before you configure anything prevents costly mistakes. Think about what the Zscaler Experience Center is and why your Student FQDN matters across every lab.</p>
-        <ul class="socratic-questions">
-          <li>The Zscaler Experience Center combines ZIA, ZPA, and ZDX administration under one URL. Why is unified management significant for an engineer versus managing three separate consoles?
-            <div class="answer-area" data-section="lab1-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Unified management means policy correlation is visible in a single pane — you can trace a traffic flow from ZCC client status through ZIA security policy into ZPA private access without switching consoles. For an engineer this is critical during troubleshooting: a ZPA access failure might actually be a ZIA SSL inspection issue, and you need both views simultaneously. It also means changes to identity (ZIdentity) propagate to all services from one place.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>Your Student FQDN (e.g. <code>zs000149.labtenant.com</code>) appears in usernames, app segment FQDNs, and external URLs throughout every lab. What would go wrong if two students accidentally used the same FQDN?
-            <div class="answer-area" data-section="lab1-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Both students' App Connectors would enrol into the same tenant, their App Segments would share FQDNs, and policy changes by one student would affect the other's tests. External URLs for Browser Access would conflict at the DNS/certificate level. The FQDN is your unique namespace — every object you create is scoped to it, ensuring lab isolation.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The Skytap pod contains multiple VMs (Client PC, App Connectors, Windows Server). What is the risk of not starting all VMs before beginning configuration tasks?
-            <div class="answer-area" data-section="lab1-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">App Connector VMs that are offline cannot register with ZPA, so any App Segment configured against them will show "No healthy connectors" and access will fail. The Windows Server is needed for DNS entries (Lab 6) and RDP targets (Lab 5). Starting all VMs upfront ensures each service is available when the lab step requires it, and avoids confusing "policy is correct but traffic fails" symptoms caused by infrastructure being offline.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <div class="task-collapsible open" id="task-1-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 1.1</span>
@@ -256,18 +201,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Unified Portal:</strong> The Zscaler Experience Center at <code>console.zscaler.com</code> manages ZIA, ZPA, ZDX, and ZIdentity from a single interface.</li>
-            <li><strong>Student FQDN:</strong> Your unique lab namespace (e.g. <code>zs000149.labtenant.com</code>) — appears in usernames, App Segment FQDNs, and external access URLs across every lab.</li>
-            <li><strong>Start VMs First:</strong> Always start all Skytap VMs before beginning configuration so App Connectors are available and reachable.</li>
-          </ul></div>
         </div>
       </div>
 

@@ -83,46 +83,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab11">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · ZDX REPORTING &amp; DATA EXPLORER</span>
-        </div>
-        <p class="socratic-insight">ZDX collects continuous synthetic probe data from every enrolled endpoint. The reporting layer — Data Explorer, QBR, system reports — is how that raw telemetry becomes actionable insight. Before you start, think about what each tool is optimised for and who its audience is.</p>
-        <ul class="socratic-questions">
-          <li>Data Explorer lets you build custom queries across multiple data sources (Web probes, Cloud Path probes, device health). A QBR report is a pre-built PowerPoint covering the same period. When would you reach for Data Explorer instead of the QBR, and vice versa?
-            <div class="answer-area" data-section="lab11-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Use Data Explorer for ad-hoc investigation — when you need to correlate a specific application against a specific user population, or filter by department or geolocation to isolate a performance regression. It's the tool for "something is wrong right now; show me the data shaped exactly the way I need it." The QBR is pre-packaged for stakeholder communication: it covers a calendar quarter with consistent formatting, requires no query skills from the recipient, and can be exported as a polished PowerPoint. Use QBR when presenting to a CISO, IT leadership, or when you need a recurring report without manual effort. Neither replaces the other — they serve different audiences and time horizons.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>A ZDX Snapshot provides a shareable URL that gives view-only access to a page's current state. What security advantage does this have over sharing admin credentials, and what are its limitations?
-            <div class="answer-area" data-section="lab11-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The primary advantage is least-privilege access: the recipient sees only the specific page state captured at snapshot time — no admin portal, no live data, no ability to modify configuration. This is especially useful when sharing diagnostics with a vendor, a user's manager, or an external consultant who should not have admin portal access. The limitations are that a snapshot is static (it cannot update with live data), most interactive controls are disabled (time range filters, dropdown menus, device selection), and the URL itself becomes a credential — if forwarded, anyone with the link can view the captured data. Snapshots should therefore be treated like sensitive documents: scoped to what is necessary and shared only with intended recipients.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 11.1 -->
       <div class="task-collapsible open" id="task-11-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -369,17 +329,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Three Reporting Layers:</strong> <em>Data Explorer</em> (ad-hoc queries — for engineers), <em>QBR</em> (automated monthly PowerPoint — for leadership), and <em>System Generated Reports</em> (pre-built interactive charts — for quick operational insight).</li>
-            <li><strong>ZDX Snapshots:</strong> Generate a read-only shareable URL capturing the current portal state — share diagnostic data with non-admin recipients without exposing credentials or live data.</li>
-          </ul></div>
         </div>
       </div>
 

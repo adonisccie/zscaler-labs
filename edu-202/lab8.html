@@ -83,61 +83,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab8">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · ZDX MONITORING</span>
-        </div>
-        <p class="socratic-insight">ZDX uses synthetic probes running on enrolled endpoints to continuously measure application and network performance. Before configuring them, think about what each probe type measures and when you'd use one vs. the other.</p>
-        <ul class="socratic-questions">
-          <li>A Web probe performs a real HTTP GET to the target URL, measuring DNS resolution time, TCP connection time, TLS handshake time, and page load time. A Cloud Path probe sends ICMP packets hop-by-hop to the target. What is the key operational difference — and why do you configure both rather than just one?
-            <div class="answer-area" data-section="lab8-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The Web probe answers "Is the application responding and how fast?" — it measures end-to-end availability and application-layer performance. The Cloud Path probe answers "Where in the network is the delay?" — it traces the route from client to server and measures per-hop latency and packet loss. Together they enable rapid triage: if the Web probe shows degraded page fetch time, the Cloud Path probe tells you whether the bottleneck is at the client LAN, the ISP, the Zscaler cloud edge, or the application server itself. Without Cloud Path you would only know the application is slow; with it you can point to a specific segment in the path.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>ZDX probes run from the user's enrolled ZCC endpoint, not from a data centre probe server. Why does this matter for diagnosing remote user experience problems?
-            <div class="answer-area" data-section="lab8-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Traditional network monitoring probes measure performance from a fixed data centre vantage point — they cannot capture Wi-Fi signal quality, home ISP congestion, or local device resource constraints at the remote user's desk. ZDX probes running on the ZCC endpoint capture the experience from the exact path the user's traffic takes: local Wi-Fi → home router → ISP → ZIA cloud edge → application. This means ZDX can surface a problem that is specific to one user's ISP, a particular Wi-Fi access point, or a device running out of CPU — issues that a centralised probe would never see because it bypasses that segment entirely.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>You set the End User Collection Probing Criteria to "All" (all user groups, users, locations, devices). You set the Exclusion Criteria to "None". The PDF notes that if probing criteria is defined at the collection level, the probe-level criteria is ignored. What does this mean operationally for managing a large deployment?
-            <div class="answer-area" data-section="lab8-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The collection-level Probing Criteria acts as an umbrella scope — if you define it there, all probes within that collection inherit it and cannot be overridden per-probe. This simplifies management in large deployments: define the user scope once at the collection level rather than configuring it identically for every probe. However, it removes per-probe flexibility. The best practice is to use collection-level criteria for broad scope ("monitor all users") and only configure probe-level criteria when you need a specific probe to cover a narrower segment of users than the collection default — for example, a probe that should only run for users in APAC.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 8.1 -->
       <div class="task-collapsible open" id="task-8-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -420,18 +365,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Endpoint-Based Probes:</strong> ZDX synthetic probes run on enrolled ZCC endpoints — not central servers — to capture the real end-user network path.</li>
-            <li><strong>Two Probe Types:</strong> <em>Web probe</em> measures application-layer availability and load time; <em>Cloud Path probe</em> traces the network route hop-by-hop using ICMP.</li>
-            <li><strong>Diagnosis:</strong> Together they let you distinguish application-level slowness from a network-layer bottleneck and pinpoint exactly where degradation occurs.</li>
-          </ul></div>
         </div>
       </div>
 

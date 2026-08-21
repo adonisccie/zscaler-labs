@@ -89,46 +89,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab0">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · ZERO TRUST FUNDAMENTALS</span>
-        </div>
-        <p class="socratic-insight">You're about to configure Zero Trust connectivity across internet access, private access, and digital experience monitoring. Before touching any setting, anchor yourself to the core model — it makes every configuration decision in the next 12 labs easier to reason about.</p>
-        <ul class="socratic-questions">
-          <li>In a traditional perimeter model, a user on the corporate network can reach any internal server unless a firewall rule explicitly blocks it. In the Zero Trust model you're about to configure, what is the default posture — and what does it mean for how App Segments and Access Policies must be constructed?
-            <div class="answer-area" data-section="lab0-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Zero Trust starts from a default-deny posture: no user can reach any resource unless there is an explicit policy that permits it. This is the inverse of a perimeter model, where implicit trust is granted once a user is "inside." The practical consequence is that every application you want to expose must be defined in an App Segment (specifying which servers and ports are reachable) and an Access Policy must explicitly grant a user group permission to that segment. If you skip either — a segment with no policy, or a policy with no segment — access is denied. This model also means App Connectors never open inbound firewall ports; they initiate outbound connections to the Zscaler cloud, so the internal network is never exposed even to enrolled users.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>This lab environment has a <em>dedicated tenant</em> (your personal ZIA/ZPA/ZDX configuration space) and a <em>Solutions Demo Center</em> (a shared, pre-populated read-only environment). Why does separating these two make sense for a training lab — and when would you need to switch between them?
-            <div class="answer-area" data-section="lab0-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The dedicated tenant gives you full admin rights in a sandboxed environment — you can create, modify, and break things without affecting anyone else's session. This is where all the configuration labs (ZPA App Connectors, Browser Access, AppProtection, etc.) happen. The SDC gives you a realistic, pre-populated environment with live data already flowing — things like ZDX performance history, DLP incidents, and QBR reports that would take weeks to accumulate in a fresh tenant. You switch to SDC for Labs 11 and 12 specifically because those labs need existing data to analyze and incidents to triage. You would also switch if you needed to demonstrate ZDX metrics to a stakeholder without polluting your own clean lab config. Think of dedicated = your sandbox for building; SDC = a realistic production-like environment for analysis.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 0.1 -->
       <div class="task-collapsible open" id="task-0-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -383,19 +343,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Seven VMs:</strong> Corp network — Client PC 1, Win Server 2016, Docker Server, ZPA Connector, Log Streaming Connector. Remote network — DNS Server, Linux Client.</li>
-            <li><strong>Session Password:</strong> Shared across all Zscaler portal accounts in your pod — save it in the Config Panel once and it populates everywhere.</li>
-            <li><strong>SDC Tenant:</strong> Labs 11–12 switch to <code>console.zscaler.com</code> (zscalerthree.net), which has pre-populated data for the analysis labs.</li>
-            <li><strong>Zero Trust Default:</strong> Everything is denied unless an explicit policy permits it — every App Segment and Access Policy you create must be intentional.</li>
-          </ul></div>
         </div>
       </div>
 

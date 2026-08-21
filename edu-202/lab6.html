@@ -83,61 +83,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab6">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · APPPROTECTION</span>
-        </div>
-        <p class="socratic-insight">AppProtection runs inside ZPA's proxy path between the user and the internal application. Before configuring it, think about how it differs architecturally from a traditional WAF and why starting in Report mode matters operationally.</p>
-        <ul class="socratic-questions">
-          <li>A traditional WAF sits in front of a public-facing application. ZPA AppProtection sits between an authenticated ZPA session and a private application. What attack vectors does AppProtection cover that traditional WAFs typically cannot?
-            <div class="answer-area" data-section="lab6-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Traditional WAFs protect public-facing apps from external attackers who may be anonymous. AppProtection protects <em>private</em> apps from <strong>authenticated internal users and trusted insiders</strong> — threats that never reach a public WAF. This includes: (1) insider threats and compromised employee accounts, (2) attacks via Browser Access sessions (e.g. contractors with limited access who try to exploit the internal app), (3) lateral-movement attacks from already-breached internal machines. AppProtection also adds <strong>identity context</strong> — it knows which ZPA user triggered an inspection event, which is something a traditional WAF cannot easily correlate.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>OWASP CRS has four Paranoia Levels (1–4). You set level 3. What is the trade-off between a high and low paranoia level, and why might level 4 be problematic in production?
-            <div class="answer-area" data-section="lab6-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Paranoia Level 1 activates only the highest-confidence OWASP rules — low false positives but may miss sophisticated attacks. Level 4 activates all 298+ rules including highly sensitive heuristics — catches more attacks but generates many false positives on legitimate traffic (e.g. URL parameters with special characters, REST APIs with JSON payloads). Level 3 is the practical balance: good coverage of real-world SQL injection and XSS patterns without excessive noise. Level 4 in production typically requires extensive tuning of Override Controls (specific rules set to Allow) before it's safe to move to Block mode.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>You configure Override Controls with Alternate Action = "Override All Controls, Transaction = Allow" for all control groups. Why start in Report mode this way rather than Block, even though DVWA is known to be vulnerable?
-            <div class="answer-area" data-section="lab6-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Even for a deliberately vulnerable app, starting in Report (Allow + log) mode is the right operational practice because: (1) it lets you see which rules fire on <em>normal</em> app usage before deciding what to block, (2) it avoids breaking the app during the lab exercise — blocking attacks against DVWA would prevent the SQL injection and XSS tests, defeating the purpose, (3) it demonstrates the standard "observe → tune → enforce" WAF deployment lifecycle. In production, you would deploy in Report for days or weeks, review the violation logs, add Override Controls for confirmed false positives, then move to Block mode rule-by-rule or all at once.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 6.1 -->
       <div class="task-collapsible open" id="task-6-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -437,17 +382,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Three Config Steps:</strong> (1) App Segment with Access Type = Browser Access + AppProtection, (2) Protection Profile (controls + paranoia level + override actions), (3) Protection Policy linking the profile to the segment with Rule Action = Inspect.</li>
-            <li><strong>Start in Report Mode:</strong> Set Override = Allow first, observe violations in <em>Logs › Insights › Private Applications › Diagnostics › AppProtection</em>, tune for false positives, then switch to Block.</li>
-          </ul></div>
         </div>
       </div>
 

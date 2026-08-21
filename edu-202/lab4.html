@@ -82,61 +82,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab4">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · BROWSER ISOLATION</span>
-        </div>
-        <p class="socratic-insight">Browser Isolation sends only rendered pixels to the endpoint — no HTML, JavaScript, or files ever reach the user's browser. Before you configure it, think about what this means for the threat model and user experience.</p>
-        <ul class="socratic-questions">
-          <li>Browser Isolation is described as sending "pixels only" to the user's browser. What category of attacks does this eliminate, and what is the performance/experience trade-off?
-            <div class="answer-area" data-section="lab4-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Browser Isolation eliminates <strong>client-side code execution attacks</strong>: drive-by downloads, malicious JavaScript, browser exploits, and phishing form submissions that harvest credentials locally. Since no active content is transmitted to the endpoint, the local browser cannot execute it. The trade-off is latency — a round trip to the remote rendering container adds perceptible delay, and interactive features (rich text editors, complex JS apps) can feel sluggish. Isolation is best applied to <em>risky-but-necessary</em> categories rather than all web traffic.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>You enable "Preserve Original URL" in the Isolation Profile. What user experience problem does this solve?
-            <div class="answer-area" data-section="lab4-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Without Preserve Original URL, the browser's address bar shows the Zscaler isolation proxy URL (e.g. <em>https://isolate.zscaler.net/…</em>) rather than the actual site URL. Users see an unfamiliar URL, which is confusing and triggers IT support calls. Enabling Preserve Original URL rewrites the address bar to show the actual destination URL, making the isolation experience transparent — users see <em>x.com</em> in the address bar even though they're viewing a remote rendering.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The URL Filtering rule uses Action = "Isolate" rather than "Allow" or "Block". How does ZIA handle a request that matches an Isolate rule, and what happens if Browser Isolation is not licensed?
-            <div class="answer-area" data-section="lab4-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">When ZIA matches a request to an Isolate rule, it redirects the session to the Cloud Browser Isolation service, which fetches the content server-side and streams a rendered pixel view to the user's browser. If the Browser Isolation add-on is not licensed, the Isolate action falls back to <strong>Allow</strong> — the site is accessible, but without isolation. This is a deliberate "fail-open" behaviour to avoid productivity disruption when a licence lapses; admins should monitor this and not rely on Isolate as a hard block.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 4.1 -->
       <div class="task-collapsible open" id="task-4-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -389,19 +334,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Pixels Only:</strong> Browser Isolation renders content server-side and streams pixels to the endpoint — no JavaScript, HTML, or files touch the local browser.</li>
-            <li><strong>Two-Part Config:</strong> The Isolation Profile defines behaviour (watermark, clipboard, URL controls); the URL Filtering rule routes traffic to that profile using Action = <em>Isolate</em>.</li>
-            <li><strong>Fail-Open:</strong> Without an Isolation licence, the Isolate action falls back to Allow — not a hard block.</li>
-            <li><strong>Rule Order:</strong> Always place Isolate rules above existing Allow rules so they match first.</li>
-          </ul></div>
         </div>
       </div>
 

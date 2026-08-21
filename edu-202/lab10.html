@@ -83,46 +83,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab10">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · ZSCALER ONEAPI &amp; AUTOMATION</span>
-        </div>
-        <p class="socratic-insight">OneAPI unifies ZIA, ZPA, ZCC, and ZDX under a single OAuth 2.0 authentication model. Before writing a single API call, make sure you understand why credentials are scoped and time-limited — and what "API Full Access" actually permits.</p>
-        <ul class="socratic-questions">
-          <li>When you create an API Client in ZIdentity you must copy the Client Secret immediately — it cannot be viewed again after saving. Why does this design pattern exist in OAuth 2.0 systems, and what operational control does it enforce?
-            <div class="answer-area" data-section="lab10-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">This is a standard security design principle called "secret exposure minimisation". The system stores only a hashed form of the secret — never the plaintext — so it cannot be retrieved even by the platform itself. Showing the plaintext once at creation time forces the engineer to immediately store it in a secrets manager (Vault, AWS Secrets Manager, etc.) or CI/CD credential store. If it must be rotated, a new secret is generated and the old one is revoked. This means a compromised developer laptop with a screen recording of the creation wizard does not give an attacker indefinite API access — they only ever see the secret once, and the organisation can rotate it at any time without re-creating the entire API client.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The API client is configured with "Access Token Validity: 90 Minutes". An access token expires — what should a well-designed automation pipeline do when a request returns HTTP 401 Unauthorized, rather than failing permanently?
-            <div class="answer-area" data-section="lab10-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">A robust pipeline should implement an automatic token refresh loop: (1) attempt the API call with the current token; (2) on 401, re-authenticate using the Client ID and Client Secret to obtain a new access token; (3) retry the original request with the new token; (4) if re-authentication also fails (e.g. secret rotated), alert the operations team and halt. Short-lived tokens are a feature, not a bug — they limit blast radius if a token is intercepted (e.g. in a log file or network trace). The 90-minute window is a balance between security (short lifetime) and operational overhead (too-frequent re-authentication).</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 10.1 -->
       <div class="task-collapsible open" id="task-10-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -505,19 +465,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>OAuth 2.0 Flow:</strong> Create an API Client in ZIdentity with scoped permissions, collect the one-time Client Secret, then authenticate to receive a time-limited access token.</li>
-            <li><strong>Cross-Service Token:</strong> The same token authenticates against ZIA, ZPA, ZCC, and ZDX — one auth flow for the entire platform.</li>
-            <li><strong>Two-Step Provisioning:</strong> GET a dependency first (e.g. enrollment certificate ID), then POST the new resource referencing that dependency.</li>
-            <li><strong>Success Signal:</strong> A <code>201 Created</code> response confirms provisioning — no portal interaction required.</li>
-          </ul></div>
         </div>
       </div>
 

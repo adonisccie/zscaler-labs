@@ -82,61 +82,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <div class="socratic-block" id="soc-lab3">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · LOG STREAMING SERVICE</span>
-        </div>
-        <p class="socratic-insight">ZPA LSS uses a dedicated App Connector to ship logs from the ZPA cloud to your SIEM. Think through why a separate connector is recommended and what data you actually get before configuring.</p>
-        <ul class="socratic-questions">
-          <li>LSS uses a separate App Connector Group from your application connectors. What operational reason justifies this separation?
-            <div class="answer-area" data-section="lab3-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Log streaming generates a continuous high-throughput TCP stream to the SIEM. If this traffic ran through the same connector as application access, it would compete for bandwidth and connection slots with production app traffic. Separating LSS into its own connector group ensures log delivery doesn't degrade application performance, and lets you scale each independently — more connectors for apps, fewer (but dedicated) for log forwarding.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>A Log Receiver is configured with a Log Type of "User Activity." What events does this capture, and how is it different from "App Connector Status" logs?
-            <div class="answer-area" data-section="lab3-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text"><strong>User Activity</strong> logs capture per-session ZPA access events: who connected, to which App Segment, from which client, at what time, and with what outcome. These are the records you'd use for UEBA, compliance reporting, and incident investigation. <strong>App Connector Status</strong> logs capture infrastructure health events — connector up/down, tunnel statistics, certificate expiry warnings. They're for ops monitoring, not user behaviour analytics.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>Why do you need to create a ZPA App Segment and Access Policy for the SIEM itself (<code>siem.patraining.safemarch.com:22</code>)?
-            <div class="answer-area" data-section="lab3-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer…" rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The SIEM is an internal server on the private network — just like the HVAC app. Without a ZPA App Segment, it is invisible and unreachable from the client VM (which has no direct route to internal subnets). Creating an SSH App Segment on port 22 and an Access Policy exposes the SIEM through ZPA so you can SSH in via ZCC to verify the log stream. This also demonstrates that ZPA can protect admin/SSH access to servers, not just web apps.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
       <!-- Task 3.1 -->
       <div class="task-collapsible open" id="task-3-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
@@ -425,19 +370,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="mental-note-block">
-        <div class="mental-note-block-icon">🧠</div>
-        <div class="mental-note-block-inner">
-          <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><ul class="mental-note-list">
-            <li><strong>Dedicated Connector Group:</strong> ZPA LSS requires its own App Connector Group to prevent log throughput from competing with application traffic.</li>
-            <li><strong>Log Receiver:</strong> Defines the SIEM destination (hostname + port + protocol); Log Type controls what is captured — <em>User Activity</em> for per-session events, <em>App Connector Status</em> for infrastructure health.</li>
-            <li><strong>TCP Stream:</strong> LSS ships logs as a TCP stream (TLS optional) — not via syslog.</li>
-            <li><strong>SIEM Verification:</strong> Access the syslog server over ZPA SSH (not direct network connection) to confirm logs are flowing.</li>
-          </ul></div>
         </div>
       </div>
 
