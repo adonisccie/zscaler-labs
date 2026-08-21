@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 2: Forward Traffic with the Zscaler Client Connector — EDU-100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 2</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">LAB 2 · CONNECTIVITY</span>
+    <div class="header-dot"></div>
+  </div>
+  <h1>Forward Traffic with the <em>Zscaler Client Connector</em></h1>
+  <div class="motivation-banner">
+    <p>None of the policy you build in Labs 3–5 matters until traffic actually reaches Zscaler. Here you configure the forwarding profile and Windows app profile that route every packet from the Corp: Client PC through the Zero Trust Exchange, then verify Internet Security, Private Access, and Digital Experience are all live.</p>
+  </div>
+</header>
+
+<div class="top-panels">
+  <div class="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel(this)">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="q-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab2">
+      <h2>Lab 2: Forward Traffic with the Zscaler Client Connector</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, your goal is to configure the Zscaler Client Connector (ZCC) to securely forward all user traffic, regardless of protocol, to Zscaler for inspection and protection. By doing so, you enable firewall functionality, secure internet access, and ensure multi-platform compatibility for users both on and off trusted networks. Before configuring traffic forwarding, you use the Zscaler read-only tenant to explore the ZCC download portal and review available client versions for each platform.</p>
+        <ul style="margin-top:10px;">
+          <li>Configure forwarding options to send all user traffic securely to Zscaler.</li>
+          <li>Set up forwarding profiles and platform settings for Windows devices.</li>
+          <li>Confirm Private Access, Internet Security, and Digital Experience are enabled and functioning.</li>
+          <li>Confirm the Corp: Client PC traffic is forwarded to Zscaler and verify entitlements and settings.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> Task 2.1 read-only tenant · Tasks 2.2–2.3 simulated tenant</div>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> This lab uses both the simulated lab environment and the Zscaler tenant. You begin with the Zscaler tenant for Task 2.1, then switch to the simulated environment for Tasks 2.2–2.3.</p>
+      </div>
+
+      <!-- Task 2.1 -->
+      <div class="task-collapsible open" id="task-2-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.1</span>
+          <span class="task-collapsible-title">Download the Zscaler Client Connector (ZCC)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you familiarize yourself with the ZCC download portal and review available versions before configuring traffic forwarding. User credentials are contained in the lab access instructions provided to you via email by the instructor.</p>
+            <ol class="step-list">
+              <li>In your browser, navigate to <code>https://console.zscaler.com</code> and authenticate with the read-only Zscaler tenant credentials:
+                <ul class="sub-steps">
+                  <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
+                  <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
+                </ul>
+                Navigate to <strong>Infrastructure &gt; Common Resources &gt; Deployment &gt; Client Connector Deployment &gt; Platform Releases</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-01.png" alt="Navigation to Infrastructure > Common Resources > Deployment > Client Connector Deployment > Platform Releases" loading="lazy">
+                  <div class="screenshot-caption">Infrastructure &gt; Common Resources &gt; Deployment &gt; Client Connector Deployment &gt; Platform Releases.</div>
+                </div>
+              </li>
+              <li>On the Platform Releases page, select the <strong>New Releases</strong> tab and observe the available Zscaler Client Connector versions for Windows, macOS, and Linux. Note the download links (EXE/MSI, 32/64-bit) available for each build — this is where you would download ZCC for deployment.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-02.png" alt="Platform Releases New Releases tab listing ZCC download links for Windows, macOS, and Linux" loading="lazy">
+                  <div class="screenshot-caption">New Releases — ZCC builds for Windows, macOS, and Linux with EXE/MSI and 32/64-bit download links.</div>
+                </div>
+              </li>
+            </ol>
+            <div class="callout callout-note"><p><strong>Note:</strong> The instructions under Tasks 2.1–2.3 are for your reference only — you perform these steps as part of the simulated lab activities.</p></div>
+          </div>
+
+          <div class="section-qa" data-section="t2-1">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 2.1</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t2-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t2-1',this)">Save</button><div class="section-qa-list" id="sq-list-t2-1"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t2-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t2-1',this)">Save</button><div class="section-qa-list" id="sn-list-t2-1"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 2.2 -->
+      <div class="task-collapsible open" id="task-2-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.2</span>
+          <span class="task-collapsible-title">Configure Traffic Forwarding Options</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you configure traffic forwarding so all users send traffic — regardless of protocol — to Zscaler.</p>
+            <ol class="step-list">
+              <li>Sign in to the Experience Center in the simulated lab environment at <code>https://console.zscaler.com</code> using:
+                <ul class="sub-steps">
+                  <li>Username: <code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Password: the password you configured at initial login in Lab 1.</li>
+                </ul>
+              </li>
+              <li>Create Forwarding Profile. Navigate to <strong>Infrastructure &gt; Connectors &gt; Client &gt; Forwarding Profile for Platforms</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-03.png" alt="Navigation to Infrastructure > Connectors > Client > Forwarding Profile for Platforms" loading="lazy">
+                  <div class="screenshot-caption">Infrastructure &gt; Connectors &gt; Client &gt; Forwarding Profile for Platforms.</div>
+                </div>
+              </li>
+              <li>Select <strong>Add Forwarding Profile</strong>. Name the profile <code>HandsOnLab</code>. Scroll down — in the Windows Driver Selection section, select <strong>Packet Filter Based</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-04.png" alt="Add Forwarding Profile dialog with name HandsOnLab and Packet Filter Based driver selected" loading="lazy">
+                  <div class="screenshot-caption">Add Forwarding Profile — Name: HandsOnLab, Windows Driver: Packet Filter Based.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> If Zscaler Client Connector (version 4.8 or higher) is installed on Windows, the application defaults to the packet filter-based driver, ignoring the Route-Based configuration option.</p></div>
+              </li>
+              <li>In the <strong>Forwarding Profile Action for ZIA</strong> section:
+                <ul class="sub-steps">
+                  <li>On-Trusted Network: <code>Tunnel</code></li>
+                  <li>Tunnel version: <code>Z-Tunnel 2.0</code></li>
+                  <li>VPN Trusted Network and Off-Trusted Network: check <code>Same as "On-Trusted Network"</code></li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-05.png" alt="Forwarding Profile Action for ZIA section with On-Trusted Network set to Tunnel and Z-Tunnel 2.0 selected" loading="lazy">
+                  <div class="screenshot-caption">ZIA forwarding action — Tunnel, Z-Tunnel 2.0.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> Tunnel 2.0 is necessary to intercept all traffic to tunnel to ZIA for Firewall functionality.</p></div>
+              </li>
+              <li>In the <strong>Forwarding Profile Action for ZPA</strong> section: On-Trusted Network: <code>Tunnel</code>; VPN Trusted Network and Off-Trusted Network: <code>Same as "On-Trusted Network"</code>. Select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-06.png" alt="Forwarding Profile Action for ZPA section with On-Trusted Network set to Tunnel, Save button visible" loading="lazy">
+                  <div class="screenshot-caption">ZPA forwarding action — Tunnel, then Save.</div>
+                </div>
+              </li>
+              <li>Add Windows App Profile. Use the left navigation panel to go to <strong>Platform Settings &gt; Windows</strong> and select <strong>Add Windows Policy</strong> under the App Profile section.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-07.png" alt="Platform Settings Windows section with Add Windows Policy option" loading="lazy">
+                  <div class="screenshot-caption">Platform Settings &gt; Windows — Add Windows Policy.</div>
+                </div>
+              </li>
+              <li>Configure (leave unspecified fields at default):
+                <ul class="sub-steps">
+                  <li>Name: <code>HandsOnLab</code></li>
+                  <li>Rule Order: <code>1</code></li>
+                  <li>Status: Enable</li>
+                  <li>Forwarding Profile: the <code>HandsOnLab</code> profile created earlier</li>
+                  <li>Install Zscaler SSL Certificate: On</li>
+                  <li>User Groups: Select All</li>
+                </ul>
+                Select <strong>Add</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-08.png" alt="Windows App Profile configuration with Install Zscaler SSL Certificate On and User Groups set to All, Add button visible" loading="lazy">
+                  <div class="screenshot-caption">Windows App Profile — SSL certificate install enabled, all user groups, ready to Add.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t2-2">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 2.2</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t2-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t2-2',this)">Save</button><div class="section-qa-list" id="sq-list-t2-2"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t2-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t2-2',this)">Save</button><div class="section-qa-list" id="sn-list-t2-2"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 2.3 -->
+      <div class="task-collapsible open" id="task-2-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.3</span>
+          <span class="task-collapsible-title">Sign In to the Zscaler Client Connector and Verify Protection</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you log in to ZCC to confirm the Corp: Client PC is now protected.</p>
+            <ol class="step-list">
+              <li>Open the Zscaler Client Connector. On the Corp: Client PC, in the Windows Task Bar (bottom-right corner), select <strong>Show hidden icons</strong>, then the Zscaler Client Connector icon, then <strong>Open Zscaler</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab2-09.png" alt="Windows taskbar hidden icons with Zscaler Client Connector icon selected" loading="lazy">
+                  <div class="screenshot-caption">Open Zscaler Client Connector from the taskbar.</div>
+                </div>
+              </li>
+              <li>Log in using the student credentials:
+                <ul class="sub-steps">
+                  <li>Username: <code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Password: as set in Lab 1.</li>
+                </ul>
+                Select <strong>Sign in</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab2-10.png" alt="Zscaler Client Connector login page with student credentials entered" loading="lazy">
+                  <div class="screenshot-caption">ZCC sign-in — Student.</div>
+                </div>
+              </li>
+              <li>Verify Private Access settings — on the Private Access page, confirm <strong>Service Status: ON</strong> and Client/Broker IP addresses are populated.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-11.png" alt="ZCC Private Access page showing Service Status ON and populated Client and Broker IP addresses" loading="lazy">
+                  <div class="screenshot-caption">Private Access — Service Status ON, Client/Broker IPs populated.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> If you do not see ZPA or ZDX in ZCC, your user may be missing service entitlements. Verify under Administration &gt; Users, Edit the Student Admin user, and check the Entitlements section for ZPA and ZDX. The Broker IP shown is an example and may not match yours.</p></div>
+              </li>
+              <li>Verify Internet Security settings — confirm <strong>Service Status: ON</strong>, Username displays correctly, and Total Bytes Sent/Received increment as you load web pages.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-12.png" alt="ZCC Internet Security page showing Service Status ON and incrementing bytes sent and received" loading="lazy">
+                  <div class="screenshot-caption">Internet Security — Service Status ON, byte counters incrementing.</div>
+                </div>
+              </li>
+              <li>Verify Digital Experience settings — confirm <strong>Service Status: ON</strong>, <strong>Authentication Status: Authenticated</strong>, Username displays correctly.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-13.png" alt="ZCC Digital Experience page showing Service Status ON and Authentication Status Authenticated" loading="lazy">
+                  <div class="screenshot-caption">Digital Experience — Service Status ON, Authenticated.</div>
+                </div>
+              </li>
+              <li>Verify Applied App Policy — on the More page, confirm <strong>App Policy: HandsOnLab</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab2-14.png" alt="ZCC More page showing Applied App Policy HandsOnLab" loading="lazy">
+                  <div class="screenshot-caption">More page — Applied App Policy: HandsOnLab.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> If the updated policy isn't reflected in ZCC, select Update Policy in the ZCC More tab to force a policy refresh, wait a few seconds, and re-verify.</p></div>
+              </li>
+              <li>Verify Traffic Forwarding — navigate to <code>https://ip.zscaler.com</code> and confirm you are accessing the internet via a service edge geographically close to you.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2-15.png" alt="ip.zscaler.com page showing service edge location details" loading="lazy">
+                  <div class="screenshot-caption">ip.zscaler.com — confirms traffic is being forwarded through a nearby Zscaler service edge.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> The Service Edge location shown will typically reflect a location geographically close to the user.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t2-3">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 2.3</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t2-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t2-3',this)">Save</button><div class="section-qa-list" id="sq-list-t2-3"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t2-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t2-3',this)">Save</button><div class="section-qa-list" id="sn-list-t2-3"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portal Credentials</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Progress</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-2-1" onchange="toggleDone(this)"><label for="chk-2-1">2.1 ZCC portal reviewed</label></li>
+        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-2-2" onchange="toggleDone(this)"><label for="chk-2-2">2.2 Forwarding profile configured</label></li>
+        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-2-3" onchange="toggleDone(this)"><label for="chk-2-3">2.3 Protection verified</label></li>
+      </ul>
+    </div>
+
+  </aside>
+</main>
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab1.html">← Lab 1: Access Entitlements</a>
+  <div class="page-nav-message">Traffic is flowing — time to decide what happens to it.</div>
+  <a class="page-nav-btn page-nav-next" href="lab3.html">Lab 3: Firewall Filtering Policy →</a>
+</div>
+
+<script>
+const CONFIG_KEY='edu100-expc-lab-config';
+const PAGE_KEY='edu100-lab-lab2';
+var SECTION_IDS=['t2-1','t2-2','t2-3'];
+
+function applyConfig(){
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
+  }catch(e){}
+}
+function loadConfig(){try{applyConfig();}catch(e){}}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
+function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
+function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
+function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
+function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
+function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
+function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
+function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
+function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
+function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
+function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
+function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.style.opacity='1';
+  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
+  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
+  sessionStorage.setItem('pt','1');
+  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
+});
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+</script>
+</body>
+</html>

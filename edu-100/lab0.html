@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 0: About &amp; Lab Setup — EDU-100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 0</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">LAB 0 · ORIENTATION</span>
+    <div class="header-dot"></div>
+  </div>
+  <h1>About &amp; <em>Lab Setup</em></h1>
+  <div class="motivation-banner">
+    <p>Before you touch a single policy, take ten minutes to understand the scenario, the topology, and every credential you'll need across the next 8 labs. You'll work in two different places — a simulated lab environment where you build configuration, and a read-only Zscaler tenant where you review real-world examples — so knowing which is which now will save you confusion later.</p>
+  </div>
+</header>
+
+<div class="top-panels">
+  <div class="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel(this)">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="q-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="q-body">
+      <div id="q-list" style="margin-top:10px;"></div>
+    </div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="n-body">
+      <div id="n-list" style="margin-top:10px;"></div>
+    </div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab0">
+      <h2>Lab 0: About &amp; Lab Setup</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p><strong>Scenario:</strong> Your organization, <em>Labtenant</em>, has deployed the Zscaler Zero Trust Exchange to protect against internet threats, control internet access, and provide secure access to private resources. The organization also cares deeply about end-user experience and uses the Zero Trust Exchange to monitor and report on digital performance. You deploy the Zscaler Client Connector (ZCC) to end-user devices to control internet access, provide access to private applications, and probe, benchmark, and measure the digital experience for every user in the organization.</p>
+        <ul style="margin-top:10px;">
+          <li>Configure connectivity to the Zero Trust Exchange.</li>
+          <li>Configure access control policies to allow or deny traffic through the Zero Trust Exchange.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 1.0 · May 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Simulated Lab Environment + Zscaler Read-Only Tenant</div>
+        </div>
+      </div>
+
+      <!-- Task 0.1 -->
+      <div class="task-collapsible open" id="task-0-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 0.1</span>
+          <span class="task-collapsible-title">Lab Description, Scenario &amp; Objectives</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">Read through the scenario so you understand the context behind every configuration task across Labs 1–8.</p>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Lab Description and Scenario</h4>
+            <p style="margin-bottom:12px;">For these lab exercises, you work with a scenario in which your organization, <strong>Labtenant</strong>, has deployed the Zscaler Zero Trust Exchange to protect against Internet threats, control Internet access, and provide secure access to private resources. The organization is also focused on end-user experience and uses the Zero Trust Exchange to monitor and report on digital performance. You deploy the Zscaler Client Connector (ZCC) to end-user devices to control Internet access, provide access to private applications, and probe, benchmark, and measure the digital experience for each user in the organization.</p>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">To Support the Rollout, You Are Tasked To</h4>
+            <ul class="sub-steps" style="margin-bottom:16px;">
+              <li>Connect users to the Zero Trust Exchange by deploying ZCC to Windows client devices.</li>
+              <li>Configure SSL inspection.</li>
+              <li>Configure user access to both Internet and private applications.</li>
+              <li>Deploy Zscaler Digital Experience (ZDX) reporting and create an initial set of ZDX applications and probes.</li>
+            </ul>
+
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Throughout the lab guide, <code>&lt;Student FQDN&gt;</code> refers to the domain assigned to your simulated tenant (e.g. <code>zs000834.labtenant.com</code>). Save it in the ⚙ Lab Configuration panel above — all placeholders update automatically.</p>
+            </div>
+          </div>
+
+          <div class="section-qa" data-section="t0-1">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 0.1</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t0-1" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t0-1',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t0-1"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t0-1" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t0-1',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t0-1"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 0.2 -->
+      <div class="task-collapsible open" id="task-0-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 0.2</span>
+          <span class="task-collapsible-title">Lab Topology &amp; Lab Setup</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:14px;">Throughout the labs, you work with Zscaler Zero Trust Exchange services (<strong>ZIdentity, ZIA, ZPA, and ZDX</strong>) in a simulated environment, and separately have read-only access to a real Zscaler tenant.</p>
+
+            <div class="screenshot-embed">
+              <img src="screenshots/lab0-02.png" alt="Lab topology diagram — Read-Only Zscaler Tenant connects via ZIdentity to the Experience Center, which fronts ZIA, ZPA, and ZDX; the Zero Trust Exchange cloud connects users to the Internet and to the Corporate Datacenter's ZPA Connector" loading="lazy">
+              <div class="screenshot-caption">Lab topology — the Experience Center (ZIdentity) is the single console for ZIA, ZPA, and ZDX. The Zero Trust Exchange cloud brokers connectivity between users, the Internet, and the Corporate Datacenter's App Connector.</div>
+            </div>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Simulated Lab Exercises</h4>
+            <p style="margin-bottom:12px;">The simulated lab exercises mimic real-world Zscaler deployments, providing a safe and controlled environment to practice configuration and administration tasks. These exercises help you become familiar with Zscaler administration and configuration interfaces and reinforce the core concepts taught in the course. Tasks marked for the simulated environment are where you actually build configuration — departments, users, entitlements, policies, App Connectors, and App Segments.</p>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Read-Only Zscaler Tenant Access</h4>
+            <p style="margin-bottom:0;">In addition to the simulated environment, you receive access to a read-only Zscaler tenant through Zscaler Solutions Demo Center (SDC) credentials. This environment presents Zscaler core features and dashboards in a realistic, production-like context:</p>
+            <ul class="sub-steps" style="margin-top:8px;">
+              <li>Provides visibility into real-world dashboards and configurations, even when full administrative access is not available.</li>
+              <li>Complements the simulated lab exercises by exposing you to Zscaler's broader ecosystem and integrated services.</li>
+            </ul>
+          </div>
+
+          <div class="section-qa" data-section="t0-2">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 0.2</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t0-2" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t0-2',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t0-2"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t0-2" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t0-2',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t0-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 0.3 -->
+      <div class="task-collapsible open" id="task-0-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 0.3</span>
+          <span class="task-collapsible-title">Lab Credentials — Complete Reference</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">Keep this page open as a credentials reference throughout the labs. Save your FQDN and passwords in the ⚙ Lab Configuration panel once and every placeholder across every lab page updates automatically.</p>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 10px;">Virtual Machine Credentials</h4>
+            <table class="creds-table">
+              <thead><tr><th>Virtual Machine</th><th>User Name</th><th>Password</th><th>IP Address</th></tr></thead>
+              <tbody>
+                <tr><td>Corp: Client PC</td><td colspan="3">Shared endpoint — sign in to apps with the portal credentials below</td></tr>
+                <tr><td>Corp: Win Svr 2016 <span style="color:var(--text-muted);">(Lab 6)</span></td><td><code>PATRAINING\Administrator</code></td><td><code>Admin-123!</code></td><td>—</td></tr>
+                <tr><td>Corp: APP Connector <span style="color:var(--text-muted);">(Lab 6)</span></td><td><code>admin</code></td><td><code>zscaler</code></td><td><code>10.0.0.4</code> (SSH/22)</td></tr>
+              </tbody>
+            </table>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 10px;">Zscaler Portal Credentials</h4>
+            <table class="creds-table">
+              <thead><tr><th>Account</th><th>Username</th><th>Password</th><th>Used In</th></tr></thead>
+              <tbody>
+                <tr><td>Student Admin</td><td><code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><span class="var var-pass">&lt;Student Password&gt;</span> (set at initial login)</td><td>All labs (simulated tenant)</td></tr>
+                <tr><td>JoeSupport (Helpdesk L1)</td><td><code>joesupport@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><code>Admin-123!</code></td><td>Lab 1 — read-only entitlement validation</td></tr>
+                <tr><td>BevIT (Global Admin)</td><td><code>bevit@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><code>Admin-123!</code></td><td>Lab 1 — full admin entitlement validation</td></tr>
+                <tr><td>Read-Only Tenant Admin</td><td><span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></td><td><span class="var var-ro-pass">&lt;Session_Password&gt;</span></td><td>Labs 1, 3–5, 8 (read-only tenant)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-note" style="margin-top:12px;">
+              <p><strong>Note:</strong> The credentials for the Zscaler read-only tenant are valid for a limited time. Contact your instructor to confirm the validity period for your assigned tenant credentials.</p>
+            </div>
+          </div>
+
+          <div class="section-qa" data-section="t0-3">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 0.3</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t0-3" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t0-3',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t0-3"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t0-3" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t0-3',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t0-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 0.4 -->
+      <div class="task-collapsible open" id="task-0-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 0.4</span>
+          <span class="task-collapsible-title">Lab Access Information</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Accessing the Zscaler Read-Only Tenant</h4>
+            <p style="margin-bottom:12px;">User credentials and the portal URL are provided in the lab access instructions sent to you by your instructor. The email includes:</p>
+            <ul class="sub-steps" style="margin-bottom:16px;">
+              <li>Zscaler read-only tenant access URL: <code>https://console.zscaler.com/</code></li>
+              <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
+              <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
+            </ul>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> The credentials for the Zscaler read-only tenant are valid for a limited time. Contact your instructor to confirm the validity period for your assigned tenant credentials.</p>
+            </div>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Simulated Tenant Access</h4>
+            <p style="margin-bottom:0;">In the simulated lab environment, navigate to <code>console.zscaler.com</code>, where you are prompted for your assigned username. After entering your username and password, you land on the Zscaler Admin Console — this is where Labs 1–2, 3.1–3.3, 4.1, 5.1–5.4, 6, and 7 are performed.</p>
+          </div>
+
+          <div class="section-qa" data-section="t0-4">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 0.4</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t0-4" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t0-4',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t0-4"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t0-4" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t0-4',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t0-4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Environment</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">PATRAINING\Administrator</code><button class="scr-copy" onclick="copySidebarCred('PATRAINING\\Administrator',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: APP Connector<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.4</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.4',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portal Credentials</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">JoeSupport (Helpdesk L1)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">joesupport@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('joesupport-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">BevIT (Global Admin)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">bevit@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('bevit-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+</main>
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="page-nav">
+  <span class="page-nav-btn page-nav-prev page-nav-disabled">← Start</span>
+  <div class="page-nav-message">Orientation complete — time to build your identity foundation in Lab 1.</div>
+  <a class="page-nav-btn page-nav-next" href="lab1.html">Lab 1: User &amp; Admin Access Entitlements →</a>
+</div>
+
+<script>
+const CONFIG_KEY='edu100-expc-lab-config';
+const CONFIG_COLLAPSED_KEY='edu100-config-collapsed';
+const PAGE_KEY='edu100-lab-lab0';
+var SECTION_IDS=['t0-1','t0-2','t0-3','t0-4'];
+
+function loadConfig(){try{applyConfig();}catch(e){}}
+function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();var rouser=document.getElementById('ro-user-input').value.trim();var ropass=document.getElementById('ro-pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass,rouser:rouser,ropass:ropass}));applyConfig();}catch(e){}}
+function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);applyConfig();}catch(e){}}
+function applyConfig(){
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
+  }catch(e){}
+}
+function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
+function toggleTask(header){var coll=header.closest('.task-collapsible');if(!coll)return;var open=coll.classList.toggle('open');try{var key=PAGE_KEY+'-task-'+coll.id;localStorage.setItem(key,open?'1':'0');}catch(e){}}
+function loadTaskStates(){document.querySelectorAll('.task-collapsible').forEach(function(el){try{var k=PAGE_KEY+'-task-'+el.id;var v=localStorage.getItem(k);if(v==='0')el.classList.remove('open');else if(v==='1')el.classList.add('open');}catch(e){}});}
+
+function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
+function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
+function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:\'Epilogue\',sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
+function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:\'Epilogue\',sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
+
+function toggleSectionQA(btn){var body=btn.nextElementSibling;if(!body)return;body.classList.toggle('open');btn.querySelector('.section-qa-chevron').style.transform=body.classList.contains('open')?'rotate(180deg)':'';}
+function saveSectionQ(id,btn){try{var ta=document.getElementById('sq-'+id);if(!ta||!ta.value.trim())return;var key=PAGE_KEY+'-sq-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.push(ta.value.trim());localStorage.setItem(key,JSON.stringify(arr));ta.value='';renderSectionQ(id);}catch(e){}}
+function saveSectionN(id,btn){try{var ta=document.getElementById('sn-'+id);if(!ta||!ta.value.trim())return;var key=PAGE_KEY+'-sn-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.push(ta.value.trim());localStorage.setItem(key,JSON.stringify(arr));ta.value='';renderSectionN(id);}catch(e){}}
+function renderSectionQ(id){try{var key=PAGE_KEY+'-sq-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=arr.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+q+'</span><button class="qa-item-del" onclick="deleteSectionQ(\''+id+'\','+i+')">×</button></div>';}).join('');try{loadQList();}catch(e){}}catch(e){}}
+function renderSectionN(id){try{var key=PAGE_KEY+'-sn-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=arr.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+n+'</span><button class="qa-item-del" onclick="deleteSectionN(\''+id+'\','+i+')">×</button></div>';}).join('');try{loadNList();}catch(e){}}catch(e){}}
+function deleteSectionQ(id,idx){try{var key=PAGE_KEY+'-sq-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.splice(idx,1);localStorage.setItem(key,JSON.stringify(arr));renderSectionQ(id);}catch(e){}}
+function deleteSectionN(id,idx){try{var key=PAGE_KEY+'-sn-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.splice(idx,1);localStorage.setItem(key,JSON.stringify(arr));renderSectionN(id);}catch(e){}}
+
+
+function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+
+function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='joesupport-user')val=d.fqdn?'joesupport@'+d.fqdn:'';else if(type==='bevit-user')val=d.fqdn?'bevit@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();
+  loadQList();
+  loadNList();
+  loadTaskStates();
+  injectCopyButtons();
+  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
+  document.querySelectorAll('.page-nav-btn[href]').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
+  document.body.style.opacity='1';
+});
+</script>
+</body>
+</html>

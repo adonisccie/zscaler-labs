@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 5: Content Filtering &amp; Access Control — EDU-100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 5</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">LAB 5 · CONTENT CONTROL</span>
+    <div class="header-dot"></div>
+  </div>
+  <h1>Configure Content Filtering &amp; <em>Access Control</em></h1>
+  <div class="motivation-banner">
+    <p>Firewall and SSL policy protect the pipe; now you shape what flows through it. You review baseline threat protection, block whole categories of risky content, then use Cloud App Control to make a surgical exception — YouTube allowed, every other streaming site blocked — before reviewing how granular per-action control works for a modern SaaS app.</p>
+  </div>
+</header>
+
+<div class="top-panels">
+  <div class="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel(this)">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="q-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab5">
+      <h2>Lab 5: Configure Content Filtering &amp; Access Control</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, your goal is to improve users' browsing experience by allowing access only to safe and appropriate content. In this lab, you explore how Zscaler Internet Access (ZIA) enforces content filtering and access control to protect against threats such as phishing, malware, and data leakage. You verify existing threat protection configurations, analyze risk reports, and test policy behavior to see how ZIA enforces organizational baselines for URL filtering, content categories, and cloud application controls. Finally, you use the Zscaler read-only tenant to review a live Cloud App Control rule that demonstrates granular, per-action enforcement for AI and ML applications.</p>
+        <ul style="margin-top:10px;">
+          <li>Explore ZIA's threat protection configurations and analyze risk reporting.</li>
+          <li>Configure and validate a URL Filtering Policy to block risky websites (e.g., gambling, adult, shopping).</li>
+          <li>Test the effect of URL Filtering control on end-user experience.</li>
+          <li>Create and verify a Cloud App Control policy to allow access to specific apps (e.g., YouTube) while restricting others in the same category.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> Tasks 5.1–5.4 simulated tenant · Task 5.5 read-only tenant</div>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> This lab uses both the simulated lab environment and the Zscaler tenant. You complete Tasks 5.1–5.4 in the simulated environment (the instructions below are for reference only; you perform them within the simulated lab), then switch to the Zscaler tenant for Task 5.5.</p>
+      </div>
+
+      <!-- Task 5.1 -->
+      <div class="task-collapsible open" id="task-5-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.1</span>
+          <span class="task-collapsible-title">View Threat Protection Reports</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review current threat protection reports in the ZIA Admin Portal, examining Malware Protection, Advanced Threat Protection, and the Page Risk Score Index.</p>
+            <ol class="step-list">
+              <li>View Malware Protection settings — go to <strong>Policies &gt; Cybersecurity &gt; Malware Protection</strong>. Compare the current settings with the Recommended Policy settings and note that Malware Protections are enabled.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-01.png" alt="Malware Protection settings page compared against Recommended Policy settings, showing protections enabled" loading="lazy">
+                  <div class="screenshot-caption">Malware Protection — current settings vs. Recommended Policy.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> Malware protection defends against spyware, botnets, malicious active content, and more.</p></div>
+              </li>
+              <li>View Advanced Threat Protection settings — use the left navigation panel to go to Advanced Threat Protection, or <strong>Policies &gt; Cybersecurity &gt; Advanced Threat Protection</strong>. Compare current settings with the Recommended Policy settings and note which protections are enabled.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-02.png" alt="Advanced Threat Protection settings compared against Recommended Policy settings" loading="lazy">
+                  <div class="screenshot-caption">Advanced Threat Protection — current settings vs. Recommended Policy.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> Advanced protections include settings against Command-and-Control Traffic, Phishing, Crypto mining, Tunneling, Cross-Site Scripting (XSS), and more.</p></div>
+              </li>
+              <li>Review the <strong>Page Risk Score Index</strong> (Suspicious Content Protection — Page Risk™), which calculates a score upon user access, dynamically analyzing the page's threat level.</li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t5-1">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 5.1</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-1',this)">Save</button><div class="section-qa-list" id="sq-list-t5-1"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-1',this)">Save</button><div class="section-qa-list" id="sn-list-t5-1"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 5.2 -->
+      <div class="task-collapsible open" id="task-5-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.2</span>
+          <span class="task-collapsible-title">Configure Content Filtering Controls</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you create a URL Filtering Policy to block risky URL categories such as gambling, adult content, and video streaming.</p>
+            <ol class="step-list">
+              <li>Test high-risk URL access before configuration — open a browser on the Corp: Client PC and attempt to visit a risky website, such as <code>888.com</code> (a gambling site). Verify the site is currently accessible.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-03.png" alt="Browser showing 888.com accessible before URL Filtering is configured" loading="lazy">
+                  <div class="screenshot-caption">888.com is accessible before the URL Filtering rule is created.</div>
+                </div>
+              </li>
+              <li>Create a URL Filtering Policy — go to <strong>Policies &gt; Access Control &gt; Internet and SaaS &gt; URL Control &gt; URL Filtering</strong>. On the URL Filtering Policy tab, select <strong>Add URL Filtering Rule</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-04.png" alt="Add URL Filtering Rule dialog" loading="lazy">
+                  <div class="screenshot-caption">Add URL Filtering Rule.</div>
+                </div>
+              </li>
+              <li>Configure:
+                <ul class="sub-steps">
+                  <li>Rule Order: <code>1</code></li>
+                  <li>Rule Name: <code>Risky URL Categories</code></li>
+                  <li>URL Categories: Adult Materials, Shopping and Auctions, Gambling, Video Streaming</li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-05.png" alt="URL Categories selection with Adult Materials, Shopping and Auctions, Gambling, and Video Streaming checked" loading="lazy">
+                  <div class="screenshot-caption">URL Categories — Adult Materials, Shopping and Auctions, Gambling, Video Streaming.</div>
+                </div>
+              </li>
+              <li>Request Methods and Protocols: ensure all options are selected. Action: select <strong>Block</strong>. Select <strong>Save and Activate</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-06.png" alt="URL Filtering rule with all Request Methods and Protocols selected and Action set to Block" loading="lazy">
+                  <div class="screenshot-caption">Action: Block, then Save + Activate.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t5-2">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 5.2</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-2',this)">Save</button><div class="section-qa-list" id="sq-list-t5-2"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-2',this)">Save</button><div class="section-qa-list" id="sn-list-t5-2"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 5.3 -->
+      <div class="task-collapsible open" id="task-5-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.3</span>
+          <span class="task-collapsible-title">Test End-User Experience with URL Filtering</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you test user access to various websites after applying the configured URL Filtering Policy.</p>
+            <ol class="step-list">
+              <li>Test blocked URLs — open a browser and attempt to visit previously accessible sites: <code>888.com</code> (Gambling) and <code>ebay.com</code> (Shopping and Auctions). Verify these are now blocked.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-07.png" alt="Browser showing 888.com and ebay.com blocked by the URL Filtering Policy" loading="lazy">
+                  <div class="screenshot-caption">888.com and ebay.com are now blocked.</div>
+                </div>
+              </li>
+              <li>Test Video Streaming site access — attempt YouTube.com or Netflix.com. Verify these are also blocked under the configured rule.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-08.png" alt="Browser showing YouTube.com and Netflix.com blocked by the Video Streaming URL category rule" loading="lazy">
+                  <div class="screenshot-caption">Video Streaming sites blocked — including YouTube, for now.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> If testing does not work, try using Incognito Mode in the browser. If it still fails, navigate to URL Filtering Policy and select Edit to confirm the Rule Status is set to Enabled.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t5-3">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 5.3</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-3',this)">Save</button><div class="section-qa-list" id="sq-list-t5-3"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-3',this)">Save</button><div class="section-qa-list" id="sn-list-t5-3"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 5.4 -->
+      <div class="task-collapsible open" id="task-5-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.4</span>
+          <span class="task-collapsible-title">Configure Cloud App Control</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">The Cloud App Control Policy provides granular control over how users access specific cloud applications and websites. In this task, you create a rule to allow access to YouTube while restricting other entertainment and recreation websites.</p>
+            <ol class="step-list">
+              <li>Add a Cloud App Control Policy — go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Policies</strong>, or use the left navigation panel. Select the <strong>Add</strong> dropdown and select <strong>Streaming Media</strong>.</li>
+              <li>Create the Cloud App Control rule:
+                <ul class="sub-steps">
+                  <li>Rule Order: <code>1</code></li>
+                  <li>Rule Name: <code>Allow YouTube</code></li>
+                </ul>
+                Under Criteria, select the drop-down for Cloud Applications and select <strong>YouTube</strong>, then select <strong>Done</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-09.png" alt="Cloud App Control rule Allow YouTube with Cloud Applications criteria set to YouTube" loading="lazy">
+                  <div class="screenshot-caption">Rule Name: Allow YouTube, Cloud Applications: YouTube.</div>
+                </div>
+              </li>
+              <li>Action — Application Access: <strong>Allow</strong>. Add Description: <code>Allow only YouTube</code>. Select <strong>Save and Activate</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-10.png" alt="Cloud App Control rule Action set to Allow with description Allow only YouTube" loading="lazy">
+                  <div class="screenshot-caption">Action: Allow, Description: Allow only YouTube.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-11.png" alt="Cloud App Control rule saved and activated confirmation" loading="lazy">
+                  <div class="screenshot-caption">Rule saved and activated.</div>
+                </div>
+              </li>
+              <li>Verify the Cloud App Control policy — ensure the new rule appears in the Streaming Media Rules List. Confirm on the Corp: Client PC that you can access YouTube.com, but other streaming sites like Netflix.com remain blocked.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-12.png" alt="Streaming Media Rules List showing the new Allow YouTube rule" loading="lazy">
+                  <div class="screenshot-caption">Allow YouTube rule appears in the Streaming Media Rules List.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-13.png" alt="Browser showing YouTube.com accessible while Netflix.com remains blocked" loading="lazy">
+                  <div class="screenshot-caption">YouTube.com now loads; Netflix.com stays blocked.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> SaaS Application policies are enforced with higher priority than URL category-based policies — that's why the specific YouTube allow overrides the broader Video Streaming block.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t5-4">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 5.4</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-4" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-4',this)">Save</button><div class="section-qa-list" id="sq-list-t5-4"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-4" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-4',this)">Save</button><div class="section-qa-list" id="sn-list-t5-4"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 5.5 -->
+      <div class="task-collapsible open" id="task-5-5">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.5</span>
+          <span class="task-collapsible-title">Review Cloud App Control Granularity</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review the ChatGPT_NoUpload rule under the AI &amp; ML Applications category to understand the granular, per-action control that Cloud App Control provides. User credentials are contained in the lab access instructions provided to you via email by the instructor.</p>
+            <ol class="step-list">
+              <li>In a browser window, go to <code>https://console.zscaler.com</code> and authenticate with the read-only Zscaler tenant credentials:
+                <ul class="sub-steps">
+                  <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
+                  <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
+                </ul>
+              </li>
+              <li>Navigate to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Policies</strong>. In the AI &amp; ML Applications category, locate the rule named <strong>ChatGPT_NoUpload</strong> and select the eye icon to open and review its configuration.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-14.png" alt="AI and ML Applications category with ChatGPT_NoUpload rule listed" loading="lazy">
+                  <div class="screenshot-caption">AI &amp; ML Applications — ChatGPT_NoUpload rule.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5-15.png" alt="ChatGPT_NoUpload rule detail showing Uploading blocked while other actions remain allowed" loading="lazy">
+                  <div class="screenshot-caption">Per-action control — Uploading: Blocked; Access, Sharing, Downloading, Deleting, Inviting, Chatting: Allowed.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> Zscaler provides granular, per-action control for cloud applications — for example, Uploading is Blocked while Application Access, Sharing, Downloading, Deleting, Inviting, and Chatting remain Allowed.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t5-5">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 5.5</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-5" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-5',this)">Save</button><div class="section-qa-list" id="sq-list-t5-5"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-5" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-5',this)">Save</button><div class="section-qa-list" id="sn-list-t5-5"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portal Credentials</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Progress</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-5-1" onchange="toggleDone(this)"><label for="chk-5-1">5.1 Threat reports reviewed</label></li>
+        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-5-2" onchange="toggleDone(this)"><label for="chk-5-2">5.2 URL Filtering configured</label></li>
+        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-5-3" onchange="toggleDone(this)"><label for="chk-5-3">5.3 Blocking verified</label></li>
+        <li class="progress-item" id="pi-4"><input type="checkbox" id="chk-5-4" onchange="toggleDone(this)"><label for="chk-5-4">5.4 Cloud App Control configured</label></li>
+        <li class="progress-item" id="pi-5"><input type="checkbox" id="chk-5-5" onchange="toggleDone(this)"><label for="chk-5-5">5.5 Per-action control reviewed</label></li>
+      </ul>
+    </div>
+
+  </aside>
+</main>
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab4.html">← Lab 4: SSL Inspection</a>
+  <div class="page-nav-message">Internet access is fully governed — now let's reach into the datacenter.</div>
+  <a class="page-nav-btn page-nav-next" href="lab6.html">Lab 6: Provision ZPA Infrastructure →</a>
+</div>
+
+<script>
+const CONFIG_KEY='edu100-expc-lab-config';
+const PAGE_KEY='edu100-lab-lab5';
+var SECTION_IDS=['t5-1','t5-2','t5-3','t5-4','t5-5'];
+
+function applyConfig(){
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
+  }catch(e){}
+}
+function loadConfig(){try{applyConfig();}catch(e){}}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
+function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
+function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
+function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
+function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
+function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
+function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
+function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
+function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
+function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
+function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
+function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.style.opacity='1';
+  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
+  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
+  sessionStorage.setItem('pt','1');
+  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
+});
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+</script>
+</body>
+</html>

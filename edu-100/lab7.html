@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 7: Add a Corporate Application — EDU-100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 7</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">LAB 7 · PRIVATE ACCESS</span>
+    <div class="header-dot"></div>
+  </div>
+  <h1>Add a <em>Corporate Application</em></h1>
+  <div class="motivation-banner">
+    <p>Your App Connector is live but has nothing to publish yet. Here you segment access two different ways — a broad wildcard segment for general discovery, and a narrow, user-scoped segment for one specific app — then enable ICMP just for troubleshooting, and only for the app that needs it.</p>
+  </div>
+</header>
+
+<div class="top-panels">
+  <div class="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel(this)">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="q-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab7">
+      <h2>Lab 7: Add a Corporate Application</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p><strong>Scenario:</strong> Safemarch Corporation needs secure, scalable access to multiple internal applications that share a common domain pattern. To simplify access management and enforce reliable Zero Trust policies, you configure a wildcard application segment for general access and a dedicated application segment for more granular user and application access. You also implement ICMP access for troubleshooting.</p>
+        <ul style="margin-top:10px;">
+          <li>Configure a wildcard application segment for internal applications (e.g., <code>*.patraining.safemarch.com</code>).</li>
+          <li>Configure user-specific access to defined internal applications.</li>
+          <li>Enable ICMP access for troubleshooting in the ZPA Admin Portal.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~30 minutes</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> Simulated tenant</div>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> All tasks in this lab (7.1–7.3) are completed using the simulated lab exercises. The instructions below are for reference only; you perform the steps within the simulated lab environment.</p>
+      </div>
+
+      <!-- Task 7.1 -->
+      <div class="task-collapsible open" id="task-7-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 7.1</span>
+          <span class="task-collapsible-title">Configure a Wildcard Application Segment for Internal Applications</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you configure a wildcard application segment to discover internal applications matching a domain pattern and allow general access for all users.</p>
+            <ol class="step-list">
+              <li>Add a Wildcard Application Segment — from the Experience Center, navigate to <strong>Policies &gt; Access Control &gt; Private Applications &gt; App Segments</strong>. Select <strong>+Add Application Segment</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-01.png" alt="App Segments page with Add Application Segment link" loading="lazy">
+                  <div class="screenshot-caption">Policies &gt; Access Control &gt; Private Applications &gt; App Segments — Add Application Segment.</div>
+                </div>
+              </li>
+              <li>At the Define Applications step &gt; General Information:
+                <ul class="sub-steps">
+                  <li>Name: <code>Discovery</code></li>
+                  <li>Status: Enabled</li>
+                  <li>Source IP Anchor: Disabled</li>
+                  <li>Add a suitable description</li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-02.png" alt="Define Applications General Information with Name Discovery, Status Enabled, Source IP Anchor Disabled" loading="lazy">
+                  <div class="screenshot-caption">General Information — Name: Discovery.</div>
+                </div>
+              </li>
+              <li>Applications — in the "Enter a domain or IP address" field, specify <code>*.patraining.safemarch.com</code>. Client Connector Access — define Port Ranges:
+                <ul class="sub-steps">
+                  <li>TCP Port Ranges: <code>2-52</code> and <code>54-65535</code></li>
+                  <li>UDP Port Ranges: <code>1-52</code> and <code>54-65535</code></li>
+                  <li>TCP Keepalive: Disabled</li>
+                </ul>
+                Common Configuration: leave defaults.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-03.png" alt="Application domain field with wildcard *.patraining.safemarch.com and TCP/UDP port ranges configured" loading="lazy">
+                  <div class="screenshot-caption">Domain: *.patraining.safemarch.com, TCP/UDP port ranges configured, TCP Keepalive: Disabled.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-04.png" alt="Common Configuration section left at default settings" loading="lazy">
+                  <div class="screenshot-caption">Common Configuration — left at defaults.</div>
+                </div>
+              </li>
+              <li>At the Additional Configuration step, leave unchanged: Double Encryption: Disabled; Bypass: Use Client Forwarding Policy; ICMP Access: Disabled. Select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-05.png" alt="Additional Configuration with Double Encryption Disabled, Bypass Use Client Forwarding Policy, ICMP Access Disabled" loading="lazy">
+                  <div class="screenshot-caption">Additional Configuration — defaults left unchanged, ICMP Access: Disabled.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> ICMP Access is typically disabled unless ICMP connectivity is required for application troubleshooting or testing.</p></div>
+              </li>
+              <li>At the Segment Group step, select <strong>Add Segment Group</strong>:
+                <ul class="sub-steps">
+                  <li>Name: <code>Discovered Apps</code></li>
+                  <li>Status: Enabled</li>
+                </ul>
+                Select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-06.png" alt="Add Segment Group with Name Discovered Apps and Status Enabled" loading="lazy">
+                  <div class="screenshot-caption">Segment Group — Discovered Apps.</div>
+                </div>
+              </li>
+              <li>Add Server Group:
+                <ul class="sub-steps">
+                  <li>Name: <code>CorpServers</code></li>
+                  <li>Status: Enabled</li>
+                  <li>Dynamic Server Discovery: Enabled</li>
+                  <li>App Connector Groups: <code>OnPrem</code></li>
+                </ul>
+                Select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-07.png" alt="Add Server Group with Name CorpServers, Dynamic Server Discovery Enabled, App Connector Groups OnPrem" loading="lazy">
+                  <div class="screenshot-caption">Server Group — CorpServers, Dynamic Server Discovery Enabled, App Connector Group: OnPrem.</div>
+                </div>
+              </li>
+              <li>At the Review step, confirm the configuration and select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-08.png" alt="Review step summarizing the wildcard Discovery App Segment configuration" loading="lazy">
+                  <div class="screenshot-caption">Review — Discovery App Segment summary.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-09.png" alt="Discovery App Segment saved confirmation" loading="lazy">
+                  <div class="screenshot-caption">Discovery App Segment saved.</div>
+                </div>
+              </li>
+              <li>Configure Access Policies — go to <strong>Policies &gt; Access Policy</strong>. Select <strong>Add</strong>:
+                <ul class="sub-steps">
+                  <li>Name: <code>Discovered Apps</code></li>
+                  <li>Rule Action: Allow Access</li>
+                  <li>App Connector Selection Method: All App Connector Groups for the Application</li>
+                </ul>
+                Select <strong>Add Criteria</strong>, select Applications, and choose the <strong>Discovered Apps</strong> Segment Group. Do not add additional criteria. Select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-10.png" alt="Access Policy Add Criteria with Applications set to Discovered Apps Segment Group" loading="lazy">
+                  <div class="screenshot-caption">Access Policy — Criteria: Applications = Discovered Apps Segment Group.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-11.png" alt="Access Policy Discovered Apps rule saved" loading="lazy">
+                  <div class="screenshot-caption">Discovered Apps access rule saved.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-12.png" alt="Access Policy list showing the new Discovered Apps rule with Allow Access action" loading="lazy">
+                  <div class="screenshot-caption">Access Policy list — Discovered Apps, Allow Access.</div>
+                </div>
+              </li>
+              <li>Test the Access Policy — on the Corp: Client PC, open a web browser window and the Zscaler Client Connector side-by-side. Load <code>http://intranet.patraining.safemarch.com</code> (a bookmark is provided). Confirm the Intranet page loads correctly, then refresh and verify the Total Bytes Sent/Received counters in ZCC increment.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-13.png" alt="Browser showing the intranet page loaded next to Zscaler Client Connector with incrementing byte counters" loading="lazy">
+                  <div class="screenshot-caption">Intranet page loads; ZCC traffic counters increment.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t7-1">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 7.1</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t7-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t7-1',this)">Save</button><div class="section-qa-list" id="sq-list-t7-1"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t7-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t7-1',this)">Save</button><div class="section-qa-list" id="sn-list-t7-1"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 7.2 -->
+      <div class="task-collapsible open" id="task-7-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 7.2</span>
+          <span class="task-collapsible-title">Configure User-Specific Access to an Intranet Application</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you create a dedicated application segment to provide more granular access control that limits intranet access to the "Student" user.</p>
+            <ol class="step-list">
+              <li>Review recently accessed private applications — from the Experience Center, type <code>applications</code> in the search bar to navigate into <strong>Analytics &gt; Private Applications</strong>. Scroll to <strong>Applications Discovered in the past 14 days</strong> to identify recently accessed applications.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-14.png" alt="Analytics Private Applications page with Applications Discovered in the past 14 days section" loading="lazy">
+                  <div class="screenshot-caption">Analytics &gt; Private Applications — Applications Discovered in the past 14 days.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-15.png" alt="Discovered applications list including intranet.patraining.safemarch.com" loading="lazy">
+                  <div class="screenshot-caption">intranet.patraining.safemarch.com appears in the discovered applications list.</div>
+                </div>
+              </li>
+              <li>Configure the Intranet Application Segment — select <strong>Add Application Segment</strong>, select the application <code>intranet.patraining.safemarch.com</code>, and select <strong>Define Selected Applications</strong>. Alternatively, navigate to <strong>Policies &gt; App Segment</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-16.png" alt="Define Selected Applications with intranet.patraining.safemarch.com selected" loading="lazy">
+                  <div class="screenshot-caption">Define Selected Applications — intranet.patraining.safemarch.com.</div>
+                </div>
+              </li>
+              <li>At the Define Applications step:
+                <ul class="sub-steps">
+                  <li>Name: <code>Intranet</code></li>
+                  <li>Status: Enabled</li>
+                  <li>Source IP Anchor: Disabled</li>
+                  <li>Add a suitable description; leave other settings default</li>
+                </ul>
+                Select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-17.png" alt="Define Applications for Intranet segment with Name Intranet and Status Enabled" loading="lazy">
+                  <div class="screenshot-caption">Intranet App Segment — Name: Intranet.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-18.png" alt="Intranet Application Segment settings left at defaults" loading="lazy">
+                  <div class="screenshot-caption">Remaining settings left at default.</div>
+                </div>
+              </li>
+              <li>Add Segment Group:
+                <ul class="sub-steps">
+                  <li>Name: <code>CorpApps</code></li>
+                  <li>Status: Enabled</li>
+                </ul>
+                Select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-19.png" alt="Add Segment Group with Name CorpApps and Status Enabled" loading="lazy">
+                  <div class="screenshot-caption">Segment Group — CorpApps.</div>
+                </div>
+              </li>
+              <li>Add Server Group: Name <code>CorpServers</code> (selected from the existing wildcard application segment). Select <strong>Next</strong>, then <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-20.png" alt="Server Group selection reusing the existing CorpServers group" loading="lazy">
+                  <div class="screenshot-caption">Server Group — reuse existing CorpServers.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-21.png" alt="Intranet Application Segment saved, redirected to Edit Policy page" loading="lazy">
+                  <div class="screenshot-caption">Saved — redirected to the Edit Policy page.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> After saving the Application Segment, you're redirected to the Edit Policy page. From there you can add a policy for the Discovery App Segment, or navigate directly to Policies &gt; Access Policy from the left-hand menu.</p></div>
+              </li>
+              <li>Add Access Policy — navigate to <strong>Policies &gt; Access Policy</strong>, select <strong>Add</strong>, and configure:
+                <ul class="sub-steps">
+                  <li>Rule Name: <code>Allow Intranet</code></li>
+                  <li>Rule Action: Allow Access</li>
+                  <li>App Connector Selection Method: All App Connector Groups</li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-22.png" alt="Add Access Policy with Rule Name Allow Intranet and Rule Action Allow Access" loading="lazy">
+                  <div class="screenshot-caption">Access Policy — Allow Intranet, Allow Access.</div>
+                </div>
+              </li>
+              <li>Define the Criteria — select <strong>Add Criteria</strong>, select Applications, and choose the <strong>Intranet</strong> Application Segment. Add additional criteria for User and Session Attributes: select the + icon, select <strong>loginname</strong>, and choose the user <code>Student@<span class="var-fqdn">&lt;FQDN&gt;</span></code>. Select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-23.png" alt="Access Policy Criteria with Applications set to Intranet segment" loading="lazy">
+                  <div class="screenshot-caption">Criteria — Applications: Intranet.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-24.png" alt="User Attributes criteria with loginname attribute selection" loading="lazy">
+                  <div class="screenshot-caption">User Attributes — add loginname criteria.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-25.png" alt="loginname attribute set to Student user for the FQDN" loading="lazy">
+                  <div class="screenshot-caption">loginname — Student@&lt;FQDN&gt; selected.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-26.png" alt="Access Policy Allow Intranet rule with User criteria configured, ready to save" loading="lazy">
+                  <div class="screenshot-caption">Allow Intranet rule — scoped to Student.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-27.png" alt="Allow Intranet Access Policy saved and appearing in the policy list" loading="lazy">
+                  <div class="screenshot-caption">Allow Intranet rule saved.</div>
+                </div>
+              </li>
+              <li>Test the policy — open a web browser on the Corp: Client PC and ZCC side-by-side. Navigate to <code>http://intranet.patraining.safemarch.com</code> using the provided bookmark. Ensure the intranet page loads successfully for the Student user; refresh and confirm the Total Bytes Sent/Received counters in ZCC increment.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-28.png" alt="Intranet page loading successfully for the Student user with ZCC byte counters incrementing" loading="lazy">
+                  <div class="screenshot-caption">Intranet loads for Student; ZCC counters increment.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t7-2">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 7.2</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t7-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t7-2',this)">Save</button><div class="section-qa-list" id="sq-list-t7-2"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t7-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t7-2',this)">Save</button><div class="section-qa-list" id="sn-list-t7-2"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 7.3 -->
+      <div class="task-collapsible open" id="task-7-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 7.3</span>
+          <span class="task-collapsible-title">Enable ICMP Access</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you enable ICMP access on an application segment so you can use ping to troubleshoot reachability to an internal application.</p>
+            <ol class="step-list">
+              <li>Verify ICMP accessibility — on the Corp: Client PC, open Command Prompt and enter:
+                <div style="margin:8px 0;"><code>ping intranet.patraining.safemarch.com</code></div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-29.png" alt="Command Prompt ping to intranet.patraining.safemarch.com failing since ICMP Access is disabled" loading="lazy">
+                  <div class="screenshot-caption">Ping fails — ICMP Access is still disabled on the Intranet segment.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> If ICMP Access is disabled in the Application Segment, the internal application does not respond to ping requests or reachability checks over ICMP.</p></div>
+              </li>
+              <li>Enable ICMP Access in the ZPA Admin Portal — navigate to <strong>Policies &gt; Access Control &gt; Private Applications &gt; App Segments</strong>, locate the <strong>Intranet</strong> segment, and select <strong>Edit</strong>. In the Edit Application Segment window, select <strong>Next</strong> to reach the ICMP Access field, set it to <strong>Enabled</strong>, and select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-30.png" alt="Edit Application Segment ICMP Access field being set to Enabled" loading="lazy">
+                  <div class="screenshot-caption">ICMP Access — set to Enabled on the Intranet segment.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-31.png" alt="Intranet Application Segment saved with ICMP Access enabled" loading="lazy">
+                  <div class="screenshot-caption">Intranet segment saved with ICMP Access enabled.</div>
+                </div>
+              </li>
+              <li>Test ICMP connectivity — return to the Corp: Client PC, reopen Command Prompt, and enter:
+                <div style="margin:8px 0;"><code>ping intranet.patraining.safemarch.com</code></div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7-32.png" alt="Command Prompt ping to intranet.patraining.safemarch.com succeeding after ICMP Access is enabled" loading="lazy">
+                  <div class="screenshot-caption">Ping now succeeds — ICMP traffic is allowed.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Expected Result:</strong> The internal application now responds to ping requests, confirming ICMP traffic is allowed.</p></div>
+                <div class="callout callout-caution"><p><strong>Caution:</strong> Enable ICMP Access only when ICMP connectivity is required for troubleshooting. Do not use ICMP Access for general application testing.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t7-3">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 7.3</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t7-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t7-3',this)">Save</button><div class="section-qa-list" id="sq-list-t7-3"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t7-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t7-3',this)">Save</button><div class="section-qa-list" id="sn-list-t7-3"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portal Credentials</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Progress</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-7-1" onchange="toggleDone(this)"><label for="chk-7-1">7.1 Wildcard segment configured</label></li>
+        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-7-2" onchange="toggleDone(this)"><label for="chk-7-2">7.2 User-scoped Intranet segment configured</label></li>
+        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-7-3" onchange="toggleDone(this)"><label for="chk-7-3">7.3 ICMP enabled &amp; tested</label></li>
+      </ul>
+    </div>
+
+  </aside>
+</main>
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab6.html">← Lab 6: ZPA Infrastructure</a>
+  <div class="page-nav-message">Access is granted and scoped — now watch how it performs.</div>
+  <a class="page-nav-btn page-nav-next" href="lab8.html">Lab 8: ZDX Dashboards →</a>
+</div>
+
+<script>
+const CONFIG_KEY='edu100-expc-lab-config';
+const PAGE_KEY='edu100-lab-lab7';
+var SECTION_IDS=['t7-1','t7-2','t7-3'];
+
+function applyConfig(){
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
+  }catch(e){}
+}
+function loadConfig(){try{applyConfig();}catch(e){}}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
+function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
+function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
+function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
+function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
+function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
+function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
+function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
+function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
+function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
+function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
+function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.style.opacity='1';
+  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
+  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
+  sessionStorage.setItem('pt','1');
+  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
+});
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+</script>
+</body>
+</html>

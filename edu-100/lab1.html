@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 1: User &amp; Administrator Access Entitlements — EDU-100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 1</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">LAB 1 · IDENTITY</span>
+    <div class="header-dot"></div>
+  </div>
+  <h1>Configure User and Administrator <em>Access Entitlements</em></h1>
+  <div class="motivation-banner">
+    <p>Every policy you write in the labs that follow only matters if the right people can — or can't — reach the console. Here you build the identity foundation: departments, groups, two very differently-privileged users, and the entitlements that make role-based access actually work.</p>
+  </div>
+</header>
+
+<div class="top-panels">
+  <div class="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel(this)">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="q-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab1">
+      <h2>Lab 1: Configure User and Administrator Access Entitlements</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p><strong>Scenario:</strong> You work in a Zscaler tenant that is already provisioned and focus on establishing a clean foundation for who can sign in and what they can access in <code>labtenant.com</code>. You onboard two new users: <strong>JoeSupport</strong> (support/helpdesk) and <strong>BevIT</strong> (IT/admin) so they are placed into the correct departments and user groups and inherit the appropriate Zscaler entitlements. JoeSupport should have limited, read-only access suitable for Tier 1 support, while BevIT should have full administrative access. You validate both experiences by signing in as each user and confirming what they can and cannot do. You also review how IdP integration using the OIDC protocol is configured in the Zscaler tenant.</p>
+        <div class="callout callout-note">
+          <p><strong>Note:</strong> The usernames <strong>JoeSupport</strong> and <strong>BevIT</strong> are just examples — you may use any other usernames you wish, as long as you apply them consistently across every task and screen in this lab.</p>
+        </div>
+        <ul style="margin-top:10px;">
+          <li>Create the required organizational structure (departments and groups).</li>
+          <li>Provision users and place them correctly so policies and entitlements apply.</li>
+          <li>Configure entitlements and verify they are applied to the correct identities and groups.</li>
+          <li>Validate access via role-based UI restrictions and service status.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~45 minutes</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> Tasks 1.1–1.4 simulated tenant · Task 1.5 read-only tenant</div>
+        </div>
+      </div>
+
+      <table class="creds-table" style="margin-bottom:20px;">
+        <thead><tr><th>User</th><th>Task</th><th>Department</th><th>User Group</th><th>Service Entitlement</th><th>Administrative Entitlement</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">JoeSupport</td><td>1.2</td><td>Support</td><td>Helpdesk Level 1</td><td>—</td><td>ZIA (Read-only), ZDX (Read-only)</td></tr>
+          <tr><td>1.3</td><td>Support</td><td>Helpdesk Level 1</td><td>ZIA</td><td>—</td></tr>
+          <tr><td>BevIT</td><td>1.2</td><td>IT</td><td>Zscaler Global Administrators (built-in group)</td><td colspan="2">ZIdentity, Workflow Automation, ZIA, ZPA, ZDX, ZCC, Zscaler Cloud and Branch Connector, Business Insights</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--text-muted);margin-top:-12px;margin-bottom:20px;">Table 1.1 — User Access and Entitlement Mapping. This is the target state you build toward across Tasks 1.1–1.3.</p>
+
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> This lab uses both the simulated lab environment and the Zscaler tenant. You complete Tasks 1.1–1.4 in the simulated environment, following the in-lab guided steps (the instructions below are for reference only). You then switch to the Zscaler tenant for Task 1.5.</p>
+      </div>
+
+      <!-- Task 1.1 -->
+      <div class="task-collapsible open" id="task-1-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.1</span>
+          <span class="task-collapsible-title">Create Departments and User Groups</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you create the Support and IT departments, then create the Helpdesk L1 user group that JoeSupport will be placed into.</p>
+            <ol class="step-list">
+              <li>In the simulated lab environment, navigate to <code>console.zscaler.com</code>, where you are prompted to enter your assigned username. After entering your username and password, access the Zscaler Admin Console and select the <strong>Administration</strong> tab. Go to <strong>Identity &gt; Departments</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-01.png" alt="Experience Center Administration navigation showing Identity > Departments menu path" loading="lazy">
+                  <div class="screenshot-caption">Administration &gt; Identity &gt; Departments — the entry point for organizational structure.</div>
+                </div>
+              </li>
+              <li>Create the <strong>Support</strong> department. Select <strong>Add Department</strong> and enter:
+                <ul class="sub-steps">
+                  <li>Department Name: <code>Support</code></li>
+                  <li>Description: <code>Support Department</code></li>
+                </ul>
+                Select <strong>Save</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-02.png" alt="Add Department dialog with Department Name set to Support and Description set to Support Department" loading="lazy">
+                  <div class="screenshot-caption">Add Department — Name: Support, Description: Support Department.</div>
+                </div>
+              </li>
+              <li>Create the <strong>IT</strong> department. Select <strong>Add Department</strong> and enter:
+                <ul class="sub-steps">
+                  <li>Department Name: <code>IT</code></li>
+                  <li>Description: <code>IT Department</code></li>
+                </ul>
+                Select <strong>Save</strong>, then confirm that IT and Support both appear in the Departments section.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-03.png" alt="Departments list showing both IT and Support departments created" loading="lazy">
+                  <div class="screenshot-caption">Departments list — IT and Support both present, confirming both were saved.</div>
+                </div>
+              </li>
+              <li>Create the <strong>Helpdesk L1</strong> user group. In the Experience Center Dashboard, select the <strong>Administration</strong> tab and go to <strong>Identity &gt; User Groups</strong>. Select <strong>Add User Group</strong> and enter:
+                <ul class="sub-steps">
+                  <li>User Group Name: <code>Helpdesk L1</code></li>
+                </ul>
+                Select <strong>Save</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-04.png" alt="Add Group pane with User Group Name set to Helpdesk L1" loading="lazy">
+                  <div class="screenshot-caption">Add User Group — Name: Helpdesk L1.</div>
+                </div>
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-05.png" alt="User Groups list showing Helpdesk L1 group created" loading="lazy">
+                  <div class="screenshot-caption">User Groups list — Helpdesk L1 confirmed saved.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t1-1">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 1.1</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t1-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t1-1',this)">Save</button><div class="section-qa-list" id="sq-list-t1-1"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t1-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t1-1',this)">Save</button><div class="section-qa-list" id="sn-list-t1-1"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 1.2 -->
+      <div class="task-collapsible open" id="task-1-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.2</span>
+          <span class="task-collapsible-title">Create Users</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you create users JoeSupport and BevIT and map them to the departments and user groups you created in Task 1.1.</p>
+            <ol class="step-list">
+              <li>Create user <strong>JoeSupport</strong>. From the left navigation panel, go to <strong>Users</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-06.png" alt="Left navigation panel with Users menu item highlighted" loading="lazy">
+                  <div class="screenshot-caption">Left navigation — Users.</div>
+                </div>
+              </li>
+              <li>Select <strong>Add User</strong> and set:
+                <ul class="sub-steps">
+                  <li>Login ID: <code>joesupport@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Name / First Name: <code>JoeSupport</code></li>
+                  <li>Same As Login ID: Enabled</li>
+                  <li>Primary Email: <code>joesupport@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Department: <code>Support</code></li>
+                  <li>Assign Groups: <code>Helpdesk L1</code></li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-07.png" alt="Add User form for JoeSupport showing Department set to Support and Assign Groups dropdown with Helpdesk L1 selected" loading="lazy">
+                  <div class="screenshot-caption">Add User — JoeSupport, Department: Support, Group: Helpdesk L1.</div>
+                </div>
+              </li>
+              <li>Select the <strong>Security Settings</strong> tab and configure:
+                <ul class="sub-steps">
+                  <li>Password option: Set By Administrator</li>
+                  <li>Password / Confirm Password: <code>Admin-123!</code></li>
+                  <li>Prompt for Password change after initial log in: Unchecked</li>
+                  <li>Multi-Factor Bypass — Skip Second Factor Authentication: Enabled, Skip until: as far out as allowed</li>
+                </ul>
+                <div class="callout callout-note"><p><strong>Note:</strong> For the purposes of this lab, the second factor of authentication is skipped. Zscaler recommends enabling Multi-Factor Authentication (MFA) for all users.</p></div>
+              </li>
+              <li>Navigate to the <strong>Additional Attributes</strong> pane. Under the INFORMATION section, set <strong>SyncZPA</strong>: <code>Zscaler</code>, then select <strong>Save</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-08.png" alt="Additional Attributes pane with SyncZPA set to Zscaler" loading="lazy">
+                  <div class="screenshot-caption">Additional Attributes — SyncZPA: Zscaler.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> Setting SyncZPA to Zscaler tells the lab environment to sync this user with ZPA so later ZPA labs and the lab-reset scripts function correctly.</p></div>
+              </li>
+              <li>Create user <strong>BevIT</strong>. Select <strong>Add User</strong> and set:
+                <ul class="sub-steps">
+                  <li>Login ID: <code>bevit@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Name / First Name: <code>BevIT</code></li>
+                  <li>Same As Login ID: Enabled</li>
+                  <li>Primary Email: <code>bevit@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Department: <code>IT</code></li>
+                  <li>Assign Groups: <code>Zscaler Global Administrators</code></li>
+                </ul>
+              </li>
+              <li>Select the <strong>Security Settings</strong> tab and repeat the same password / MFA bypass configuration as JoeSupport (Password: <code>Admin-123!</code>). Navigate to <strong>Additional Attributes</strong> and set <strong>SyncZPA</strong>: <code>Zscaler</code>, then select <strong>Save</strong>.</li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t1-2">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 1.2</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t1-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t1-2',this)">Save</button><div class="section-qa-list" id="sq-list-t1-2"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t1-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t1-2',this)">Save</button><div class="section-qa-list" id="sn-list-t1-2"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 1.3 -->
+      <div class="task-collapsible open" id="task-1-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.3</span>
+          <span class="task-collapsible-title">Add Administrative and Service Entitlements</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you assign administrative entitlements and service entitlements to the Helpdesk L1 group so JoeSupport inherits them.</p>
+            <ol class="step-list">
+              <li>Assign administrative entitlement for <strong>ZIA</strong> (Helpdesk L1). From the Experience Center Dashboard, navigate to <strong>Administration &gt; Admin Management &gt; Role Based Access Control &gt; Administrative Entitlements</strong>. Select <strong>Zscaler Internet Access</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-09.png" alt="Administrative Entitlements list with Zscaler Internet Access entry" loading="lazy">
+                  <div class="screenshot-caption">Administrative Entitlements — select Zscaler Internet Access.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-10.png" alt="Zscaler Internet Access Administrative pane with Assign Groups option" loading="lazy">
+                  <div class="screenshot-caption">Zscaler Internet Access — Administrative pane, select Assign Groups.</div>
+                </div>
+              </li>
+              <li>In the Zscaler Internet Access - Administrative pane, select <strong>Assign Groups</strong>, check <strong>Helpdesk L1</strong>, choose role <strong>Executive Insights App</strong> from the Role dropdown, then select <strong>Next</strong> and <strong>Assign</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-11.png" alt="Assign Groups dialog with Helpdesk L1 checkbox selected and Executive Insights App role chosen" loading="lazy">
+                  <div class="screenshot-caption">Assign Groups — Helpdesk L1, Role: Executive Insights App.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> For simplicity, this lab uses the predefined Executive Insights App role, which conveniently provides read-only access to the Zscaler portal — the intended permission level for this user. In production, you can create a custom role under Administration &gt; Admin Management &gt; Role Based Access Control &gt; Roles.</p></div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-12.png" alt="Confirmation that Helpdesk L1 group is assigned Executive Insights App role for Zscaler Internet Access" loading="lazy">
+                  <div class="screenshot-caption">Assignment confirmed for Zscaler Internet Access.</div>
+                </div>
+              </li>
+              <li>Assign administrative entitlement for <strong>ZDX</strong> (Helpdesk L1). Select <strong>Back</strong> next to Assign Groups, then select <strong>Zscaler Digital Experience</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-13.png" alt="Back navigation link next to Assign Groups" loading="lazy">
+                  <div class="screenshot-caption">Back to Administrative Entitlements list.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-14.png" alt="Administrative Entitlements list with Zscaler Digital Experience entry" loading="lazy">
+                  <div class="screenshot-caption">Select Zscaler Digital Experience.</div>
+                </div>
+              </li>
+              <li>In the Zscaler Digital Experience - Administrative pane, select <strong>Assign Groups</strong>, check <strong>Helpdesk L1</strong>, choose role <strong>ZDX Read-only Admin</strong>, then select <strong>Next</strong> and <strong>Assign</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-15.png" alt="Assign Groups dialog for Zscaler Digital Experience with Helpdesk L1 selected and ZDX Read-only Admin role chosen" loading="lazy">
+                  <div class="screenshot-caption">Assign Groups — Helpdesk L1, Role: ZDX Read-only Admin.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> The ZDX Read-only Administrator role is a pre-built role.</p></div>
+              </li>
+              <li>Assign service entitlement for <strong>ZIA</strong> (Helpdesk L1). Navigate to <strong>Administration &gt; Entitlements &gt; End User Entitlements &gt; Service Entitlements</strong> and select <strong>Zscaler Internet Access</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-16.png" alt="Service Entitlements list with Zscaler Internet Access entry" loading="lazy">
+                  <div class="screenshot-caption">Service Entitlements — select Zscaler Internet Access.</div>
+                </div>
+              </li>
+              <li>In the Zscaler Internet Access - Service pane, select <strong>Assign Groups</strong>, check <strong>Helpdesk L1</strong>, then select <strong>Next</strong> and <strong>Assign</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-17.png" alt="Zscaler Internet Access Service pane with Assign Groups selected and Helpdesk L1 checked" loading="lazy">
+                  <div class="screenshot-caption">Service entitlement — Helpdesk L1 assigned to Zscaler Internet Access.</div>
+                </div>
+              </li>
+              <li>Verify the entitlements for user JoeSupport. Navigate to <strong>Administration &gt; Identity &gt; Users</strong> and select the <strong>Edit</strong> (pencil) icon for JoeSupport.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-18.png" alt="Users list with Edit pencil icon for user JoeSupport highlighted" loading="lazy">
+                  <div class="screenshot-caption">Users list — edit JoeSupport.</div>
+                </div>
+              </li>
+              <li>In the Edit User pane, navigate to the <strong>Entitlements</strong> tab and verify that both the administrative and service entitlements are assigned to JoeSupport. Select <strong>Cancel</strong> to exit.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-19.png" alt="Edit User pane Entitlements tab for JoeSupport showing ZIA and ZDX administrative and service entitlements" loading="lazy">
+                  <div class="screenshot-caption">JoeSupport's Entitlements tab — ZIA and ZDX administrative + ZIA service entitlement confirmed.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-20.png" alt="Edit User pane with Cancel button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Select Cancel to exit without changes.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> You can verify the entitlements for BevIT the same way — Administration &gt; Identity &gt; Users, Edit BevIT, review the Entitlements tab.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t1-3">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 1.3</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t1-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t1-3',this)">Save</button><div class="section-qa-list" id="sq-list-t1-3"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t1-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t1-3',this)">Save</button><div class="section-qa-list" id="sn-list-t1-3"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 1.4 -->
+      <div class="task-collapsible open" id="task-1-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.4</span>
+          <span class="task-collapsible-title">Validate Entitlement Access for Users</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you sign in to the Experience Center to validate administrative entitlements and access for users JoeSupport and BevIT.</p>
+            <ol class="step-list">
+              <li>Validate administrative entitlements for JoeSupport. On the Corp: Client PC, open a new incognito Chrome window and navigate to <code>https://console.zscaler.com/</code>. Authenticate with:
+                <ul class="sub-steps">
+                  <li>Username: <code>joesupport@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Password: <code>Admin-123!</code></li>
+                </ul>
+                Select <strong>Sign in</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-21.png" alt="ZIdentity sign-in page with JoeSupport's credentials entered" loading="lazy">
+                  <div class="screenshot-caption">Sign in as JoeSupport.</div>
+                </div>
+              </li>
+              <li>In the Experience Center Dashboard, observe that the Administration and Policy tabs are more restrictive than they were for the Student user. Confirm that JoeSupport cannot access Admin Management, Sign-On Policies, or other administrative configuration areas, and can only <em>view</em> existing Digital Experience data.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-22.png" alt="Experience Center dashboard for JoeSupport showing restricted Administration and Policy tab options" loading="lazy">
+                  <div class="screenshot-caption">JoeSupport's dashboard — restricted Administration/Policy navigation compared to the Student admin.</div>
+                </div>
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-23.png" alt="Digital Experience view-only data for JoeSupport with no create or modify controls" loading="lazy">
+                  <div class="screenshot-caption">ZDX data is view-only for JoeSupport — no create/modify controls.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> The Helpdesk Level 1 group has read-only privileges for ZIA and ZDX. JoeSupport inherits this read-only access, which removes access to core administrative areas (Policies, Admin Management) and limits him to view-only analytics and experience data.</p></div>
+                Select the <strong>Account settings</strong> icon (top right) to sign out.
+              </li>
+              <li>Validate administrative entitlements for BevIT. In the same incognito window, navigate to <code>https://console.zscaler.com/</code> and authenticate with:
+                <ul class="sub-steps">
+                  <li>Username: <code>bevit@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Password: <code>Admin-123!</code></li>
+                </ul>
+                Navigate to <strong>Administration &gt; Admin Management &gt; Sign-On policies</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-24.png" alt="Admin Sign-On Policy window with Add Rule button enabled for BevIT" loading="lazy">
+                  <div class="screenshot-caption">Admin Sign-On Policy — Add Rule is enabled for BevIT.</div>
+                </div>
+              </li>
+              <li>Confirm that in the Admin Sign-On Policy window, BevIT is allowed to <strong>Add Rule</strong> (button enabled) because she is part of the Zscaler Global Administrators group. Select the Account settings icon to sign out.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-25.png" alt="Account settings icon used to sign out of the Experience Center" loading="lazy">
+                  <div class="screenshot-caption">Sign out via the Account settings icon.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> The Add Rule button is only enabled for users with sufficient administrative privileges. As a Zscaler Global Administrator, BevIT has full administrative access, including managing sign-on policies.</p></div>
+              </li>
+              <li>Validate service entitlement for JoeSupport via Zscaler Client Connector. On the Corp: Client PC, in the Windows taskbar (bottom-right), select the <strong>Show hidden icons</strong> arrow, then the Zscaler Client Connector icon, then <strong>Open Zscaler</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-26.png" alt="Windows taskbar hidden icons showing the Zscaler Client Connector icon" loading="lazy">
+                  <div class="screenshot-caption">Taskbar — open Zscaler Client Connector.</div>
+                </div>
+              </li>
+              <li>From the ZCC login page, authenticate with:
+                <ul class="sub-steps">
+                  <li>Username: <code>joesupport@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
+                  <li>Password: <code>Admin-123!</code></li>
+                </ul>
+                Select <strong>Sign in</strong>.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1-27.png" alt="Zscaler Client Connector login page with JoeSupport's credentials entered" loading="lazy">
+                  <div class="screenshot-caption">ZCC sign-in — JoeSupport.</div>
+                </div>
+              </li>
+              <li>Verify JoeSupport's service entitlement access for Zscaler Internet Access — in the ZCC console, confirm Zscaler Internet Access is <strong>ON</strong> for JoeSupport. After verifying, log out of ZCC (you sign in again later with a different account).
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-28.png" alt="Zscaler Client Connector console showing Zscaler Internet Access service status ON for JoeSupport" loading="lazy">
+                  <div class="screenshot-caption">ZCC — Zscaler Internet Access is ON for JoeSupport, confirming his ZIA service entitlement.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t1-4">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 1.4</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t1-4" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t1-4',this)">Save</button><div class="section-qa-list" id="sq-list-t1-4"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t1-4" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t1-4',this)">Save</button><div class="section-qa-list" id="sn-list-t1-4"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 1.5 -->
+      <div class="task-collapsible open" id="task-1-5">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.5</span>
+          <span class="task-collapsible-title">Review IdP Integration Using OIDC</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you log in to the Experience Center using the <strong>read-only Zscaler tenant</strong> to review IdP integration using the OIDC protocol. User credentials are contained in the lab access instructions provided to you via email by the instructor.</p>
+            <ol class="step-list">
+              <li>In your browser, navigate to <code>https://console.zscaler.com</code> and authenticate with the read-only Zscaler tenant credentials:
+                <ul class="sub-steps">
+                  <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
+                  <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
+                </ul>
+              </li>
+              <li>Go to <strong>Administration &gt; Identity &gt; ZIdentity &gt; IDP Configuration &gt; External Identities</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-29.png" alt="External Identities page showing Okta IdP listed as Primary Identity Provider" loading="lazy">
+                  <div class="screenshot-caption">External Identities — Okta IdP listed as Primary Identity Provider, Type OIDC, Status Enabled.</div>
+                </div>
+                <div class="callout callout-note"><p><strong>Note:</strong> What you see is a simplified view of the Okta IdP configuration within Zscaler. A real-world environment involves significantly more setup on the IdP side — OIDC app registration, redirect URIs, SCIM provisioner setup, attribute mapping, and group sync policies. See the <a href="https://help.zscaler.com/zscaler-technology-partners/zscaler-and-okta-deployment-guide" target="_blank" rel="noopener">Zscaler and Okta Deployment Guide</a> for the full integration walkthrough.</p></div>
+              </li>
+              <li>Observe that Okta IdP is listed as the Primary Identity Provider with Type set to <strong>OIDC</strong> and Status set to <strong>Enabled</strong>. Select the eye icon to open the Okta IdP configuration and review the <strong>Basic</strong> tab — note the Identity Vendor (Okta), Protocol (OIDC), and Login ID Attribute (email).
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-30.png" alt="Okta IdP Basic tab showing Identity Vendor Okta, Protocol OIDC, Login ID Attribute email" loading="lazy">
+                  <div class="screenshot-caption">Okta IdP — Basic tab: Vendor Okta, Protocol OIDC, Login ID Attribute email.</div>
+                </div>
+              </li>
+              <li>Scroll down to review the <strong>OIDC Configuration</strong> section — note the Metadata URL, Redirect URI, and endpoint details. Then select the <strong>Provisioning</strong> tab to review SCIM Provisioning settings.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-31.png" alt="OIDC Configuration section showing Metadata URL, Redirect URI, and endpoint details" loading="lazy">
+                  <div class="screenshot-caption">OIDC Configuration — Metadata URL, Redirect URI, and endpoint details.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-32.png" alt="Provisioning tab showing SCIM Provisioning settings for the Okta IdP" loading="lazy">
+                  <div class="screenshot-caption">Provisioning tab — SCIM Provisioning settings.</div>
+                </div>
+              </li>
+              <li>Close the Okta IdP panel and navigate to <strong>Administration &gt; Identity &gt; ZIdentity &gt; Passwords &amp; Authentication &gt; Authentication Session</strong>. Note the <strong>Administrator Inactivity Timeout Duration</strong> configured for the tenant — this controls how long an admin session remains active without interaction.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-33.png" alt="Authentication Session settings page showing Administrator Inactivity Timeout Duration" loading="lazy">
+                  <div class="screenshot-caption">Authentication Session — Administrator Inactivity Timeout Duration.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-34.png" alt="Passwords and Authentication configuration page in ZIdentity" loading="lazy">
+                  <div class="screenshot-caption">Passwords &amp; Authentication configuration overview.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1-35.png" alt="ZIdentity Authentication Session detail confirming timeout duration in minutes" loading="lazy">
+                  <div class="screenshot-caption">Timeout duration is configured in minutes and applies tenant-wide.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-qa" data-section="t1-5">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 1.5</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t1-5" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t1-5',this)">Save</button><div class="section-qa-list" id="sq-list-t1-5"></div></div>
+                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t1-5" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t1-5',this)">Save</button><div class="section-qa-list" id="sn-list-t1-5"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portal Credentials</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">JoeSupport (Helpdesk L1)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">joesupport@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('joesupport-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">BevIT (Global Admin)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">bevit@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('bevit-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Lab Progress</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-1-1" onchange="toggleDone(this)"><label for="chk-1-1">1.1 Departments &amp; groups created</label></li>
+        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-1-2" onchange="toggleDone(this)"><label for="chk-1-2">1.2 JoeSupport &amp; BevIT created</label></li>
+        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-1-3" onchange="toggleDone(this)"><label for="chk-1-3">1.3 Entitlements assigned</label></li>
+        <li class="progress-item" id="pi-4"><input type="checkbox" id="chk-1-4" onchange="toggleDone(this)"><label for="chk-1-4">1.4 Access validated</label></li>
+        <li class="progress-item" id="pi-5"><input type="checkbox" id="chk-1-5" onchange="toggleDone(this)"><label for="chk-1-5">1.5 OIDC reviewed</label></li>
+      </ul>
+    </div>
+
+  </aside>
+</main>
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab0.html">← Lab 0: About &amp; Setup</a>
+  <div class="page-nav-message">Identity is the foundation — now go make it forward traffic.</div>
+  <a class="page-nav-btn page-nav-next" href="lab2.html">Lab 2: Forward Traffic with ZCC →</a>
+</div>
+
+<script>
+const CONFIG_KEY='edu100-expc-lab-config';
+const PAGE_KEY='edu100-lab-lab1';
+var SECTION_IDS=['t1-1','t1-2','t1-3','t1-4','t1-5'];
+
+function applyConfig(){
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
+  }catch(e){}
+}
+function loadConfig(){try{applyConfig();}catch(e){}}
+function toggleFooter(){}
+
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
+function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
+function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
+function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
+function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
+function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
+function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
+function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
+function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
+function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
+function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
+function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
+function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.style.opacity='1';
+  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
+  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
+  sessionStorage.setItem('pt','1');
+  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
+});
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='joesupport-user')val=d.fqdn?'joesupport@'+d.fqdn:'';else if(type==='bevit-user')val=d.fqdn?'bevit@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+</script>
+</body>
+</html>
