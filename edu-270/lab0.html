@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 0: Lab Access Details — EDU-270</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-270</a> › Lab 0</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 0 · EDU-270</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Lab Access Details</h1>
+  <div class="motivation-banner">
+    <p>Get into your lab POD, meet the Corp: Client PC, and learn the two portals — Experience Center and Skytap — you'll live in across every automation lab.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="sid-input">Student ID</label>
+        <div class="config-field-row">
+          <input type="text" id="sid-input" placeholder="zs5101" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('sid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="vanity-input">ZIdentity Vanity Domain</label>
+        <div class="config-field-row">
+          <input type="text" id="vanity-input" placeholder="zs5101.zscloud.net" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('vanity-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientid-input">API Client ID</label>
+        <div class="config-field-row">
+          <input type="text" id="clientid-input" placeholder="(from Task 1.2)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientsecret-input">API Client Secret</label>
+        <div class="config-field-row">
+          <input type="text" id="clientsecret-input" placeholder="(from Task 1.2)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientsecret-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="zpacid-input">ZPA Customer ID</label>
+        <div class="config-field-row">
+          <input type="text" id="zpacid-input" placeholder="(from Private Access Tenant)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('zpacid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>API Client name:</strong> <code id="d-apiclient">&lt;Student ID&gt;-APIClient</code></span>
+      <span><strong>Access Token name:</strong> <code id="d-token">&lt;Student ID&gt;-Access-Token</code></span>
+      <span><strong>Experience Center:</strong> <code>https://console.zscaler.com/</code></span>
+      <span><strong>Skytap:</strong> <code>https://zscaler.skytap-portal.com/</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab0">
+      <h2>Lab 0: Lab Access Details</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">OVERVIEW</div>
+        <p>Welcome to <strong>Zscaler Zero Trust Automation (EDU-270)</strong>. This is a guided, hands-on lab that moves you from clicking through the Zscaler console to <strong>automating it</strong> — through Postman/ZIdentity, the official Python SDK, and Terraform. All exercises run in a safe, read-only-by-default lab tenant. By the end of this lab you will be able to:</p>
+        <ul style="margin-top:10px;">
+          <li>Access your assigned Skytap POD and launch the <strong>Corp: Client PC</strong></li>
+          <li>Identify the two portals used throughout the course — <strong>Experience Center</strong> (configure) and <strong>Skytap</strong> (run &amp; validate VMs)</li>
+          <li>Know where your lab credentials and the downloadable Lab Guide live</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-270</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 3.0 · Aug 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Postman + VS Code + Zscaler Experience Center</div>
+        </div>
+      </div>
+
+      <h3>What this course covers</h3>
+      <p>Across the labs, your objectives include:</p>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>Fork a Postman collection, create a <strong>ZIdentity API client</strong>, and generate an access token (<strong>Lab 1</strong>)</li>
+          <li>Automate <strong>ZIA</strong> URL filtering and SSL inspection rules with the <strong>Zscaler Python SDK</strong> (<strong>Lab 2</strong>)</li>
+          <li>Automate <strong>ZCC</strong> app profiles, forwarding profiles, and device reporting with the SDK (<strong>Lab 3</strong>)</li>
+          <li>Automate a full <strong>ZPA</strong> access policy — connector group through application segment — with the SDK (<strong>Lab 4</strong>)</li>
+          <li>Declare and deploy <strong>ZIA</strong> rules with the Zscaler <strong>Terraform</strong> provider (<strong>Lab 5</strong>)</li>
+          <li>Declare and deploy <strong>ZPA</strong> segments and policies at scale with Terraform (<strong>Lab 6</strong>)</li>
+        </ul>
+      </div>
+
+      <h3>Lab Setup</h3>
+      <p>This lab environment is designed for carrying out the exercises in this manual. Your lab environment tests secure programmatic access to Zscaler through the Zero Trust Exchange. Your virtual lab environment starts with:</p>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>A virtual <strong>Windows PC</strong> (Corp: Client PC) you use as the automation workstation — running Postman and Visual Studio Code</li>
+          <li>Credentials for the admin and API accounts you need</li>
+          <li>A lab manual with the set of exercises to guide your learning</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-01.png" alt="Lab environment overview — Windows PC, credentials, and lab manual are provided">
+        <div class="screenshot-caption">Your POD ships with a Windows client VM, the credentials you need, and this lab manual — everything required to get from console clicks to code.</div>
+      </div>
+
+      <h3>Task 0.1 — Accessing the Lab Environment</h3>
+      <p>To access your lab environment, follow these steps on your laptop:</p>
+      <div class="task-block">
+        <h4><span class="task-num">TASK 0.1</span> Log into Skytap</h4>
+        <ul class="step-list">
+          <li>Open a browser window and navigate to the <strong>Skytap access URL</strong>.</li>
+          <li>Enter your <strong>Skytap Passcode</strong> <code class="var var-skytap">&lt;Skytap Passcode&gt;</code> and click <strong>Go</strong>.</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-02.png" alt="Skytap access page prompting for the passcode">
+        <div class="screenshot-caption">Enter your emailed Skytap passcode and select Go to reach your POD's course manager.</div>
+      </div>
+      <div class="task-block">
+        <ul class="step-list">
+          <li>If the <strong>Corp: Client PC</strong> VM is shut down, click to start it.</li>
+          <li>If prompted for Windows credentials, sign in with: Username <code>Student</code> | Password <code>Admin-123!</code></li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-03.png" alt="Corp: Client PC VM tile with a Start control, and the Windows sign-in prompt">
+        <div class="screenshot-caption">Start the Corp: Client PC VM if it isn't already running, then sign in with the Student / Admin-123! Windows credentials.</div>
+      </div>
+
+      <h3>Task 0.2 — Lab Resources and Sign-In Credentials</h3>
+      <div class="task-block">
+        <h4><span class="task-num">TASK 0.2</span> Find your credentials and the lab guide</h4>
+        <ul class="step-list">
+          <li>At any time during the lab, click the <strong>Resources</strong> tab in the right window frame to access your <strong>Lab Guide attachment</strong>.</li>
+        </ul>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-04.png" alt="Skytap Resources tab open, showing the downloadable Lab Guide attachment">
+        <div class="screenshot-caption">The Resources tab holds a downloadable soft copy of this Lab Guide for offline reference.</div>
+      </div>
+      <div class="callout callout-note">
+        <p><strong>Tip:</strong> Enter your Student ID, Skytap passcode, ZIdentity vanity domain, API client ID/secret, and ZPA customer ID once in the <strong>Lab Configuration</strong> bar at the top of this page. Every later lab reuses these values — you only type them once.</p>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab0" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab0','Lab 0: Access')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab0" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab0')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-270 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab0" onchange="toggleDone(this)"><label for="chk-lab0">Lab 0: Access verified</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">OneAPI</div><div class="qr-def">Zscaler's unified API gateway — one base URL and OAuth2 flow in front of ZIA, ZPA, and ZDX.</div></div>
+      <div class="qr-item"><div class="qr-term">ZIdentity</div><div class="qr-def">Zscaler's identity platform; issues OAuth2 access tokens to API clients for OneAPI calls.</div></div>
+      <div class="qr-item"><div class="qr-term">API Client</div><div class="qr-def">An OAuth2 client registered in ZIdentity with a Client ID/Secret and scoped resource access.</div></div>
+      <div class="qr-item"><div class="qr-term">Access Token</div><div class="qr-def">A short-lived OAuth2 bearer token generated from client credentials, used on every API call.</div></div>
+      <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, and API client management.</div></div>
+      <div class="qr-item"><div class="qr-term">Skytap</div><div class="qr-def">Hosts the lab VMs (Corp: Client PC) for hands-on Postman / VS Code / Terraform work.</div></div>
+      <div class="qr-item"><div class="qr-term">zscaler-sdk-python</div><div class="qr-def">Official Python SDK wrapping OneAPI/ZIA/ZPA/ZCC endpoints for scripted automation.</div></div>
+      <div class="qr-item"><div class="qr-term">Terraform Provider</div><div class="qr-def">A plugin (zscaler/zia, zscaler/zpa) that translates HCL resources into OneAPI calls.</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <span class="page-nav-btn page-nav-prev page-nav-disabled">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Start of Lab Guide</span>
+  </span>
+  <div class="page-nav-message">Every automation starts with an API client, not a login. Let's build one.</div>
+  <a class="page-nav-btn page-nav-next" href="lab1.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 1: Postman &amp; ZIdentity</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-270 · Zscaler Zero Trust Automation · Hands-On Lab Guide</span>
+  <span>Lab 0: Access</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu270-automation-lab-config';
+const COLLAPSE_KEY='edu270-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var sid=document.getElementById('sid-input').value.trim();var vanity=document.getElementById('vanity-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[sid,vanity].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('sid-input').value=cfg.sid||'';document.getElementById('skytap-input').value=cfg.skytap||'';document.getElementById('vanity-input').value=cfg.vanity||'';document.getElementById('clientid-input').value=cfg.clientid||'';document.getElementById('clientsecret-input').value=cfg.clientsecret||'';document.getElementById('zpacid-input').value=cfg.zpacid||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={sid:document.getElementById('sid-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim(),vanity:document.getElementById('vanity-input').value.trim(),clientid:document.getElementById('clientid-input').value.trim(),clientsecret:document.getElementById('clientsecret-input').value.trim(),zpacid:document.getElementById('zpacid-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var sid=document.getElementById('sid-input').value.trim();
+  var skytap=document.getElementById('skytap-input').value.trim();
+  var vanity=document.getElementById('vanity-input').value.trim();
+  var clientid=document.getElementById('clientid-input').value.trim();
+  var clientsecret=document.getElementById('clientsecret-input').value.trim();
+  var zpacid=document.getElementById('zpacid-input').value.trim();
+  document.querySelectorAll('.var-studentid').forEach(function(el){if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent='<Student ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-skytap').forEach(function(el){if(skytap){el.textContent=skytap;el.classList.add('filled');}else{el.textContent='<Skytap Passcode>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-vanity').forEach(function(el){if(vanity){el.textContent=vanity;el.classList.add('filled');}else{el.textContent='<Vanity Domain>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientid').forEach(function(el){if(clientid){el.textContent=clientid;el.classList.add('filled');}else{el.textContent='<Client ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientsecret').forEach(function(el){if(clientsecret){el.textContent=clientsecret;el.classList.add('filled');}else{el.textContent='<Client Secret>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-zpacid').forEach(function(el){if(zpacid){el.textContent=zpacid;el.classList.add('filled');}else{el.textContent='<ZPA Customer ID>';el.classList.remove('filled');}});
+  var apiclient=sid?sid+'-APIClient':'<Student ID>-APIClient';
+  var token=sid?sid+'-Access-Token':'<Student ID>-Access-Token';
+  document.querySelectorAll('.d-apiclient').forEach(function(el){el.textContent=apiclient;});
+  document.querySelectorAll('.d-token').forEach(function(el){el.textContent=token;});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-270-lab-lab0';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Postman & ZIdentity','lab2':'Lab 2: ZIA Python SDK','lab3':'Lab 3: ZCC Python SDK','lab4':'Lab 4: ZPA Python SDK','lab5':'Lab 5: ZIA Terraform','lab6':'Lab 6: ZPA Terraform'};
+
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

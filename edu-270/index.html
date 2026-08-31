@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDU-270 Hands-On Lab Guide — Zero Trust Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › EDU-270</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">EDU-270 · Hands-On Lab</span>
+  </div>
+  <h1>Zscaler <em>Zero Trust Automation</em></h1>
+  <div class="motivation-banner">
+    <p>Stop clicking through the console by hand — provision an API client, then automate ZIA, ZCC, and ZPA policy with Postman, the official Zscaler Python SDK, and the Zscaler Terraform providers.</p>
+  </div>
+</header>
+
+<div class="hub-main">
+<details class="zscaler-one-min">
+  <summary>&#9432; Zero Trust Automation in one minute — key terms</summary>
+  <div class="zom-body">
+    <div class="zom-term"><strong>OneAPI</strong><span>Zscaler's unified API gateway — one base URL and one OAuth2 flow (via ZIdentity) in front of ZIA, ZPA, and ZDX.</span></div>
+    <div class="zom-term"><strong>ZIdentity API Client</strong><span>An OAuth2 client registered in ZIdentity that automation uses to authenticate — no human login required.</span></div>
+    <div class="zom-term"><strong>zscaler-sdk-python</strong><span>The official Python SDK that wraps OneAPI/ZIA/ZPA/ZCC endpoints so scripts don't hand-craft HTTP calls.</span></div>
+    <div class="zom-term"><strong>Terraform Provider</strong><span>A plugin (zscaler/zia, zscaler/zpa) that translates declarative HCL resources into OneAPI calls.</span></div>
+    <div class="zom-term"><strong>plan / apply / destroy</strong><span>The core Terraform workflow: preview changes, create them, then tear them down cleanly.</span></div>
+  </div>
+</details>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">SETUP</span>
+      <div class="phase-title">Access &amp; Environment</div>
+      <div class="phase-range">Lab 0 · Reach your POD and understand what the lab environment gives you</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab0.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 0</span>
+          <span class="lab-card-time">~10 min</span>
+        </div>
+        <div class="lab-card-title">Lab Access Details</div>
+        <div class="lab-card-desc">Reach your Skytap POD, launch the Corp: Client PC, and learn the two portals (Experience Center + Skytap) you'll use throughout the course.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label amber">API FOUNDATIONS</span>
+      <div class="phase-title">Provision Programmatic Access</div>
+      <div class="phase-range">Lab 1 · Create the API client and access token every later lab depends on</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab1.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 1</span>
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">Postman &amp; ZIdentity Automation</div>
+        <div class="lab-card-desc">Fork the Zscaler OneAPI Postman collection, create a ZIdentity API client with a client secret, generate an access token, and make your first OneAPI call.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label green">PYTHON SDK AUTOMATION</span>
+      <div class="phase-title">Script ZIA, ZCC &amp; ZPA</div>
+      <div class="phase-range">Labs 2–4 · Debug through the official zscaler-sdk-python against three services</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab2.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 2</span>
+          <span class="lab-card-time">~50 min</span>
+        </div>
+        <div class="lab-card-title">Automate ZIA Policies</div>
+        <div class="lab-card-desc">Set breakpoints in main.py, query URL categories, create a rule label, then create/reorder URL filtering and SSL inspection rules through the SDK.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab3.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 3</span>
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">Automate ZCC Profiles &amp; Devices</div>
+        <div class="lab-card-desc">Create a Windows app profile and a forwarding profile with the SDK, then retrieve and filter device reporting data.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab4.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 4</span>
+          <span class="lab-card-time">~40 min</span>
+        </div>
+        <div class="lab-card-title">Automate ZPA Access Policy</div>
+        <div class="lab-card-desc">Build the full ZPA composition chain — App Connector Group → Segment Group → Server Group → Application Segment → Access Policy — then verify and clean up.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label purple">INFRASTRUCTURE AS CODE</span>
+      <div class="phase-title">Declare ZIA &amp; ZPA with Terraform</div>
+      <div class="phase-range">Labs 5–6 · Same resources, declarative HCL instead of imperative SDK calls</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="lab5.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 5</span>
+          <span class="lab-card-time">~25 min</span>
+        </div>
+        <div class="lab-card-title">ZIA Rules with Terraform</div>
+        <div class="lab-card-desc">Review versions.tf and locals.tf, authenticate the ZIA provider, then plan, apply, and destroy URL filtering and SSL inspection rules.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab6.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 6</span>
+          <span class="lab-card-time">~30 min</span>
+        </div>
+        <div class="lab-card-title">ZPA Segments &amp; Policies with Terraform</div>
+        <div class="lab-card-desc">Deploy the full ZPA composition flow — connector group, server group, segment group, 8 application segments, and 8 access policies — via a single Terraform apply.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>EDU-270 · Zscaler Zero Trust Automation · Hands-On Lab Guide</span>
+  <span>Labs 0–6</span>
+</footer>
+
+<script>
+document.body.style.transition='opacity 0.3s ease';
+document.body.style.opacity='1';
+sessionStorage.setItem('pt','1');
+</script>
+</body>
+</html>

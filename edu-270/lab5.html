@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 5: ZIA Rules with Terraform — EDU-270</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-270</a> › Lab 5</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 5 · EDU-270</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Working with ZIA Rules Using the Terraform Provider</h1>
+  <div class="motivation-banner">
+    <p>Trade imperative SDK scripts for declarative HCL — authenticate the Zscaler ZIA Terraform provider, then plan, apply, and destroy URL filtering and SSL inspection rules.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="sid-input">Student ID</label>
+        <div class="config-field-row">
+          <input type="text" id="sid-input" placeholder="zs5101" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('sid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="vanity-input">ZIdentity Vanity Domain</label>
+        <div class="config-field-row">
+          <input type="text" id="vanity-input" placeholder="zs5101.zscloud.net" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('vanity-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientid-input">API Client ID</label>
+        <div class="config-field-row">
+          <input type="text" id="clientid-input" placeholder="(from Lab 1)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientsecret-input">API Client Secret</label>
+        <div class="config-field-row">
+          <input type="text" id="clientsecret-input" placeholder="(from Lab 1)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientsecret-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="zpacid-input">ZPA Customer ID</label>
+        <div class="config-field-row">
+          <input type="text" id="zpacid-input" placeholder="(from Private Access Tenant)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('zpacid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Provider source:</strong> <code>zscaler/zia</code></span>
+      <span><strong>Workflow:</strong> <code>terraform init → plan → apply → destroy</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab5">
+      <h2>Lab 5: Working with ZIA Rules Using the Zscaler Terraform Provider</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">LAB 5</div>
+        <p><strong>Scenario:</strong> You've learned to use the Zscaler Python SDK and are now ready to automate ZIA configuration with Terraform. In this lab, you use the Zscaler Terraform provider for ZIA to deploy and manage rules — including URL filtering and SSL inspection rules — then clean up the environment by destroying the resources you created.</p>
+        <ul style="margin-top:10px;">
+          <li>Explain how Terraform manages cloud and SaaS resources through provider APIs</li>
+          <li>Describe the role of HCL, JSON data files, and locals.tf in a Zscaler Terraform project</li>
+          <li>Configure environment variables to authenticate the Zscaler Terraform provider for ZIA</li>
+          <li>Initialize a Terraform working directory and review an execution plan</li>
+          <li>Apply a Terraform plan to create ZIA resources, verify them, then destroy them</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
+          <div class="lab-meta-item"><strong>Tools:</strong> VS Code, Terraform, zscaler/zia provider</div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-5-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.1</span>
+          <span class="task-collapsible-title">Open the Lab Folder in Visual Studio Code</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you open the ZIA lab folder in VS Code to review the Terraform files.</p>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>In the Corp: Client PC, go to <code>C:\Labs\Lab 5-6</code>.</li>
+              <li>Right-click the <strong>ZIA</strong> folder to <strong>Open with Code</strong>.</li>
+              <li>Enable the checkbox and trust the authors.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-01.png" alt="File Explorer with the ZIA folder inside Lab 5-6 selected"><div class="screenshot-caption">Navigate to the ZIA Terraform project inside Lab 5-6.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-02.png" alt="Right-click context menu showing Open with Code on the ZIA folder"><div class="screenshot-caption">Open the ZIA folder with VS Code.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-03.png" alt="VS Code Trust dialog and Terraform file tree under the ZIA folder"><div class="screenshot-caption">Trust the authors, then confirm all the Terraform files are visible under ZIA.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Click on <code>versions.tf</code> to view provider information.</li>
+              <li>Open <code>locals.tf</code> and review the contents of the file.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> versions.tf declares the Zscaler ZIA Terraform provider that this project depends on. The required_providers block names the provider locally as <code>zia</code> and points its source to <code>zscaler/zia</code> — the official Zscaler publisher on the Terraform Registry.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-04.png" alt="versions.tf open showing the required_providers block for zscaler/zia"><div class="screenshot-caption">versions.tf pins the zscaler/zia provider version and source.</div></div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> locals.tf loads the JSON data files into variables and defines associations between resources — for example, labels to rules, URL categories to rules.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-05.png" alt="locals.tf open showing JSON data being loaded into local variables"><div class="screenshot-caption">locals.tf is where rule data (from JSON) gets wired into the resource blocks that create ZIA rules.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-5-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.2</span>
+          <span class="task-collapsible-title">Configure Environment Variables for Authentication</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you set the environment variables required by the ZIA Terraform provider for authentication.</p>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Open a new terminal window and enter each environment variable command:
+                <ul class="sub-steps">
+                  <li><code>$Env:ZSCALER_CLIENT_ID=</code> <span class="var var-clientid">&lt;Client ID&gt;</span></li>
+                  <li><code>$Env:ZSCALER_CLIENT_SECRET=</code> <span class="var var-clientsecret">&lt;Client Secret&gt;</span></li>
+                  <li><code>$Env:ZSCALER_VANITY_DOMAIN=</code> <span class="var var-vanity">&lt;Vanity Domain&gt;</span></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Values should be quoted, e.g. <code>$Env:ZSCALER_CLIENT_ID= "iqenSub1706g3"</code>.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-06.png" alt="PowerShell terminal setting ZSCALER_CLIENT_ID, ZSCALER_CLIENT_SECRET, and ZSCALER_VANITY_DOMAIN environment variables"><div class="screenshot-caption">Terraform's ZIA provider reads these three environment variables at init/plan/apply time — no credentials live in the .tf files.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Verify the environment was set by running <code>echo $Env:ZSCALER_CLIENT_ID</code>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-07.png" alt="Terminal echoing the ZSCALER_CLIENT_ID environment variable to confirm it was set"><div class="screenshot-caption">Echo the variable back to confirm it was captured correctly before running terraform init.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-5-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.3</span>
+          <span class="task-collapsible-title">Initialize and Plan the Terraform Deployment</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you initialize the Terraform working directory and generate an execution plan.</p>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Initialize Terraform: <code>terraform init</code></li>
+              <li>Verify Terraform is successfully initiated.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-08.png" alt="terraform init command output confirming the zscaler/zia provider was downloaded and initialized"><div class="screenshot-caption">terraform init downloads the zscaler/zia provider and initializes the working directory.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Generate an execution plan: <code>terraform plan -out=tfplan</code></li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-09.png" alt="terraform plan -out=tfplan command running"><div class="screenshot-caption">Generate and save the execution plan to the tfplan file.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-10.png" alt="terraform plan output listing resources to be created"><div class="screenshot-caption">The plan output lists every resource Terraform intends to create — review it before applying.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-5-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.4</span>
+          <span class="task-collapsible-title">Apply the Terraform Plan and Verify Resources</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you apply the saved plan to deploy resources to ZIA and verify them in the Admin Portal.</p>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Apply the plan: <code>terraform apply tfplan</code></li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Wait for the deployment to complete. Terraform calls the underlying ZIA APIs to create each resource — this process may take several minutes.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-11.png" alt="terraform apply tfplan command executing, creating ZIA resources"><div class="screenshot-caption">terraform apply tfplan executes exactly the plan you reviewed — no surprises.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Navigate to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; URL Control &gt; URL Filtering</strong> and confirm the new rules appear.</li>
+              <li>Navigate to <strong>URL Categories</strong> and confirm custom URL categories were created.</li>
+              <li>Navigate to <strong>Policies &gt; Common Configuration &gt; SSL/TLS Inspection &gt; SSL/TLS Inspection Policy</strong> and confirm the new rules appear.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-12.png" alt="Experience Center URL Filtering policy list showing rules created by Terraform"><div class="screenshot-caption">URL filtering rules deployed by Terraform now appear in Experience Center.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-13.png" alt="Experience Center URL Categories list showing new custom categories created by Terraform"><div class="screenshot-caption">Custom URL categories created by the same apply — Terraform manages both categories and rules together.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-14.png" alt="Experience Center SSL/TLS Inspection policy list showing rules created by Terraform"><div class="screenshot-caption">SSL/TLS Inspection rules deployed alongside the URL filtering rules in the same apply.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-5-5">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.5</span>
+          <span class="task-collapsible-title">Destroy Terraform-Managed Resources</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you use Terraform to remove all resources created in the previous task.</p>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>In the Terminal, execute: <code>terraform destroy</code></li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab5-15.png" alt="terraform destroy command output removing all ZIA resources created by this lab"><div class="screenshot-caption">terraform destroy removes every resource Terraform created — the tenant returns to its starting state.</div></div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab5" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab5','Lab 5: ZIA Terraform')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab5" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab5')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-270 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab5a" onchange="toggleDone(this)"><label for="chk-lab5a">Task 5.1: Files reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5b" onchange="toggleDone(this)"><label for="chk-lab5b">Task 5.2: Env vars configured</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5c" onchange="toggleDone(this)"><label for="chk-lab5c">Tasks 5.3–5.4: Plan applied, verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5d" onchange="toggleDone(this)"><label for="chk-lab5d">Task 5.5: Resources destroyed</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">Terraform Provider</div><div class="qr-def">A plugin (zscaler/zia) that translates HCL resources into OneAPI calls.</div></div>
+      <div class="qr-item"><div class="qr-term">HCL</div><div class="qr-def">HashiCorp Configuration Language — the declarative syntax used to define Terraform resources.</div></div>
+      <div class="qr-item"><div class="qr-term">versions.tf</div><div class="qr-def">Declares which providers a project depends on and their version constraints.</div></div>
+      <div class="qr-item"><div class="qr-term">locals.tf</div><div class="qr-def">Loads external data (e.g. JSON) into variables and defines resource associations.</div></div>
+      <div class="qr-item"><div class="qr-term">terraform init</div><div class="qr-def">Downloads the declared providers and initializes the working directory.</div></div>
+      <div class="qr-item"><div class="qr-term">terraform plan</div><div class="qr-def">Previews what will be created, changed, or destroyed — without making changes.</div></div>
+      <div class="qr-item"><div class="qr-term">terraform apply</div><div class="qr-def">Executes a plan, calling the provider's API to create the declared resources.</div></div>
+      <div class="qr-item"><div class="qr-term">terraform destroy</div><div class="qr-def">Removes every resource Terraform manages in the current state.</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab4.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 4: ZPA Python SDK</span>
+  </a>
+  <div class="page-nav-message">ZIA is declarative now. Close the loop with ZPA at scale — 8 segments, one apply.</div>
+  <a class="page-nav-btn page-nav-next" href="lab6.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 6: ZPA Terraform</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-270 · Zscaler Zero Trust Automation · Hands-On Lab Guide</span>
+  <span>Lab 5: ZIA Terraform</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu270-automation-lab-config';
+const COLLAPSE_KEY='edu270-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var sid=document.getElementById('sid-input').value.trim();var vanity=document.getElementById('vanity-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[sid,vanity].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('sid-input').value=cfg.sid||'';document.getElementById('skytap-input').value=cfg.skytap||'';document.getElementById('vanity-input').value=cfg.vanity||'';document.getElementById('clientid-input').value=cfg.clientid||'';document.getElementById('clientsecret-input').value=cfg.clientsecret||'';document.getElementById('zpacid-input').value=cfg.zpacid||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={sid:document.getElementById('sid-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim(),vanity:document.getElementById('vanity-input').value.trim(),clientid:document.getElementById('clientid-input').value.trim(),clientsecret:document.getElementById('clientsecret-input').value.trim(),zpacid:document.getElementById('zpacid-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var sid=document.getElementById('sid-input').value.trim();
+  var vanity=document.getElementById('vanity-input').value.trim();
+  var clientid=document.getElementById('clientid-input').value.trim();
+  var clientsecret=document.getElementById('clientsecret-input').value.trim();
+  var zpacid=document.getElementById('zpacid-input').value.trim();
+  document.querySelectorAll('.var-studentid').forEach(function(el){if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent='<Student ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-vanity').forEach(function(el){if(vanity){el.textContent=vanity;el.classList.add('filled');}else{el.textContent='<Vanity Domain>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientid').forEach(function(el){if(clientid){el.textContent=clientid;el.classList.add('filled');}else{el.textContent='<Client ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientsecret').forEach(function(el){if(clientsecret){el.textContent=clientsecret;el.classList.add('filled');}else{el.textContent='<Client Secret>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-zpacid').forEach(function(el){if(zpacid){el.textContent=zpacid;el.classList.add('filled');}else{el.textContent='<ZPA Customer ID>';el.classList.remove('filled');}});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-270-lab-lab5';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Postman & ZIdentity','lab2':'Lab 2: ZIA Python SDK','lab3':'Lab 3: ZCC Python SDK','lab4':'Lab 4: ZPA Python SDK','lab5':'Lab 5: ZIA Terraform','lab6':'Lab 6: ZPA Terraform'};
+
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

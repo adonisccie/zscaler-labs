@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 3: Automate ZCC Profiles &amp; Devices with the Python SDK — EDU-270</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-270</a> › Lab 3</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 3 · EDU-270</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Automate ZCC Profiles &amp; Devices with the Python SDK</h1>
+  <div class="motivation-banner">
+    <p>Create a Windows ZCC app profile and a forwarding profile through the SDK, then pull and filter device reporting data — the same operations you'd otherwise repeat by hand for every OS and device inventory pull.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="sid-input">Student ID</label>
+        <div class="config-field-row">
+          <input type="text" id="sid-input" placeholder="zs5101" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('sid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="vanity-input">ZIdentity Vanity Domain</label>
+        <div class="config-field-row">
+          <input type="text" id="vanity-input" placeholder="zs5101.zscloud.net" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('vanity-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientid-input">API Client ID</label>
+        <div class="config-field-row">
+          <input type="text" id="clientid-input" placeholder="(from Lab 1)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientsecret-input">API Client Secret</label>
+        <div class="config-field-row">
+          <input type="text" id="clientsecret-input" placeholder="(from Lab 1)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientsecret-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="zpacid-input">ZPA Customer ID</label>
+        <div class="config-field-row">
+          <input type="text" id="zpacid-input" placeholder="(from Private Access Tenant)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('zpacid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>API Client name:</strong> <code id="d-apiclient">&lt;Student ID&gt;-APIClient</code></span>
+      <span><strong>Install:</strong> <code>pip install zscaler-sdk-python</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab3">
+      <h2>Lab 3: Automating ZCC App Profiles, Devices, and Forwarding Profiles with the Python SDK</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">LAB 3</div>
+        <p><strong>Scenario:</strong> In this lab, you automate ZCC app profiles, forwarding profiles, and device reporting by using the Python SDK. You use the SDK environment to create and validate profiles, and to retrieve device information.</p>
+        <ul style="margin-top:10px;">
+          <li>Create a ZCC app profile by using the Python SDK</li>
+          <li>Create a ZCC forwarding profile by using the Python SDK</li>
+          <li>Retrieve device reporting information by using the Python SDK</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~30 minutes</div>
+          <div class="lab-meta-item"><strong>Tools:</strong> VS Code, zscaler-sdk-python, PowerShell</div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-3-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 3.1</span>
+          <span class="task-collapsible-title">Automate a ZCC App Profile with the Python SDK</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you create a Windows app profile by using the Python SDK and verify it in the Experience Center. In the SDK and API context, the ZCC app profile is often referred to as a <strong>web policy</strong> — it instructs the Zscaler Client Connector how to behave on an endpoint, with associated policies for items such as DNS and SSL inspection.</p>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Web profiles differ by operating system. Each platform — Windows, macOS, Android, and Linux — has its own separate profile.</p>
+          </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Open the ZCC project in VS Code</h4>
+            <ol class="step-list">
+              <li>Go to the Corp: Client PC and open <strong>File Explorer &gt; Local Disk (C:)</strong>.</li>
+              <li>Open the Labs folder and select the <strong>Labs 2-4</strong> folder.</li>
+              <li>Open the <strong>ZCC</strong> folder, right-click it, and choose <strong>Open with Code</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-01.jpg" alt="File Explorer with the ZCC folder inside Labs 2-4 selected for Open with Code"><div class="screenshot-caption">Open the ZCC project folder in VS Code to begin setting up the debugger.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Create the virtual environment</h4>
+            <ol class="step-list">
+              <li>As an alternate option, create the virtual environment directly from PowerShell:
+                <ul class="sub-steps">
+                  <li><code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code></li>
+                  <li><code>python -m venv .venv</code></li>
+                  <li><code>.\.venv\Scripts\Activate.ps1</code></li>
+                </ul>
+              </li>
+              <li>Ensure the Python SDK is installed in the environment: run <code>pip install zscaler-sdk-python</code> in the Terminal.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-02.png" alt="PowerShell commands to set execution policy and create the .venv virtual environment"><div class="screenshot-caption">These three PowerShell commands are a faster alternate path to creating and activating .venv.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-03.png" alt="pip install zscaler-sdk-python running in the activated virtual environment"><div class="screenshot-caption">Install the Zscaler SDK into the newly activated environment.</div></div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> After you initialize the environment, start a new terminal — select the trash icon to close and reopen it. Do not use an external terminal.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-04.png" alt="VS Code terminal panel with the trash icon highlighted to close and reopen the terminal"><div class="screenshot-caption">Close and reopen the integrated terminal so it picks up the new .venv environment.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Review and run the app profile script</h4>
+            <ol class="step-list">
+              <li>Open the app profile in Explorer and review its properties — several are coded directly in the Python script.</li>
+              <li>Select <strong>Run and Debug</strong> and choose <strong>Python File</strong>.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> During run and debug, breakpoints are set at key SDK calls so you can inspect specific actions before they execute. Documentation for these properties and values is available in the Automation Hub and Zscaler Help portal.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-05.png" alt="VS Code Explorer with the app profile script open, showing hardcoded properties"><div class="screenshot-caption">The app profile script's hardcoded properties define exactly what the created profile will look like.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-06.jpg" alt="Run and Debug panel with Python File selected for the app profile script"><div class="screenshot-caption">Start the debugger with Python File to run the currently active app profile script.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-07.png" alt="Terminal requesting authentication details before creating the profile"><div class="screenshot-caption">Go to Terminal and review the requested authentication details.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">4</span> Authenticate and select the OS type</h4>
+            <ol class="step-list">
+              <li>In the Terminal, provide: <code class="var var-clientid">&lt;Client ID&gt;</code>, <code class="var var-clientsecret">&lt;Client Secret&gt;</code>, <code class="var var-vanity">&lt;Vanity Domain&gt;</code>.</li>
+              <li>Select the OS type for the app profile — enter <code>1</code> to create the Windows app profile.</li>
+              <li>The debugger pauses at your breakpoint — select <strong>Continue</strong> (or press F5) to resume execution.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-08.png" alt="Terminal prompting in sequence for Client ID, Client Secret, and vanity domain"><div class="screenshot-caption">Provide the Client ID, Client Secret, and vanity domain from your API client in Lab 1.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-09.png" alt="Terminal OS type menu with option 1 for Windows app profile"><div class="screenshot-caption">Enter 1 to target the Windows app profile — the debugger will pause at the SDK call that creates it.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-10.png" alt="Terminal output confirming the new Windows app profile was created"><div class="screenshot-caption">Confirm that the new app profile is created — a success message appears in the terminal.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">5</span> Verify and stop</h4>
+            <ol class="step-list">
+              <li>Go to the Experience Center, use the search feature in the upper-right corner, type <code>App Profile</code>, then select <strong>Windows</strong>.</li>
+              <li>Verify that the profile created by the Python code appears.</li>
+              <li>Go to <strong>Actions</strong> and edit the policy to review the parameters added to the app profile.</li>
+              <li>Stop the debugger.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-11.png" alt="Experience Center Windows App Profile search results showing the newly created profile"><div class="screenshot-caption">The new profile appears in the Windows App Profile list in Experience Center.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-12.png" alt="Edit App Profile dialog showing the parameters set by the Python script"><div class="screenshot-caption">Editing the profile confirms every parameter the script set — DNS, SSL inspection hooks, and related settings.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-3-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 3.2</span>
+          <span class="task-collapsible-title">Automate ZCC Forwarding Profiles with the Python SDK</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you create a forwarding profile by using the Python SDK and verify it in the Experience Center. The forwarding profile in ZCC determines how traffic is forwarded for each network type — trusted networks, off-trusted VPNs, and similar conditions.</p>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Run the forwarding profile script</h4>
+            <ol class="step-list">
+              <li>Return to the Python SDK environment used in the previous task.</li>
+              <li>Select <strong>Forwarding Profile</strong> in the left pane.</li>
+              <li>Select <strong>Run and Debug</strong>; if prompted, select the current Python file.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-13.png" alt="VS Code left pane with Forwarding Profile script selected"><div class="screenshot-caption">Select the Forwarding Profile script in the left pane before starting the debugger.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Authenticate and create the profile</h4>
+            <ol class="step-list">
+              <li>Provide: <code class="var var-clientid">&lt;Client ID&gt;</code>, <code class="var var-clientsecret">&lt;Client Secret&gt;</code>, <code class="var var-vanity">&lt;Vanity Domain&gt;</code>.</li>
+              <li>Enter <code>1</code> to create the forwarding profile.</li>
+              <li>The debugger pauses at your breakpoint — select <strong>Continue</strong> (or press F5) to resume execution.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-14.png" alt="Terminal creating the forwarding profile after credential entry, option 1 selected"><div class="screenshot-caption">Enter 1 to create the forwarding profile after supplying credentials.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-15.png" alt="Terminal output confirming the new forwarding profile was created"><div class="screenshot-caption">Confirm the new forwarding profile is created — a success message appears in the terminal.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Verify the forwarding profile</h4>
+            <ol class="step-list">
+              <li>Go to the Experience Center and use the search feature to type <code>Forwarding Profile</code>.</li>
+              <li>Verify that the profile created by the Python code appears.</li>
+              <li>Go to <strong>Actions</strong> and edit the profile to review the parameters added.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-16.png" alt="Experience Center search results for Forwarding Profile"><div class="screenshot-caption">Search for Forwarding Profile in Experience Center to locate the new object.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-17.png" alt="Edit Forwarding Profile dialog showing tunnel type and forwarding action parameters"><div class="screenshot-caption">The profile's parameters — tunnel type/version and per-network forwarding action — match what the script set.</div></div>
+          <div class="callout callout-success">
+            <p><strong>Verify:</strong> Confirm that the forwarding profile appears in the Experience Center and includes the expected parameters.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-3-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 3.3</span>
+          <span class="task-collapsible-title">Automate ZCC Device Reporting with the Python SDK</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you use the Python SDK to retrieve device information and filter device results. Organizations commonly need a device inventory — Zscaler provides APIs that return device information, and the SDK makes it easier to work with device listings, especially when paging through many devices. You can also filter results by type, such as Windows or Mac devices, based on your reporting needs.</p>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Open the devices project</h4>
+            <ol class="step-list">
+              <li>Stop debugging from the previous session.</li>
+              <li>In the Python SDK environment, select <strong>Devices</strong> in the left pane.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-18.png" alt="VS Code left pane with the Devices script selected after stopping the previous debug session"><div class="screenshot-caption">Stop the forwarding profile debug session, then select the Devices script.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-19.png" alt="Devices project open and ready to run in VS Code"><div class="screenshot-caption">The Devices script is ready to run — it queries device reporting endpoints via the SDK.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Run the device report</h4>
+            <ol class="step-list">
+              <li>Select <strong>Run and Debug</strong>. When prompted, provide: <code class="var var-clientid">&lt;Client ID&gt;</code>, <code class="var var-clientsecret">&lt;Client Secret&gt;</code>, <code class="var var-vanity">&lt;Vanity Domain&gt;</code>.</li>
+              <li>Enter <code>1</code> to fetch the current page details — the script returns the device details.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-20.png" alt="Terminal prompting for credentials before fetching device page details"><div class="screenshot-caption">Authenticate, then enter 1 to fetch and print the current page of device details.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Go to the Experience Center, use the search feature to type <code>Device Overview</code>.</li>
+              <li>Review all 7 listed devices.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab3-21.png" alt="Experience Center Device Overview listing all 7 devices in the tenant"><div class="screenshot-caption">Device Overview in Experience Center lists all 7 devices — cross-check the count against the script's terminal output.</div></div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab3" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab3','Lab 3: ZCC Python SDK')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab3" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab3')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-270 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab3a" onchange="toggleDone(this)"><label for="chk-lab3a">Task 3.1: Windows app profile created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3b" onchange="toggleDone(this)"><label for="chk-lab3b">Task 3.2: Forwarding profile created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3c" onchange="toggleDone(this)"><label for="chk-lab3c">Task 3.3: Device report retrieved</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">ZCC App Profile</div><div class="qr-def">Also called a web policy — controls ZCC client behavior (DNS, SSL inspection) per OS.</div></div>
+      <div class="qr-item"><div class="qr-term">ZCC Forwarding Profile</div><div class="qr-def">Determines how ZCC forwards traffic per network condition (trusted, off-trusted, VPN).</div></div>
+      <div class="qr-item"><div class="qr-term">Device Overview</div><div class="qr-def">Experience Center view listing all devices enrolled in ZCC for the tenant.</div></div>
+      <div class="qr-item"><div class="qr-term">Paging</div><div class="qr-def">Fetching device results one page at a time via the SDK, rather than all at once.</div></div>
+      <div class="qr-item"><div class="qr-term">Automation Hub</div><div class="qr-def">Zscaler's reference documentation for SDK/API properties and values used in automation.</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab2.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 2: ZIA Python SDK</span>
+  </a>
+  <div class="page-nav-message">Endpoints are provisioned. Now automate the private-access side: ZPA.</div>
+  <a class="page-nav-btn page-nav-next" href="lab4.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 4: ZPA Python SDK</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-270 · Zscaler Zero Trust Automation · Hands-On Lab Guide</span>
+  <span>Lab 3: ZCC Python SDK</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu270-automation-lab-config';
+const COLLAPSE_KEY='edu270-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var sid=document.getElementById('sid-input').value.trim();var vanity=document.getElementById('vanity-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[sid,vanity].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('sid-input').value=cfg.sid||'';document.getElementById('skytap-input').value=cfg.skytap||'';document.getElementById('vanity-input').value=cfg.vanity||'';document.getElementById('clientid-input').value=cfg.clientid||'';document.getElementById('clientsecret-input').value=cfg.clientsecret||'';document.getElementById('zpacid-input').value=cfg.zpacid||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={sid:document.getElementById('sid-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim(),vanity:document.getElementById('vanity-input').value.trim(),clientid:document.getElementById('clientid-input').value.trim(),clientsecret:document.getElementById('clientsecret-input').value.trim(),zpacid:document.getElementById('zpacid-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var sid=document.getElementById('sid-input').value.trim();
+  var vanity=document.getElementById('vanity-input').value.trim();
+  var clientid=document.getElementById('clientid-input').value.trim();
+  var clientsecret=document.getElementById('clientsecret-input').value.trim();
+  var zpacid=document.getElementById('zpacid-input').value.trim();
+  document.querySelectorAll('.var-studentid').forEach(function(el){if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent='<Student ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-vanity').forEach(function(el){if(vanity){el.textContent=vanity;el.classList.add('filled');}else{el.textContent='<Vanity Domain>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientid').forEach(function(el){if(clientid){el.textContent=clientid;el.classList.add('filled');}else{el.textContent='<Client ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientsecret').forEach(function(el){if(clientsecret){el.textContent=clientsecret;el.classList.add('filled');}else{el.textContent='<Client Secret>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-zpacid').forEach(function(el){if(zpacid){el.textContent=zpacid;el.classList.add('filled');}else{el.textContent='<ZPA Customer ID>';el.classList.remove('filled');}});
+  var apiclient=sid?sid+'-APIClient':'<Student ID>-APIClient';
+  document.querySelectorAll('.d-apiclient').forEach(function(el){el.textContent=apiclient;});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-270-lab-lab3';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Postman & ZIdentity','lab2':'Lab 2: ZIA Python SDK','lab3':'Lab 3: ZCC Python SDK','lab4':'Lab 4: ZPA Python SDK','lab5':'Lab 5: ZIA Terraform','lab6':'Lab 6: ZPA Terraform'};
+
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>

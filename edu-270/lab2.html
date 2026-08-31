@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab 2: Automate ZIA Policies with the Python SDK — EDU-270</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html.pt-init body{opacity:0;}</style>
+<link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.screenshot-embed img{max-height:150px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-270</a> › Lab 2</div>
+  <div class="header-top">
+    <span class="eyebrow-chip">Lab 2 · EDU-270</span>
+    <span class="header-dot"></span>
+  </div>
+  <h1>Automate ZIA Policies with the Python SDK</h1>
+  <div class="motivation-banner">
+    <p>Move ZIA policy work out of the console: query URL categories, create a rule label, then build, reorder, and delete URL filtering and SSL inspection rules through the official zscaler-sdk-python package.</p>
+  </div>
+</header>
+
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="sid-input">Student ID</label>
+        <div class="config-field-row">
+          <input type="text" id="sid-input" placeholder="zs5101" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('sid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="skytap-input">Skytap Passcode</label>
+        <div class="config-field-row">
+          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="vanity-input">ZIdentity Vanity Domain</label>
+        <div class="config-field-row">
+          <input type="text" id="vanity-input" placeholder="zs5101.zscloud.net" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('vanity-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientid-input">API Client ID</label>
+        <div class="config-field-row">
+          <input type="text" id="clientid-input" placeholder="(from Lab 1)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="clientsecret-input">API Client Secret</label>
+        <div class="config-field-row">
+          <input type="text" id="clientsecret-input" placeholder="(from Lab 1)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('clientsecret-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="zpacid-input">ZPA Customer ID</label>
+        <div class="config-field-row">
+          <input type="text" id="zpacid-input" placeholder="(from Private Access Tenant)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('zpacid-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>API Client name:</strong> <code id="d-apiclient">&lt;Student ID&gt;-APIClient</code></span>
+      <span><strong>Install:</strong> <code>pip install zscaler-sdk-python</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+  </div>
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
+      <span class="notes-panel-title">MY NOTES</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
+    </button>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+
+<main>
+  <div class="content-col">
+
+    <div class="section-block" id="section-lab2">
+      <h2>Lab 2: Automate ZIA Policies with the Zscaler Python SDK</h2>
+
+      <div class="lab-header-card">
+        <div class="lab-badge">LAB 2</div>
+        <p><strong>Scenario:</strong> Your organization is moving repetitive ZIA policy work — creating URL filtering rules, tagging them, ordering them, and creating SSL inspection rules — out of the console and into reusable Python automation. As the automation engineer, you use the official <code>zscaler-sdk-python</code> package to query URL categories and cloud applications, create rule labels, build URL filtering and SSL inspection rules, reorder them, and verify the results in Experience Center.</p>
+        <ul style="margin-top:10px;">
+          <li>Set up a Python virtual environment in VS Code and install the official Zscaler Python SDK</li>
+          <li>Use breakpoints to step through and inspect SDK calls</li>
+          <li>Query ZIA URL categories and cloud applications through the SDK</li>
+          <li>Create rule labels and associate them with policy rules</li>
+          <li>Create, reorder, and delete URL filtering and SSL inspection rules through the SDK</li>
+          <li>Verify all changes in the Experience Center</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~50 minutes</div>
+          <div class="lab-meta-item"><strong>Tools:</strong> VS Code, Python 3.14, zscaler-sdk-python</div>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> This lab is interactive. The script prompts you in the terminal at several points — for credentials, and for yes/no decisions at each stage. Keep the terminal panel visible while you work.</p>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.1</span>
+          <span class="task-collapsible-title">Set Up a Python Virtual Environment and Install the SDK</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Open the project in VS Code</h4>
+            <ol class="step-list">
+              <li>On the Corp: Client PC, navigate to <code>C:/Labs/Lab 2-4</code>.</li>
+              <li>Right-click on the <code>zia</code> folder and open with Code.</li>
+              <li>Enable the checkbox for <strong>Trust the authors of all files in the parent folder 'Lab 2-4'</strong> and click <strong>Yes, I trust the authors</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-01.png" alt="File Explorer navigated to C:/Labs/Lab 2-4 with the zia folder selected"><div class="screenshot-caption">Navigate to the zia project folder inside Lab 2-4.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-02.png" alt="VS Code Trust dialog for the Lab 2-4 parent folder"><div class="screenshot-caption">Trust the authors of the Lab 2-4 folder to enable full VS Code functionality including the debugger.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Mark the folder as an active Python project</h4>
+            <ol class="step-list">
+              <li>Right-click on <strong>url_filtering_rule</strong> and click <strong>Add as a python project</strong>.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Add as Python Project marks the folder as the active Python project so that environment creation, interpreter selection, and the integrated terminal scope to this folder. It does not create the environment itself — you do that in the next step.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-03.png" alt="Right-click context menu on url_filtering_rule showing Add as a python project"><div class="screenshot-caption">Add as a Python Project scopes the interpreter and terminal to url_filtering_rule specifically.</div></div>
+          <div class="task-block">
+            <ol class="step-list" start="4">
+              <li>Verify that the <code>.vscode</code> folder is added under the zia explorer window.</li>
+              <li>Click <strong>View</strong> and launch <strong>Command Palette</strong>.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The Command Palette is a search box at the top of Visual Studio Code that lets you run any command by typing its name.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-04.png" alt=".vscode folder visible under the zia explorer tree"><div class="screenshot-caption">The .vscode folder confirms the project is now marked and scoped correctly.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-05.png" alt="View menu open with Command Palette highlighted"><div class="screenshot-caption">Open the Command Palette via View → Command Palette.</div></div>
+          <div class="task-block">
+            <ol class="step-list" start="6">
+              <li>Select <strong>zia</strong> and then select <strong>OK</strong>.</li>
+              <li>In the Command Palette, search and select <strong>Python: Create Environment</strong> and then <strong>Venv</strong> to create a virtual environment.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> A virtual environment is a separate, project-specific Python setup. When you install a package like the Zscaler SDK, it goes into your project folder only — not onto the rest of your computer.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-06.png" alt="Command Palette with zia folder selected and OK button"><div class="screenshot-caption">Confirm zia as the target folder for environment creation.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-07.png" alt="Command Palette search showing Python: Create Environment command"><div class="screenshot-caption">Search for and select Python: Create Environment.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-08.png" alt="Environment type picker showing the Venv option"><div class="screenshot-caption">Choose Venv — a lightweight, project-local virtual environment.</div></div>
+          <div class="task-block">
+            <ol class="step-list" start="8">
+              <li>Select interpreter path as <code>C:ProgramFiles\Python314\python.exe</code>.</li>
+              <li>Keep the default name as <code>.venv</code> and press <strong>Enter</strong>.</li>
+              <li>Skip the package installation for PyPI.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-09.png" alt="Interpreter path picker showing Python 3.14 installation"><div class="screenshot-caption">Select the Python 3.14 interpreter as the base for the new venv.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-10.png" alt="Venv name prompt defaulting to .venv"><div class="screenshot-caption">Accept the default .venv name and skip the optional PyPI package install prompt.</div></div>
+          <div class="task-block">
+            <ol class="step-list" start="9">
+              <li>Verify the virtual environment is created by confirming the <code>.venv</code> folder under the ZIA folder in Explorer.</li>
+              <li>Navigate to <strong>url_filtering_rule &gt; main.py</strong>, click the interpreter version in the bottom-right of the VS Code window.</li>
+              <li>Select <strong>Python 3.14.5 (.venv)</strong> <code>.\venv\Scripts\python.exe</code> as the interpreter path.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-11.png" alt=".venv folder created under the zia project"><div class="screenshot-caption">The .venv folder confirms the virtual environment now exists.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-12.png" alt="VS Code status bar showing the interpreter version selector"><div class="screenshot-caption">Bottom-right status bar shows the currently selected Python interpreter.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-13.png" alt="Interpreter picker with Python 3.14.5 (.venv) selected"><div class="screenshot-caption">Select the .venv interpreter so main.py runs inside the project's isolated environment.</div></div>
+          <div class="task-block">
+            <ol class="step-list" start="11">
+              <li>Navigate to <strong>Terminal &gt; New Terminal</strong>.</li>
+              <li>In the Terminal, run <code>pip install zscaler-sdk-python</code> and verify installation is successful.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-14.png" alt="Terminal menu open with New Terminal option"><div class="screenshot-caption">Open a new integrated terminal scoped to the .venv environment.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-15.png" alt="pip install zscaler-sdk-python command running in the terminal"><div class="screenshot-caption">Install the official SDK: pip install zscaler-sdk-python.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-16.png" alt="Successful pip install output confirming zscaler-sdk-python installed"><div class="screenshot-caption">A successful install confirms the SDK and its dependencies are ready inside .venv.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.2</span>
+          <span class="task-collapsible-title">Set Breakpoints in main.py</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you set breakpoints so the script pauses at each significant SDK call — letting you inspect what the SDK is doing before it runs.</p>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>In the Explorer pane, expand <strong>URL Filtering Rule</strong> and open <code>main.py</code>.</li>
+              <li>Set a breakpoint on the line that looks up URL categories (<strong>line 396</strong>) — click in the gutter to the left of the line number; a red dot appears, indicating an active breakpoint.</li>
+              <li>Set a breakpoint on the line that creates the rule label (<strong>line 416</strong>).</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-17.png" alt="main.py editor with a red breakpoint dot on the URL categories lookup line, line 396"><div class="screenshot-caption">A red breakpoint dot on line 396 pauses execution right before the URL categories lookup call.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-18.png" alt="main.py editor with a red breakpoint dot on the rule label creation line, line 416"><div class="screenshot-caption">A second breakpoint on line 416 pauses execution right before the rule label is created.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.3</span>
+          <span class="task-collapsible-title">Run the Script in Debug Mode</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ol class="step-list">
+              <li>With <code>main.py</code> (under URL Filtering Rule) selected and active in the editor, select <strong>Run and Debug</strong>.</li>
+              <li>When prompted for the debug configuration: select <strong>Python Debugger</strong>, then select <strong>Python File</strong> to debug the currently active Python file.</li>
+              <li>In the integrated terminal, supply your credentials when prompted:
+                <ul class="sub-steps">
+                  <li>Paste your <code class="var var-clientid">&lt;Client ID&gt;</code> and press Enter.</li>
+                  <li>Paste your <code class="var var-clientsecret">&lt;Client Secret&gt;</code> and press Enter.</li>
+                  <li>Type your <code class="var var-vanity">&lt;Vanity Domain&gt;</code> and press Enter.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-19.png" alt="Run and Debug panel with main.py active in the editor"><div class="screenshot-caption">Start the debugger from the Run and Debug panel with main.py active.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-20.png" alt="Debug configuration picker showing Python Debugger option"><div class="screenshot-caption">Select Python Debugger from the configuration picker.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-21.png" alt="Debug configuration picker showing Python File option"><div class="screenshot-caption">Select Python File to debug the currently active file, main.py.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-22.png" alt="Integrated terminal prompting for Client ID, Client Secret, and vanity domain"><div class="screenshot-caption">The terminal prompts for the Client ID, Client Secret, and vanity domain saved in Lab 1.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.4</span>
+          <span class="task-collapsible-title">Query URL Categories</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ol class="step-list">
+              <li>At the <strong>Query URL categories?</strong> prompt, type <code>Y</code> and press Enter.</li>
+              <li>The debugger pauses at the URL categories breakpoint.</li>
+              <li>Review the terminal output — the script filters returned categories to <strong>Developer Tools</strong> and <strong>Science and Technology</strong> and prints the matching IDs.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> This lab uses the default URL categories in Zscaler. The same SDK call works against custom URL categories.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-23.png" alt="Terminal output listing matching Developer Tools and Science and Technology URL category IDs"><div class="screenshot-caption">Filtered URL category IDs printed to the terminal after resuming past the breakpoint.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-5">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.5</span>
+          <span class="task-collapsible-title">Create a Rule Label</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ol class="step-list">
+              <li>At the <strong>Create a rule label?</strong> prompt, type <code>Y</code> and press Enter.</li>
+              <li>The debugger pauses at the rule label breakpoint. Select <strong>Continue</strong> to let the SDK create the label.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Rule labels do not change rule behavior. They make rules easier to find, filter, and govern when you manage many rules through automation.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-24.png" alt="Debugger paused at the rule label creation breakpoint"><div class="screenshot-caption">Execution paused right before the SDK call that creates the rule label — select Continue to let it run.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-25.png" alt="Terminal output confirming the rule label was created with its ID"><div class="screenshot-caption">Verify: the terminal output confirms the rule label was created and shows its ID.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-6">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.6</span>
+          <span class="task-collapsible-title">Create Three URL Filtering Rules</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ol class="step-list">
+              <li>At the <strong>Create URL filtering rules?</strong> prompt, type <code>Y</code> and press Enter.</li>
+              <li>The debugger pauses at the URL filtering rule breakpoint inside the creation loop. Select <strong>Continue</strong> three times to let the SDK create three URL filtering rules with the <strong>Block</strong> action.</li>
+              <li>Verify that all three URL filtering rules were created successfully.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-26.png" alt="Debugger paused inside the URL filtering rule creation loop"><div class="screenshot-caption">The breakpoint fires once per loop iteration — Continue three times to create all three rules.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>In the Experience Center dashboard, navigate to <strong>Policies &gt; URL Control &gt; URL Filtering &gt; URL Filtering Policy</strong> and verify the rules' status.</li>
+              <li>When prompted to display a topology diagram of how the URL filtering rules are wired up, type <code>Y</code> and press Enter.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-27.png" alt="Experience Center URL Filtering Policy list showing the three newly created rules"><div class="screenshot-caption">All three URL filtering rules appear in Experience Center with the Block action.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-28.png" alt="Terminal-rendered topology diagram showing how the URL filtering rules, label, and categories connect"><div class="screenshot-caption">The topology diagram visualizes how the rule label and URL categories tie into each of the three rules.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-7">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.7</span>
+          <span class="task-collapsible-title">Invert the Rules' Evaluation Order</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <ol class="step-list">
+              <li>When the terminal displays <strong>"Invert the rules' evaluation order (1,2,3 → 3,2,1)?"</strong>, type <code>Y</code> and press Enter.</li>
+              <li>When the terminal displays the follow-up prompt <strong>"Invert the rules' order now?"</strong>, type <code>Y</code> and press Enter to execute the reorder.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-29.png" alt="Terminal prompts for inverting the rules evaluation order"><div class="screenshot-caption">Confirm the reorder in two steps — the intent prompt, then the execution prompt.</div></div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>When the terminal displays <strong>"Re-render the topology with the new order?"</strong>, type <code>Y</code> and press Enter.</li>
+              <li>When the terminal displays <strong>"Delete the rules and label you just created and finish?"</strong>, type <code>Y</code> and press Enter to delete and clean up.</li>
+              <li>Click the <strong>Stop</strong> button (the red square) on the debug toolbar to terminate the active debugging session.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-30.png" alt="Re-rendered topology diagram showing the inverted rule order 3,2,1"><div class="screenshot-caption">The re-rendered topology confirms the rules now evaluate in reverse order.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-31.png" alt="Terminal output confirming the rules and label were deleted"><div class="screenshot-caption">Cleanup deletes the three URL filtering rules and the rule label, returning the tenant to its starting state.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-32.png" alt="VS Code debug toolbar with the Stop (red square) button highlighted"><div class="screenshot-caption">Stop the debug session once cleanup completes.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible open" id="task-2-8">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 2.8</span>
+          <span class="task-collapsible-title">Create and Reorder SSL Inspection Rules</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> A ZIA SSL inspection rule determines how TLS traffic is handled when it matches specified categorization criteria. The rule action can decrypt, pass through, or block the matching session. SSL inspection rules execute before other policies in the pipeline.</p>
+          </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Open the script and set breakpoints</h4>
+            <ol class="step-list">
+              <li>In VS Code, expand the <strong>SSL Inspection Rules</strong> folder and select <code>main.py</code> to open it in the editor.</li>
+              <li>Locate the <code>run_lab</code> function (<strong>line 347</strong>).</li>
+              <li>Set a breakpoint on the line that calls the cloud application lookup (<strong>line 453</strong>).</li>
+              <li>Set a breakpoint on the line that creates the SSL inspection rule (<strong>line 516</strong>).</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-33.png" alt="SSL Inspection Rules folder expanded with main.py open"><div class="screenshot-caption">Open the SSL Inspection Rules project's main.py.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-34.png" alt="main.py editor scrolled to the run_lab function at line 347"><div class="screenshot-caption">The run_lab function at line 347 orchestrates the entire SSL inspection rule flow.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-35.png" alt="Breakpoint set on the cloud application lookup call at line 453"><div class="screenshot-caption">Breakpoint on line 453 — the cloud application lookup call.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-36.png" alt="Breakpoint set on the SSL inspection rule creation call at line 516"><div class="screenshot-caption">Breakpoint on line 516 — the SSL inspection rule creation call.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Start the debugger and authenticate</h4>
+            <ol class="step-list">
+              <li>Confirm <code>main.py</code> under SSL Inspection Rules is active, then select <strong>Run &gt; Run and Debug</strong>.</li>
+              <li>When prompted, select <strong>Python Debugger</strong> and then <strong>Python File</strong>.</li>
+              <li>Supply your credentials when prompted: <code class="var var-clientid">&lt;Client ID&gt;</code>, <code class="var var-clientsecret">&lt;Client Secret&gt;</code>, then <code class="var var-vanity">&lt;Vanity Domain&gt;</code>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-37.png" alt="Run and Debug panel with SSL Inspection Rules main.py active"><div class="screenshot-caption">Launch the debugger for the SSL Inspection Rules script.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-38.png" alt="Terminal prompting for Client ID, Client Secret, and vanity domain"><div class="screenshot-caption">Authenticate with the same API client credentials used throughout the course.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Inspect URL category and cloud application lookups</h4>
+            <ol class="step-list">
+              <li>When the script prompts you to query URL categories, enter <code>Y</code>.</li>
+              <li>The debugger pauses at the cloud application lookup breakpoint — select <strong>Continue</strong> (or press F5) to resume execution.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The returned cloud application IDs will be used alongside the URL category IDs when creating the SSL inspection rule.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-39.png" alt="Terminal confirming the URL category lookup completed"><div class="screenshot-caption">URL categories resolved — the script moves on toward the cloud application lookup breakpoint.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-40.png" alt="Debugger paused at the cloud application lookup breakpoint with returned application IDs visible"><div class="screenshot-caption">The debugger pauses at the cloud application lookup — the returned IDs (e.g. for ChatGPT) will pair with the URL category IDs.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">4</span> Create the shared rule label and the three SSL inspection rules</h4>
+            <ol class="step-list">
+              <li>When prompted to create the shared rule label, enter <code>Y</code>. Verify the terminal shows <code>[OK] Rule Label '&lt;label_name&gt;' created (id=&lt;label_id&gt;)</code>.</li>
+              <li>When prompted for the rule action, enter <code>BLOCK</code>. Enter <code>Y</code> when prompted for <strong>Create three SSL Inspection rules</strong>.</li>
+              <li>The debugger pauses at the breakpoint inside the creation loop — select the play button to create each rule; the loop executes three times.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-41.png" alt="Terminal confirming the shared rule label was created for SSL inspection rules"><div class="screenshot-caption">The shared rule label ties all three SSL inspection rules together for later cleanup and filtering.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-42.png" alt="Debugger paused inside the SSL inspection rule creation loop with BLOCK action set"><div class="screenshot-caption">The creation loop pauses on each iteration — resume three times to create rules A, B, and C with the Block action.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">5</span> Review the relationship diagram and verify in Experience Center</h4>
+            <ol class="step-list">
+              <li>After all three rules are created, examine the visualization the script outputs. Answer <code>Y</code> when prompted for <strong>Show a diagram of how these rules are wired up?</strong></li>
+              <li>Confirm that cloud applications are associated with URL categories, and URL categories are associated with the SSL inspection rules.</li>
+              <li>Switch to the Experience Center portal and select <strong>SSL/TLS Inspection</strong> under <strong>Policies &gt; Common Configuration</strong>.</li>
+            </ol>
+          </div>
+          <div class="callout callout-success">
+            <p><strong>Verify:</strong> Three new SSL inspection rules appear with rule order A = 1, B = 2, and C = 3. The action is Block, and each rule references the expected cloud application (for example, ChatGPT).</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-43.png" alt="Terminal-rendered relationship diagram connecting cloud applications, URL categories, and SSL inspection rules"><div class="screenshot-caption">The relationship diagram shows cloud applications feeding into URL categories, which feed into the three SSL inspection rules.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-44.png" alt="Experience Center SSL/TLS Inspection policy list showing rules A, B, C in order 1, 2, 3 with Block action"><div class="screenshot-caption">Rules A, B, C appear in Experience Center with order 1, 2, 3 and the Block action confirmed.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">6</span> Reorder the rules and verify again</h4>
+            <ol class="step-list">
+              <li>Return to VS Code, resume execution, and confirm the reorder operation with <code>Y</code>.</li>
+              <li>Switch back to the Experience Center portal and select <strong>Refresh</strong> on the SSL inspection rules page.</li>
+            </ol>
+          </div>
+          <div class="callout callout-success">
+            <p><strong>Verify:</strong> The rule order is now inverted — C = 1, B = 2, A = 3.</p>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-45.png" alt="VS Code prompt confirming the SSL inspection rule reorder"><div class="screenshot-caption">Confirm the reorder in the terminal to proceed.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-46.png" alt="Experience Center SSL/TLS Inspection policy list showing the inverted rule order C, B, A"><div class="screenshot-caption">After Refresh, the rule order shows C = 1, B = 2, A = 3 — confirming the SDK's reorder call took effect.</div></div>
+          <div class="task-block">
+            <h4><span class="task-num">7</span> Re-render the topology and clean up</h4>
+            <ol class="step-list">
+              <li>Answer <code>Y</code> when prompted for <strong>Re-render the topology with the new order</strong>.</li>
+              <li>Return to VS Code. When prompted to delete the created rules and labels, enter <code>y</code>.</li>
+              <li>Allow the script to complete.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed"><img src="screenshots/lab2-47.png" alt="Terminal output confirming the SSL inspection rules and shared label were deleted, script complete"><div class="screenshot-caption">Cleanup removes the three SSL inspection rules and the shared label — the tenant returns to its starting state.</div></div>
+        </div>
+      </div>
+
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab2" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab2','Lab 2: ZIA Python SDK')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab2" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab2')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-col -->
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <a href="index.html" class="hub-link">← EDU-270 Lab Hub</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab2a" onchange="toggleDone(this)"><label for="chk-lab2a">Tasks 2.1–2.3: Environment + debugger running</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab2b" onchange="toggleDone(this)"><label for="chk-lab2b">Tasks 2.4–2.5: Categories queried, label created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab2c" onchange="toggleDone(this)"><label for="chk-lab2c">Tasks 2.6–2.7: URL filtering rules created + reordered</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab2d" onchange="toggleDone(this)"><label for="chk-lab2d">Task 2.8: SSL inspection rules created + reordered</label></li>
+      </ul>
+    </div>
+
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+      <div class="qr-item"><div class="qr-term">zscaler-sdk-python</div><div class="qr-def">Official Python SDK wrapping OneAPI/ZIA/ZPA/ZCC endpoints for scripted automation.</div></div>
+      <div class="qr-item"><div class="qr-term">Rule Label</div><div class="qr-def">Tag object attached to policy rules for filtering/governance — doesn't change rule behavior.</div></div>
+      <div class="qr-item"><div class="qr-term">URL Filtering Rule</div><div class="qr-def">ZIA policy object that allows or blocks traffic based on URL category.</div></div>
+      <div class="qr-item"><div class="qr-term">SSL Inspection Rule</div><div class="qr-def">ZIA policy controlling TLS decrypt/pass-through/block by category + cloud app; runs before other policy.</div></div>
+      <div class="qr-item"><div class="qr-term">Cloud Application</div><div class="qr-def">A SaaS app identified by deep packet inspection, independent of the domain serving it.</div></div>
+      <div class="qr-item"><div class="qr-term">Breakpoint</div><div class="qr-def">A paused execution point in the debugger, letting you inspect state before an SDK call runs.</div></div>
+      <div class="qr-item"><div class="qr-term">Rule Order</div><div class="qr-def">The sequence rules are evaluated in; earlier rules win when multiple rules match the same traffic.</div></div>
+      </div><!-- /qr-body -->
+    </div>
+  </aside>
+</main>
+
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab1.html">
+    <span class="page-nav-label">← PREVIOUS</span>
+    <span class="page-nav-title">Lab 1: Postman &amp; ZIdentity</span>
+  </a>
+  <div class="page-nav-message">ZIA policy is now code. Next: bring ZCC profiles and devices under the same automation.</div>
+  <a class="page-nav-btn page-nav-next" href="lab3.html">
+    <span class="page-nav-label">NEXT →</span>
+    <span class="page-nav-title">Lab 3: ZCC Python SDK</span>
+  </a>
+</div>
+
+<footer>
+  <span>EDU-270 · Zscaler Zero Trust Automation · Hands-On Lab Guide</span>
+  <span>Lab 2: ZIA Python SDK</span>
+</footer>
+
+<script>
+const CONFIG_KEY='edu270-automation-lab-config';
+const COLLAPSE_KEY='edu270-config-collapsed';
+function updateSidebarOffset(){var h=document.getElementById('config-panel').offsetHeight;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var sid=document.getElementById('sid-input').value.trim();var vanity=document.getElementById('vanity-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[sid,vanity].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('sid-input').value=cfg.sid||'';document.getElementById('skytap-input').value=cfg.skytap||'';document.getElementById('vanity-input').value=cfg.vanity||'';document.getElementById('clientid-input').value=cfg.clientid||'';document.getElementById('clientsecret-input').value=cfg.clientsecret||'';document.getElementById('zpacid-input').value=cfg.zpacid||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={sid:document.getElementById('sid-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim(),vanity:document.getElementById('vanity-input').value.trim(),clientid:document.getElementById('clientid-input').value.trim(),clientsecret:document.getElementById('clientsecret-input').value.trim(),zpacid:document.getElementById('zpacid-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function applyConfig(){
+  var sid=document.getElementById('sid-input').value.trim();
+  var vanity=document.getElementById('vanity-input').value.trim();
+  var clientid=document.getElementById('clientid-input').value.trim();
+  var clientsecret=document.getElementById('clientsecret-input').value.trim();
+  var zpacid=document.getElementById('zpacid-input').value.trim();
+  document.querySelectorAll('.var-studentid').forEach(function(el){if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent='<Student ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-vanity').forEach(function(el){if(vanity){el.textContent=vanity;el.classList.add('filled');}else{el.textContent='<Vanity Domain>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientid').forEach(function(el){if(clientid){el.textContent=clientid;el.classList.add('filled');}else{el.textContent='<Client ID>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-clientsecret').forEach(function(el){if(clientsecret){el.textContent=clientsecret;el.classList.add('filled');}else{el.textContent='<Client Secret>';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-zpacid').forEach(function(el){if(zpacid){el.textContent=zpacid;el.classList.add('filled');}else{el.textContent='<ZPA Customer ID>';el.classList.remove('filled');}});
+  var apiclient=sid?sid+'-APIClient':'<Student ID>-APIClient';
+  document.querySelectorAll('.d-apiclient').forEach(function(el){el.textContent=apiclient;});
+}
+function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+['sid-input','skytap-input','vanity-input','clientid-input','clientsecret-input','zpacid-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+
+const PAGE_KEY='edu-270-lab-lab2';
+const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Postman & ZIdentity','lab2':'Lab 2: ZIA Python SDK','lab3':'Lab 3: ZCC Python SDK','lab4':'Lab 4: ZPA Python SDK','lab5':'Lab 5: ZIA Terraform','lab6':'Lab 6: ZPA Terraform'};
+
+function getQArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}
+function saveQArr(qs){localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}
+function saveNotesArr(ns){localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
+});
+</script>
+</body>
+</html>
