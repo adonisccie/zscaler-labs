@@ -6,24 +6,46 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 13: Access Internal App via RDP — EDU-200</title>
+<title>Lab 13: Access an Internal App via RDP — EDU-200</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-200</a> › Lab 13</div>
   <div class="header-top">
-    <span class="eyebrow-chip">Lab 13 · EDU-200</span><span class="eyebrow-chip" style="background:rgba(180,83,9,0.1);color:var(--amber);border:1px solid var(--amber-border);margin-left:10px;">Optional</span>
+    <span class="eyebrow-chip">Lab 13 · EDU-200 · Optional</span>
     <span class="header-dot"></span>
   </div>
   <h1>Access Internal App via RDP</h1>
   <div class="motivation-banner">
-    <p>Add port 3389 to the Intranet app segment, connect via Remote Desktop through ZPA, and verify the session in netstat and ZPA analytics.</p>
+    <p>Add TCP 3389 to the Intranet segment, RDP to the server through ZPA, find the session in Private Applications analytics, then remove the port and read the policy block in Diagnostics.</p>
   </div>
 </header>
 
@@ -96,115 +118,225 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <!-- ═══════════════════════════════════════════ LAB 13 ═══════════════════════════════════════════ -->
 
     <div class="section-block" id="section-lab13">
-      <h2>Lab 13: Access Internal App via RDP <span style="font-size:0.75em;font-weight:400;color:var(--text-muted)">[Optional]</span></h2>
+      <h2>Lab 13: Access an Internal Application using Remote Desktop Protocol (RDP) [Optional]</h2>
+
       <div class="lab-header-card">
-        <div class="lab-badge">LAB 13</div>
-        <p><strong>Scenario:</strong> Extend the Intranet app segment to allow RDP (port 3389) access, then connect to the internal Windows Server 2016 via Remote Desktop through ZPA — no VPN required. Verify the connection in both netstat logs and ZPA private application analytics.</p>
+        <div class="lab-badge">LAB 13 · OPTIONAL</div>
+        <p><strong>Scenario:</strong> An internal user reports that they can't access the internal application <code>intranet.patraining.safemarch.com</code>. As the Zscaler administrator, you start troubleshooting by confirming application connectivity through <strong>ICMP Access</strong>. With basic connectivity confirmed, you try to connect to the application using <strong>Remote Desktop Protocol (RDP)</strong>, which <strong>requires TCP port 3389</strong>. Reviewing the application segment configuration, you find that port <strong>3389 is not included in the defined TCP port ranges</strong>, so <strong>ZPA</strong> doesn't forward RDP traffic. To fix this, you will update the application segment to include port 3389 and confirm secure access with RDP.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <ul style="margin-top:6px;">
+          <li>Configure the <strong>Intranet Application Segment</strong> in ZPA to allow <strong>RDP access</strong> on port <strong>3389</strong> for troubleshooting, connecting securely through ZPA.</li>
+          <li>Verify the access details in the logs.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 13.1</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab13-hero.png" alt="Lab 13 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab13">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · PORTS IN APP SEGMENTS</span>
         </div>
-      </div>
-
-      <h3>Task 13.1 — Add RDP Port and Connect via Remote Desktop</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> View current App Segments</h4>
-        <ol class="step-list">
-          <li>In ZPA Admin Console, navigate to <strong>Applications</strong> → <strong>App Segments</strong>.</li>
-          <li>Note the existing segments: Discovery, Intranet, and SIPA.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-app-segments-ad-dc-intranet.png" alt="ZPA App Segments list showing Discovery, Intranet and SIPA segments">
-        <div class="screenshot-caption">App Segments list — you'll edit the Intranet segment to add RDP port 3389.</div>
-      </div>
-
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Add port 3389 to the Intranet segment</h4>
-        <ol class="step-list">
-          <li>Click the <strong>Intranet</strong> segment to edit it.</li>
-          <li>In <strong>Port Ranges</strong>, add <code>3389</code> (TCP, RDP).</li>
-          <li>Click <strong>Save</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-edit-intranet-segment-rdp-port.png" alt="Edit Intranet segment form with RDP port 3389 being added to port ranges">
-        <div class="screenshot-caption">Edit Intranet segment — add port 3389 to allow RDP connections through the ZPA-brokered path.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-intranet-segment-port-ranges-rdp.png" alt="Intranet segment port ranges showing port 3389 added alongside port 80">
-        <div class="screenshot-caption">Port ranges updated: 80 (HTTP) and 3389 (RDP) — Intranet segment now supports both web and RDP access.</div>
-      </div>
-
-      <div class="task-block">
-        <h4><span class="task-num">3</span> Connect via Remote Desktop</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, open <strong>Remote Desktop Connection</strong> (<code>mstsc</code>).</li>
-          <li>In the <strong>Computer</strong> field, enter <code>intranet.labtenant.com</code>.</li>
-          <li>Click <strong>Connect</strong>.</li>
-          <li>When prompted, enter credentials:
-            <ul class="sub-steps">
-              <li>Username: <code>Administrator</code></li>
-              <li>Password: <code>Admin-123!</code></li>
-            </ul>
+        <p class="socratic-insight">An application segment defines a <em>host</em> and the <em>ports</em> ZPA will carry for it. The browser works and ping works, yet RDP fails. Same host, different port.</p>
+        <ul class="socratic-questions">
+          <li>In Lab 10 you enabled ICMP and HTTP worked, so the host is clearly reachable. Why does ZPA still refuse RDP to the <em>same</em> host, and why is that the intended behavior?
+            <div class="answer-area" data-section="lab13-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">ZPA grants access per <strong>application = host + port</strong>, not per host. The Intranet segment only lists the web ports, so a request to <code>:3389</code> doesn't match any segment the user is allowed. ZPA has nothing to forward, and Diagnostics records a policy block. That's least privilege by design: being allowed to <em>browse</em> a server doesn't mean being allowed to <em>log in to its desktop</em>.</div>
+                </div>
+              </div>
+            </div>
           </li>
-          <li>The Windows Server 2016 desktop should appear.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed dialog">
-        <img src="screenshots/lab13-remote-desktop-connection-dialog.png" alt="Remote Desktop Connection dialog with intranet.labtenant.com in the Computer field">
-        <div class="screenshot-caption">RDP dialog — enter intranet.labtenant.com as the computer name. ZPA handles the routing transparently.</div>
-      </div>
-      <div class="screenshot-embed dialog">
-        <img src="screenshots/lab13-rdp-credentials-filled.png" alt="RDP credentials dialog with Administrator username filled in">
-        <div class="screenshot-caption">RDP credentials — Administrator / Admin-123! (hardcoded server credentials, not the session password).</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-rdp-desktop-connected.png" alt="Windows Server 2016 desktop connected via RDP through ZPA">
-        <div class="screenshot-caption">Windows Server 2016 desktop connected via RDP through ZPA — no VPN, no direct network path needed.</div>
+          <li><code>netstat -fn</code> shows an <strong>Established</strong> connection on 3389, but the remote address isn't the server's real 10.0.0.x IP. What is the client actually connected to, and why?
+            <div class="answer-area" data-section="lab13-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">ZCC answers DNS for ZPA-defined apps with a <strong>synthetic IP</strong> (typically in the 100.64.0.0/10 range), and the client "connects" to that local address. ZCC intercepts the session and carries it through the ZPA tunnel to the App Connector, which opens the <em>real</em> connection to the server. The client never learns or routes to the data-center IP, so the network stays hidden even from authenticated users.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Opening RDP to a server is powerful. In production, how would you make sure only the right admins get port 3389, rather than everyone who can reach the intranet?
+            <div class="answer-area" data-section="lab13-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Put RDP in its <strong>own application segment</strong> (host + 3389 only) instead of adding the port to the general web segment, and attach an <strong>access policy</strong> scoped to an admin group, ideally with posture or device-trust criteria. Consider <strong>Privileged Remote Access</strong> (clientless, recorded sessions) for third parties. Then a regular intranet user still gets only the website, and admin access is separate, auditable and easy to revoke.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">4</span> Verify the connection and check analytics</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, open <strong>Command Prompt</strong> and run: <code>netstat -an</code></li>
-          <li>Look for a TCP connection to <code>intranet.labtenant.com:3389</code> with state <strong>ESTABLISHED</strong>.</li>
-          <li>In ZPA Admin Console, navigate to <strong>Analytics</strong> → <strong>Private Applications</strong> to see the RDP session log.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-netstat-port-3389-established.png" alt="netstat output showing TCP connection to port 3389 in ESTABLISHED state">
-        <div class="screenshot-caption">netstat confirms ESTABLISHED connection on port 3389 — the RDP session is active through ZPA.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-private-apps-analytics-rdp-connection.png" alt="ZPA Private Applications analytics showing RDP session log entry">
-        <div class="screenshot-caption">ZPA Private Applications analytics — the RDP session appears in logs with user identity, app segment, and connection timing.</div>
-      </div>
+      <!-- ─────────────────────────── TASK 13.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-13-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 13.1</span>
+          <span class="task-collapsible-title">Verify Access to an Internal Application Using RDP</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
 
-      <div class="task-block">
-        <h4><span class="task-num">5</span> Run ZPA Diagnostics (optional)</h4>
-        <ol class="step-list">
-          <li>In ZPA Admin Console, navigate to <strong>Diagnostics</strong>.</li>
-          <li>Run a diagnostic for the Intranet segment to see the access policy evaluation result.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-diagnostics-rdp-3389-detail.png" alt="ZPA Diagnostics showing RDP port 3389 detail for Intranet segment">
-        <div class="screenshot-caption">ZPA Diagnostics — shows the policy evaluation path and connector status for the Intranet segment including the new RDP port.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-access-policy-blocks-not-configured.png" alt="ZPA Diagnostics showing Access Policy Not Configured for some checks">
-        <div class="screenshot-caption">Diagnostics: Policy Not Configured — indicates the diagnostic test didn't match a specific policy rule. If the user can access the app, this is informational rather than an error.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-top-policy-blocks-access.png" alt="ZPA Diagnostics showing top policy that blocks access">
-        <div class="screenshot-caption">Diagnostics policy evaluation — shows which rules evaluated and whether the result was allow or block.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab13-diagnostics-policy-not-configured.png" alt="ZPA Diagnostics Policy Not Configured detail view">
-        <div class="screenshot-caption">Policy Not Configured in the diagnostics — verify by checking the actual access policy rules are active and correctly scoped.</div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Enable the RDP port in the Application Segment</h4>
+            <ol class="step-list">
+              <li>On the <strong>Corp Client PC</strong>, go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; App Segment</strong> in the ZPA Admin Portal.</li>
+              <li>Find the <strong>Intranet</strong> App Segment and click <strong>Edit</strong>.</li>
+              <li>In the <strong>Edit Application Segment</strong> window:
+                <ul class="sub-steps">
+                  <li>Scroll to the port configuration section.</li>
+                  <li>Add the <strong>RDP port (3389)</strong> to the TCP Port Ranges.</li>
+                </ul>
+              </li>
+              <li>Click <strong>Save</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p184-a.png" alt="App Segments list with the Intranet segment row and its Edit icon highlighted">
+            <div class="screenshot-caption">App Segments → <strong>Edit</strong> on <strong>Intranet</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p185-a.png" alt="Edit Application Segment Intranet TCP port ranges with RDP 3389 being added">
+            <div class="screenshot-caption">TCP Port Ranges: add <strong>3389</strong> (RDP is available as a preset).</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p185-b.png" alt="Intranet segment port list including 3389 with Save highlighted">
+            <div class="screenshot-caption">3389 now appears alongside the web ports. Click <strong>Save</strong>.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Connect using Remote Desktop Connection</h4>
+            <ol class="step-list">
+              <li>On the <strong>Corp Client PC</strong>, open the <strong>Remote Desktop Connection</strong> application.</li>
+              <li>Enter the following credentials:
+                <ul class="sub-steps">
+                  <li>Computer: <code>intranet.patraining.safemarch.com</code></li>
+                  <li>Username: <code>student</code></li>
+                  <li>Password: <code>Admin-123!</code></li>
+                </ul>
+              </li>
+              <li>Confirm that you reach the internal application with the Remote Desktop application.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab13-p186-a.png" alt="Remote Desktop Connection dialog with an empty Computer field">
+            <div class="screenshot-caption">Open <strong>Remote Desktop Connection</strong>.</div>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab13-p186-b.png" alt="Remote Desktop Connection with Computer intranet.patraining.safemarch.com and User name student">
+            <div class="screenshot-caption">Computer <code>intranet.patraining.safemarch.com</code>, user <code>student</code>, then Connect.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p187-a.png" alt="Remote desktop session to the Windows server showing its desktop">
+            <div class="screenshot-caption">You're on the server's desktop, carried entirely over ZPA.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Verify the RDP connection and logs</h4>
+            <ol class="step-list">
+              <li>Open the command prompt and type: <code>netstat -fn</code>
+                <ul class="sub-steps"><li>Confirm that port <strong>3389</strong> is listed as an <strong>Established</strong> connection.</li></ul>
+              </li>
+              <li>Go to <strong>Analytics &gt; Private Applications</strong> and open the <strong>Recently Application Accessed</strong> tab.</li>
+              <li>Find the entry for <code>intranet.patraining.safemarch.com:3389</code>.</li>
+              <li>Click the entry to view its diagnostics.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p187-b.png" alt="netstat -fn output with a TCP connection to port 3389 in ESTABLISHED state highlighted">
+            <div class="screenshot-caption"><code>netstat -fn</code>: an <strong>ESTABLISHED</strong> session to <strong>:3389</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p188-a.png" alt="Private Applications analytics with intranet.patraining.safemarch.com:3389 highlighted under Recent Applications Accessed">
+            <div class="screenshot-caption">Analytics → Private Applications: <code>intranet…:3389</code> under <strong>Recent Applications Accessed</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> You may need to toggle the setting <strong>"Switch to existing reports"</strong> to view private application logs.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p189-a.png" alt="Diagnostics page with connection, policy, user, service edge and App Connector details for the 3389 session">
+            <div class="screenshot-caption">Diagnostics shows the whole path for the session: policy, user, Service Edge, App Connector and application.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> With Zscaler Private Access (ZPA), you can securely reach a Windows server over Remote Desktop from any internet-connected device running Zscaler Client Connector. Once an administrator has the right entitlement, they can also reach internal applications hosted in the data center.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">4</span> (Optional) Troubleshooting steps</h4>
+            <ol class="step-list">
+              <li>If problems occur while establishing the RDP connection:
+                <ul class="sub-steps">
+                  <li>Edit the <strong>Intranet Application Segment</strong> in the ZPA Admin Portal and remove the <strong>RDP ports (TCP 3389, UDP 3389)</strong> from the <strong>TCP and UDP Port Ranges</strong>.</li>
+                  <li>Try to reconnect with the <strong>Remote Desktop Connection</strong> app, using the same credentials and connection details as before.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The RDP connection fails because port 3389 is no longer defined in the application segment, so ZPA can't forward the traffic.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">5</span> Check Diagnostics and Access Policy Blocks</h4>
+            <ol class="step-list">
+              <li>Go to <strong>Analytics &gt; Private Applications</strong> and scroll down to <strong>Top Policy Blocks</strong>.</li>
+              <li>Click <strong>Access Policy Blocks</strong>, then choose <strong>Show in Logs</strong>.</li>
+              <li>On the <strong>Diagnostics</strong> page:
+                <ul class="sub-steps">
+                  <li>Expand the log entry for the access attempt.</li>
+                  <li>Review the following details: <strong>Status Code</strong>, <strong>Server IP &amp; Protocol</strong>.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p190-a.png" alt="Private Applications analytics with the Top Policy Blocks panel highlighted">
+            <div class="screenshot-caption"><strong>Top Policy Blocks</strong> on the Private Applications dashboard.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p191-a.png" alt="Access Policy Blocks entry with the Show in Logs option highlighted">
+            <div class="screenshot-caption">Access Policy Blocks → <strong>Show in Logs</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab13-p191-b.png" alt="Diagnostics log entry with Connection Status Code indicating the policy is not configured for access and the application port 3389 highlighted">
+            <div class="screenshot-caption">The Status Code shows that no policy is configured for this access, for application port <strong>3389</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The <strong>Access Policy Blocks</strong> section tracks application requests blocked by access policy rules. Because the RDP port (3389) isn't defined in the App Segment, the user can't reach the internal application, and the error shows up in the diagnostics logs.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-13-1 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>ZPA app = host + port.</strong> Web working ≠ RDP allowed, so add <strong>TCP 3389</strong> to the segment. Proof: RDP to <code>intranet.patraining.safemarch.com</code>, <code>netstat -fn</code> ESTABLISHED :3389, Analytics → Private Applications → Diagnostics. Remove the port and the block appears under <strong>Top Policy Blocks → Show in Logs</strong> with a status code.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -212,7 +344,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab13" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab13','Lab 13: RDP Access via ZPA')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab13','Lab 13: RDP Access')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -233,7 +365,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab13a" onchange="toggleDone(this)"><label for="chk-lab13a">Task 13.1: RDP via ZPA verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab13a" onchange="toggleDone(this)"><label for="chk-lab13a">Port 3389 added, RDP connected</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab13b" onchange="toggleDone(this)"><label for="chk-lab13b">Session found in Diagnostics</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab13c" onchange="toggleDone(this)"><label for="chk-lab13c">(Optional) Policy block reviewed</label></li>
       </ul>
     </div>
 
@@ -242,35 +376,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -278,58 +416,57 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
   </aside>
 </main>
 
-<div class="recap-block">
-  <span class="recap-label">ZPA phase complete</span>
-  <p class="recap-item"><strong>You just:</strong> completed the full ZPA infrastructure stack — App Connector Group, Provisioning Key, App Segments, Server Groups, Access Policy, SIPA forwarding, and RDP remote access. Private apps are reachable from anywhere without a VPN.</p>
-  <p class="recap-item"><strong>Next up:</strong> Lab 14 opens ZDX — the Digital Experience layer that shows you whether the access you just built is actually working well for users. ZDX is the "how is it performing?" answer to ZPA's "can they connect?" question.</p>
-</div>
 <div class="page-nav">
   <a class="page-nav-btn page-nav-prev" href="lab12.html">
     <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 12: SIPA Forwarding</span>
+    <span class="page-nav-title">Lab 12: SIPA</span>
   </a>
   <div class="page-nav-message">If you can RDP through ZPA, you can route anything through it.</div>
   <a class="page-nav-btn page-nav-next" href="lab14.html">
@@ -339,9 +476,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
   <span>Lab 13: RDP Access</span>
-  <span>LAB 13 of 16</span>
 </footer>
 
 <script>
@@ -465,7 +601,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -500,6 +649,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -683,7 +864,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

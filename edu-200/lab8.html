@@ -12,6 +12,28 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
@@ -23,7 +45,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Enforce Policy with Unified DLP</h1>
   <div class="motivation-banner">
-    <p>Build a DLP Engine from credit card dictionary patterns, create a Block+Notify rule, then test with a file upload containing synthetic sensitive data.</p>
+    <p>Build a Sensitive Data DLP engine on the Credit Cards dictionary, block it with a high-severity DLP rule, and watch an upload of credit-card data get stopped.</p>
   </div>
 </header>
 
@@ -96,101 +118,216 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <!-- ═══════════════════════════════════════════ LAB 8 ═══════════════════════════════════════════ -->
 
     <div class="section-block" id="section-lab8">
-      <h2>Lab 8: Enforce Policy with Unified DLP</h2>
+      <h2>Lab 8: Enforce Policy with Unified DLP across Multi-Channel</h2>
+
       <div class="lab-header-card">
         <div class="lab-badge">LAB 8</div>
-        <p><strong>Scenario:</strong> Sensitive data (credit card numbers) must not leave the organisation via web uploads. You'll build a DLP Engine from dictionary patterns, create a DLP Rule to block and notify, then test with a file upload containing synthetic sensitive data.</p>
+        <p><strong>Scenario:</strong> In this lab, you will configure and test policies that protect sensitive data in motion and at rest, ensuring compliance with privacy regulations such as <strong>PCI-DSS</strong> (Payment Card Industry Data Security Standard). Using Zscaler's <strong>Unified DLP</strong> policies, you will secure multi-channel data by analyzing endpoint and SaaS application security logs.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Verify and enable SSL/TLS inspection</strong> for visibility into and control of data traffic.</li>
+          <li><strong>Configure DLP Dictionaries</strong>, <strong>DLP Engines</strong> and <strong>DLP Rules</strong> to detect and block sensitive data, such as credit card information.</li>
+          <li><strong>Test policy enforcement</strong> to confirm that DLP rules block sensitive information in data transfers.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 8.1</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab8-hero.png" alt="Lab 8 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab8">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · DATA LOSS PREVENTION</span>
         </div>
+        <p class="socratic-insight">DLP has three layers: a <em>dictionary</em> recognizes a pattern, an <em>engine</em> combines dictionaries into a detection, and a <em>rule</em> decides what happens when the engine fires.</p>
+        <ul class="socratic-questions">
+          <li>Step 1 of this lab just checks that <strong>SSL Inspect All</strong> is still enabled. Why can't DLP work without it on a site like <code>dlptoolbox.com</code>?
+            <div class="answer-area" data-section="lab8-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The upload goes over <strong>HTTPS</strong>. Without decryption, ZIA only sees the encrypted TLS stream: the domain from SNI and the byte counts, never the file contents. The DLP engine needs the <strong>plaintext body</strong> to find credit-card patterns. So SSL inspection (Lab 5) is the prerequisite that makes content-aware controls like DLP, sandboxing and file-type control possible at all.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Why separate the <strong>DLP Engine</strong> ("what sensitive data looks like") from the <strong>DLP Rule</strong> ("what to do about it")? Give an example where you'd reuse one engine in several rules.
+            <div class="answer-area" data-section="lab8-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Detection logic changes slowly and should be defined once. Enforcement varies by context. For example, the same <strong>Sensitive Data</strong> engine could <strong>Block</strong> uploads to unsanctioned file-sharing sites for everyone, only <strong>Allow + notify the auditor</strong> for the Finance group sending to the corporate SharePoint, and also feed an endpoint or SaaS (data-at-rest) policy. If you tune the engine once, every rule improves. That's the "unified" in Unified DLP.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The engine's violation threshold is <strong>1</strong>, so a single card number triggers it. What are the risks of such a low threshold, and how could you reduce false positives without missing real leaks?
+            <div class="answer-area" data-section="lab8-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">One match can come from a test number, a receipt or a random 16-digit string, so legitimate work gets blocked and users lose trust in the tool. Mitigations: raise the threshold (e.g. 5+ cards suggests a bulk export), raise the dictionary's <strong>confidence score</strong> (the Luhn check plus nearby keywords), combine dictionaries with AND (card + name/expiry), exclude known BINs, or start with <strong>Allow + auditor notification</strong> to measure before you block.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <div class="callout callout-note">
-        <p><strong>Prerequisite:</strong> SSL Inspection must be enabled (Lab 5 Task 5.1). DLP cannot inspect encrypted HTTPS uploads without it.</p>
-      </div>
+      <!-- ─────────────────────────── TASK 8.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-8-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 8.1</span>
+          <span class="task-collapsible-title">Protect PII Information for Data in Motion</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will create and test <strong>PII (Personally Identifiable Information)</strong> policies that safeguard data in motion, such as credit card numbers embedded in unsearchable PDFs or other documents.</p>
 
-      <h3>Task 8.1 — Build DLP Engine, Rule, and Test</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Confirm SSL Inspect All is active</h4>
-        <ol class="step-list">
-          <li>Navigate to <strong>Policies</strong> → <strong>SSL Inspection</strong> and verify the <strong>Inspect All Users</strong> rule is enabled and activated.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab8-ssl-inspect-all-policy-enabled.png" alt="SSL Inspection Policy showing Inspect All Users rule active">
-        <div class="screenshot-caption">SSL Inspect All active — prerequisite for DLP to inspect HTTPS upload content.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Verify SSL Inspection</h4>
+            <ol class="step-list">
+              <li>Go to <strong>Policies &gt; Common Configuration &gt; SSL/TLS Inspection &gt; SSL/TLS Inspection Policy</strong>.
+                <ul class="sub-steps">
+                  <li>Search for <strong>SSL Inspect All</strong>, which you created earlier.</li>
+                  <li>Verify that its status is set to <strong>Enabled</strong>.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p110-a.png" alt="SSL Inspection Policy list showing the SSL Inspect All rule with action Inspect">
+            <div class="screenshot-caption">SSL Inspection Policy: <strong>SSL Inspect All</strong> from Lab 5 is still there with action <strong>Inspect</strong>.</div>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Create a DLP Engine</h4>
-        <ol class="step-list">
-          <li>Navigate to <strong>Policy</strong> → <strong>Data Loss Prevention</strong> → <strong>DLP Engines</strong>.</li>
-          <li>Click the <strong>Engines</strong> tab, then click <strong>Add Custom DLP Engine</strong>.</li>
-          <li>Set <strong>Name</strong> to <code>Sensitive Data</code>.</li>
-          <li>Add a condition using the <strong>Credit Cards</strong> DLP dictionary with an appropriate match threshold.</li>
-          <li>Click <strong>Save</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab8-dlp-engines-tab-add-engine.png" alt="DLP Engines tab with Add Custom DLP Engine button">
-        <div class="screenshot-caption">DLP Engines tab — custom engines define the content patterns that constitute a policy violation.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab8-dlp-dictionary-credit-cards.png" alt="DLP dictionary showing Credit Cards dictionary selected">
-        <div class="screenshot-caption">Credit Cards dictionary — Zscaler's built-in pattern library for financial data detection.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab8-dlp-engine-sensitive-data-config.png" alt="DLP Engine Sensitive Data configuration with Credit Cards condition">
-        <div class="screenshot-caption">Sensitive Data engine configured with Credit Cards dictionary — the engine defines what to look for; the rule defines what to do.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Create a DLP Engine</h4>
+            <ol class="step-list">
+              <li>Go to <strong>Policies &gt; Data Protection &gt; Common Resources &gt; Dictionaries and Engines</strong>.</li>
+              <li>In the <strong>DLP Dictionaries</strong> tab:
+                <ul class="sub-steps">
+                  <li>Search for the <strong>Credit Cards</strong> dictionary.</li>
+                  <li>Click the <strong>Edit</strong> button to explore its configuration.</li>
+                </ul>
+              </li>
+              <li>In <strong>DLP Dictionaries &amp; Engines</strong>, go to the <strong>DLP Engine</strong> tab.</li>
+              <li>Click <strong>Add DLP Engines</strong> and configure the engine as follows:
+                <ul class="sub-steps">
+                  <li>Name: <code>Sensitive Data</code></li>
+                  <li>Expression: <strong>All</strong></li>
+                  <li>Select a Predefined Dictionary: <strong>Credit cards</strong></li>
+                  <li>Violations Thresholds: <strong>1</strong> (empty field)</li>
+                  <li>Description: <code>Credit Card Number and Sensitive Data Violation</code></li>
+                </ul>
+              </li>
+              <li>Click <strong>Save</strong> and <strong>Activate</strong> the changes.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab8-p111-a.png" alt="Edit DLP Dictionary dialog for the predefined Credit Cards dictionary with confidence score threshold">
+            <div class="screenshot-caption">The predefined <strong>Credit Cards</strong> dictionary: note the confidence score threshold and the BIN include/exclude options.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p111-b.png" alt="DLP Dictionaries and Engines page with the DLP Engines tab and Add DLP Engine button highlighted">
+            <div class="screenshot-caption"><strong>DLP Engines</strong> tab → <strong>+ Add DLP Engine</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p112-a.png" alt="DLP Engine form with name Sensitive Data, expression ALL with Credit Cards dictionary, and description, Save highlighted">
+            <div class="screenshot-caption">Engine <strong>Sensitive Data</strong>: ALL → <strong>Credit Cards</strong> (threshold 1). The preview reads <em>(Credit Cards &gt; 0)</em>.</div>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">3</span> Create a DLP Rule</h4>
-        <ol class="step-list">
-          <li>Navigate to <strong>Data Loss Prevention</strong> → <strong>Rules</strong>.</li>
-          <li>Click <strong>Add DLP Rule</strong>.</li>
-          <li>Set <strong>Name</strong> to <code>Block Sensitive Data</code>.</li>
-          <li>Set <strong>DLP Engine</strong> to <strong>Sensitive Data</strong> (the engine you just created).</li>
-          <li>Set <strong>Action</strong> to <strong>Block</strong>.</li>
-          <li>Enable <strong>Notify User</strong> and set a custom notification message.</li>
-          <li>Click <strong>Save</strong>, then <strong>Activate</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab8-add-dlp-rule-form.png" alt="Add DLP Rule form with Sensitive Data engine and Block action">
-        <div class="screenshot-caption">DLP Rule linked to the Sensitive Data engine — Action: Block with a user notification for blocked upload attempts.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab8-dlp-rule-action-block-notify.png" alt="DLP rule action set to Block with notify user enabled">
-        <div class="screenshot-caption">Block + Notify — the upload is blocked and the user sees a notification explaining the policy violation.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab8-add-custom-notification-message.png" alt="Custom DLP notification message configuration">
-        <div class="screenshot-caption">Custom notification message — informs the user why their upload was blocked and what to do next.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab8-data-loss-prevention-rule-saved.png" alt="DLP rule saved and visible in the DLP Rules list">
-        <div class="screenshot-caption">Block Sensitive Data rule saved — the DLP engine + rule chain is complete. Activate to push the policy.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Create a DLP Rule</h4>
+            <ol class="step-list">
+              <li>Go to <strong>Policies &gt; Data Protection &gt; Policy &gt; Data Loss Prevention</strong>.</li>
+              <li>Click <strong>+Add DLP Rule</strong> and configure the following:
+                <ul class="sub-steps">
+                  <li>Rule Order: <strong>1</strong></li>
+                  <li>Severity: <strong>High</strong></li>
+                  <li>Rule Name: <code>Data Violation Rule</code></li>
+                  <li>Rule Status: <strong>Enabled</strong></li>
+                  <li>Content Matching: <strong>Select DLP Engine</strong></li>
+                  <li>DLP Engines: <strong>Sensitive Data</strong></li>
+                  <li>Leave all other options in <strong>Criteria</strong> and <strong>DLP Incident Receiver</strong> at their defaults.</li>
+                  <li>Action, Data Traffic: <strong>Block</strong></li>
+                  <li>End User Notification: <strong>Show</strong></li>
+                </ul>
+              </li>
+              <li>Click <strong>Save</strong> and <strong>Activate</strong> the changes with the Activation icon (cloud with arrow) in the top-right corner.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p113-a.png" alt="Add DLP Rule form with Rule Order 1, Severity High, Rule Name Data Violation Rule, Enabled, Content Matching Select DLP Engines and DLP Engine Sensitive Data">
+            <div class="screenshot-caption">Rule order <strong>1</strong>, Severity <strong>High</strong>, <strong>Data Violation Rule</strong>, Content Matching → DLP Engine <strong>Sensitive Data</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p114-a.png" alt="DLP rule Incident Receiver, Action Data Traffic Block and End User Notification Show">
+            <div class="screenshot-caption">Action → Data Traffic: <strong>Block</strong>, End User Notification: <strong>Show</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> You can optionally add a custom notification message: select the <strong>Notification Message</strong> drop-down, click the <strong>+</strong> (plus) icon, name it <code>CreditCard Block</code>, and customize the Allow and Block messages as needed.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p115-a.png" alt="Add Custom Message dialog with additional information checkboxes and an Allow message preview">
+            <div class="screenshot-caption">Optional custom notification: choose which details (file name, rule name, URL category…) the user sees.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p115-b.png" alt="Data Loss Prevention policy list showing rule 1 Data Violation Rule with DLP engine Sensitive Data and action Block">
+            <div class="screenshot-caption">The DLP policy now lists <strong>Data Violation Rule</strong> → Sensitive Data → <strong>Block</strong>.</div>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">4</span> Test with a sensitive file upload</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, navigate to <code>https://dlptoolbox.com</code>.</li>
-          <li>Click <strong>File Audit</strong> and upload the <strong>Sensitive Data.txt</strong> file (provided in the lab materials).</li>
-          <li>ZIA should intercept the upload and display a DLP block notification.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab8-dlptoolbox-file-audit-upload.png" alt="DLP Toolbox website showing File Audit upload interface">
-        <div class="screenshot-caption">DLP Toolbox File Audit — the upload endpoint used to trigger DLP inspection of the Sensitive Data.txt file.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab8-dlp-block-notification-shown.png" alt="ZIA DLP block notification displayed in browser after upload attempt">
-        <div class="screenshot-caption">DLP block notification — ZIA intercepted the upload, detected credit card patterns, and blocked the transmission with user notification.</div>
+          <div class="task-block">
+            <h4><span class="task-num">4</span> Test the policy as a user</h4>
+            <ol class="step-list">
+              <li>Verify ZIA activation: in <strong>Zscaler Client Connector</strong>, make sure the status for <strong>Internet Security</strong> is enabled.</li>
+              <li>Test blocking of sensitive data:
+                <ul class="sub-steps">
+                  <li>Open a browser window on the <strong>Corp Client PC</strong>.</li>
+                  <li>Go to: <code>https://dlptoolbox.com/</code></li>
+                  <li>From the left navigation pane, select <strong>File Audit</strong>.</li>
+                  <li>Click <strong>Choose file</strong> and locate the file <strong>“Sensitive Data.txt”</strong> in the <strong>DLP Test Files</strong> folder on the <strong>Desktop</strong>.</li>
+                  <li>Click <strong>Upload</strong>.</li>
+                </ul>
+              </li>
+              <li>Verify the blocking behavior: confirm that a <strong>Block Notification</strong> appears during the upload attempt, which shows the DLP rule stopped the sensitive data from being sent.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p117-a.png" alt="dlptoolbox.com DLP File Testing page with File Audit selected and the Choose File and Upload controls highlighted">
+            <div class="screenshot-caption">dlptoolbox.com → <strong>File Audit</strong> → choose <em>Sensitive Data.txt</em> → Upload.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab8-p117-b.png" alt="Zscaler block notification reading Sorry, posting content to this website is not allowed, Violates Compliance Category Sensitive Data">
+            <div class="screenshot-caption">Blocked: <strong>"posting content to this website is not allowed"</strong>, violates compliance category <strong>Sensitive Data</strong>.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-8-1 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>No SSL inspection, no DLP.</strong> <strong>Dictionary</strong> (Credit Cards) → <strong>Engine</strong> (<code>Sensitive Data</code>, threshold 1) → <strong>Rule</strong> (<code>Data Violation Rule</code>, High, Block, notify user). Test with <em>Sensitive Data.txt</em> on <code>dlptoolbox.com</code> → File Audit, and expect the block notification.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -219,7 +356,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab8a" onchange="toggleDone(this)"><label for="chk-lab8a">Task 8.1: DLP engine + rule + upload test</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab8a" onchange="toggleDone(this)"><label for="chk-lab8a">SSL Inspect All verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab8b" onchange="toggleDone(this)"><label for="chk-lab8b">Sensitive Data engine + DLP rule</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab8c" onchange="toggleDone(this)"><label for="chk-lab8c">Upload blocked on dlptoolbox.com</label></li>
       </ul>
     </div>
 
@@ -228,35 +367,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -264,54 +407,53 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
   </aside>
 </main>
 
-<div class="recap-block">
-  <span class="recap-label">ZIA Policies phase complete</span>
-  <p class="recap-item"><strong>You just:</strong> built ZIA's full policy stack — Firewall filtering, SSL Inspection, URL and Cloud App Control, DNS Security, and DLP. Every internet-bound packet from the Corp: Client PC is now inspected, classified, and controlled.</p>
-  <p class="recap-item"><strong>Next up:</strong> Lab 9 shifts from internet access to <em>private</em> app access. You'll deploy a ZPA App Connector in the data centre — a Linux VM that calls out to the ZPA cloud. No inbound firewall rules needed. This connector is the prerequisite for every private-app lab that follows.</p>
-</div>
 <div class="page-nav">
   <a class="page-nav-btn page-nav-prev" href="lab7.html">
     <span class="page-nav-label">← PREVIOUS</span>
@@ -325,9 +467,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 8: DLP</span>
-  <span>LAB 8 of 16</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 8: Unified DLP</span>
 </footer>
 
 <script>
@@ -451,7 +592,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -486,6 +640,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -669,7 +855,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

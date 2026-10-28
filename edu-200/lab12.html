@@ -12,6 +12,28 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
@@ -23,7 +45,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Traffic Forwarding through SIPA</h1>
   <div class="motivation-banner">
-    <p>Configure SIPA in ZPA and a forwarding rule in ZIA to route App Connector internet traffic through ZIA. Verify the egress IP changes to a Zscaler service edge.</p>
+    <p>Give a public app a fixed, allow-listable source IP: a Source IP Anchor segment in ZPA, client forwarding rules, a ZIA ZPA Gateway and a forwarding rule, then watch the egress IP change.</p>
   </div>
 </header>
 
@@ -97,190 +119,381 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
     <div class="section-block" id="section-lab12">
       <h2>Lab 12: Traffic Forwarding through SIPA</h2>
+
       <div class="lab-header-card">
         <div class="lab-badge">LAB 12</div>
-        <p><strong>Scenario:</strong> Internet traffic from ZPA App Connectors currently exits with the data centre IP. You'll configure SIPA to route this traffic through ZIA, giving it a consistent Zscaler service edge egress IP, then verify the IP change using ip.zscaler.com and ping.eu.</p>
+        <p><strong>Scenario:</strong> Safemarch Corporation hosts critical cloud applications that require <strong>strict Source IP whitelisting</strong> for access. <strong>Zscaler Internet Access (ZIA)</strong> uses dynamic egress IP addresses, which can cause problems when reaching these applications. To meet these requirements, a Zscaler administrator must <strong>configure</strong> the <strong>Source IP Anchoring (SIPA)</strong> feature to <strong>ensure consistent, whitelisted source IPs for accessing public applications</strong> while using ZPA's secure connectivity.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Configure</strong> a <strong>Source IP Anchoring application segment</strong> to give public applications consistent egress IPs.</li>
+          <li><strong>Define and apply ZPA and ZIA forwarding rules</strong> that enable SIPA for traffic management.</li>
+          <li><strong>Validate the configuration</strong> by testing traffic routing through the SIPA-enabled application.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~30 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 12.1 – 12.3</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab12-hero.png" alt="Lab 12 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~30 minutes</div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab12">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · SOURCE IP ANCHORING</span>
         </div>
+        <p class="socratic-insight">With SIPA, ZIA still inspects the traffic, but instead of leaving the internet from a shared Zscaler IP, it hands the session to ZPA, which sends it out through <em>your</em> App Connector and therefore <em>your</em> public IP.</p>
+        <ul class="socratic-questions">
+          <li>A SaaS partner only accepts logins from IPs on its allow-list. Why is "just allow-list Zscaler's egress IPs" a poor answer, and how does SIPA solve it?
+            <div class="answer-area" data-section="lab12-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">ZIA egress IPs are <strong>shared</strong> with other Zscaler customers and can <strong>change</strong> with the Service Edge the user lands on. Allow-listing them would let other tenants' users through and still break when the IP changes. SIPA steers only the chosen application from ZIA into ZPA, out through the <strong>App Connector</strong>, so the partner sees <strong>your organization's own, stable</strong> IP, and you keep ZIA's inspection and policy along the way.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>You create <strong>two</strong> client forwarding rules for the same segment: <em>SIPA Bypass</em> (Client Connector → Bypass ZPA) and <em>SIPA Forward</em> (ZIA Service Edge → Forward to ZPA). Why both, and what would go wrong without the bypass?
+            <div class="answer-area" data-section="lab12-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The goal is the path <strong>ZCC → ZIA → ZPA → App Connector → Internet</strong>. Without the bypass, ZCC would see <code>ip.zscaler.com</code> in a ZPA segment and send it <strong>straight into ZPA</strong>, skipping ZIA entirely (no inspection, no ZIA logs). <em>SIPA Bypass</em> tells ZCC "don't take this through ZPA, send it to ZIA". <em>SIPA Forward</em> then allows ZPA to accept it when it arrives <strong>from a ZIA Service Edge</strong>. Together they give exactly one path, through both services.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>In Task 12.3 you swap <code>ip.zscaler.com</code> for <code>ping.eu</code> in the segment, and the new site's traffic is anchored without touching any ZIA rule. What does that tell you about where the "which apps get SIPA" decision lives?
+            <div class="answer-area" data-section="lab12-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The ZIA forwarding rule and the client forwarding rules all point to the <strong>SIPA application segment</strong> (and its segment group), not to specific domains. The <em>segment</em> is the single source of truth: add or remove a domain there and every rule that references it follows automatically. Operationally, onboarding a new allow-listed SaaS app is a one-line change in ZPA instead of edits across several policies.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <h3>Task 12.1 — Configure SIPA in ZPA</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Check initial egress IP</h4>
-        <ol class="step-list">
-          <li>Ensure ZCC has ZIA <strong>disabled</strong> (Internet Security OFF) so you can see the connector's native egress IP.</li>
-          <li>Navigate to <code>http://ip.zscaler.com</code> on the Corp: Client PC and note the current IP address.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-zcc-zia-zpa-disabled-side-by-side.png" alt="ZCC with ZIA and ZPA disabled for baseline IP check">
-        <div class="screenshot-caption">ZCC with ZIA disabled — checking the native (non-Zscaler) egress IP before SIPA configuration as a baseline.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-ip-zscaler-native-ip-no-proxy.png" alt="ip.zscaler.com showing the data centre's native egress IP without Zscaler">
-        <div class="screenshot-caption">Native egress IP — the data centre's public IP before SIPA is configured. This will change after SIPA is active.</div>
-      </div>
-
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Create a SIPA App Segment in ZPA</h4>
-        <ol class="step-list">
-          <li>Re-enable ZCC (Internet Security ON), then in the ZPA Admin Console navigate to <strong>Applications</strong> → <strong>App Segments</strong>.</li>
-          <li>Click <strong>Add Application Segment</strong>.</li>
-          <li>Set <strong>Name</strong> to <code>SIPA</code> (or <code>ip.zscaler.com</code>).</li>
-          <li>Set <strong>Domain</strong> to <code>ip.zscaler.com</code> (the test destination via SIPA).</li>
-          <li>Add port ranges: <code>80</code> and <code>443</code>.</li>
-          <li>Assign the <strong>On-Prem</strong> App Connector Group.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-app-connectors-nav.png" alt="ZPA App Connectors navigation showing connected connector">
-        <div class="screenshot-caption">App Connectors page — the On-Prem connector is Connected and will handle the SIPA app segment traffic.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-add-sipa-app-segment-general.png" alt="Add SIPA App Segment form with ip.zscaler.com domain">
-        <div class="screenshot-caption">SIPA App Segment — defines ip.zscaler.com as a ZPA-routed destination, forcing that traffic through the SIPA path.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-sipa-app-segment-port-ranges.png" alt="SIPA app segment port ranges showing 80 and 443">
-        <div class="screenshot-caption">Port ranges 80 and 443 — HTTP and HTTPS access to the SIPA destination domain.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-sipa-segment-group-config.png" alt="SIPA app segment connector group configuration">
-        <div class="screenshot-caption">SIPA segment connector group — On-Prem handles the SIPA traffic through the same connector used for Intranet access.</div>
-      </div>
-
-      <div class="task-block">
-        <h4><span class="task-num">3</span> Configure the ZPA Gateway for SIPA</h4>
-        <ol class="step-list">
-          <li>In the ZPA Admin Portal, go to <strong>Infrastructure → App Connectors → Gateways</strong>.</li>
-          <li>Click the existing gateway to open it (or click <strong>Add Gateway</strong> if none exists yet). In the gateway form, locate the <strong>SIPA</strong> section and set <strong>SIPA Forwarding</strong> to <strong>Enabled</strong>.</li>
-          <li>In the <strong>SIPA App Segments</strong> field, select the <code>SIPA</code> app segment you created in step 2. Save the gateway.</li>
-        </ol>
-        <div class="callout callout-troubleshoot">
-          <strong>Troubleshoot</strong>
-          <p>If no gateway appears in the list, the App Connector may not have registered yet — check <strong>Infrastructure → App Connectors</strong> to confirm the On-Prem connector shows <strong>Connected</strong> status. If the SIPA section is absent from the gateway form, verify your ZPA subscription includes the SIPA add-on under <strong>Administration → Subscriptions</strong>.</p>
+      <!-- ─────────────────────────── TASK 12.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-12-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 12.1</span>
+          <span class="task-collapsible-title">Configure Source IP Anchoring (SIPA) in ZPA</span>
+          <span class="task-collapsible-chevron">▾</span>
         </div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-edit-gateway-zpa-sipa.png" alt="ZPA Gateway settings showing SIPA configuration">
-        <div class="screenshot-caption">ZPA Gateway SIPA configuration — the gateway tells ZPA where to forward internet-bound traffic from the connector for ZIA inspection.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-sipa-server-group-config.png" alt="SIPA server group configuration in ZPA">
-        <div class="screenshot-caption">SIPA server group — defines the server-side configuration for the SIPA app segment in ZPA.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-sipa-app-segment-review.png" alt="SIPA app segment review showing complete configuration">
-        <div class="screenshot-caption">SIPA App Segment review — domain, ports, connector group, and server group configured. Save to create the segment.</div>
-      </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will configure the SIPA feature in ZPA so public applications get a fixed, whitelisted egress IP.</p>
 
-      <div class="task-block">
-        <h4><span class="task-num">4</span> Create an Access Policy for SIPA</h4>
-        <ol class="step-list">
-          <li>In <strong>Policy</strong> → <strong>Access Policy</strong>, add a rule allowing access to the SIPA segment.</li>
-          <li>Set criteria and user scope appropriately, then Save.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-add-sipa-access-policy-form.png" alt="Add SIPA access policy form in ZPA">
-        <div class="screenshot-caption">SIPA access policy — allows the appropriate users to use the SIPA forwarding path for internet-bound traffic.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-sipa-access-policy-allow-access.png" alt="SIPA access policy set to Allow with criteria configured">
-        <div class="screenshot-caption">Allow access via SIPA — the policy controls who can use the SIPA forwarding path.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-sipa-access-policy-criteria.png" alt="SIPA access policy criteria showing segment and user configuration">
-        <div class="screenshot-caption">SIPA access policy criteria — segment + user identity criteria define who gets SIPA forwarding.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-sipa-policy-step-allow-intranet.png" alt="SIPA policy step showing allow intranet access alongside SIPA">
-        <div class="screenshot-caption">Policy step in SIPA segment wizard — verify the access policy is linked before saving.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Check the current egress IPs</h4>
+            <ol class="step-list">
+              <li>Find your native public IP (without ZCC):
+                <ul class="sub-steps">
+                  <li>Open <strong>Zscaler Client Connector (ZCC)</strong> on the <strong>Corp Client PC</strong> and <strong>disable ZIA and ZPA</strong>.</li>
+                  <li>Open a browser and go to: <code>ip.zscaler.com</code></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p162-a.png" alt="Two ZCC windows showing Internet Security and Private Access with the Turn Off controls highlighted">
+            <div class="screenshot-caption">Turn off <strong>Internet Security</strong> and <strong>Private Access</strong> in ZCC.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p163-a.png" alt="ip.zscaler.com reporting the request did not come from a Zscaler IP and showing the native public IP">
+            <div class="screenshot-caption">"…didn't come from a Zscaler IP": this is the PC's <strong>native</strong> public IP.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The IP address displayed is your device's native public IP without Zscaler services active.</p>
+          </div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Find your public IP after enabling Zscaler services:
+                <ul class="sub-steps">
+                  <li><strong>Re-enable ZIA and ZPA</strong> in ZCC.</li>
+                  <li>Open a browser and go to: <code>ip.zscaler.com</code></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p164-a.png" alt="ZCC Internet Security with Service Status ON highlighted">
+            <div class="screenshot-caption">Services back <strong>ON</strong>. ip.zscaler.com now reports a Zscaler (ZIA) egress IP.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The IP address shown is the <strong>ZIA egress IP</strong>, which changes dynamically, as is typical of Zscaler's proxy-based architecture. Public applications, however, often need a consistent, predictable IP for security reasons. Enabling SIPA solves this, as you'll configure in the next steps.</p>
+          </div>
 
-      <h3>Task 12.2 — Configure ZIA Forwarding Rule for ZPA</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Enable ZCC and navigate to ZIA forwarding</h4>
-        <ol class="step-list">
-          <li>In ZCC, ensure <strong>Internet Security</strong> is <strong>ON</strong>.</li>
-          <li>In ZIA, navigate to <strong>Policy</strong> → <strong>Network Policies</strong> → <strong>ZPA</strong> (or <strong>Forwarding Control</strong>).</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-zcc-internet-security-on.png" alt="ZCC showing Internet Security ON">
-        <div class="screenshot-caption">ZCC Internet Security ON — ZIA is now inspecting traffic. The SIPA configuration will route connector traffic through here.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-zia-network-policies-zpa-nav.png" alt="ZIA Network Policies ZPA navigation page">
-        <div class="screenshot-caption">ZIA Network Policies → ZPA — configure how ZIA handles traffic arriving from ZPA App Connectors via the SIPA path.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Configure SIPA in ZPA</h4>
+            <ol class="step-list">
+              <li>Go to the ZPA Admin Portal through the Experience Center:
+                <ul class="sub-steps">
+                  <li>Go to <strong>Infrastructure &gt; Private Access &gt; App Connectors</strong>.</li>
+                  <li>Verify that an App Connector is deployed and <strong>connected</strong>.</li>
+                </ul>
+              </li>
+              <li>Add a new Application Segment:
+                <ul class="sub-steps">
+                  <li>Go to <strong>Policies &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+                  <li>Click <strong>Add Application Segment</strong> and configure it as follows:
+                    Name: <code>SIPA Application</code>; Source IP Anchor: <strong>Enabled</strong>; Application: <code>ip.zscaler.com</code>; TCP Port Ranges: <strong>80</strong> (HTTP) and <strong>443</strong> (HTTPS). Click <strong>Next</strong>.</li>
+                </ul>
+              </li>
+              <li>Configure the Segment Group: Name <code>SIPA Segment</code>, Description optional, Status <strong>Enabled</strong>. Click <strong>Next</strong>.</li>
+              <li>Configure the Server Group: Name <code>SIPA Server</code>, App Connector Group <strong>OnPrem</strong>. Click <strong>Next</strong>.</li>
+              <li>Click <strong>Save</strong> to complete the configuration.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p165-a.png" alt="Infrastructure > Private Access menu with App Connectors highlighted">
+            <div class="screenshot-caption">Infrastructure → Private Access → <strong>App Connectors</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p165-b.png" alt="App Connectors list with the OnPrem connector showing Connected">
+            <div class="screenshot-caption">The OnPrem connector from Lab 9 is <strong>Connected</strong>. SIPA traffic will leave through it.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p166-a.png" alt="Add Application Segment with Name SIPA Application and Source IP Anchor Enabled highlighted">
+            <div class="screenshot-caption">Name <strong>SIPA Application</strong>, <strong>Source IP Anchor: Enabled</strong>, the switch that makes this a SIPA segment.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p167-a.png" alt="Applications field containing ip.zscaler.com">
+            <div class="screenshot-caption">Application: <code>ip.zscaler.com</code>, a public site, not a private one.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p167-b.png" alt="TCP port ranges 80 and 443 highlighted, Next button">
+            <div class="screenshot-caption">TCP ports <strong>80</strong> and <strong>443</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p168-a.png" alt="Add Segment Group with Name SIPA Segment and Status Enabled">
+            <div class="screenshot-caption">Segment group <strong>SIPA Segment</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p169-a.png" alt="Add Server Group with Name SIPA Server and App Connector Group OnPrem">
+            <div class="screenshot-caption">Server group <strong>SIPA Server</strong> → App Connector Group <strong>OnPrem</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p169-b.png" alt="Review step summarizing SIPA Application, SIPA Segment, SIPA Server and OnPrem with Save highlighted">
+            <div class="screenshot-caption">Review, then <strong>Save</strong>.</div>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Add a forwarding rule for ZPA SIPA traffic</h4>
-        <ol class="step-list">
-          <li>Click <strong>Add Forwarding Rule</strong>.</li>
-          <li>Configure the rule to match traffic from the ZPA SIPA gateway and forward it through ZIA.</li>
-          <li>Set the appropriate destination and forwarding action.</li>
-          <li>Click <strong>Save</strong>, then <strong>Activate</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-add-forwarding-rule-sipa-forward.png" alt="Add Forwarding Rule for SIPA in ZIA">
-        <div class="screenshot-caption">ZIA Forwarding Rule for SIPA — routes traffic arriving from the ZPA connector through ZIA's inspection and egress path.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-forwarding-rule-destination-criteria.png" alt="Forwarding rule destination criteria configuration">
-        <div class="screenshot-caption">Forwarding rule destination criteria — scope the rule to the SIPA-related traffic destinations.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-app-connectors-onprem-connected.png" alt="ZIA App Connectors showing On-Prem connector connected">
-        <div class="screenshot-caption">On-Prem App Connector shown in ZIA — confirms ZIA sees the connector and can route its traffic through the SIPA path.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-forwarding-control-activate.png" alt="ZIA Forwarding Control Activate Changes button">
-        <div class="screenshot-caption">Activate Forwarding Control changes — push the SIPA forwarding rule to ZIA service edges.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Configure and save the access policy</h4>
+            <ol class="step-list">
+              <li>After you save the SIPA Application Segment, you are redirected to the <strong>Access Policy</strong> page. Alternatively, go to <strong>Policies &gt; Private Applications &gt; Access Policy</strong>.</li>
+              <li>Add a new policy rule:
+                <ul class="sub-steps">
+                  <li>Name: <code>SIPA Policy</code></li>
+                  <li>Action: <strong>Allow Access</strong></li>
+                  <li>Criteria: select the applications mapped to the SIPA application segment and segment groups.</li>
+                </ul>
+              </li>
+              <li>Click <strong>Save</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p170-a.png" alt="Policies step of the wizard with the Edit Policy button highlighted">
+            <div class="screenshot-caption">Use <strong>Edit Policy</strong> from the wizard's Policies step.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p171-a.png" alt="Add Access Policy with Name SIPA Policy and Rule Action Allow Access">
+            <div class="screenshot-caption">Rule <strong>SIPA Policy</strong>: Allow Access.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p171-b.png" alt="Access policy criteria with Application Segments SIPA Application and Save highlighted">
+            <div class="screenshot-caption">Criteria: Application Segments = <strong>SIPA Application</strong>, then Save.</div>
+          </div>
 
-      <h3>Task 12.3 — Verify SIPA Egress</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Compare egress IP before and after SIPA</h4>
-        <ol class="step-list">
-          <li>Navigate to <code>http://ip.zscaler.com</code> with ZCC active.</li>
-          <li>The egress IP should now be a <strong>Zscaler service edge IP</strong> — different from the native connector IP noted in Task 12.1.</li>
-          <li>The page should confirm: "You are accessing the Internet via Zscaler."</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-sipa-app-segment-ip-zscaler.png" alt="SIPA app segment showing ip.zscaler.com as the target domain">
-        <div class="screenshot-caption">SIPA App Segment targeting ip.zscaler.com — traffic to this domain routes through the SIPA forwarding path.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-sipa-bypass-forwarding-policy.png" alt="Forwarding policy showing SIPA bypass configuration">
-        <div class="screenshot-caption">SIPA forwarding policy details — bypass vs. forward rules determine which connector traffic goes through ZIA.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab12-sipa-forward-forwarding-policy.png" alt="Forwarding policy showing SIPA forward action">
-        <div class="screenshot-caption">SIPA forward action in the forwarding policy — traffic matching the SIPA criteria is routed through ZIA.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-ip-zscaler-sipa-egress-ip.png" alt="ip.zscaler.com showing Zscaler service edge egress IP after SIPA">
-        <div class="screenshot-caption">After SIPA: ip.zscaler.com shows a Zscaler service edge IP — connector internet traffic now egresses through ZIA, not the data centre IP.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-sipa-app-segment-edit-ping-eu.png" alt="SIPA app segment edited to include ping.eu domain for additional verification">
-        <div class="screenshot-caption">SIPA segment extended to ping.eu — an external IP echo service used to verify the SIPA egress IP from a second source.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-app-segments-discovery-intranet-sipa.png" alt="App Segments list showing Discovery, Intranet, and SIPA segments all configured">
-        <div class="screenshot-caption">App Segments list: Discovery, Intranet, and SIPA all configured — each serves a distinct purpose in the ZPA architecture.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab12-ping-eu-sipa-new-egress-ip.png" alt="ping.eu showing the new SIPA egress IP address">
-        <div class="screenshot-caption">ping.eu confirms the new SIPA egress IP — connector internet traffic now leaves via the Zscaler service edge, consistent with ZCC user traffic.</div>
+          <div class="task-block">
+            <h4><span class="task-num">4</span> Configure the Client Forwarding Policies</h4>
+            <ol class="step-list">
+              <li><strong>Rule 1, bypass ZPA for specific segment groups.</strong> Go to <strong>Infrastructure &gt; Private Access &gt; Client Connector Policies &gt; Client Forwarding Policies</strong> and add a client forwarding policy:
+                <ul class="sub-steps">
+                  <li>Name: <code>SIPA Bypass</code></li>
+                  <li>Rule Action: <strong>Bypass ZPA</strong></li>
+                  <li>Criteria: Applications = map the application segments and segment groups. Client Types = <strong>Client Connector</strong>.</li>
+                  <li>Click <strong>Add Rule</strong>.</li>
+                </ul>
+              </li>
+              <li><strong>Rule 2, forward traffic to ZPA.</strong> Configure <code>SIPA Forward</code>:
+                <ul class="sub-steps">
+                  <li>Rule Action: <strong>Forward to ZPA</strong></li>
+                  <li>Criteria: Applications = map the application segments and segment groups. Client Types = <strong>ZIA Service Edge</strong>.</li>
+                  <li>Click <strong>Add Rule</strong>.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p172-a.png" alt="Infrastructure > Private Access with Client Connector Policies and Client Forwarding Policy highlighted">
+            <div class="screenshot-caption">Infrastructure → Private Access → Client Connector Policies → <strong>Client Forwarding Policy</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p173-a.png" alt="Client Forwarding Policy Add Rule with Segment Groups SIPA Segment, Client Types Client Connector and Action Bypass ZPA, rule name SIPA Bypass">
+            <div class="screenshot-caption"><strong>SIPA Bypass</strong>: SIPA Segment + <strong>Client Connector</strong> → <strong>Bypass ZPA</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p174-a.png" alt="Client Forwarding Policy Add Rule with Segment Groups SIPA Segment, Client Types ZIA Service Edge and Action Forward to ZPA, rule name SIPA Forward">
+            <div class="screenshot-caption"><strong>SIPA Forward</strong>: SIPA Segment + <strong>ZIA Service Edge</strong> → <strong>Forward to ZPA</strong>.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-12-1 -->
+
+      <!-- ─────────────────────────── TASK 12.2 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-12-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 12.2</span>
+          <span class="task-collapsible-title">Configure ZIA Forwarding for Source IP Anchoring</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will configure forwarding behavior in <strong>Zscaler Internet Access (ZIA)</strong> so that <strong>SIPA-enabled applications</strong> are <strong>routed through ZPA</strong> with consistent source IPs.</p>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Define the ZPA Gateway</h4>
+            <ol class="step-list">
+              <li>In the Experience Center, go to <strong>Infrastructure &gt; Internet and SaaS &gt; Network Policies &gt; Zscaler Private Access</strong>.</li>
+              <li>Click <strong>Add Gateway for ZPA</strong> and give it a name (e.g., <code>SIPA Gateway</code>).</li>
+              <li>Select the <strong>server group</strong> and <strong>application segment</strong>. These should be fetched automatically from the ZPA configuration in Task 12.1.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p175-a.png" alt="Infrastructure > Internet and SaaS > Network Policies with Zscaler Private Access highlighted">
+            <div class="screenshot-caption">Infrastructure → <strong>Internet &amp; SaaS</strong> → Network Policies → <strong>Zscaler Private Access</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p176-a.png" alt="Edit Gateway for ZPA with Gateway Name SIPA Gateway, Server Group SIPA Server and Application Segment SIPA Application">
+            <div class="screenshot-caption"><strong>SIPA Gateway</strong> → Server Group <strong>SIPA Server</strong>, Application Segment <strong>SIPA Application</strong>, both pulled from ZPA.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Configure the Forwarding Control Policy</h4>
+            <ol class="step-list">
+              <li>On the same page, move to the <strong>Forwarding Control Policy</strong> tab.</li>
+              <li>Define the following:
+                <ul class="sub-steps">
+                  <li>Rule order: <strong>1</strong></li>
+                  <li>Rule name: <code>SIPA Forward</code></li>
+                  <li>Make sure the rule status is <strong>enabled</strong>.</li>
+                  <li>Under <strong>Forwarding Method</strong>, select <strong>ZPA</strong>.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p177-a.png" alt="Add Forwarding Rule with Rule Order 1, Rule Name SIPA Forward and Forwarding Method ZPA highlighted">
+            <div class="screenshot-caption">Forwarding rule <strong>SIPA Forward</strong>, order 1, method <strong>ZPA</strong>.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Set the forwarding criteria</h4>
+            <ol class="step-list">
+              <li>Go to the <strong>Criteria</strong> tab.</li>
+              <li>Click <strong>Destination</strong> and define the ZPA application segment (e.g., <strong>SIPA Application</strong>).</li>
+              <li>Set the <strong>Forward to ZPA Gateway</strong> action to the <strong>SIPA Gateway</strong> you defined earlier.</li>
+              <li>Click <strong>Save</strong>, then <strong>Activate</strong> the changes.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p178-a.png" alt="Forwarding rule Destination tab with ZPA Application Segment SIPA Application and Forward to ZPA Gateway SIPA Gateway, Save highlighted">
+            <div class="screenshot-caption">Destination: ZPA Application Segment <strong>SIPA Application</strong> → Forward to ZPA Gateway <strong>SIPA Gateway</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p179-a.png" alt="Forwarding Control page with the Activation panel and Activate highlighted">
+            <div class="screenshot-caption"><strong>Activate</strong> the ZIA change.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-12-2 -->
+
+      <!-- ─────────────────────────── TASK 12.3 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-12-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 12.3</span>
+          <span class="task-collapsible-title">Verify Source IP Anchoring (SIPA) Functionality</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will <strong>verify</strong> that the <strong>SIPA configuration</strong> works correctly by confirming that traffic is routed through ZPA, and see what happens when you change the application segment.</p>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Do an initial check</h4>
+            <ol class="step-list">
+              <li>Open a browser on the <strong>Corp Client PC</strong> and go to: <code>ip.zscaler.com</code></li>
+              <li>Look at the public IP address shown. This IP confirms that traffic is routed from <strong>ZIA</strong> to <strong>ZPA</strong> to the <strong>App Connector</strong>, as defined in the <strong>SIPA</strong> rule.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p180-a.png" alt="ip.zscaler.com showing the request arriving from the App Connector's public IP address">
+            <div class="screenshot-caption">ip.zscaler.com now sees the <strong>App Connector's</strong> public IP: the anchored source IP.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The SIPA IP shown is different from the default ZIA egress IP (Step 1 of Task 12.1). This shows that ZPA can give a fixed source IP to selected applications, which is essential for whitelisting security.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Dynamic testing (modify the application segment)</h4>
+            <ol class="step-list">
+              <li>Go to the ZPA Admin Portal through the Experience Center: <strong>Policies &gt; Private Application &gt; Defined Application Segments</strong>.</li>
+              <li>Edit the <strong>SIPA Application</strong> segment as follows:
+                <ul class="sub-steps">
+                  <li><strong>Remove</strong> <code>ip.zscaler.com</code> from the <strong>Application</strong> tab.</li>
+                  <li>Add a new domain (e.g., <code>ping.eu</code>) instead.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p181-a.png" alt="App Segments list with the SIPA Application segment and its Edit icon highlighted">
+            <div class="screenshot-caption">Edit the <strong>SIPA Application</strong> segment.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p181-b.png" alt="Application field now containing ping.eu">
+            <div class="screenshot-caption">Swap the application to <code>ping.eu</code> and save.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Test the dynamic configuration</h4>
+            <ol class="step-list">
+              <li>Open a browser and go to: <code>ping.eu</code></li>
+              <li>Look at the new IP address shown by ping.eu.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab12-p182-a.png" alt="ping.eu page showing Your IP is with the anchored IP highlighted">
+            <div class="screenshot-caption"><code>ping.eu</code> now reports the anchored IP too. No ZIA rule had to change.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Traffic for the newly defined application is routed through ZPA-SIPA and shows the updated ZPA egress IP.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-12-3 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Path: ZCC → ZIA → ZPA → App Connector → Internet.</strong> ZPA: segment <code>SIPA Application</code> (<strong>Source IP Anchor on</strong>, 80/443) + SIPA Segment/Server + <em>SIPA Policy</em>. Client forwarding: <em>SIPA Bypass</em> (Client Connector) + <em>SIPA Forward</em> (ZIA Service Edge). ZIA: <em>SIPA Gateway</em> + forwarding rule (method ZPA) + <strong>Activate</strong>. To change which apps are anchored, edit the <strong>segment</strong>.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -288,7 +501,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab12" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab12','Lab 12: SIPA Traffic Forwarding')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab12','Lab 12: SIPA')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -309,8 +522,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab12a" onchange="toggleDone(this)"><label for="chk-lab12a">Task 12.1: SIPA segment + gateway</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab12b" onchange="toggleDone(this)"><label for="chk-lab12b">Task 12.3: SIPA egress IP verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab12a" onchange="toggleDone(this)"><label for="chk-lab12a">Task 12.1: SIPA segment, policy + forwarding rules</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab12b" onchange="toggleDone(this)"><label for="chk-lab12b">Task 12.2: ZIA SIPA Gateway + forwarding rule</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab12c" onchange="toggleDone(this)"><label for="chk-lab12c">Task 12.3: Anchored IP verified (ip.zscaler.com, ping.eu)</label></li>
       </ul>
     </div>
 
@@ -319,35 +533,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -355,43 +573,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
@@ -401,7 +623,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <div class="page-nav">
   <a class="page-nav-btn page-nav-prev" href="lab11.html">
     <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 11: Troubleshoot ZPA</span>
+    <span class="page-nav-title">Lab 11: Troubleshoot Access</span>
   </a>
   <div class="page-nav-message">Internet and private access, unified. Two birds, one tunnel.</div>
   <a class="page-nav-btn page-nav-next" href="lab13.html">
@@ -411,9 +633,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 12: SIPA Forwarding</span>
-  <span>LAB 12 of 16</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 12: SIPA</span>
 </footer>
 
 <script>
@@ -537,7 +758,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -572,6 +806,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -755,7 +1021,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

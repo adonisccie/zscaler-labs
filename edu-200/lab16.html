@@ -6,24 +6,46 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 16: Troubleshoot Slow DNS — EDU-200</title>
+<title>Lab 16: Troubleshoot Slow DNS Response — EDU-200</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-200</a> › Lab 16</div>
   <div class="header-top">
-    <span class="eyebrow-chip">Lab 16 · EDU-200</span><span class="eyebrow-chip" style="background:rgba(92,53,204,0.15);color:#7c5ce8;border:1px solid #c8bbff;margin-left:10px;">SDC</span>
+    <span class="eyebrow-chip">Lab 16 · EDU-200 · SDC</span>
     <span class="header-dot"></span>
   </div>
   <h1>Troubleshoot Slow DNS</h1>
   <div class="motivation-banner">
-    <p>Use ZDX Copilot to surface Linda Lucas, analyse her consistently poor all-apps score, isolate 3000ms DNS Time in web probe metrics, and confirm with Y-Engine.</p>
+    <p>Ask ZDX Copilot why Linda Lucas's SaaS apps crawl, then prove it yourself: Page Fetch Time vs baseline, the DNS Resolve Time breakdown, and a Y-Engine verdict of High DNS.</p>
   </div>
 </header>
 
@@ -96,104 +118,310 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <!-- ═══════════════════════════════════════════ LAB 16 ═══════════════════════════════════════════ -->
 
     <div class="section-block" id="section-lab16">
-      <h2>Lab 16: Troubleshoot Slow DNS</h2>
+      <h2>Lab 16: Troubleshoot Slow DNS Response</h2>
+
       <div class="lab-header-card">
-        <div class="lab-badge">LAB 16</div>
-        <p><strong>Scenario:</strong> Linda Lucas is reporting that all her cloud applications are slow. Using ZDX Copilot and the SDC environment, you'll identify Linda's poor ZDX score across all apps, analyse web probe Page Fetch Time to isolate high DNS Time, and use the Y-Engine to confirm DNS as the root cause.</p>
+        <div class="lab-badge">LAB 16 · SDC</div>
+        <p><strong>Scenario:</strong> A user, <strong>Linda Lucas</strong>, <strong>reports to the service desk</strong> that she has a consistently poor experience when accessing SaaS applications. <strong>Zoom calls work fine once connected, but anything web-based is very slow.</strong> Initial investigation suggests the issue may be related to <strong>slow DNS response times</strong>, which increase page load latency and degrade the user's digital experience.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Use ZDX Copilot</strong> to identify likely root causes of poor user experience.</li>
+          <li><strong>View a user's overall ZDX score over time</strong> for the incident period.</li>
+          <li><strong>Analyze Page Fetch Time</strong> and related <strong>Web Probe Metrics</strong> to find latency patterns.</li>
+          <li><strong>Confirm</strong> the primary <strong>root cause</strong> using the <strong>ZDX Y-Engine</strong>.</li>
+        </ul>
+        <table class="creds-table" style="margin-top:12px;">
+          <tbody>
+            <tr><td><strong>User</strong></td><td>Linda Lucas</td></tr>
+            <tr><td><strong>Device</strong></td><td>HOST-2</td></tr>
+            <tr><td><strong>Time Range</strong></td><td>Last 48 Hours</td></tr>
+            <tr><td><strong>Highlights</strong></td><td>Poor App Experience, Slow DNS Response Times</td></tr>
+          </tbody>
+        </table>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 16.1 – 16.4</div>
+          <div class="lab-meta-item"><strong>Tenant:</strong> Solutions Demo Center (read-only)</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab16-hero.png" alt="Lab 16 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab16">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · DNS &amp; PAGE LOAD</span>
+        </div>
+        <p class="socratic-insight">Every new web connection starts with a DNS lookup. A slow resolver adds a delay before <em>anything else</em> can happen, and modern pages make dozens of lookups.</p>
+        <ul class="socratic-questions">
+          <li>Linda says Zoom is fine once connected but web apps are slow. Why would slow DNS hurt web apps so much more than an established Zoom call?
+            <div class="answer-area" data-section="lab16-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">A Zoom call resolves its servers once at the start, then streams over long-lived connections, so DNS isn't in the path anymore. A SaaS web page loads many resources from many hostnames (CDNs, APIs, identity providers like Okta), and each new name needs a lookup. With a slow resolver, every one of those adds delay before the TCP/TLS handshake even starts, so <strong>Page Fetch Time</strong> rises even though bandwidth and server response are fine. "Fine once connected" is the classic DNS symptom.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Copilot gives you an answer in seconds. Why does the lab still have you validate it manually with Web Probe metrics and the Y-Engine?
+            <div class="answer-area" data-section="lab16-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">An AI summary is a great <strong>starting hypothesis</strong>, but you'll have to justify the fix to someone (the network team who owns the DNS server, or the user). Seeing that DNS Resolve Time makes up most of Page Fetch Time, that PFT is roughly 2× baseline, and that the Y-Engine names High DNS with 100% confidence gives <strong>evidence you can show</strong>. It also teaches you how ZDX reaches its conclusion, so you can spot when an automated answer is incomplete.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The finding is that HOST-2 uses DNS server <code>10.0.1.53</code>, and it's slow. What corrective actions would you suggest, and how could the work you did in Lab 7 relate?
+            <div class="answer-area" data-section="lab16-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Hand the evidence to the team that owns <code>10.0.1.53</code>: check its load, forwarders and upstream latency, add capacity or a closer resolver, or fix the DHCP option that hands it out. Check whether other users on that resolver show the same pattern (it's rarely just one person). Lab 7's lesson applies too: when ZCC steers DNS through the Zero Trust Exchange, resolution and DNS security happen in Zscaler's cloud. Make sure the steering and resolver design don't add an extra slow hop, and monitor DNS time continuously with ZDX afterwards.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ─────────────────────────── TASK 16.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-16-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 16.1</span>
+          <span class="task-collapsible-title">Use ZDX Copilot for Root Cause Analysis</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task you will use <strong>ZDX Copilot</strong> to understand why Linda is getting poor performance.</p>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Ask Copilot</h4>
+            <ol class="step-list">
+              <li>From the <strong>Experience Center</strong>, go to <strong>Analytics &gt; Copilot</strong>, or use the <strong>Search</strong> option to go to <strong>Copilot</strong>.</li>
+              <li>In the Copilot chat, enter the following prompt and click <strong>Send</strong>:
+                <ul class="sub-steps">
+                  <li><code>Linda Lucas linda.lucas@thexerotrustlab.com reports to the service desk that she is having a consistently poor experience when accessing SaaS apps like okta. analyze the reason behind</code></li>
+                </ul>
+              </li>
+              <li>Review ZDX Copilot's response, focusing on:
+                <ul class="sub-steps">
+                  <li>The <strong>reason</strong> it gives for Linda's poor SaaS experience.</li>
+                  <li>Any mention of <strong>DNS</strong>, <strong>latency</strong> or <strong>Page Fetch Time</strong> as contributing factors.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p232-a.png" alt="Experience Center search for copilot with Copilot under Analytics highlighted">
+            <div class="screenshot-caption">Search <strong>copilot</strong> → Analytics → <strong>Copilot</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p233-a.png" alt="ZDX Copilot chat showing the Linda Lucas prompt and a response listing latency and high page fetch time issues with Okta">
+            <div class="screenshot-caption">Copilot's answer: overall latency and <strong>high Page Fetch Time</strong> issues with Okta.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p233-b.png" alt="Copilot response with charts for application experience and probe metrics including page fetch and DNS">
+            <div class="screenshot-caption">Copilot backs its summary with charts. Note which metric it points at.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> In the next tasks, you'll do a <strong>manual investigation</strong> with ZDX dashboards to validate Copilot's findings and understand how ZDX reaches that conclusion.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-16-1 -->
+
+      <!-- ─────────────────────────── TASK 16.2 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-16-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 16.2</span>
+          <span class="task-collapsible-title">View User ZDX Score Over Time</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will view Linda's overall ZDX score for all monitored applications over the period she has been having issues.</p>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Find Linda's device</h4>
+            <ol class="step-list">
+              <li>Go to <strong>Analytics &gt; Digital Experience Management &gt; User / Device Search</strong> and search for:
+                <ul class="sub-steps">
+                  <li>User: <code>Linda Lucas</code></li>
+                  <li>Device: <code>HOST-2</code></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p234-a.png" alt="Search bar with User/Device Search under Digital Experience Management highlighted">
+            <div class="screenshot-caption">Search → <strong>User/Device Search</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p234-b.png" alt="User Search results for linda with Linda Lucas entries listed">
+            <div class="screenshot-caption">User search for <strong>Linda Lucas</strong> → open her <strong>HOST-2</strong> device.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> View the ZDX score for the incident period</h4>
+            <ol class="step-list">
+              <li>Select the time period for the incident (e.g., <strong>48 Hours</strong>).</li>
+              <li>View the <strong>ZDX Score Over Time</strong> graph.</li>
+              <li>Look for this example behavior:
+                <ul class="sub-steps">
+                  <li>The ZDX score is consistently <strong>Poor</strong> over the entire interval.</li>
+                  <li>The score for every application is poor (<strong>13/100 or lower</strong>).</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p235-a.png" alt="Linda Lucas user page with device details, poor scores for Outlook, SharePoint, Salesforce and Box, and the ZDX Score Over Time graph">
+            <div class="screenshot-caption">Every app is red. A problem <em>common to all apps</em> points at the device or network, not a single SaaS.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> You can also open the user view by clicking <strong>Users</strong> in the left navigation, searching for Linda Lucas, and opening her detail page.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-16-2 -->
+
+      <!-- ─────────────────────────── TASK 16.3 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-16-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 16.3</span>
+          <span class="task-collapsible-title">Analyze High Page Fetch Time</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will analyze the user's web probe metrics for patterns that help isolate the cause of the poor ZDX score.</p>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Review Page Fetch Time</h4>
+            <ol class="step-list">
+              <li>From <strong>Linda's user/device report</strong>, scroll down to the <strong>Web Probe Metrics</strong> section.</li>
+              <li>Review the overall range of <strong>Page Fetch Time values</strong> over the selected period. In this example, values range from about <strong>1000 ms to 3000 ms</strong>, which means high page-load latency.</li>
+              <li>Click a specific point in the <strong>Page Fetch Time</strong> graph to analyze a single sample.</li>
+              <li>Compare:
+                <ul class="sub-steps">
+                  <li>The <strong>Page Fetch Time</strong> at this point (for example, <strong>1204 ms</strong>).</li>
+                  <li>The <strong>PFT Baseline</strong> (for example, <strong>506 ms</strong>).</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p237-a.png" alt="Linda Lucas user report header with the time range selector">
+            <div class="screenshot-caption">Stay on Linda's user/device report for the same time range.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p238-a.png" alt="Web Probe Metrics Page Fetch Time graph fluctuating between about 1000 and 3000 ms with a selected point">
+            <div class="screenshot-caption"><strong>Page Fetch Time</strong> hovering around 1000–3000 ms, far above baseline.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> In this example, a Page Fetch Time of <strong>1204 ms</strong> is much higher than the PFT Baseline of <strong>506 ms</strong>, which means unusually high latency per page request.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Break down Page Fetch Time</h4>
+            <ol class="step-list">
+              <li>Examine the breakdown of Page Fetch Time at the selected point: <strong>Server Response Time</strong> and <strong>DNS Resolve Time</strong>.</li>
+              <li>In this example, note:
+                <ul class="sub-steps">
+                  <li>High <strong>fluctuations in the DNS Resolve Time</strong>.</li>
+                  <li><strong>DNS Resolve Time</strong> accounts for most of the overall Page Fetch Time latency.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p238-b.png" alt="DNS Time graph with large fluctuations and a selected sample">
+            <div class="screenshot-caption"><strong>DNS Time</strong>: large, erratic spikes.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p238-c.png" alt="Server Response Time and Availability graphs showing stable values">
+            <div class="screenshot-caption"><strong>Server Response Time</strong> and <strong>Availability</strong> look normal, so the SaaS servers aren't the problem.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> This suggests that slow or unstable DNS is a primary contributor to Linda's poor experience.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-16-3 -->
+
+      <!-- ─────────────────────────── TASK 16.4 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-16-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 16.4</span>
+          <span class="task-collapsible-title">Use ZDX Root Cause Analysis to Determine Root Cause</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will use the <strong>ZDX Y-Engine</strong> to <strong>confirm</strong> that slow DNS is the main cause of Linda's poor ZDX score and high Page Fetch Time.</p>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Run Analyze Score</h4>
+            <ol class="step-list">
+              <li>Scroll back up to the <strong>ZDX Score Over Time</strong> graph for Linda's device.</li>
+              <li>Click <strong>Analyze Score</strong>.</li>
+              <li>Review the analysis panel showing the factors that might have affected the ZDX score during the time window.</li>
+              <li>Identify the <strong>top contributing factor(s)</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab16-p240-a.png" alt="Analyze Score results table listing High DNS as the factor with 100% confidence">
+            <div class="screenshot-caption">Y-Engine verdict: <strong>High DNS</strong>, confidence <strong>100%</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> In this example, <strong>High DNS</strong> is identified as the most likely <strong>root cause</strong> of the poor performance, with a Confidence Level of 100%.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Confirm and identify the DNS server</h4>
+            <ol class="step-list">
+              <li>Confirm that this matches your findings from Task 16.3:
+                <ul class="sub-steps">
+                  <li><strong>DNS Resolve Time</strong> made up most of the Page Fetch Time.</li>
+                  <li>DNS latency varied significantly over time.</li>
+                </ul>
+              </li>
+              <li>View the <strong>User Devices</strong> section to find the DNS server used by <strong>HOST-2</strong>: <code>10.0.1.53</code></li>
+            </ol>
+          </div>
+          <div class="callout callout-success">
+            <p><strong>Conclusion:</strong> This confirms that <strong>slow DNS responses from the configured DNS server</strong> are the main cause of Linda's poor experience with SaaS applications, matching both the <strong>manual analysis</strong> and the <strong>ZDX Copilot</strong> findings.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-16-4 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Copilot to hypothesize, dashboards to prove.</strong> All apps Poor → look below the app layer. <strong>Page Fetch Time</strong> ≫ baseline (1204 vs 506 ms), with <strong>DNS Resolve Time</strong> making up most of it while Server Response stays normal. <em>Analyze Score</em> → <strong>High DNS, 100%</strong>. Device details → resolver <code>10.0.1.53</code>. "Fine once connected, slow to load" = suspect DNS.</div>
         </div>
       </div>
 
-      <h3>Task 16.1 — Use ZDX Copilot to Surface the Issue</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Open ZDX Copilot and query for issues</h4>
-        <ol class="step-list">
-          <li>In ZDX, navigate to <strong>Copilot</strong> (or the AI assistant icon).</li>
-          <li>Enter a natural-language query such as: <code>Which users are experiencing poor performance?</code></li>
-          <li>Review Copilot's response — it should surface Linda Lucas as a user with consistently poor scores across all applications.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-zdx-copilot-search.png" alt="ZDX Copilot search interface with a query about poor performing users">
-        <div class="screenshot-caption">ZDX Copilot — AI-powered query interface that synthesises ZDX data to surface insights. Useful as a starting point for investigations.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-copilot-response-linda-lucas.png" alt="ZDX Copilot response identifying Linda Lucas as a user with poor performance across all apps">
-        <div class="screenshot-caption">Copilot response surfaces Linda Lucas — all-apps poor score is a strong signal of a shared-path issue (device, DNS, or network) rather than an app-specific problem.</div>
-      </div>
-
-      <h3>Task 16.2 — Find Linda Lucas and View ZDX Score</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Search for Linda Lucas in ZDX Users</h4>
-        <ol class="step-list">
-          <li>Navigate to <strong>ZDX</strong> → <strong>Users</strong> and search for <code>Linda Lucas</code>.</li>
-          <li>Open her device detail page.</li>
-          <li>Observe that her ZDX score is <strong>consistently Poor</strong> across all applications.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-user-search-linda-lucas.png" alt="ZDX Users search showing Linda Lucas in the results with poor ZDX score">
-        <div class="screenshot-caption">Linda Lucas in ZDX Users — consistently poor ZDX score across all apps confirms the issue is in the shared path.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-linda-lucas-device-header.png" alt="Linda Lucas device header showing device name and consistently poor ZDX score">
-        <div class="screenshot-caption">Linda Lucas device header — Poor ZDX score persisting over time. All-apps impact rules out application-specific causes.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-linda-lucas-zdx-score-consistently-poor.png" alt="Linda Lucas ZDX score graph showing consistently poor scores across the time window">
-        <div class="screenshot-caption">Consistently poor ZDX score — not an intermittent spike but a persistent degradation, suggesting a configuration-level problem.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-linda-lucas-all-apps-poor.png" alt="Linda Lucas applications overview showing all monitored apps with poor ZDX scores">
-        <div class="screenshot-caption">All apps poor — when every application shows a poor ZDX score, look at the shared elements: device, DNS, Wi-Fi, or network path.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-copilot-application-zdx-scores.png" alt="ZDX Copilot showing application ZDX scores for Linda Lucas">
-        <div class="screenshot-caption">Copilot application scores — corroborates the all-apps poor finding across multiple app measurements.</div>
-      </div>
-
-      <h3>Task 16.3 — Analyse Page Fetch Time (DNS Time)</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> View web probe metrics</h4>
-        <ol class="step-list">
-          <li>On Linda's device detail page, navigate to the <strong>Web Probe</strong> or application metrics section.</li>
-          <li>View the <strong>Page Fetch Time</strong> breakdown.</li>
-          <li>Identify that <strong>DNS Time</strong> is disproportionately high — approximately <strong>3000ms</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-web-probe-page-fetch-time-dns-time.png" alt="ZDX web probe Page Fetch Time breakdown showing DNS Time as very high (3000ms)">
-        <div class="screenshot-caption">Page Fetch Time breakdown — DNS Time at ~3000ms is the dominant contributor to Linda's poor page load times. TCP Connect and Server Response are normal.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-dns-time-high-3000ms.png" alt="ZDX DNS Time metric showing approximately 3000ms DNS resolution time">
-        <div class="screenshot-caption">DNS Time 3000ms — a 3-second DNS resolution adds 3 seconds to every page load. This explains why all apps appear slow: every app request shares the DNS bottleneck.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-server-response-time-availability.png" alt="ZDX server response time and availability metrics showing normal values">
-        <div class="screenshot-caption">Server response and availability normal — the application server is healthy. The problem is entirely in DNS resolution, not the app or network path.</div>
-      </div>
-
-      <h3>Task 16.4 — Y-Engine Confirms DNS as Root Cause</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Click Analyze Score and confirm DNS finding</h4>
-        <ol class="step-list">
-          <li>Click <strong>Analyze Score</strong> on Linda's ZDX score panel.</li>
-          <li>Review the factor breakdown — <strong>DNS Time</strong> should appear as the highest-weighted contributing factor.</li>
-          <li>The Y-Engine's analysis confirms DNS resolution latency as the primary root cause of Linda's poor ZDX score.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab16-zdx-analyze-score-high-dns.png" alt="ZDX Analyze Score panel for Linda Lucas showing DNS Time as the primary root cause factor">
-        <div class="screenshot-caption">Y-Engine Analyze Score — DNS Time is the top contributing factor to Linda's poor ZDX score. The machine learning confirms what the raw probe metrics showed.</div>
-      </div>
-
-      <div class="callout callout-success">
-        <p><strong>Root Cause:</strong> Linda Lucas's consistently poor ZDX score across all applications is caused by high DNS resolution time (~3000ms). The fix: investigate Linda's DNS server configuration — she may be using a slow or misconfigured DNS resolver, or her ZCC DNS path has an issue. Correcting the DNS server assignment or flushing the DNS configuration should resolve the performance degradation.</p>
+      <div class="recap-block">
+        <span class="recap-label">COURSE RECAP</span>
+        <p class="recap-item"><strong>Connect (Labs 0–3):</strong> CloudShare, identities and entitlements, ZCC forwarding with Z-Tunnel 2.0.</p>
+        <p class="recap-item"><strong>Secure Internet &amp; SaaS (Labs 4–8):</strong> Firewall, SSL inspection, URL and Cloud App Control, DNS security, Unified DLP.</p>
+        <p class="recap-item"><strong>Private Access (Labs 9–13):</strong> App Connectors, app segments and policy, troubleshooting, SIPA, RDP over ZPA.</p>
+        <p class="recap-item"><strong>Digital Experience (Labs 14–16):</strong> ZDX dashboards, Wi-Fi and DNS root-cause analysis with the Y-Engine and Copilot.</p>
       </div>
 
       <div class="lesson-tools">
@@ -201,7 +429,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab16" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab16','Lab 16: Troubleshoot Slow DNS')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab16','Lab 16: Slow DNS')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -222,7 +450,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab16a" onchange="toggleDone(this)"><label for="chk-lab16a">Linda Lucas DNS root cause confirmed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab16a" onchange="toggleDone(this)"><label for="chk-lab16a">Task 16.1: Copilot hypothesis</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab16b" onchange="toggleDone(this)"><label for="chk-lab16b">Task 16.2: User score reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab16c" onchange="toggleDone(this)"><label for="chk-lab16c">Task 16.3: PFT / DNS breakdown</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab16d" onchange="toggleDone(this)"><label for="chk-lab16d">Task 16.4: High DNS confirmed</label></li>
       </ul>
     </div>
 
@@ -231,35 +462,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -267,43 +502,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
@@ -313,19 +552,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <div class="page-nav">
   <a class="page-nav-btn page-nav-prev" href="lab15.html">
     <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 15: Wi-Fi Issue</span>
+    <span class="page-nav-title">Lab 15: Poor Wi-Fi</span>
   </a>
   <div class="page-nav-message">DNS &mdash; where 90% of performance problems hide. You&rsquo;ve got this.</div>
-  <span class="page-nav-btn page-nav-next page-nav-disabled">
-    <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">End of Lab Guide</span>
-  </span>
+  <a class="page-nav-btn page-nav-next" href="index.html">
+    <span class="page-nav-label">FINISH →</span>
+    <span class="page-nav-title">Back to Lab Hub</span>
+  </a>
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 16: DNS Issue</span>
-  <span>LAB 16 of 16</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 16: Slow DNS</span>
 </footer>
 
 <script>
@@ -449,7 +687,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -484,6 +735,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -667,7 +950,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

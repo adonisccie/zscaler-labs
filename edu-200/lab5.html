@@ -12,6 +12,28 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
@@ -23,7 +45,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Configure SSL Inspection Policies</h1>
   <div class="motivation-banner">
-    <p>Enable Inspect All, verify the Zscaler CA is trusted, add a cert-pinning bypass for Threema, and confirm inspection in Web Insights logs.</p>
+    <p>Turn on SSL Inspect All, watch the certificate issuer change to Zscaler, confirm the Zscaler Root CA is trusted, then fix a certificate-pinned app (Threema) with a Do Not Inspect rule.</p>
   </div>
 </header>
 
@@ -97,181 +119,336 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
     <div class="section-block" id="section-lab5">
       <h2>Lab 5: Configure SSL Inspection Policies</h2>
+
       <div class="lab-header-card">
         <div class="lab-badge">LAB 5</div>
-        <p><strong>Scenario:</strong> Without SSL inspection, encrypted traffic is a blind spot. You'll enable inspect-all for users, verify Zscaler's CA certificate is trusted, then add a bypass rule for the Threema cert-pinned messaging app, and confirm inspection logs in Web Insights.</p>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, you are tasked with <strong>enabling SSL/TLS inspection</strong> to <strong>monitor and enforce policies</strong> on users' <strong>encrypted web traffic</strong>. Most modern threats hide inside HTTPS traffic, so <strong>SSL inspection</strong> gives you <strong>visibility into encrypted sessions</strong> and lets policies be enforced properly. You need to <strong>configure SSL inspection for all destinations</strong> and <strong>define exemptions for trusted or privacy-sensitive categories</strong>.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Enable and configure SSL inspection policies</strong> for all encrypted traffic.</li>
+          <li><strong>Verify Zscaler’s certificate installation</strong> on the <strong>Windows Corp Client PC</strong>.</li>
+          <li><strong>Analyze</strong> and resolve <strong>certificate pinning errors</strong>.</li>
+          <li><strong>Analyze SSL inspection logs</strong> and <strong>identify inspection or bypass events</strong>.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~30 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 5.1 – 5.3 (5.2 optional)</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab5-hero.png" alt="Lab 5 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~30 minutes</div>
+      </div>
+
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> The Zscaler Root CA Certificate is installed on Windows Client PCs when the Zscaler Client Connector is installed. <strong>For Windows devices, the Root CA must be installed in both:</strong> (a) the System Certificate Store (Trusted Root Certification Authorities), and (b) the Firefox Certificate Store (based on the setting in the App Profile).</p>
+      </div>
+
+      <div class="socratic-block" id="soc-lab5">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · SSL / TLS INSPECTION</span>
         </div>
+        <p class="socratic-insight">SSL inspection is a <em>trusted</em> man-in-the-middle: ZIA terminates the TLS session from the browser, inspects the plaintext, and opens its own TLS session to the real server.</p>
+        <ul class="socratic-questions">
+          <li>After you enable <strong>SSL Inspect All</strong>, Wikipedia's certificate is issued by <strong>Zscaler</strong> instead of Let's Encrypt, yet Chrome still says "Connection is secure". What makes the browser accept it, and what would happen on a PC without ZCC?
+            <div class="answer-area" data-section="lab5-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">ZIA signs a certificate for <code>*.wikipedia.org</code> on the fly using a Zscaler intermediate CA that chains up to the <strong>Zscaler Root CA</strong>. ZCC installed that root in the Windows <em>Trusted Root Certification Authorities</em> store (the "Install Zscaler SSL Certificate: On" setting from Lab 3), so Chrome trusts the chain. A device without that root would show a full-page certificate warning for every HTTPS site. That's why root-CA distribution (ZCC, GPO, MDM) is a prerequisite for inspection.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Threema fails with a <strong>Connection Error</strong> even though the Zscaler Root CA is trusted. What is the app checking that the browser isn't, and why is a <strong>Do Not Inspect</strong> rule the right fix instead of disabling inspection?
+            <div class="answer-area" data-section="lab5-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Threema uses <strong>certificate pinning</strong>: it has the expected server certificate (or key) hard-coded and rejects any other, however trusted the issuing CA is. Zscaler's substitute certificate can never match. A narrowly scoped <strong>Do Not Inspect</strong> rule for the Threema cloud application, placed <strong>above</strong> SSL Inspect All, exempts only that app's traffic. Everything else stays inspected, so you keep visibility while the pinned app keeps working.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The scenario mentions exemptions for <strong>privacy-sensitive categories</strong>. Which kinds of sites might an organization choose <em>not</em> to decrypt even if it technically could, and why?
+            <div class="answer-area" data-section="lab5-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Typical candidates are <strong>health/medical</strong>, <strong>finance/banking</strong> and sometimes <strong>government</strong> categories. Decrypting an employee's personal banking or medical session can conflict with privacy laws, works-council agreements or internal policy, and adds legal risk for little security gain. The trade-off is deliberate: exempt by <em>category</em> (not by "anything that breaks"), document why, and keep inspecting everything else, especially uncategorized and newly registered domains where threats actually hide.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <h3>Task 5.1 — Enable SSL Inspect All Users Rule</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Verify pre-inspection certificate state</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, navigate to <code>https://www.wikipedia.org</code>.</li>
-          <li>Click the padlock icon in the browser address bar → <strong>Certificate</strong>.</li>
-          <li>Note the issuer — it should be <strong>Let's Encrypt</strong> (Wikipedia's real CA, not yet inspected by Zscaler).</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-wikipedia-site-info-before-ssl.png" alt="Browser showing Wikipedia certificate issued by Let's Encrypt before SSL inspection">
-        <div class="screenshot-caption">Before SSL inspection: Wikipedia's real certificate from Let's Encrypt is visible end-to-end.</div>
-      </div>
+      <!-- ─────────────────────────── TASK 5.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-5-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.1</span>
+          <span class="task-collapsible-title">Enable SSL Inspection for All Destinations</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will enable SSL inspection for all encrypted traffic.</p>
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Add an SSL Inspection rule</h4>
-        <ol class="step-list">
-          <li>In ZIA, navigate to <strong>Policies</strong> → <strong>SSL Inspection</strong> → <strong>SSL/TLS Inspection Policy</strong>.</li>
-          <li>Click <strong>Add SSL Inspection Rule</strong>.</li>
-          <li>Set <strong>Name</strong> to <code>Inspect All Users</code>.</li>
-          <li>Set <strong>Action</strong> to <strong>Inspect</strong>.</li>
-          <li>Leave <strong>Users</strong> as all users and click <strong>Save</strong>.</li>
-          <li>Click <strong>Activate</strong> to push the policy.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-ssl-tls-inspection-policy-nav.png" alt="SSL/TLS Inspection Policy page in ZIA">
-        <div class="screenshot-caption">SSL/TLS Inspection Policy — the rule list follows top-down first-match logic, same as Firewall Filtering.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-ssl-rule-action-inspect.png" alt="SSL inspection rule with Inspect action selected">
-        <div class="screenshot-caption">Action: Inspect — ZIA will decrypt, inspect content, then re-encrypt with Zscaler's CA before forwarding.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-add-ssl-inspection-rule-form.png" alt="Add SSL Inspection Rule form with Inspect All Users configuration">
-        <div class="screenshot-caption">Inspect All Users rule configuration — broad rule that catches all HTTPS traffic not matched by a bypass rule above it.</div>
-      </div>
-      <div class="screenshot-embed dialog">
-        <img src="screenshots/lab5-ssl-rule-activate.png" alt="Activate Changes for SSL inspection rule">
-        <div class="screenshot-caption">Activate to push the SSL inspection policy change globally.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Verify the current SSL Inspection status</h4>
+            <ol class="step-list">
+              <li>On the <strong>Corp Client PC</strong>, open a Chrome browser window in <strong>Incognito Mode</strong>.
+                <ul class="sub-steps"><li>Go to: <code>www.wikipedia.org</code></li></ul>
+              </li>
+              <li>Click the <strong>site information (filter)</strong> icon in the URL field.</li>
+              <li>Click <strong>Connection is secure &gt; Certificate is valid</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed menu">
+            <img src="screenshots/lab5-p070-a.png" alt="Chrome site information menu for wikipedia.org showing Connection is secure">
+            <div class="screenshot-caption">The site-information icon (left of the URL) → <strong>Connection is secure</strong>.</div>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab5-p071-a.png" alt="Certificate Viewer for *.wikipedia.org issued by Let's Encrypt (E7)">
+            <div class="screenshot-caption"><strong>Before</strong> inspection: <code>*.wikipedia.org</code> is issued by <strong>Let's Encrypt</strong>, the site's real CA.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> <strong>You will see that you have received the certificate from the destination web server.</strong> The site information icon looks like three horizontal lines connected by dots. In some browsers it is a padlock icon. It's usually shown to the left of the URL in the browser's address bar.</p>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">3</span> Verify Zscaler certificate is now used</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, navigate to <code>https://www.wikipedia.org</code> again.</li>
-          <li>Check the certificate — the issuer should now be <strong>Zscaler Intermediate Root CA</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-wikipedia-cert-lets-encrypt-before.png" alt="Wikipedia certificate showing Let's Encrypt issuer before inspection">
-        <div class="screenshot-caption">Before: Let's Encrypt CA — the original certificate reaching the browser.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-wikipedia-cert-zscaler-after.png" alt="Wikipedia certificate showing Zscaler Intermediate Root CA after inspection enabled">
-        <div class="screenshot-caption">After: Zscaler Intermediate Root CA — ZIA has re-signed the certificate, confirming inspection is active.</div>
-      </div>
-      <div class="callout callout-troubleshoot">
-        <strong>Troubleshoot — certificate still shows original issuer</strong>
-        <p>If the certificate issuer is still Let's Encrypt (or another CA) after adding the SSL Inspection rule, check three things: (1) Confirm the rule is <strong>Enabled</strong> in the SSL Inspection rules list — a newly saved rule shows as Enabled by default, but verify. (2) Confirm you clicked <strong>Activate</strong> — ZIA policy changes require an explicit Activate before they propagate to service edges. (3) Confirm ZCC is showing Internet Security status as <strong>ON</strong> (Lab 3, Task 3.2) — if ZCC is tunnelling with Z-Tunnel 1.0, SSL inspection may not intercept all traffic. Allow 30–60 seconds after Activate, then refresh the page and recheck the certificate.</p>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Enable SSL Inspection</h4>
+            <ol class="step-list">
+              <li>Back in the <strong>Zscaler Experience Center</strong> window, go to <strong>Policies &gt; Common Configuration &gt; SSL/TLS Inspection &gt; SSL/TLS Inspection Policy</strong>.</li>
+              <li>On the <strong>SSL Inspection Policy</strong> tab, click <strong>+Add SSL Inspection Rule</strong>.</li>
+              <li>Configure the rule as follows:
+                <ul class="sub-steps">
+                  <li>Rule Order: <strong>1</strong></li>
+                  <li>Rule Name: <code>SSL Inspect All</code></li>
+                </ul>
+              </li>
+              <li>Scroll down to the <strong>ACTION</strong> section and select <strong>Inspect</strong> under Action.</li>
+              <li>Click <strong>Save</strong> and <strong>Activate</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p072-a.png" alt="Policies > Common Configuration with SSL/TLS Inspection and SSL/TLS Inspection Policy highlighted">
+            <div class="screenshot-caption">Policies → <strong>Common Configuration</strong> → SSL/TLS Inspection → <strong>SSL/TLS Inspection Policy</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p072-b.png" alt="Add SSL Inspection Rule form with Rule Order 1, Rule Name SSL Inspect All and Rule Status Enabled">
+            <div class="screenshot-caption">Rule Order <strong>1</strong>, name <strong>SSL Inspect All</strong>, status Enabled. Leave the criteria empty so it matches everything.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p073-a.png" alt="SSL inspection rule Action section with Inspect selected and the Save button highlighted">
+            <div class="screenshot-caption">ACTION: <strong>Inspect</strong>, then Save.</div>
+          </div>
+          <div class="screenshot-embed menu">
+            <img src="screenshots/lab5-p073-b.png" alt="Pending Activation panel with Activate highlighted">
+            <div class="screenshot-caption">Click <strong>Activate</strong> so the rule takes effect.</div>
+          </div>
 
-      <h3>Task 5.2 — Verify Zscaler Root CA Certificate (Optional)</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Check Windows certificate store</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, press <strong>Win + R</strong> and run <code>certmgr.msc</code> (current user store).</li>
-          <li>Expand <strong>Trusted Root Certification Authorities</strong> → <strong>Certificates</strong>.</li>
-          <li>Locate and verify the <strong>Zscaler Root CA</strong> certificate (installed via the HandsOnLab app profile).</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-certmgr-search-windows.png" alt="Windows Certificate Manager showing Trusted Root Certification Authorities">
-        <div class="screenshot-caption">Windows certmgr.msc — Zscaler Root CA must appear here for Windows to trust ZIA-re-signed certificates.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-certlm-trusted-root-zscaler.png" alt="Zscaler Root CA visible in Trusted Root Certification Authorities">
-        <div class="screenshot-caption">Zscaler Root CA in Trusted Root Certification Authorities — installed automatically by the HandsOnLab ZCC app profile.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Verify the inspection status</h4>
+            <ol class="step-list">
+              <li>Close the <strong>Incognito</strong> browser or refresh it (to make sure the new policy is applied).</li>
+              <li>Open a new browser window in <strong>Incognito Mode</strong> and visit <code>www.wikipedia.org</code></li>
+              <li>Click the <strong>site information (filter)</strong> icon in the URL field <strong>&gt; Connection is secure &gt; Certificate is valid</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab5-p074-a.png" alt="Certificate Viewer for *.wikipedia.org now issued by Zscaler Intermediate Root CA">
+            <div class="screenshot-caption"><strong>After</strong> inspection: the same site is now issued by a <strong>Zscaler Intermediate Root CA</strong>. ZIA is decrypting and inspecting.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> You will see that you have received a server certificate signed by <strong>Zscaler</strong>.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-5-1 -->
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Verify Chrome certificate store</h4>
-        <ol class="step-list">
-          <li>In Chrome, navigate to <strong>Settings</strong> → <strong>Privacy and Security</strong> → <strong>Security</strong> → <strong>Manage Certificates</strong>.</li>
-          <li>Under <strong>Trusted Root Certification Authorities</strong>, confirm Zscaler Root CA is present.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-chrome-certificate-manager.png" alt="Chrome certificate manager showing Trusted Root Certification Authorities tab">
-        <div class="screenshot-caption">Chrome maintains its own certificate store on Windows — the Zscaler CA must be present here as well as in the OS store.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-chrome-imported-certs-zscaler.png" alt="Zscaler Root CA visible in Chrome's imported certificate list">
-        <div class="screenshot-caption">Zscaler Root CA visible in Chrome's Trusted Root CA list — both OS and browser stores are covered.</div>
-      </div>
+      <!-- ─────────────────────────── TASK 5.2 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-5-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.2</span>
+          <span class="task-collapsible-title">Verify Zscaler CA Installation [Optional]</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you will check whether the <strong>Zscaler Root CA</strong> is properly <strong>installed</strong> on the <strong>Corp Client PC</strong>.</p>
 
-      <h3>Task 5.3 — Add a Certificate Pinning Bypass for Threema</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Install Threema desktop app</h4>
-        <ol class="step-list">
-          <li>On the Corp: Client PC, navigate to the Threema download page (URL in the lab instructions).</li>
-          <li>Download the <strong>Threema for Windows</strong> installer.</li>
-          <li>Install via PowerShell or the downloaded installer.</li>
-          <li>Open Threema — it will fail to connect because SSL inspection breaks its certificate pinning.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-threema-download-page.png" alt="Threema desktop download page">
-        <div class="screenshot-caption">Threema download page — download the Windows installer to test cert-pinned app behaviour under SSL inspection.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-threema-powershell-install.png" alt="PowerShell window showing Threema installation commands">
-        <div class="screenshot-caption">Installing Threema via PowerShell — the app uses certificate pinning, so it will fail once SSL inspection is active.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-threema-connection-error.png" alt="Threema showing connection error because SSL inspection breaks cert pinning">
-        <div class="screenshot-caption">Threema connection error — SSL inspection re-signs the certificate, causing the fingerprint check to fail.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Check the Windows certificate store</h4>
+            <ol class="step-list">
+              <li>Open the certmgr tool: type <code>certmgr</code> in the Windows search bar or run it from the command prompt.</li>
+              <li>Go to <strong>Trusted Root Certification Authorities &gt; Certificates</strong>.</li>
+              <li>Confirm the following:
+                <ul class="sub-steps">
+                  <li>The <strong>Zscaler Root CA</strong> Certificate is listed.</li>
+                  <li>The certificate is not expired.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p075-a.png" alt="Windows search for certmgr showing Manage computer certificates with Open highlighted">
+            <div class="screenshot-caption">Search <strong>certmgr</strong> → Manage computer certificates → Open.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p076-a.png" alt="certlm window with Trusted Root Certification Authorities > Certificates selected and Zscaler Root CA highlighted">
+            <div class="screenshot-caption">Trusted Root Certification Authorities → Certificates: <strong>Zscaler Root CA</strong> is listed.</div>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Add a Do Not Inspect bypass rule for Threema</h4>
-        <ol class="step-list">
-          <li>In ZIA SSL/TLS Inspection Policy, click <strong>Add SSL Inspection Rule</strong>.</li>
-          <li>Set <strong>Name</strong> to <code>Bypass Threema</code>.</li>
-          <li>Set <strong>Action</strong> to <strong>Do Not Inspect</strong>.</li>
-          <li>In <strong>Cloud Applications</strong>, search for and add <code>Threema</code>.</li>
-          <li>Click <strong>Save</strong>.</li>
-          <li><strong>Important:</strong> Ensure the Bypass Threema rule is positioned <strong>above</strong> the Inspect All Users rule.</li>
-          <li>Click <strong>Activate</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-bypass-threema-do-not-inspect.png" alt="SSL rule configured with Do Not Inspect action for Threema">
-        <div class="screenshot-caption">Do Not Inspect action — ZIA passes Threema's TLS session through unmodified, preserving the original server certificate.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab5-ssl-bypass-threema-rule.png" alt="SSL Inspection Policy showing Threema bypass rule above Inspect All Users">
-        <div class="screenshot-caption">Bypass Threema above Inspect All Users — the bypass rule must be matched first, before the broad Inspect rule.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Verify via Google Chrome</h4>
+            <ol class="step-list">
+              <li>Open a browser window and type <code>chrome://certificate-manager/</code> in the address bar.</li>
+              <li>Click <strong>Local certificates</strong>.</li>
+              <li>Select <strong>View imported certificates from Windows</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p077-a.png" alt="Chrome Certificate Manager with Local certificates selected and View imported certificates from Windows highlighted">
+            <div class="screenshot-caption">Chrome Certificate Manager → <strong>Local certificates</strong> → View imported certificates from Windows.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p077-b.png" alt="Imported from Windows trusted certificates list with Zscaler Root CA highlighted">
+            <div class="screenshot-caption">Chrome picks up <strong>Zscaler Root CA</strong> from the Windows store, which is why it trusts inspected sites.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-5-2 -->
 
-      <div class="task-block">
-        <h4><span class="task-num">3</span> Verify Threema connects after bypass</h4>
-        <ol class="step-list">
-          <li>Reopen Threema on the Corp: Client PC.</li>
-          <li>Threema should now connect successfully — the original server certificate passes through intact.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-threema-after-bypass.png" alt="Threema successfully connecting after bypass rule is applied">
-        <div class="screenshot-caption">Threema connects after the bypass rule — the cert-pinned connection succeeds because ZIA no longer re-signs the certificate.</div>
-      </div>
+      <!-- ─────────────────────────── TASK 5.3 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-5-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 5.3</span>
+          <span class="task-collapsible-title">Review Certificate Pinning Errors</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p><strong>Certificate pinning</strong> is a client-side mechanism that secures applications by checking that the SSL certificate presented by a backend server matches a trusted certificate hard-coded into the application. It helps protect against man-in-the-middle (MITM) attacks, but it can also cause SSL connection failures when the pinned certificate doesn't match an intercepting proxy's certificate, such as Zscaler's SSL inspection certificates. <strong>In this task, you will learn two common methods to resolve certificate pinning errors in applications.</strong></p>
 
-      <h3>Task 5.4 — Analyze SSL Inspection Logs</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> View inspected traffic in Web Insights</h4>
-        <ol class="step-list">
-          <li>In ZIA, navigate to <strong>Analytics</strong> → <strong>Web Insights</strong>.</li>
-          <li>Filter by <strong>SSL Inspected: Yes</strong> to see only traffic that was inspected.</li>
-          <li>Confirm that recent HTTPS sessions (e.g., Wikipedia) appear with <strong>Zscaler Intermediate Root CA</strong> as the issuer.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab5-web-insights-ssl-inspected-logs.png" alt="Web Insights showing SSL inspected traffic logs with Zscaler CA">
-        <div class="screenshot-caption">Web Insights SSL Inspected filter — confirms which sessions ZIA decrypted and re-encrypted for content inspection.</div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Recreate the certificate pinning error</h4>
+            <ol class="step-list">
+              <li>Open a <strong>Chrome</strong> browser on the <strong>Corp Client PC</strong>.</li>
+              <li>Download <strong>Threema Private Desktop</strong> for <strong>Windows</strong>:
+                <ul class="sub-steps">
+                  <li>Go to <code>https://threema.com/en/download</code></li>
+                  <li>Click <strong>Download Apps</strong> under <strong>Threema Private</strong>.</li>
+                  <li>Click download for <strong>Windows</strong>. An <strong>.msix</strong> file is downloaded.</li>
+                </ul>
+              </li>
+              <li>Open the msix file from the Downloads folder and follow the installation steps. Then, from the Start menu, open <strong>Threema Beta</strong>.</li>
+              <li>Observe the error message displayed during installation.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p078-a.png" alt="Threema download page with Download Apps under Threema Private highlighted">
+            <div class="screenshot-caption">threema.com → <strong>Threema Private</strong> → Download Apps.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p079-a.png" alt="Threema downloads page with Desktop App 2.0 (Beta) and the For Windows link">
+            <div class="screenshot-caption"><strong>Desktop App 2.0 (Beta)</strong> → <strong>For Windows</strong> downloads the .msix installer.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p080-a.png" alt="Windows Start menu search showing Threema Beta app with Open option">
+            <div class="screenshot-caption">After installing, open <strong>Threema Beta</strong> from the Start menu.</div>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab5-p081-a.png" alt="Threema Connection Error dialog stating the connection to the server was lost before linking was complete, with a Retry button">
+            <div class="screenshot-caption"><strong>Connection Error</strong>. Threema rejects Zscaler's substitute certificate because it's pinned to its own.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Configure an SSL Bypass Rule</h4>
+            <ol class="step-list">
+              <li>From the <strong>SSL Inspection</strong> page, click <strong>Add SSL Inspection Rule</strong> and configure the following:
+                <ul class="sub-steps">
+                  <li>Rule Order: <strong>1</strong></li>
+                  <li>Rule Name: <code>Bypass Threema</code></li>
+                  <li>Cloud Applications: click <strong>Instant Messaging</strong> and select <strong>Threema</strong> from the list. Click <strong>Done</strong>.</li>
+                  <li>Scroll down. Under <strong>Action</strong>, select <strong>Do Not Inspect</strong>.</li>
+                  <li>Click <strong>Save</strong> and <strong>Activate</strong> with the Activation icon in the top-right corner.</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p081-b.png" alt="Add SSL Inspection Rule form with Rule Order 1, Rule Name Bypass Threema and Cloud Applications Threema">
+            <div class="screenshot-caption">Rule Order <strong>1</strong> (above SSL Inspect All), name <strong>Bypass Threema</strong>, Cloud Applications = <strong>Threema</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p082-a.png" alt="SSL rule Action section with Do Not Inspect selected and Save highlighted">
+            <div class="screenshot-caption">Action: <strong>Do Not Inspect</strong>, then Save and Activate.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Try the Threema installation again</h4>
+            <ol class="step-list">
+              <li>Right-click the <strong>Windows Taskbar</strong> and select <strong>Task Manager</strong>.
+                <ul class="sub-steps">
+                  <li>Find <strong>Threema</strong> (if present) in the list of running applications.</li>
+                  <li>Click <strong>End Task</strong>.</li>
+                </ul>
+              </li>
+              <li>Reopen the Downloads folder. From the Start menu, open <strong>Threema Beta</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p083-a.png" alt="Windows Start menu with Threema Beta selected">
+            <div class="screenshot-caption">Relaunch <strong>Threema Beta</strong>.</div>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab5-p084-a.png" alt="Threema Link Your Mobile Device screen with a QR code">
+            <div class="screenshot-caption">This time Threema reaches its server and shows <strong>Link Your Mobile Device</strong> with a QR code, so the bypass works.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">4</span> Analyze SSL Inspection and Bypass Logs</h4>
+            <ol class="step-list">
+              <li>From the <strong>Experience Center</strong>, go to <strong>Logs &gt; Web Insights &gt; Logs</strong>.</li>
+              <li>Configure the following:
+                <ul class="sub-steps">
+                  <li>Timeframe: <strong>Last 1 hour</strong> (you can also pick other timeframes, such as Last 2 hours or Current Day).</li>
+                  <li>Add filters: <strong>SSL Inspected</strong> and <strong>Bypassed Transaction</strong>.</li>
+                </ul>
+              </li>
+              <li>Click <strong>Run Query</strong>.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Allow time for logs to populate (typically ~5 minutes). Use the available filters and operators to explore the differences between SSL inspection and bypass events.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab5-p085-a.png" alt="Web Insights Logs with SSL Inspected and Bypassed Transaction filters set and Threema bypassed transactions highlighted in the results">
+            <div class="screenshot-caption">Web Insights → Logs with the <strong>SSL Inspected</strong> and <strong>Bypassed Transaction</strong> filters. The highlighted Threema rows were bypassed while other traffic was inspected.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The Insights page lets you analyze transactions processed by Zscaler through customizable charts and logs. It also has filters and operators to drill down into specific insights for detailed analysis.</p>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-5-3 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Issuer tells the story:</strong> Let's Encrypt = not inspected, Zscaler Intermediate CA = inspected. Trust comes from the <strong>Zscaler Root CA</strong> in the Windows store (installed by ZCC). <strong>Pinned apps</strong> (Threema) break under inspection, so add a narrow <strong>Do Not Inspect</strong> rule <em>above</em> SSL Inspect All. Prove it in <strong>Logs → Web Insights</strong> with the SSL Inspected / Bypassed filters.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -279,7 +456,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab5" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab5','Lab 5: SSL Inspection Policies')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab5','Lab 5: SSL Inspection')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -301,8 +478,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab5a" onchange="toggleDone(this)"><label for="chk-lab5a">Task 5.1: SSL Inspect All enabled</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab5b" onchange="toggleDone(this)"><label for="chk-lab5b">Task 5.3: Threema bypass added</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab5c" onchange="toggleDone(this)"><label for="chk-lab5c">Task 5.4: Logs verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5b" onchange="toggleDone(this)"><label for="chk-lab5b">Task 5.2: Zscaler Root CA verified (optional)</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5c" onchange="toggleDone(this)"><label for="chk-lab5c">Task 5.3: Threema bypass + logs reviewed</label></li>
       </ul>
     </div>
 
@@ -311,35 +488,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -347,43 +528,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
@@ -403,9 +588,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
   <span>Lab 5: SSL Inspection</span>
-  <span>LAB 5 of 16</span>
 </footer>
 
 <script>
@@ -529,7 +713,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -564,6 +761,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -747,7 +976,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

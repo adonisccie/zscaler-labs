@@ -12,6 +12,28 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
@@ -23,7 +45,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Provision ZPA Infrastructure</h1>
   <div class="motivation-banner">
-    <p>Create an App Connector Group and Provisioning Key, then activate the Corp: App Connector VM using WinSCP and terminal commands.</p>
+    <p>Create the OnPrem App Connector Group, generate an OAuth enrollment token on the Corp ZPA Connector VM, and enroll the connector until it shows Connected.</p>
   </div>
 </header>
 
@@ -97,134 +119,239 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
     <div class="section-block" id="section-lab9">
       <h2>Lab 9: Provision ZPA Infrastructure</h2>
+
       <div class="lab-header-card">
         <div class="lab-badge">LAB 9</div>
-        <p><strong>Scenario:</strong> Before ZPA can provide access to internal applications, an App Connector must be activated in the data centre. You'll create a Connector Group and Provisioning Key in the ZPA Admin Console, then upload the key to the Corp: App Connector VM and start the ZPA service.</p>
+        <p><strong>Scenario:</strong> Safemarch Corporation is preparing to launch internal applications and needs secure, policy-driven connectivity without exposing those applications to the internet. <strong>As a Zscaler administrator</strong>, you will deploy and <strong>provision ZPA App Connectors</strong> across data centers and cloud platforms. These App Connectors provide encrypted connectivity through the <strong>Zero Trust Exchange (ZTE)</strong> while keeping internal apps protected.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Deploy and provision</strong> an <strong>App Connector</strong> using an OAuth-based token.</li>
+          <li><strong>Activate</strong> the <strong>App Connector</strong> so it can communicate securely with the ZPA infrastructure.</li>
+          <li><strong>Validate</strong> the <strong>connection</strong> and make sure the App Connector is working correctly.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 9.1 – 9.2</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab9-hero.png" alt="Lab 9 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab9">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · APP CONNECTORS</span>
         </div>
+        <p class="socratic-insight">The App Connector is ZPA's foothold next to your private apps. It only ever dials <em>out</em> to the Zero Trust Exchange, and nothing dials in.</p>
+        <ul class="socratic-questions">
+          <li>A traditional VPN concentrator sits in the DMZ listening for connections. The App Connector needs <strong>no inbound firewall rules</strong> at all. What does that change for an attacker scanning the internet?
+            <div class="answer-area" data-section="lab9-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">There is <strong>nothing to find</strong>. No public IP, no open port, no login page to brute-force and no VPN appliance CVE to exploit. The connector makes outbound TLS connections to the ZPA cloud, and user sessions are stitched together <em>inside</em> the ZTE only after policy allows them. Apps become invisible to the internet, which removes the attack surface instead of guarding it.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>You create an <strong>App Connector Group</strong> (OnPrem) before enrolling any connector. Why group connectors at all, and why might you put two or more connectors in the same group?
+            <div class="answer-area" data-section="lab9-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Policy and app segments reference a <strong>group</strong> (through server groups), not individual VMs, so you can add, remove or upgrade connectors without touching any policy. Several connectors in one group, at the same <em>location</em>, give <strong>high availability and load sharing</strong>: if one goes down or is being updated in its maintenance window, the others keep carrying traffic. The location also helps ZPA choose the closest connector and Service Edge.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The enrollment token is short-lived and single-use, and you regenerate it by deleting <code>/opt/zscaler/var/*</code>. Why is that safer than a long-lived shared key baked into an image?
+            <div class="answer-area" data-section="lab9-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">A long-lived key that leaks (from a template, a script or a screenshot) lets <em>anyone</em> enroll a rogue connector into your tenant. An OAuth code generated <strong>on the device itself</strong> and approved by an admin in the console binds enrollment to that specific VM and that moment. If it expires or is used once, it's worthless to an attacker. Clearing the state directory forces a fresh identity and a new code.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <h3>Task 9.1 — Create App Connector Group and Provisioning Key</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Create an App Connector Group</h4>
-        <ol class="step-list">
-          <li>In the ZPA Admin Console (navigate to ZPA from <strong>console.zscaler.com</strong>), go to <strong>Infrastructure</strong> → <strong>App Connectors</strong> → <strong>Connector Groups</strong>.</li>
-          <li>Click <strong>Add App Connector Group</strong>.</li>
-          <li>Set <strong>Name</strong> to <code>On-Prem</code> (or as instructed).</li>
-          <li>Configure location and server settings as needed, then click <strong>Save</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-app-connector-groups-nav.png" alt="ZPA App Connector Groups navigation page">
-        <div class="screenshot-caption">App Connector Groups — logical groupings that share App Connectors and are referenced by app segment configurations.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-add-connector-group-onprem-form.png" alt="Add App Connector Group form with On-Prem name configured">
-        <div class="screenshot-caption">On-Prem connector group — the group that the Corp: App Connector VM will join after provisioning.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-connector-group-update-settings.png" alt="App Connector Group settings showing configured group">
-        <div class="screenshot-caption">Connector group settings — location and connection settings for the on-premises connector group.</div>
-      </div>
+      <!-- ─────────────────────────── TASK 9.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-9-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 9.1</span>
+          <span class="task-collapsible-title">Provision an App Connector</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you set up the App Connector side in the console by creating an App Connector Group to register the connector into the Zero Trust Exchange.</p>
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Generate a Provisioning Key</h4>
-        <ol class="step-list">
-          <li>Navigate to <strong>Infrastructure</strong> → <strong>App Connectors</strong> → <strong>Connector Keys</strong>.</li>
-          <li>Click <strong>Add Provisioning Key</strong>.</li>
-          <li>Set <strong>Name</strong> and select the <strong>On-Prem</strong> connector group.</li>
-          <li>Click <strong>Save</strong>.</li>
-          <li>Copy the <strong>provisioning key value</strong> — you will need it in Task 9.2.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-app-connector-keys-nav.png" alt="ZPA App Connector Keys page">
-        <div class="screenshot-caption">Connector Keys page — keys authorise new App Connectors to register with a specific connector group.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-add-provisioning-key-form.png" alt="Add Provisioning Key form with connector group selected">
-        <div class="screenshot-caption">Add Provisioning Key linked to the On-Prem group — once used to activate a connector, the key is consumed.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab9-connector-keys-list-copy.png" alt="Connector keys list showing the new key ready to copy">
-        <div class="screenshot-caption">Copy the provisioning key value — you'll upload it to the Corp: App Connector VM in the next task.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Access the Admin Portal</h4>
+            <ol class="step-list">
+              <li>On the <strong>Corp Client PC</strong> VM, sign in with the following credentials:
+                <ul class="sub-steps">
+                  <li>Username: <code>student</code></li>
+                  <li>Password: <code>Admin-123!</code></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
 
-      <h3>Task 9.2 — Activate the App Connector via WinSCP</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Connect to the App Connector VM using WinSCP</h4>
-        <ol class="step-list">
-          <li>On the Corp: WIN SRV 2016, open <strong>WinSCP</strong> from the desktop.</li>
-          <li>Connect to the Corp: App Connector VM using the IP address and credentials from the lab topology.</li>
-          <li>Accept any SSH host key prompt.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab9-windows-server-winscp-desktop.png" alt="Windows Server desktop with WinSCP icon visible">
-        <div class="screenshot-caption">WinSCP on the Client PC — used to transfer the provisioning key file to the App Connector VM.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-winscp-login-connector.png" alt="WinSCP login dialog connecting to App Connector VM">
-        <div class="screenshot-caption">WinSCP login to the Corp: App Connector — the connector VM runs Linux (CentOS/RHEL). Use the IP from the lab topology.</div>
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Configure the App Connector Group</h4>
+            <ol class="step-list">
+              <li>In the <strong>Experience Center</strong>, go to <strong>Infrastructure &gt; Private Access &gt; App Connector Groups</strong>.</li>
+              <li>Select <strong>+Add</strong> and enter the following values in <strong>Add App Connector Group</strong>:
+                <ul class="sub-steps">
+                  <li>Name: <code>OnPrem</code></li>
+                  <li>Status: <strong>Enabled</strong></li>
+                  <li>Description: optional</li>
+                  <li>Signing Certificate: <strong>Connector</strong></li>
+                  <li>Other Configurations: leave at their defaults</li>
+                  <li>App Connector Location: enter your current city</li>
+                </ul>
+              </li>
+              <li>Select <strong>Save</strong>.</li>
+              <li>Verify that the App Connector Group was created.</li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Choose an App Connector location close to where you are.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p119-a.png" alt="Infrastructure > Private Access menu with App Connector Groups highlighted">
+            <div class="screenshot-caption">Infrastructure → <strong>Private Access</strong> → App Connector Groups.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p120-a.png" alt="App Connector Groups Add form with Name OnPrem, Status Enabled and Signing Certificate Connector highlighted">
+            <div class="screenshot-caption">Name <strong>OnPrem</strong>, Status <strong>Enabled</strong>, Signing Certificate <strong>Connector</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p121-a.png" alt="App Connector Group version profile and location map with a city entered in App Connector Location and Save highlighted">
+            <div class="screenshot-caption">Scroll down to <strong>App Connector Location</strong>, enter your city, then Save.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> If the maintenance window <strong>warning</strong> appears, select <strong>"I understand"</strong> to continue with the configuration.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p121-b.png" alt="App Connector Groups list showing OnPrem enabled with 0 connectors">
+            <div class="screenshot-caption"><strong>OnPrem</strong> appears in the list, Enabled, with no connectors yet.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-9-1 -->
 
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Upload the provisioning key</h4>
-        <ol class="step-list">
-          <li>In WinSCP, navigate to <code>/home/admin</code> on the remote VM.</li>
-          <li>Create a file named <code>provision_key</code> and paste the provisioning key value into it, or upload the saved key file.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-winscp-provision-key-upload.png" alt="WinSCP showing provision_key file uploaded to /home/admin on the App Connector VM">
-        <div class="screenshot-caption">Provisioning key uploaded to /home/admin on the connector VM — the activation script will read it from this location.</div>
-      </div>
+      <!-- ─────────────────────────── TASK 9.2 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-9-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 9.2</span>
+          <span class="task-collapsible-title">Activate the App Connector</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>In this task, you activate the App Connector and confirm traffic can flow securely to ZPA.</p>
 
-      <div class="task-block">
-        <h4><span class="task-num">3</span> Run activation commands in terminal</h4>
-        <ol class="step-list">
-          <li>Go to the console of the App Connector VM.</li>
-          <li>Use the command to copy the file: <code>cp provision_key /opt/zscaler/var/</code></li>
-          <li>Verify the file is present: <code>ls /opt/zscaler/var/</code></li>
-          <li>Start the ZPA connector service: <code>systemctl start zpa-connector</code></li>
-          <li>Check service status: <code>systemctl status zpa-connector</code></li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-connector-terminal-cp-provision-key.png" alt="Terminal showing cp command copying provision_key to /opt/zscaler/var/">
-        <div class="screenshot-caption">Copying the provisioning key to the ZPA connector's var directory — the activation process reads it from here.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-connector-terminal-verify-dir.png" alt="Terminal showing ls output confirming provision_key in /opt/zscaler/var/">
-        <div class="screenshot-caption">Verify the provisioning key is in place before starting the service.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-connector-terminal-commands.png" alt="Terminal showing ZPA connector service start commands">
-        <div class="screenshot-caption">Starting the ZPA connector service — it reads the provisioning key, registers with the ZPA cloud, and joins the On-Prem group.</div>
-      </div>
-      <div class="screenshot-embed narrow">
-        <img src="screenshots/lab9-connector-service-active-running.png" alt="Terminal showing ZPA connector service status as active/running">
-        <div class="screenshot-caption">Service status: active (running) — the App Connector has registered with ZPA and established its outbound TLS tunnel.</div>
-      </div>
-      <div class="callout callout-troubleshoot">
-        <strong>Troubleshoot — service fails to start</strong>
-        <p>If <code>systemctl status zpa-connector</code> shows <strong>failed</strong> or <strong>inactive</strong>: run <code>ls /opt/zscaler/var/</code> and confirm <code>provision_key</code> is present and non-empty and has no extension (NO .TXT). If missing or empty, re-copy it: <code>cp provision_key /opt/zscaler/var/provision_key</code>, then start the service again. If the key is present but the service still fails, check the log
-      </div>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Configure the App Connector</h4>
+            <ol class="step-list">
+              <li>Launch the <strong>Corp ZPA Connector VM</strong>.</li>
+              <li>Log in to the Corp ZPA Connector VM by clicking <strong>SSH</strong> in the left side panel to log in automatically.</li>
+              <li>Alternatively, use the <strong>CON</strong> options to sign in to the Corp ZPA Connector VM with these credentials:
+                <ul class="sub-steps">
+                  <li>Username: <code>admin</code></li>
+                  <li>Password: <code>Zscaler1!</code></li>
+                </ul>
+              </li>
+              <li>To view the token, type: <code>cat /etc/issue</code></li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p122-a.png" alt="CloudShare zpa-connector VM tab with the SSH icon highlighted and a shell prompt">
+            <div class="screenshot-caption">The <strong>SSH</strong> icon on the connector VM's tab logs you in automatically.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p123-a.png" alt="Connector console showing cat /etc/issue output with the OAuth token highlighted">
+            <div class="screenshot-caption"><code>cat /etc/issue</code> prints the OAuth token and the "enter the code … to authenticate" line.</div>
+          </div>
 
-      <div class="task-block">
-        <h4><span class="task-num">4</span> Verify connector appears in ZPA console</h4>
-        <ol class="step-list">
-          <li>Back in the ZPA Admin Console, navigate to <strong>Infrastructure</strong> → <strong>App Connectors</strong>.</li>
-          <li>The new connector should appear with status <strong>Connected</strong>.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab9-app-connectors-portal-connected.png" alt="ZPA App Connectors page showing the new connector with Connected status">
-        <div class="screenshot-caption">App Connector Connected — the outbound TLS tunnel to the ZPA cloud is established. The data centre is now ZPA-accessible.</div>
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Regenerate a new authentication token from the CLI</h4>
+            <ol class="step-list">
+              <li>Stop the ZPA Connector service: <code>sudo systemctl stop zpa-connector</code></li>
+              <li>Switch to root user privileges: <code>sudo su</code></li>
+              <li>Delete the existing OAuth token files: <code>rm -rf /opt/zscaler/var/*</code></li>
+              <li>Restart the ZPA Connector service to generate the new OAuth token: <code>sudo systemctl start zpa-connector</code></li>
+              <li>To view the token, type: <code>cat /etc/issue</code></li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p124-a.png" alt="Connector console showing the stop, sudo su, rm -rf, start and cat /etc/issue commands with the new token highlighted">
+            <div class="screenshot-caption">The full sequence: stop → <code>sudo su</code> → clear <code>/opt/zscaler/var/*</code> → start → <code>cat /etc/issue</code> shows a <strong>new</strong> token.</div>
+          </div>
+          <div class="callout callout-caution">
+            <p><strong>Caution:</strong> <code>rm -rf /opt/zscaler/var/*</code> wipes the connector's enrollment state. Type it carefully (use <strong>Actions → Send Text</strong>) and run it only on the Corp ZPA Connector VM.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Enter the token in the App Connector to deploy it</h4>
+            <ol class="step-list">
+              <li>In the Experience Center landing page (<strong>Corp Client PC</strong>), go to <strong>Infrastructure &gt; Private Access &gt; App Connectors</strong>.</li>
+              <li>Select <strong>Add</strong>.
+                <ul class="sub-steps">
+                  <li>Group: <strong>OnPrem</strong> (the App Connector Group you created in Task 9.1)</li>
+                  <li>Enrollment Tokens: add the token generated in Task 9.2, Step 2 (for example, <code>RPSTV-QZLJM</code>).</li>
+                  <li>Select <strong>Add</strong>.</li>
+                  <li>Select <strong>Save</strong>.</li>
+                </ul>
+              </li>
+              <li>Confirm that the App Connector appears in the list.</li>
+              <li>Select the App Connector name to view its details, including Host OS, PSE, Location, IP addresses and Uptime.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p125-a.png" alt="App Connectors Add form with Group OnPrem selected, an enrollment token entered, and Add and Save highlighted">
+            <div class="screenshot-caption">App Connectors → Add: Group <strong>OnPrem</strong>, paste the token, click <strong>Add</strong>, then <strong>Save</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> If the generated token doesn't work or has expired, repeat the previous steps (Step 2).</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p125-b.png" alt="App Connectors list showing the new connector in OnPrem with Connection Health Connected and status Enabled">
+            <div class="screenshot-caption">The connector appears in <strong>OnPrem</strong> and turns <strong>Connected</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> The App Connector <strong>Connection Health</strong> may take about 30 seconds to change from Disconnected to Connected. Continue with the next lab task and check the status again shortly.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab9-p126-a.png" alt="App Connector Details panel listing host OS, versions, location, public and private IP and uptime">
+            <div class="screenshot-caption">Connector details: host platform, software version, location, public/private IP and uptime.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-9-2 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Group first, connector second.</strong> App Connector Group <code>OnPrem</code> (Enabled, Connector cert, your city). On the connector VM: <code>cat /etc/issue</code> shows the <strong>OAuth token</strong>, and stop → clear <code>/opt/zscaler/var/*</code> → start makes a fresh one. Paste it into App Connectors → Add, then wait ~30 s for <strong>Connected</strong>. Outbound-only: no inbound ports needed.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -232,7 +359,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab9" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab9','Lab 9: Provision ZPA Infrastructure')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab9','Lab 9: ZPA Infrastructure')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -253,8 +380,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab9a" onchange="toggleDone(this)"><label for="chk-lab9a">Task 9.1: Connector Group + Key created</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab9b" onchange="toggleDone(this)"><label for="chk-lab9b">Task 9.2: Connector activated + Connected</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab9a" onchange="toggleDone(this)"><label for="chk-lab9a">Task 9.1: OnPrem connector group created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab9b" onchange="toggleDone(this)"><label for="chk-lab9b">Task 9.2: Connector enrolled + Connected</label></li>
       </ul>
     </div>
 
@@ -263,35 +390,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -299,43 +430,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
@@ -350,14 +485,13 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="page-nav-message">Private access, zero exposure. This is the good stuff.</div>
   <a class="page-nav-btn page-nav-next" href="lab10.html">
     <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 10: App Segments</span>
+    <span class="page-nav-title">Lab 10: Corporate App</span>
   </a>
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
   <span>Lab 9: ZPA Infrastructure</span>
-  <span>LAB 9 of 16</span>
 </footer>
 
 <script>
@@ -481,7 +615,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -516,6 +663,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -699,7 +878,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

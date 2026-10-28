@@ -12,6 +12,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
@@ -23,7 +35,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>About the EDU-200 Hands-On Lab</h1>
   <div class="motivation-banner">
-    <p>Explore the lab topology, three VMs, and credential structure. Learn how the Skytap environment is organised before you start configuring.</p>
+    <p>Get to know the lab topology, the three VMs, and how credentials are structured. Then switch the Experience Center to Nav 1.0 before you start configuring.</p>
   </div>
 </header>
 
@@ -100,58 +112,126 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">OVERVIEW</div>
-        <p>Welcome to the <strong>Zscaler for Users — Administrator (EDU-200)</strong> Hands-on Lab. You will practice skills from the EDU-200 e-learning by configuring a real Zscaler Zero Trust Exchange tenant. By the end of the lab series you will be able to:</p>
+        <p>Welcome to the <strong>Zscaler for Users — Administrator (EDU-200)</strong> Hands-on Lab. Throughout the hands-on lab, you will practice skills that you learned during the EDU-200 e-learning. By the end of the hands-on lab, you will be able to:</p>
         <ul style="margin-top:10px;">
-          <li>Configure connectivity to the Zero Trust Exchange</li>
-          <li>Configure access control policies to allow or deny traffic</li>
-          <li>Use the administration interfaces to interpret and analyze traffic patterns</li>
+          <li>Configure connectivity to the Zero Trust Exchange.</li>
+          <li>Configure access control policies to allow or deny traffic through the Zero Trust Exchange.</li>
+          <li>Use the administration interfaces to interpret and analyze traffic patterns.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Course:</strong> EDU-200</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 1.0 · Dec 2025</div>
-          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Sep 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> CloudShare + Zscaler Experience Center</div>
         </div>
         <figure class="lab-hero">
           <img src="images/lab0-hero.png" alt="Lab 0 — About the EDU-200 Lab" loading="lazy">
         </figure>
       </div>
 
+      <div class="socratic-block" id="soc-lab0">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · THE LAB ENVIRONMENT</span>
+        </div>
+        <p class="socratic-insight">Before you touch the console, think about how this small pod stands in for a real enterprise: one user endpoint, one data center, and a cloud service in between.</p>
+        <ul class="socratic-questions">
+          <li>The Corp Client PC sits at <code>192.168.1.1</code> and the data center is <code>10.0.0.0/24</code>, yet there is no VPN between them. How do you expect the client to reach intranet apps on the Windows Server?
+            <div class="answer-area" data-section="lab0-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Through <strong>ZPA</strong>. The Client Connector on the PC builds an outbound tunnel to the Zero Trust Exchange, and the <strong>Corp App Connector</strong> (<code>10.0.0.4</code>) builds its own outbound tunnel from inside the data center. The ZTE stitches the two together per application. Neither side accepts inbound connections, so the data center never has to expose a listening VPN concentrator to the Internet.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Every admin and test account in your pod shares the same session password, and all login IDs end in your Student FQDN. Why would a training environment be designed this way, and why would you never do it in production?
+            <div class="answer-area" data-section="lab0-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The FQDN makes each pod a separate, isolated tenant identity, so dozens of students can work in parallel without clashing. One shared password removes friction so the class can focus on Zscaler concepts. In production, shared credentials remove accountability (you can't tell who did what in the audit logs) and turn one leaked password into a breach of every account. That's why real tenants use SSO, unique credentials and MFA.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The lab is written for the Experience Center <strong>Nav 1.0</strong> interface. What could go wrong if you stayed on Nav 2.0 and tried to follow the menu paths in this guide?
+            <div class="answer-area" data-section="lab0-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The settings are the same, but the navigation tree is different. Paths like <em>Administration &gt; Identity &gt; Departments</em> may not exist in that form, so you'd waste time hunting for menus or end up on the wrong page. Switching once to Nav 1.0 keeps every step and screenshot in the guide in line with what you see. The <strong>search</strong> option (magnifier icon) is a good fallback in either interface.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
       <h3>Lab Description and Scenario</h3>
-      <p>Your organization (<strong>Labtenant</strong>) has deployed the <strong>Zscaler Zero Trust Exchange</strong> to protect against Internet security threats, control Internet access, and provide secure access to private resources. You will deploy the <strong>Zscaler Client Connector (ZCC)</strong> to end-user devices to control Internet access, provide access to private applications, and probe, benchmark, and measure digital experiences.</p>
-      <p>Your tasks include:</p>
+      <p>For these lab exercises, consider the scenario where your organization (<strong>Labtenant</strong>) has deployed the <strong>Zscaler Zero Trust Exchange</strong> to protect against Internet security threats, control Internet access, and provide secure access to private resources. Your organization is also interested in the end-user experience, which can be reported on with the Zero Trust Exchange.</p>
+      <p>You will deploy the <strong>Zscaler Client Connector (ZCC)</strong> application to end-user devices to control Internet access, provide access to private applications, and to probe, benchmark, and measure the digital experiences for each user within the organization. To support the rollout, you are tasked to:</p>
       <ul>
-        <li>Connect users to the Zero Trust Exchange by deploying <strong>ZCC</strong> to Windows client devices</li>
-        <li>Configure SSL inspection</li>
-        <li>Deploy <strong>Zscaler Digital Experience (ZDX)</strong> reporting and create an initial set of probes</li>
-        <li>Configure user access to both Internet and private applications</li>
-        <li>Verify Cyberthreat Protection and Data Protection services</li>
+        <li>Connect users to the Zero Trust Exchange by deploying <strong>ZCC</strong> to Windows client devices.</li>
+        <li>Configure SSL inspection.</li>
+        <li>Deploy <strong>Zscaler Digital Experience (ZDX)</strong> reporting and create an initial set of ZDX applications and probes.</li>
+        <li>Configure user access to both Internet and private applications.</li>
+        <li>Verify Cyberthreat Protection services.</li>
+        <li>Verify Data Protection services.</li>
       </ul>
 
       <h3>Lab Setup</h3>
-      <p>You will have access to <strong>Zscaler Zero Trust Exchange (ZIdentity/ZIA/ZPA/ZDX)</strong> and a <strong>Skytap 'Pod'</strong>. You will configure ZIdentity, ZIA, ZPA, and ZDX services using a Windows 10 Client PC in Skytap to connect to the Zero Trust Exchange.</p>
+      <p>You will have access to the <strong>Zscaler Zero Trust Exchange (Service Portal (formerly ZIdentity) / ZIA / ZPA / ZDX)</strong> and a lab ‘Pod’. For your lab exercises, you will configure the <strong>Service Portal</strong>, <strong>ZIA</strong>, <strong>ZPA</strong>, and <strong>ZDX</strong> services and explore the end-user experience. You will use a <strong>Windows 10 Client PC</strong> to connect to the Zero Trust Exchange.</p>
 
       <h3>Lab Topology</h3>
       <div class="screenshot-embed">
-        <img src="screenshots/lab0-topology-diagram.png" alt="EDU-200 lab topology showing Client PC, Zero Trust Exchange, Corporate Data Center with Win Svr 2016 and App Connector">
-        <div class="screenshot-caption">Lab topology: Corp: Client PC connects through the Zscaler Zero Trust Exchange (ZTE) to the Internet, and via App Connector to the Corporate Data Center (10.0.0.0/24).</div>
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: Corp Client PC connects through the Zero Trust Exchange to the Internet and, via the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025">
+        <div class="screenshot-caption">Lab topology: the Corp Client PC reaches the Internet through the Zero Trust Exchange, and reaches the Corporate Data Center (<code>10.0.0.0/24</code>: Corp Win Svr 2025 + Corp ZPA Connector) through ZPA. The admin portals (ZIA, ZPA, ZDX) are all reached through the Experience Center / Service Portal.</div>
       </div>
 
       <h4>Virtual Machines</h4>
       <div class="task-block">
         <ul class="step-list">
-          <li><strong>Corp: Client PC</strong> — Windows 10 endpoint (192.168.1.1). Joined to Active Directory <code>patraining.labtenant.com</code>. Username / Password: <code>student</code> / <code>Admin-123!</code></li>
-          <li><strong>Corp: Win Svr 2016</strong> — Active Directory, DNS, HTTP/HTTPS Intranet apps, CIFS, RDP. Username / Password: <code>administrator</code> / <code>Admin-123!</code></li>
-          <li><strong>Corp: App Connector</strong> — Red Hat Enterprise 9.4 VM, pre-deployed with App Connector RPM. Username / Password: <code>admin</code> / <code>zscaler</code></li>
+          <li><strong>Windows Client PC: Corp Client PC</strong>. Joined to the Active Directory domain <code>patraining.safemarch.com</code>.
+            <ul class="sub-steps"><li>Username | Password: <code>student</code> | <code>Admin-123!</code></li></ul>
+          </li>
+          <li><strong>Windows Server: Corp Win Svr 2025</strong>
+            <ul class="sub-steps">
+              <li>Provides local directory services through Active Directory.</li>
+              <li>Hosts the Active Directory domain <code>patraining.safemarch.com</code>, which the Corp Client PC is joined to.</li>
+              <li>Runs HTTP/HTTPS intranet applications and file services.</li>
+              <li>Acts as the DNS server for hosts in the data center.</li>
+              <li>Username | Password: <code>administrator</code> | <code>Admin-123!</code></li>
+            </ul>
+          </li>
+          <li><strong>App Connector: Corp App Connector</strong>. A Red Hat Enterprise 9.4 VM, pre-deployed in the network to simulate having already deployed the VM from the OVA/OVF file with the App Connector RPM installed.
+            <ul class="sub-steps"><li>Username | Password: <code>admin</code> | <code>Zscaler1!</code></li></ul>
+          </li>
         </ul>
       </div>
 
       <h3>Lab Credentials</h3>
       <table class="creds-table">
-        <thead><tr><th>Virtual Machine</th><th>User Name</th><th>Password</th><th>IP Address</th></tr></thead>
+        <thead><tr><th>Virtual Machine Name</th><th>User Name</th><th>Password</th><th>IP Address</th></tr></thead>
         <tbody>
-          <tr><td>Corp: Client PC</td><td>student</td><td>Admin-123!</td><td>192.168.1.1</td></tr>
-          <tr><td>Corp: Win Svr 2016</td><td>administrator</td><td>Admin-123!</td><td>10.0.0.0/24</td></tr>
-          <tr><td>Corp: App Connector</td><td>admin</td><td>zscaler</td><td>10.0.0.4</td></tr>
+          <tr><td>Corp Client PC</td><td>student</td><td>Admin-123!</td><td>192.168.1.1</td></tr>
+          <tr><td>Corp Win Svr 2025</td><td>administrator</td><td>Admin-123!</td><td>10.0.0.0/24</td></tr>
+          <tr><td>Corp App Connector</td><td>admin</td><td>Zscaler1!</td><td>10.0.0.4</td></tr>
           <tr class="section-row"><td>User Information</td><td>User Name</td><td>Password</td><td></td></tr>
           <tr><td></td><td>Joe</td><td>Admin-123!</td><td></td></tr>
           <tr><td></td><td>Bev</td><td>Admin-123!</td><td></td></tr>
@@ -159,13 +239,53 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </table>
 
       <h3>Lab Access Information</h3>
-      <p>Each student receives a unique <strong>Student ID</strong> (e.g., <code>zs9901</code>) and <strong>Student FQDN</strong> (e.g., <code>zs9901.labtenant.com</code>). The admin login format is <code class="d-username-student">student@&lt;Student FQDN&gt;</code>. The password is unique per session and identical across all configured accounts in the pod.</p>
+      <p>For this course, each student gets a unique student ID with a dedicated virtual environment, plus a matching Student FQDN and a set of admin and test user accounts for Zscaler. All user credentials and portal addresses are in the lab access instructions for your assigned training pod. These include:</p>
+      <ul>
+        <li>Your <strong>Student ID</strong>, a unique identifier for your pod (e.g., <code>zs9901</code>).</li>
+        <li>Your <strong>Student FQDN</strong>, a unique domain for your pod (e.g., <code>zs9901.labtenant.com</code>).</li>
+        <li>Your admin login credentials for the Zscaler portals:
+          <ul>
+            <li>The login name uses the format <code class="d-username-student">student@&lt;Student FQDN&gt;</code>, where &lt;Student FQDN&gt; is the domain assigned to your pod.</li>
+            <li>The password is unique to your session and is the same on every configured admin and user account in the pod.</li>
+          </ul>
+        </li>
+      </ul>
       <div class="callout callout-note">
-        <p><strong>Note:</strong> To navigate to any specific feature you can use the search option (<strong>Ctrl+K</strong>) available in the Experience Center tenant.</p>
+        <p><strong>Note:</strong> To navigate to any specific feature, you can use the search option available in the Experience Center tenant.</p>
       </div>
       <div class="screenshot-embed">
-        <img src="screenshots/lab0-experience-center-search.png" alt="Experience Center search bar activated with Ctrl+K shortcut">
-        <div class="screenshot-caption">Use Ctrl+K in the Experience Center to quickly navigate to any feature — faster than drilling through menus.</div>
+        <img src="screenshots/lab0-p009-a.png" alt="Experience Center top bar with the search icon and Search menu field highlighted">
+        <div class="screenshot-caption">The search icon (top right) opens the <em>Search menu</em> field. Type a feature name to jump straight to it instead of drilling through menus.</div>
+      </div>
+
+      <h3>Navigating to the Experience Center Nav 1.0 User Interface</h3>
+      <p>After you log in to your assigned Zscaler lab tenant or Solutions Demo Center tenant, you should see the <strong>Experience Center Nav 1.0</strong> user interface. If you see <strong>Experience Center Nav 2.0</strong> instead, switch to Nav 1.0, because this lab is designed around it:</p>
+      <div class="task-block">
+        <h4><span class="task-num">NAV</span> Switch from Nav 2.0 to Nav 1.0</h4>
+        <ol class="step-list">
+          <li>In the Experience Center Nav 2.0 tenant, click the <strong>account settings</strong> icon in the top-right corner and go to <strong>Account Settings</strong>.</li>
+          <li>Under <strong>Settings &gt; New Navigation Experience</strong>, select <strong>Original</strong>, then click <strong>Save</strong> at the bottom to switch to the Experience Center Nav 1.0 user interface.</li>
+        </ol>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p010-a.png" alt="Experience Center Nav 2.0 home page with the account settings icon highlighted in the top-right corner">
+        <div class="screenshot-caption">Nav 2.0 home page. The account settings icon is in the top-right corner.</div>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p011-a.png" alt="Account menu dropdown open with Account Settings highlighted">
+        <div class="screenshot-caption">Step 1: open the account menu and choose <strong>Account Settings</strong>.</div>
+      </div>
+      <div class="screenshot-embed">
+        <img src="screenshots/lab0-p011-b.png" alt="Settings page with New Navigation Experience set to Original and the Save button highlighted">
+        <div class="screenshot-caption">Step 2: set <strong>New Navigation Experience</strong> to <strong>Original</strong> and click <strong>Save</strong>. The console reloads in Nav 1.0.</div>
+      </div>
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text">Three VMs: <strong>Corp Client PC</strong> (the user), <strong>Corp Win Svr 2025</strong> (AD, DNS, intranet apps), <strong>Corp App Connector</strong> (ZPA's foothold in the data center). Every login ends in <code>@&lt;Student FQDN&gt;</code>. App Connector password is now <code>Zscaler1!</code>. Use <strong>Nav 1.0 (Original)</strong> so the menus match this guide.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -195,6 +315,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab0" onchange="toggleDone(this)"><label for="chk-lab0">Lab 0: Environment reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0b" onchange="toggleDone(this)"><label for="chk-lab0b">Lab 0: Switched to Nav 1.0</label></li>
       </ul>
     </div>
 
@@ -203,35 +324,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -239,43 +364,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
@@ -295,7 +424,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
   <span>Lab 0: About</span>
 </footer>
 
@@ -420,7 +549,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -455,6 +597,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -638,7 +812,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');

@@ -6,12 +6,34 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 1: Connect to the Lab Environment — EDU-200</title>
+<title>Lab 1: Connect to the Virtual Lab Environment — EDU-200</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+/* Screenshot thumbnails */
+.screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+/* Lightbox */
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+</style>
 </head>
 <body>
 
@@ -21,9 +43,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 1 · EDU-200</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Connect to the Lab Environment</h1>
+  <h1>Connect to the Virtual Lab Environment</h1>
   <div class="motivation-banner">
-    <p>Access the Skytap virtual environment, start the Corp: Client PC, and log into the Experience Center admin console for the first time.</p>
+    <p>Log in to CloudShare, start your lab VMs, learn the Send Text and Send Password clipboard actions, and sign in to the Experience Center for the first time.</p>
   </div>
 </header>
 
@@ -100,87 +122,279 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 1</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, you need to establish a functional, pre-configured environment (the Virtual Lab) that mirrors the Lab tenant's potential production setup — and access its core management console (Experience Center) before you can begin configuration tasks.</p>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, you need a working, pre-configured environment (the Virtual Lab) that mirrors Labtenant's likely production setup. You'll use it to validate the platform and reach its core management console, the <strong>Experience Center</strong>, before you start configuration tasks.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Connect to CloudShare</strong> and your lab virtual machines (VMs).</li>
+          <li><strong>Familiarize</strong> yourself <strong>with</strong> the login options and <strong>clipboard copy/paste functions</strong>.</li>
+        </ul>
+        <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
+          <div class="lab-meta-item"><strong>Tasks:</strong> 1.1 – 1.3</div>
+        </div>
         <figure class="lab-hero">
           <img src="images/lab1-hero.png" alt="Lab 1 — hero illustration" loading="lazy">
         </figure>
-        <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Objectives:</strong> Connect to Skytap; sign in to Experience Center; use VM clipboard</div>
-          <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab1">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · REACHING THE LAB</span>
         </div>
-      </div>
-
-      <h3>Task 1.1: Verify Lab Access</h3>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Start and connect to your Skytap pod</h4>
-        <ol class="step-list">
-          <li>Click the <strong>Skytap Portal URL</strong> provided in your access instructions.</li>
-          <li>Ensure the checkbox is checked to <strong>select all VMs</strong>.</li>
-          <li>If machines have not already started, click the <strong>Play</strong> button. All VMs will launch.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab1-skytap-vms-running.png" alt="Skytap portal showing all three VMs running: Corp App Connector, Corp Client PC, Corp Win Svr 2016">
-        <div class="screenshot-caption">All three VMs should show "Running" status. VMs start in stages — wait a few minutes for all to be ready.</div>
-      </div>
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> VMs in the environment are set to start in stages, so the whole process will take a few minutes.</p>
-      </div>
-
-      <h3>Task 1.2: Sign In to the Experience Center Landing Page</h3>
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> Throughout this lab guide, <span class="var var-fqdn">&lt;Student FQDN&gt;</span> represents the domain assigned to your tenant. For example, if your admin username is <strong>student@zs9901.labtenant.com</strong>, then your Student FQDN is <strong>zs9901.labtenant.com</strong>.</p>
-      </div>
-
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Login to the Corp: Client PC as the local Student User</h4>
-        <ol class="step-list">
-          <li>Launch the <strong>Corp: Client PC</strong> from the Skytap portal.</li>
-          <li>Click the <strong>Ctrl-Alt-Del</strong> icon in the Skytap Toolbar.</li>
-          <li>Click the <strong>Credential (keys)</strong> icon in the Skytap Toolbar.</li>
-          <li>Click the <strong>Insert Credentials</strong> icon next to the password field for the <strong>student</strong> username.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab1-client-pc-login.png" alt="Skytap toolbar showing the credential insert icon next to the student login">
-        <div class="screenshot-caption">Use the Skytap Credential (keys) icon to auto-fill the student password — avoids clipboard issues at the Windows lock screen.</div>
-      </div>
-
-      <div class="task-block">
-        <h4><span class="task-num">2</span> Open Experience Center and sign in</h4>
-        <ol class="step-list">
-          <li>In a browser window, open the Experience Center Landing Page: <code>https://console.zscaler.com/</code></li>
-          <li>You will be redirected to the ZIdentity login page. Authenticate with:
-            <ul class="sub-steps">
-              <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
-              <li>Password: as provided in the Lab Access Instructions (<span class="var var-pass">&lt;Session Password&gt;</span>)</li>
-              <li>Click <strong>Sign in</strong></li>
-            </ul>
+        <p class="socratic-insight">You are about to work inside a remote Windows desktop streamed to your browser. A few small habits now will save you a lot of frustration later.</p>
+        <ul class="socratic-questions">
+          <li>CloudShare gives you <strong>Send Text</strong> instead of a normal Ctrl+V into the VM. Why can't your host clipboard simply be shared with the VM, and when will Send Text matter most in these labs?
+            <div class="answer-area" data-section="lab1-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The VM is a separate machine whose screen and keystrokes are streamed through the browser. Your local clipboard never reaches its operating system unless the console explicitly sends it. <strong>Send Text</strong> types your text into the VM as keystrokes. It matters most for long, error-prone values: FQDN-based login IDs, URLs, provisioning keys and CLI commands for the App Connector later in the course. One typo in a provisioning key costs far more time than a paste.</div>
+                </div>
+              </div>
+            </div>
           </li>
-          <li>You will be prompted to change your password. Set a new password and remember it for all remaining labs.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed dialog">
-        <img src="screenshots/lab1-experience-center-password-reset.png" alt="ZIdentity success screen showing password has been reset successfully">
-        <div class="screenshot-caption">Successful password reset — click Re-Login and sign in again with your new password.</div>
+          <li>On your first sign-in as <code>student@&lt;Student FQDN&gt;</code>, you are forced to change the password. Why does the Service Portal do this for a brand-new admin account, and why should you write the new one down now?
+            <div class="answer-area" data-section="lab1-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The initial password was set by someone else and delivered through a shared channel (here, the CloudShare Credentials tab), so it should be treated as already exposed. Forcing a change means only you know the working credential from then on. Lab 3 and later labs ask for "the password you configured at initial login in Lab 1" for both the console and Zscaler Client Connector, so losing it now blocks you later.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The Corp App Connector VM has no desktop, only an SSH console. What does that tell you about the role this machine plays compared with the Corp Client PC?
+            <div class="answer-area" data-section="lab1-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The App Connector is <strong>infrastructure</strong>, not a user device. It's a headless Linux service that sits next to the private applications and brokers ZPA connections outbound to the cloud. Nobody browses from it, so it needs no GUI. You'll only use its console to enroll it (Lab 9) and check its health. The Client PC is where a <em>user</em> works and where ZCC enforces policy.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <h3>Task 1.3: Use the Lab Clipboard</h3>
-      <p>During these labs, you will frequently copy commands, URLs, and configuration values from the lab guide into the virtual machines.</p>
-      <div class="task-block">
-        <h4><span class="task-num">1</span> Use the clipboard icon in the lab interface</h4>
-        <ol class="step-list">
-          <li>Click the <strong>clipboard icon</strong> in the Skytap toolbar.</li>
-          <li>Paste text into the <strong>Copy/paste</strong> field. The VM clipboard will be populated.</li>
-          <li>Inside the VM, use <strong>Ctrl+V</strong> (or right-click &gt; Paste) to paste.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab1-vm-clipboard.png" alt="VM Clipboard dialog showing Copy/paste field with instructions for host-to-VM and VM-to-host transfer">
-        <div class="screenshot-caption">The VM Clipboard bridges your local clipboard with the Skytap VM. On Mac, use Cmd+V locally but Ctrl+V inside the VM.</div>
-      </div>
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> Even if you are on a Mac, the virtual machine is running Windows, so use <strong>Ctrl+V</strong> (not Cmd+V) inside the VM.</p>
+      <!-- ─────────────────────────── TASK 1.1 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-1-1">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.1</span>
+          <span class="task-collapsible-title">Verify Lab Access</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Locate the CloudShare lab URL</h4>
+            <ol class="step-list">
+              <li>Your unique <strong>CloudShare lab URL</strong> and <strong>passphrase</strong> will be shown on the classroom screen at the start of the session. Note these credentials carefully, because you need them to access your lab environment (example: <code>https://use.cloudshare.com/…</code>).</li>
+            </ol>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Access the Lab Login Page</h4>
+            <ol class="step-list">
+              <li>Open a web browser and go to the CloudShare lab URL shown on the classroom screen.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p013-a.png" alt="CloudShare login page asking for an email address and passphrase">
+            <div class="screenshot-caption">CloudShare login page.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Enter Your Credentials</h4>
+            <ol class="step-list">
+              <li>On the login page, enter the <strong>email address</strong> and <strong>passphrase</strong> provided in your invitation email, then click <strong>Login</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p013-b.png" alt="CloudShare login page with an email address and passphrase entered">
+            <div class="screenshot-caption">Enter your email and the class passphrase, then click Login.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">4</span> Review the Lab Overview</h4>
+            <ol class="step-list">
+              <li>After you log in, you are taken to the lab environment dashboard. The screen you see matches the specific lab you've been assigned.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p014-a.png" alt="CloudShare environment Overview tab for the EDU-200 Zscaler for Users - Administrator lab">
+            <div class="screenshot-caption">The environment Overview tab for <em>EDU-200 · Zscaler for Users - Administrator</em>.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">5</span> Navigate to the VM List</h4>
+            <ol class="step-list">
+              <li>In the <strong>Overview</strong> tab, click <strong>Go to My VM List</strong> to open the <strong>VM List</strong> tab. This tab shows all virtual machines assigned to your lab session.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p015-a.png" alt="Overview tab with the Go to My VM List button highlighted">
+            <div class="screenshot-caption">Click <strong>Go to My VM List</strong>.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">6</span> Run the Virtual Machine</h4>
+            <ol class="step-list">
+              <li>In the <strong>VM List</strong> tab, click the <strong>Run</strong> button next to the virtual machine name to start the VM.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p015-b.png" alt="VM List showing three virtual machines (Windows 11 x64, Windows Server 2025 Standard, zpa-connector) with the Run button highlighted">
+            <div class="screenshot-caption">Three VMs: the Windows client, Windows Server 2025 and the ZPA connector. Click <strong>Run</strong> on each VM you need.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">7</span> Verify the VM is Running</h4>
+            <ol class="step-list">
+              <li>Once started, the virtual machine's tab shows it running, which confirms the environment is ready to use.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p016-a.png" alt="Windows 11 VM tab showing the lock screen with Press Ctrl+Alt+Delete to unlock">
+            <div class="screenshot-caption">A running Windows VM shows its lock screen in its own tab.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> For the <strong>Corp App Connector</strong> VM, click the VM, then click the <strong>SSH</strong> icon to see the VM running.</p>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p017-a.png" alt="zpa-connector VM tab with the SSH icon highlighted and a Linux console with a Zscaler ASCII banner">
+            <div class="screenshot-caption">The App Connector VM has no desktop. The <strong>SSH</strong> icon opens its Linux console.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">8</span> Open the Lab Guide</h4>
+            <ol class="step-list">
+              <li>Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. It opens in a new browser tab and gives detailed instructions for the lab exercises.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p017-b.png" alt="CloudShare environment with the Lab Guide tab highlighted">
+            <div class="screenshot-caption">The <strong>Lab Guide</strong> tab, next to the VM tabs.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">9</span> View your Zscaler tenant and SDC credentials</h4>
+            <ol class="step-list">
+              <li>To find your <strong>Zscaler tenant</strong> and <strong>Solutions Demo Center (SDC)</strong> credentials, click the <strong>Credentials</strong> tab in the left panel. These are the credentials you'll use in the lab.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p018-a.png" alt="Credentials panel with the Zscaler Tenant section showing the admin console link, student admin username and one-time password">
+            <div class="screenshot-caption"><strong>Credentials → Zscaler Tenant</strong>: console link, your <code>student@&lt;Student FQDN&gt;</code> admin username and its one-time password.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p018-b.png" alt="Credentials panel with the SDC Credentials section showing Solutions Demo Center usernames">
+            <div class="screenshot-caption"><strong>Credentials → SDC Credentials</strong>: the Solutions Demo Center logins used for the ZDX labs (14–16).</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-1-1 -->
+
+      <!-- ─────────────────────────── TASK 1.2 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-1-2">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.2</span>
+          <span class="task-collapsible-title">Use the Lab Clipboard</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <p>During these labs, you will often copy commands, URLs and configuration values from the lab guide into the virtual machines.</p>
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Send text to the VM</h4>
+            <ol class="step-list">
+              <li>To use the VM clipboard, first copy the text from your host / lab guide.</li>
+              <li>Click the <strong>Actions</strong> tab and choose <strong>Send Text</strong>.</li>
+              <li>Paste the text into the text box and click <strong>Send</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p019-a.png" alt="Actions menu expanded with Keyboard > Send Text highlighted">
+            <div class="screenshot-caption"><strong>Actions → Send Text</strong>. The same menu also has Send Password and Send Ctrl+Alt+Del.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p020-a.png" alt="Send Text dialog with a text box and the Send button highlighted">
+            <div class="screenshot-caption">Paste into the Send Text box and click <strong>Send</strong>. The text is typed into whichever field has focus in the VM.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-1-2 -->
+
+      <!-- ─────────────────────────── TASK 1.3 ─────────────────────────── -->
+      <div class="task-collapsible open" id="task-1-3">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 1.3</span>
+          <span class="task-collapsible-title">Sign In to the Experience Center Landing Page</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Throughout this lab guide, <strong>&lt;Student FQDN&gt;</strong> means the domain assigned to your tenant. For example, if your student admin username is <strong>student@zs9901.labtenant.com</strong>, your Student FQDN is <strong>zs9901.labtenant.com</strong>. Enter it in the Lab Configuration panel above to fill in every login on these pages.</p>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">1</span> Log in to the Corp Client PC as the local Student user</h4>
+            <ol class="step-list">
+              <li>Launch the <strong>Corp Client PC</strong> from the CloudShare portal.</li>
+              <li>Go to the <strong>Actions</strong> tab and click <strong>Send Password</strong>.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p021-a.png" alt="Corp Client PC lock screen with the Actions menu open and Send Password highlighted">
+            <div class="screenshot-caption"><strong>Actions → Send Password</strong> types the local <code>student</code> password for you, so there's no need to type it.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Sign in to the Experience Center</h4>
+            <ol class="step-list">
+              <li>In a browser window, open the Experience Center landing page: <code>https://console.zscaler.com/</code></li>
+            </ol>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> You will be redirected to the <strong>Service Portal</strong> (formerly ZIdentity) login page to validate your identity.</p>
+          </div>
+          <div class="task-block">
+            <ol class="step-list">
+              <li>Authenticate with your student admin account:
+                <ul class="sub-steps">
+                  <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
+                  <li>Password: as provided in the Lab Access Instructions <span class="var var-pass">&lt;Session Password&gt;</span></li>
+                  <li>Click <strong>Sign in</strong>.</li>
+                </ul>
+              </li>
+              <li>You will be prompted to <strong>change your password</strong> after you authenticate successfully. Remember the new password, because later labs ask for it.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab1-p022-a.png" alt="Zscaler Success page stating the password has been reset successfully, with a Re-Login link">
+            <div class="screenshot-caption">Password changed. Use <strong>Re-Login</strong> to sign in again with your new password.</div>
+          </div>
+        </div><!-- /task-collapsible-body -->
+      </div><!-- /task-1-3 -->
+
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>CloudShare:</strong> Overview → VM List → Run. <strong>Credentials</strong> tab = tenant + SDC logins. <strong>Actions → Send Text</strong> pastes into a VM, and <strong>Send Password</strong> unlocks the Client PC. First console login at <code>console.zscaler.com</code> forces a password change, so keep the new one because Lab 3 and ZCC need it.</div>
+        </div>
       </div>
 
       <div class="lesson-tools">
@@ -209,7 +423,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab1" onchange="toggleDone(this)"><label for="chk-lab1">Lab 1: Connected to Skytap + Experience Center</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1" onchange="toggleDone(this)"><label for="chk-lab1">Task 1.1: CloudShare VMs running</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1b" onchange="toggleDone(this)"><label for="chk-lab1b">Task 1.2: Send Text tried</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1c" onchange="toggleDone(this)"><label for="chk-lab1c">Task 1.3: Signed in + password changed</label></li>
       </ul>
     </div>
 
@@ -218,35 +434,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs.</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com — unified admin portal for ZIA, ZPA, ZDX, ZIdentity.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">Service Portal</div>
+        <div class="qr-def">Formerly ZIdentity. The identity layer where users, groups, departments and entitlements are managed and where admins and users authenticate.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZCC</div>
-        <div class="qr-def">Zscaler Client Connector — endpoint agent that tunnels all traffic to the ZTE.</div>
+        <div class="qr-def">Zscaler Client Connector, the endpoint agent that tunnels traffic to the Zero Trust Exchange.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Z-Tunnel 2.0</div>
-        <div class="qr-def">Network-layer tunnel that intercepts all IP protocols. Required for Cloud Firewall.</div>
+        <div class="qr-def">Network-layer tunnel that captures all IP protocols, not just web traffic. Required for Cloud Firewall.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Entitlement</div>
-        <div class="qr-def">Grants a user access to use a Zscaler service (ZIA, ZPA, ZDX) via ZCC.</div>
+        <div class="qr-def">Lets a user or group <em>use</em> a Zscaler service (ZIA, ZPA, ZDX) through ZCC.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Admin Entitlement</div>
-        <div class="qr-def">Grants a user access to configure a service in the admin console, with a specific role.</div>
+        <div class="qr-def">Lets a user or group <em>administer</em> a service in the console, scoped by a role (e.g. Executive Insights App, ZDX Read-only Admin).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SyncZPA</div>
-        <div class="qr-def">User attribute (value: Zscaler) that syncs the user into ZPA's identity store for policy use.</div>
+        <div class="qr-def">Additional user attribute (optional value, e.g. 123) that the lab uses to sync the user into ZPA for policy use.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Forwarding Profile</div>
-        <div class="qr-def">Defines tunnel type/version and forwarding action per network context (on/off/VPN trusted).</div>
+        <div class="qr-def">Sets the tunnel type/version and forwarding action for each network context (on-trusted, off-trusted, VPN-trusted).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
@@ -254,43 +474,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
-        <div class="qr-def">Trusted MitM: ZIA decrypts → inspects → re-encrypts using Zscaler CA. Requires Zscaler Root CA trusted on endpoint.</div>
+        <div class="qr-def">Trusted man-in-the-middle: ZIA decrypts, inspects and re-encrypts traffic using the Zscaler CA. The endpoint must trust the Zscaler Root CA.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Cert Pinning Bypass</div>
-        <div class="qr-def">"Do Not Inspect" SSL rule for apps that verify server cert fingerprints (e.g., Threema). Must be above the Inspect All rule.</div>
+        <div class="qr-def">A "Do Not Inspect" SSL rule for apps that check the server certificate fingerprint. It must sit above the Inspect All rule.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">DLP Engine</div>
-        <div class="qr-def">Defines what sensitive content looks like (dictionary patterns + thresholds). Paired with a DLP Rule to define the action.</div>
+        <div class="qr-def">Defines what sensitive content looks like (dictionaries + thresholds). Paired with a DLP rule that sets the action.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Connector</div>
-        <div class="qr-def">ZPA software in the data centre that makes outbound TLS tunnels to ZPA cloud. No inbound firewall rules required.</div>
+        <div class="qr-def">ZPA software in the data center that builds outbound TLS tunnels to the ZPA cloud. No inbound firewall rules needed.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Provisioning Key</div>
-        <div class="qr-def">One-time key placed at /opt/zscaler/var/provision_key. Authorises a new connector to join a specific connector group.</div>
+        <div class="qr-term">Enrollment Token</div>
+        <div class="qr-def">OAuth-based one-time code shown on the App Connector console (<code>cat /etc/issue</code>). Entered in App Connectors → Add to enroll the connector into a group.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">App Segment</div>
-        <div class="qr-def">ZPA object defining a private resource by domain/IP + port. Together with an Access Policy, enables ZPA access.</div>
+        <div class="qr-def">ZPA object that defines a private resource by domain/IP and port. Combined with an access policy, it grants ZPA access.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SIPA</div>
-        <div class="qr-def">Secure Internet and Private Access — routes ZPA App Connector internet traffic through ZIA for consistent egress IP + policy.</div>
+        <div class="qr-def">Source IP Anchoring. Sends selected ZIA traffic out through a ZPA App Connector so the destination sees your organization's own egress IP.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Score</div>
-        <div class="qr-def">0–100 composite metric of end-to-end digital experience. 0 = worst, 100 = best. &lt;50 = Poor, 50–79 = Okay, 80+ = Good.</div>
+        <div class="qr-def">0–100 measure of end-to-end digital experience. Below 50 = Poor, 50–79 = Okay, 80 and above = Good.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">Y-Engine</div>
-        <div class="qr-def">ZDX ML engine that analyses probe data to identify root-cause factors (Wi-Fi, DNS, TCP, server response) and ranks their contribution.</div>
+        <div class="qr-term">Y-Engine (Analyze Score)</div>
+        <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-term">ZDX Copilot</div>
+        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
-        <div class="qr-def">Synthetic background test run by ZCC that measures DNS Time, TCP Connect, Server Response, and Page Fetch Time continuously.</div>
+        <div class="qr-def">Synthetic test run by ZCC in the background that continuously measures DNS time, TCP connect, server response and page fetch time.</div>
       </div>
       </div><!-- /qr-body -->
     </div>
@@ -310,9 +534,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Experience Center</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
   <span>Lab 1: Connect</span>
-  <span>LAB 1 of 16</span>
 </footer>
 
 <script>
@@ -436,7 +659,20 @@ const SECTIONS={
   'lab0':'Lab 0: About',
   'lab1':'Lab 1: Connect',
   'lab2':'Lab 2: Users & Entitlements',
-  'lab3':'Lab 3: ZCC Traffic Forwarding'
+  'lab3':'Lab 3: ZCC Traffic Forwarding',
+  'lab4':'Lab 4: Firewall Filtering',
+  'lab5':'Lab 5: SSL Inspection',
+  'lab6':'Lab 6: Content Filtering & Access Control',
+  'lab7':'Lab 7: DNS Security',
+  'lab8':'Lab 8: Unified DLP',
+  'lab9':'Lab 9: ZPA Infrastructure',
+  'lab10':'Lab 10: Add a Corporate Application',
+  'lab11':'Lab 11: Troubleshoot Internal App Access',
+  'lab12':'Lab 12: SIPA',
+  'lab13':'Lab 13: RDP Access',
+  'lab14':'Lab 14: ZDX Dashboards',
+  'lab15':'Lab 15: Poor Wi-Fi',
+  'lab16':'Lab 16: Slow DNS'
 };
 
 // Socratic collapse
@@ -471,6 +707,38 @@ function togglePrompt(btn){
   if(h){c.removeAttribute('hidden');btn.textContent='▴ Hide image generation prompt';}
   else{c.setAttribute('hidden','');btn.textContent='▾ Show image generation prompt';}
 }
+
+// Screenshot lightbox
+function initLightbox(){
+  var lb=document.createElement('div');
+  lb.className='img-lightbox';
+  lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';
+  document.body.appendChild(lb);
+  var lbImg=lb.querySelector('img');
+  function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
+  function close(){lb.classList.remove('active');document.body.style.overflow='';}
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  document.querySelectorAll('.screenshot-embed img').forEach(function(img){
+    img.addEventListener('click',function(){open(img.src,img.alt);});
+  });
+}
+
+// Task collapsible
+function toggleTask(header){
+  var tc=header.closest('.task-collapsible');
+  tc.classList.toggle('open');
+  try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}
+}
+(function(){
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){
+    var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);
+    if(saved==='0')tc.classList.remove('open');
+  });
+  document.querySelectorAll('.task-collapsible-header').forEach(function(h){
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});
+  });
+})();
 
 // Section nav
 function navTo(id){
@@ -654,7 +922,7 @@ function injectCopyButtons(){
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
   renderQPanel();renderNotesPanel();initChecks();
-  injectCopyButtons();
+  injectCopyButtons();initLightbox();
   if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){
     document.getElementById('qpanel-body').classList.add('open');
     document.getElementById('qpanel-header').classList.add('open');
