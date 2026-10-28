@@ -72,7 +72,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 3</div>
-        <p><strong>Scenario:</strong> Your security team needs ZPA user-activity events in the SIEM (<code>siem.patraining.safemarch.com</code>). You deploy a dedicated Log Streaming Connector, wire up a Log Receiver, expose the SIEM over ZPA so students can SSH in, and confirm that logs arrive in real time.</p>
+        <p><strong>Scenario:</strong> You are an IT Engineer tasked with centralizing security monitoring by streaming private application access logs to an on-premises security information and event management (SIEM) system. Because the SIEM consumes syslog data from local hosts, you provision a dedicated App Connector and configure the Log Streaming Service (LSS) to send real-time user activity events to a local syslog server.</p>
         <figure class="lab-hero">
           <img src="images/lab3-hero.png" alt="Lab 3 — ZPA Log Streaming" loading="lazy">
         </figure>
@@ -86,46 +86,78 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-3-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 3.1</span>
-          <span class="task-collapsible-title">Deploy the Log Streaming Connector</span>
+          <span class="task-collapsible-title">Provision a Dedicated App Connector for Log Streaming</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you create a dedicated Log Streaming App Connector by creating a Log Streaming App Connector Group.</p>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> This task gives high-level instructions because you performed these steps in Lab 2. If you need detailed guidance, refer to Task 2.1 and Task 2.2.</p>
+            </div>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; App Connectors &gt; App Connector Groups</strong>.</li>
-              <li>Select <strong>+ Add App Connector Group</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>Log Streaming</code></li>
-                  <li><strong>Status:</strong> Enabled</li>
-                  <li><strong>App Connector Certificate:</strong> select the Connector certificate from the dropdown</li>
-                  <li><strong>City:</strong> enter your location city</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
-              <li>In Skytap, open the <strong>Corp: Log Streaming Connector</strong> VM console.</li>
-              <li>Run the following command to retrieve the pre-generated provisioning key (OAuth token):
-                <ul class="sub-steps">
-                  <li><code>cat /etc/issue</code></li>
-                </ul>
+              <li><strong>Configure the App Connector Group.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center, go to <strong>Infrastructure &gt; Private Access &gt; App Connector Groups</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p42-img2.png" alt="Log Streaming Connector VM terminal — cat /etc/issue output showing OAuth Token value" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p55-img1.png" alt="Infrastructure menu open with Private Access and App Connector Groups highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Add App Connector Group</strong> and enter the Name <code>Log Streaming</code> (follow the remaining steps as in Task 2.1). Select <strong>Save</strong>.</li>
+                </ol>
+              </li>
+              <li><strong>Configure the App Connector.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Launch the <strong>Corp Log Streaming Connector</strong> VM.</li>
+                  <li>Log in to the Corp Log Streaming Connector VM by clicking <strong>SSH</strong> in the left side panel to log in automatically.</li>
+                  <li>Alternatively, use the <strong>CON</strong> option to sign in to the VM with the following credentials to generate a new token:
+                    <ul class="sub-steps">
+                      <li>Username: <code>admin</code></li>
+                      <li>Password: <code>Zscaler1!</code></li>
+                    </ul>
+                  </li>
+                  <li>To view the token, type: <code>cat /etc/issue</code>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab3/lab3-p56-img1.png" alt="Terminal output of cat /etc/issue on the Log Streaming Connector VM showing the OAuth Token" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Use the CLI to regenerate a new authentication token</strong> by running the following commands:
+                <ol class="sub-steps" style="list-style:lower-roman;">
+                  <li>Stop the ZPA Connector service: <code>sudo systemctl stop zpa-connector</code></li>
+                  <li>Switch to root user privileges: <code>sudo su</code></li>
+                  <li>Delete the existing OAuth token files: <code>rm -rf /opt/zscaler/var/*</code></li>
+                  <li>Restart the ZPA Connector service to generate a new OAuth token: <code>sudo systemctl start zpa-connector</code></li>
+                  <li>View the new token: <code>cat /etc/issue</code></li>
+                </ol>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab3/lab3-p58-img1.png" alt="Terminal showing the commands that stop the connector, delete the token files, restart it and print the new OAuth token" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-              <li>Copy the token value displayed.</li>
-              <li>Back in the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; App Connectors &gt; App Connectors</strong>.</li>
-              <li>Select <strong>+ Add App Connector</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>App Connector Group:</strong> <code>Log Streaming</code></li>
-                  <li><strong>Provisioning Key / OAuth Token:</strong> paste the token from the VM</li>
-                  <li><strong>Certificate:</strong> select the Connector certificate</li>
-                </ul>
+              <li><strong>Update the token in the App Connector to deploy it.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center landing page (Corp Client PC 1), go to <strong>Infrastructure &gt; Private Access &gt; App Connectors</strong>.</li>
+                  <li>Select <strong>Add</strong>, then enter:
+                    <ul class="sub-steps">
+                      <li>Group: <code>Log Streaming</code> (the App Connector Group you created in Step 1)</li>
+                      <li>Enrollment Tokens: add the token generated in Step 3 (for example, <code>DVQXP – NF69H</code>)</li>
+                    </ul>
+                    Select <strong>Add</strong>, then select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p43-img1.png" alt="Add App Connectors form — Group: Log Streaming, Signing Certificate: Connector, OAuth token pasted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p59-img1.png" alt="Add App Connector form with Group Log Streaming and an enrollment token entered" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
-              <li>Select <strong>Save</strong> and wait for the connector to show a green <strong>Connected</strong> status.
+            </ol>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> If the generated token is not working or has expired, repeat Step 3 to generate a new one.</p>
+            </div>
+            <ol class="step-list" start="5">
+              <li>Confirm that the App Connector appears in the list.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p44-img1.png" alt="App Connectors list confirming Log Streaming connector with Connected status and Enabled" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p60-img1.png" alt="App Connectors list showing the Log Streaming connector with Connected status" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
@@ -156,48 +188,56 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 3.2 -->
       <div class="task-collapsible open" id="task-3-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 3.2</span>
-          <span class="task-collapsible-title">Configure the Log Receiver</span>
+          <span class="task-collapsible-title">Add a Log Receiver</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you create a log receiver to stream User Activity logs to the syslog server in the data center.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Infrastructure &gt; Private Access &gt; Log Streaming Service &gt; Log Receivers</strong>.</li>
-              <li>Select <strong>+ Add Log Receiver</strong>.</li>
-              <li>On the <strong>Log Receiver</strong> tab, enter:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>Syslog-UserActivity</code></li>
-                  <li><strong>Domain:</strong> <code>siem.patraining.safemarch.com</code></li>
-                  <li><strong>TCP Port:</strong> <code>514</code></li>
-                  <li><strong>TLS Encryption:</strong> Disabled</li>
-                  <li><strong>App Connector Groups:</strong> <code>Log Streaming</code></li>
-                </ul>
+              <li><strong>Access the log streaming settings.</strong> On the <strong>Corp Client PC 1</strong> VM, go to <strong>Logs &gt; Log Streaming &gt; Log Receivers</strong>.</li>
+              <li><strong>Configure the log receiver.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add Log Receiver</strong> on the Log Receivers page.</li>
+                  <li>Enter the following settings on the <strong>General</strong> tab (the first step of the wizard):
+                    <ul class="sub-steps">
+                      <li>Name: <code>Syslog-UserActivity</code></li>
+                      <li>Domain or IP Address: <code>siem.patraining.safemarch.com</code></li>
+                      <li>TCP Port: <code>514</code></li>
+                      <li>App Connector Groups: <code>Log Streaming</code></li>
+                    </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p46-img1.png" alt="Add Log Receiver — Name: Syslog-UserActivity, Domain: siem.patraining.safemarch.com, TCP Port: 514, TLS Disabled, ACG: Log Streaming" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p62-img1.png" alt="Add Log Receiver form with Name, Domain, TCP Port 514 and App Connector Group Log Streaming highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                  <li>Select <strong>Next</strong>.</li>
+                  <li>Enter the following settings on the <strong>Log Selection</strong> tab:
+                    <ul class="sub-steps">
+                      <li>Log Type: <strong>User Activity</strong></li>
+                      <li>Log Template: <strong>CSV</strong></li>
+                      <li>Log Stream Content: leave at the default values</li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab3/lab3-p63-img1.png" alt="Log Stream step with Log Type User Activity and Log Template CSV highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Next</strong>.</li>
+                </ol>
               </li>
-              <li>On the <strong>Log Stream</strong> tab, configure:
-                <ul class="sub-steps">
-                  <li><strong>Log Type:</strong> User Activity</li>
-                  <li><strong>Feed Output Type:</strong> CSV</li>
-                </ul>
+              <li><strong>Filter specific logs and save the receiver.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the <strong>Policy</strong> tab, leave the default settings, then select <strong>Next</strong>.</li>
+                  <li>On the <strong>Review</strong> page, review the configuration, then select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p47-img1.png" alt="Log Stream tab — Log Type: User Activity, Log Template: CSV selected" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p64-img1.png" alt="Review step showing the Syslog-UserActivity receiver, destination, App Connector group, log type and template with Save highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
-              </li>
-              <li>Select <strong>Save</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p48-img1.png" alt="Log Receiver review page confirming Syslog-UserActivity, siem.patraining.safemarch.com:514:TCP, Log Streaming ACG, User Activity/CSV" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  </li>
+                </ol>
               </li>
             </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> The Log Receiver targets the SIEM using its internal hostname. The Log Streaming Connector resolves this hostname and forwards the TCP stream to port 514 on the SIEM. No syslog agent is needed on the SIEM — it's already listening on 514/tcp.</p>
-            </div>
           </div>
 
           <div class="section-qa" data-section="t3-2">
@@ -225,54 +265,48 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 3.3 -->
       <div class="task-collapsible open" id="task-3-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 3.3</span>
-          <span class="task-collapsible-title">Create an App Segment and Policy for SSH to SIEM</span>
+          <span class="task-collapsible-title">Add SSH Access to the SIEM Server</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:13px;color:var(--text-soft);margin-bottom:12px;"><strong>App Segment — SSH to SIEM</strong></p>
+            <p style="margin-bottom:12px;">In this task, you create an application segment and access policy to allow SSH access to the SIEM server for log verification.</p>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Use the skills you practiced in Lab 2 to complete this configuration.</p>
+            </div>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Private Access &gt; App Segments</strong>.</li>
-              <li>Select <strong>+ Add App Segment</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>SSH to SIEM</code></li>
-                  <li><strong>Applications:</strong> <code>siem.patraining.safemarch.com</code></li>
-                  <li><strong>TCP Ports:</strong> 22–22</li>
-                  <li><strong>Segment Group:</strong> CorpApps</li>
-                  <li><strong>Server Group:</strong> CorpServers</li>
-                </ul>
+              <li><strong>Configure an application segment for SSH access.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Corp Client PC 1, go to <strong>Policies &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+                  <li>Create a segment with the following settings:
+                    <ul class="sub-steps">
+                      <li>Name: <code>SSH to SIEM</code></li>
+                      <li>Applications: <code>siem.patraining.safemarch.com</code></li>
+                      <li>Default Port Ranges: <strong>SSH</strong></li>
+                    </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p50-img1.png" alt="Add Application Segment — Name: SSH to SIEM, Application: siem.patraining.safemarch.com" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p66-img1.png" alt="Add Application Segment form with Name SSH to SIEM and the SIEM application domain highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p51-img1.png" alt="App Segment port settings — Default Port Ranges: SSH, TCP Port Range 22–22" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p67-img1.png" alt="Client Connector Access with Default Port Ranges SSH and TCP port range 22 to 22 highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
-              </li>
-              <li>Select <strong>Save</strong>.
+                  </li>
+                  <li>Select <strong>Next</strong>.</li>
+                  <li>Segment Group: <code>CorpApps</code></li>
+                  <li>Server Group: <code>CorpServers</code></li>
+                  <li>Select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p52-img1.png" alt="App Segment review page — SSH to SIEM, Segment Group: CorpApps, Server Group: CorpServers, Connector Group: OnPrem" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p68-img1.png" alt="Review step showing the SSH to SIEM application segment with CorpApps segment group and CorpServers server group" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
-            </ol>
-          </div>
-          <div class="task-block" style="margin-top:16px;">
-            <p style="font-size:13px;color:var(--text-soft);margin-bottom:12px;"><strong>Access Policy</strong></p>
-            <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Private Access &gt; Access Policies</strong>.</li>
-              <li>Select <strong>+ Add Policy Rule</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Rule Name:</strong> <code>Allow SSH to SIEM</code></li>
-                  <li><strong>Action:</strong> Allow</li>
-                  <li><strong>App Segments:</strong> SSH to SIEM</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong> and <strong>Activate</strong>.
+              <li><strong>Configure an access policy.</strong> Select <strong>Edit Policy</strong> and create a rule to allow SSH access to the SIEM server for your user account (for example, <code>Allow SSH to SIEM</code>).
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p53-img1.png" alt="Access Policy list confirming Allow SSH to SIEM rule at Rule Order 3 with Allow Access action and SSH to SIEM segment criteria" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p69-img1.png" alt="Access Policy list showing the Allow SSH to SIEM rule with the SSH to SIEM application segment" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
@@ -303,48 +337,65 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 3.4 -->
       <div class="task-collapsible open" id="task-3-4">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 3.4</span>
-          <span class="task-collapsible-title">Verify Log Delivery via SSH</span>
+          <span class="task-collapsible-title">Verify the Log Feed</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you monitor the syslog file on the SIEM server to verify that the Zscaler log feed is active.</p>
             <ol class="step-list">
-              <li>On the Linux Client VM, ensure ZCC is running and connected to your ZPA tenant.
+              <li><strong>Sign in to Zscaler Client Connector (ZCC).</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Corp Client PC 1, in the Windows taskbar (bottom-right corner), click the <strong>Show hidden icons</strong> arrow (^).</li>
+                  <li>Select the <strong>Zscaler Client Connector</strong> icon, then click <strong>Open Zscaler</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p54-img1.png" alt="ZCC system tray icon — right-click context menu showing Open Zscaler option" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p70-img1.png" alt="Windows system tray menu with Open Zscaler highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                  <li>On the Zscaler Client Connector login page, authenticate with the student credentials you use to sign in to the console.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p55-img1.png" alt="Zscaler Client Connector window — Internet Security tab showing Service Status: ON and connected to ZPA tenant" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p70-img2.png" alt="Zscaler Client Connector login page" onclick="openLightbox(this.src,this.alt)">
                 </div>
-              </li>
-              <li>Open a terminal and SSH to the SIEM:
-                <ul class="sub-steps">
-                  <li><code>ssh student@siem.patraining.safemarch.com</code></li>
-                  <li>Password: <code>Zscaler123!</code></li>
-                </ul>
-              </li>
-              <li>Once connected, tail the syslog in real time:
-                <ul class="sub-steps">
-                  <li><code>tail -f /var/log/syslog</code></li>
-                </ul>
+                  </li>
+                  <li>Select <strong>Sign in</strong>.</li>
+                  <li>Verify the service entitlement access for <strong>Internet Security</strong> and <strong>Private Access</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p56-img1.png" alt="Windows terminal — SSH session to SIEM established via ZPA, tail -f /var/log/syslog running" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p71-img1.png" alt="Zscaler Client Connector showing Internet Security service status ON" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
-              <li>In a second terminal, generate ZPA activity by browsing to the HVAC application (from Lab 2) or any other ZPA-proxied resource.</li>
-              <li>Return to the syslog tail and look for lines containing <strong>User Activity zpa-lss</strong> — these confirm the Log Streaming Connector is forwarding events.
+              <li><strong>Establish an SSH connection to the SIEM server.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Corp Client PC 1, open a command prompt.</li>
+                  <li>Connect to the SIEM server: <code>ssh zscaler@siem.patraining.safemarch.com</code></li>
+                  <li>When prompted, enter the password: <code>Zscaler123!</code></li>
+                  <li>If prompted, enter <code>yes</code> to accept the host key.</li>
+                </ol>
+              </li>
+              <li><strong>Monitor the log feed.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Enter the following command to view the live syslog feed: <code>tail -f /var/log/syslog</code>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab3/lab3-p56-img2.png" alt="Syslog output showing live ZPA User Activity zpa-lss CSV rows arriving in real time from the Log Streaming Connector" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab3/lab3-p72-img1.png" alt="Command prompt showing the ssh login to the SIEM server and the tail -f /var/log/syslog command" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                  <li>Verify that log entries appear that include <code>User Activity zpa-lss</code> after the time field.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab3/lab3-p72-img2.png" alt="Syslog output with User Activity zpa-lss log entries highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
               </li>
-              <li>Press <kbd>Ctrl+C</kbd> to stop the tail when verified.</li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Verify:</strong> Each ZPA session appears as a CSV row in the syslog stream. Fields include timestamp, user, app segment, connector, policy decision, and bytes transferred.</p>
+              <p><strong>Note:</strong> If no entries appear, generate user activity by refreshing the HVAC application page you tested in Lab 2.</p>
+            </div>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Type <code>exit</code> in the command prompt to close the connection to the SIEM server.</p>
             </div>
           </div>
 
@@ -402,7 +453,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -414,7 +465,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -423,7 +474,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -432,17 +483,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 

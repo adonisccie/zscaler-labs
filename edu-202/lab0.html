@@ -41,7 +41,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   </div>
   <h1>Lab Orientation &amp; <em>Environment Overview</em></h1>
   <div class="motivation-banner">
-    <p>Before you configure anything, take five minutes to understand what you're working with. This lab walks you through the scenario, the virtual machines in your Skytap pod, every credential you'll use across the 12 labs, and how to access both your dedicated tenant and the Solutions Demo Center. Think of it as your map before the expedition.</p>
+    <p>Before you configure anything, take five minutes to understand what you're working with. This lab walks you through the scenario, the virtual machines in your CloudShare environment, every credential you'll use across the 12 labs, and how to access both your dedicated tenant and the Solutions Demo Center. Think of it as your map before the expedition.</p>
   </div>
 </header>
 
@@ -84,8 +84,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </figure>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~5 minutes (read-through)</div>
-          <div class="lab-meta-item"><strong>Environment:</strong> Skytap Virtual Lab Pod</div>
-          <div class="lab-meta-item"><strong>Services:</strong> ZIA · ZPA · ZDX · ZIdentity</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> CloudShare Virtual Lab Environment</div>
+          <div class="lab-meta-item"><strong>Services:</strong> ZIA · ZPA · ZDX · Service Portal (formerly ZIdentity)</div>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
             </ul>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Lab Setup</h4>
-            <p style="margin-bottom:0;">You have access to the Zero Trust Exchange services — ZIA, ZPA, and ZDX — plus a ZIdentity account and a Skytap pod. You configure ZIA, ZPA, and ZDX, and use Windows and Linux client VMs in Skytap to connect to the Zero Trust Exchange and test access and user experience.</p>
+            <p style="margin-bottom:0;">You have access to the Zero Trust Exchange services — ZIA, ZPA, and ZDX — plus an account for the Zscaler Authentication service (formerly ZIdentity) and a CloudShare environment. You configure the ZIA, ZPA, and ZDX services and a Zscaler Service Portal (formerly ZIdentity) environment, and use Windows and Linux client VMs in CloudShare to connect to the Zero Trust Exchange and test access and user experience.</p>
           </div>
 
           <div class="section-qa" data-section="t0-1">
@@ -161,24 +161,23 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">Your Skytap pod contains seven virtual machines. Each VM plays a specific role across the labs. Study the topology so you always know which machine to use for each task.</p>
+            <p style="color:var(--text-soft);margin-bottom:14px;">Your CloudShare environment contains six virtual machines. Each VM plays a specific role across the labs. Study the topology so you always know which machine to use for each task.</p>
 
             <div class="screenshot-embed">
-              <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram showing the Skytap pod with Corp and Remote network segments, VM names, and their connections to the Zscaler Zero Trust Exchange cloud" onclick="openLightbox(this.src,this.alt)">
+              <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram showing the CloudShare environment with the Remote Public Network (192.168.1.0/24) and Corporate Data Center (10.0.0.0/24) segments, VM names, and their connections to the Zscaler Zero Trust Exchange cloud" onclick="openLightbox(this.src,this.alt)">
             </div>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Corp Network VMs</h4>
             <ul class="sub-steps" style="margin-bottom:16px;">
               <li><strong>Corp: Client PC 1</strong> — The primary Windows workstation you use for most lab tasks. Username: <code>student</code> · Password: <code>Admin-123!</code> · IP: <code>192.168.1.1</code></li>
-              <li><strong>Corp: Win Svr 2016</strong> — Provides local directory services via Active Directory for the <code>patraining.safemarch.com</code> domain. Hosts HTTP/HTTPS intranet apps, file sharing, DNS for data center hosts, and Microsoft Certificate Server for Browser Access certificates. Username: <code>administrator</code> · Password: <code>Admin-123!</code> · IP: <code>10.0.0.1</code></li>
-              <li><strong>Corp: Docker Server</strong> — Hosts the HVAC application, DVWA (Damn Vulnerable Web App), and a syslog server that simulates a SIEM. Username: <code>zscaler</code> · Password: <code>zscaler123!</code> · IP: <code>10.0.0.2</code></li>
-              <li><strong>Corp: ZPA Connector</strong> — RHEL VM that simulates an App Connector OVA deployment. Pre-provisioned for ZPA. Username: <code>admin</code> · Password: <code>zscaler</code> · IP: <code>10.0.0.3</code></li>
-              <li><strong>Corp: Log Streaming Connector</strong> — A second RHEL App Connector VM dedicated to ZPA Log Streaming. Username: <code>admin</code> · Password: <code>zscaler</code> · IP: <code>10.0.0.20</code></li>
+              <li><strong>Corp: Win Svr 2025</strong> — Provides local directory services through Active Directory and hosts the <code>patraining.safemarch.com</code> domain. Runs HTTP/HTTPS intranet applications and file-sharing services, acts as the DNS server for data center hosts, and runs Microsoft Certificate Server to issue certificates for Browser Access. Username: <code>administrator</code> · Password: <code>Admin-123!</code> · IP: <code>10.0.0.1</code></li>
+              <li><strong>Corp: Docker Server</strong> — Hosts the HVAC application, a vulnerable web app (DVWA), and a syslog server that simulates a SIEM for log streaming. Username: <code>zscaler</code> · Password: <code>Zscaler123!</code> · IP: <code>10.0.0.2</code></li>
+              <li><strong>Corp: ZPA Connector</strong> — Red Hat Enterprise Linux (RHEL) VM that simulates deploying an OVA/OVF and installing the App Connector RPM. The initial lab setup provisions and activates the connectors for the ZPA service. Username: <code>admin</code> · Password: <code>Zscaler1!</code> · IP: <code>10.0.0.3</code></li>
+              <li><strong>Corp: Log Streaming Connector</strong> — A second RHEL App Connector VM dedicated to ZPA Log Streaming. Username: <code>admin</code> · Password: <code>Zscaler1!</code> · IP: <code>10.0.0.20</code></li>
             </ul>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Remote Network VMs</h4>
             <ul class="sub-steps">
-              <li><strong>Remote: DNS Server</strong> — Simulates a public DNS server in a home or hotspot environment. You add DNS entries here to emulate public DNS records without updating an external DNS provider. Username: <code>administrator</code> · Password: <code>Zscaler123!</code> · IP: <code>192.168.1.252</code></li>
               <li><strong>Remote: Linux Client PC</strong> — Secondary Linux client for tasks that require testing from a non-corporate endpoint. Username: <code>admin</code> · Password: <code>Admin-123!</code> · IP: <code>192.168.1.2</code></li>
             </ul>
           </div>
@@ -230,12 +229,11 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
                 </tr>
               </thead>
               <tbody>
-                <tr><td>Corp: Win Svr 2016</td><td><code>administrator</code></td><td><code>Admin-123!</code></td><td><code>10.0.0.1</code></td></tr>
+                <tr><td>Corp: Win Svr 2025</td><td><code>administrator</code></td><td><code>Admin-123!</code></td><td><code>10.0.0.1</code></td></tr>
                 <tr><td>Corp: Client PC 1</td><td><code>student</code></td><td><code>Admin-123!</code></td><td><code>192.168.1.1</code></td></tr>
-                <tr><td>Corp: Docker Server</td><td><code>zscaler</code></td><td><code>zscaler123!</code></td><td><code>10.0.0.2</code></td></tr>
-                <tr><td>Corp: ZPA Connector</td><td><code>admin</code></td><td><code>zscaler</code></td><td><code>10.0.0.3</code></td></tr>
-                <tr><td>Corp: Log Streaming Connector</td><td><code>admin</code></td><td><code>zscaler</code></td><td><code>10.0.0.20</code></td></tr>
-                <tr><td>Remote: DNS Server</td><td><code>administrator</code></td><td><code>Zscaler123!</code></td><td><code>192.168.1.252</code></td></tr>
+                <tr><td>Corp: Docker Server</td><td><code>zscaler</code></td><td><code>Zscaler123!</code></td><td><code>10.0.0.2</code></td></tr>
+                <tr><td>Corp: ZPA Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td><code>10.0.0.3</code></td></tr>
+                <tr><td>Corp: Log Streaming Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td><code>10.0.0.20</code></td></tr>
                 <tr><td>Remote: Linux Client PC</td><td><code>admin</code></td><td><code>Admin-123!</code></td><td><code>192.168.1.2</code></td></tr>
               </tbody>
             </table>
@@ -299,13 +297,14 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <div class="task-block">
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Dedicated Lab Tenant Access</h4>
-            <p style="margin-bottom:12px;">Each student is assigned a unique Student ID with a dedicated virtual environment hosted in Skytap, and a corresponding <strong>Student FQDN</strong> with a set of admin and test user accounts for Zscaler. Your lab access instructions contain:</p>
+            <p style="margin-bottom:12px;">Each student is assigned a unique Student ID with a dedicated virtual environment hosted in CloudShare, and a corresponding <strong>Student FQDN</strong> with a set of admin and test user accounts for Zscaler. Your lab access instructions contain:</p>
             <ul class="sub-steps" style="margin-bottom:16px;">
               <li><strong>Student ID</strong> — a unique identifier for your pod (e.g. <code>zs000834</code>)</li>
               <li><strong>Student FQDN</strong> — a unique domain for your pod (e.g. <code>zs000834.labtenant.com</code>)</li>
               <li>Login name format: <code>student@&lt;Student FQDN&gt;</code></li>
               <li>Session Password — unique to your session, shared across all admin and user accounts in your pod</li>
             </ul>
+            <p style="margin-bottom:12px;">You can also find your tenant and SDC credentials on the <strong>Credentials</strong> tab of your CloudShare environment (see Lab 1).</p>
             <div class="callout callout-note">
               <p>Save your Student FQDN and Session Password in the <strong>⚙ Lab Configuration</strong> panel at the top of every lab page. All credential placeholders will update automatically across all steps.</p>
             </div>
@@ -375,7 +374,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -387,7 +386,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -396,7 +395,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -405,17 +404,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 
@@ -471,7 +461,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
 <div class="page-nav">
   <span class="page-nav-btn page-nav-prev page-nav-disabled">← Start</span>
-  <div class="page-nav-message">Orientation complete — time to fire up your Skytap pod!</div>
+  <div class="page-nav-message">Orientation complete — time to start your CloudShare environment!</div>
   <a class="page-nav-btn page-nav-next" href="lab1.html">Lab 1: Environment Setup →</a>
 </div>
 

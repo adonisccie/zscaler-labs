@@ -86,75 +86,91 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-5-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.1</span>
-          <span class="task-collapsible-title">Create PRA Application Segments</span>
+          <span class="task-collapsible-title">Creating Application Segments</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">This lab uses two application segments: one for the Windows VM (RDP) and one for the Log Streaming Connector VM (SSH). You also create a single Access Policy rule that covers both.</p>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">App Segment 1 — Windows Server RDP</h4>
+            <p style="margin-bottom:12px;">This lab uses two application segments: one for the Windows VM and one for the Linux VM. In this task, you create an application segment for the Windows VM <strong>Corp Win Svr 2025</strong>, then repeat the process for the <strong>Corp Log Streaming Connector</strong> VM.</p>
             <ol class="step-list">
-              <li>In the Experience Center, go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; App Segments</strong>.</li>
-              <li>Select <strong>Add Application Segment</strong>.</li>
-              <li>Configure the application segment:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_RDP1_win Svr</code></li>
-                  <li><strong>Applications:</strong> <code>10.0.0.1</code> (IP address of the Corp: Win Svr)</li>
-                  <li><strong>Access Type:</strong> Privileged Remote Access</li>
-                  <li><strong>Protocol:</strong> RDP</li>
-                  <li><strong>Port:</strong> <code>3389</code></li>
-                  <li><strong>Connection Security:</strong> Any</li>
-                </ul>
-              </li>
-              <li>Under <strong>Client Connector Access</strong>, configure:
-                <ul class="sub-steps">
-                  <li><strong>Default Port Ranges:</strong> RDP (3389)</li>
-                  <li><strong>TCP Port Ranges:</strong> 3389 – 3389</li>
-                  <li><strong>UDP Port Ranges:</strong> 3389 – 3389</li>
-                </ul>
-              </li>
-              <li>Under <strong>Common Configuration</strong>, keep all values as-is. Select <strong>Next</strong>.
+              <li><strong>Go to the App Segments page.</strong> In the Experience Center portal, go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+              <li><strong>Add an application segment.</strong> Select <strong>Add Application Segment</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p76-img1.png" alt="Add Application Segment form: Name 'PRA_RDP1_win Svr', Status Enabled, Inspect Traffic with ZIA Disabled" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p78-img1.png" alt="App Segment Common Configuration tab: Health Reporting On Access, App Connector Selection Closer to User" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p91-img1.png" alt="Defined Application Segments page with Add Application Segment highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-              <li>Select the Segment Group: <strong>CorpApps</strong>. Select <strong>Next</strong>.</li>
-              <li>Select the Server Group: <strong>CorpServers</strong>. Select <strong>Next</strong>.</li>
-              <li>Review the settings and select <strong>Save</strong>.</li>
-              <li>Create the Access Policy rule. Open the <strong>Access Policy</strong> editor (either from the Save confirmation or via <strong>Policies &gt; Access Policy</strong>). Select <strong>Add</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Rule Name:</strong> <code>PRA_Allow_Access</code></li>
-                  <li><strong>Rule Action:</strong> Allow Access</li>
-                  <li><strong>App Connector Selection Method:</strong> All App Connector Groups</li>
-                  <li>Under <strong>Criteria</strong>, select <strong>Applications</strong> and choose <code>PRA_RDP1_win Svr</code>.</li>
-                </ul>
+              <li><strong>Configure the application segment</strong> with the following values:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Name: <code>PRA_RDP1_win Svr</code>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p92-img1.png" alt="Add Application Segment form with the name PRA_RDP1_win Svr highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Applications: <code>10.0.0.1</code> (IP address of the Win Svr)</li>
+                  <li>Access Type: <strong>Privileged Remote Access</strong></li>
+                  <li>Protocol: <strong>RDP</strong></li>
+                  <li>Port: <code>3389</code></li>
+                  <li>Connection Security: <strong>Any</strong></li>
+                  <li>Under <strong>Client Connector Access</strong>: Default Port Ranges <strong>RDP (3389)</strong>; UDP Port Ranges <code>3389</code>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p93-img1.png" alt="Application 10.0.0.1 with Privileged Remote Access, RDP protocol, port 3389 and Client Connector Access settings highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Under <strong>Common Configuration</strong>, keep everything as it is.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p94-img1.png" alt="Common Configuration section left at defaults with Next highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Next</strong>.</li>
+                  <li>Select the segment group: Name <code>CorpApps</code></li>
+                  <li>Select the server group: Name <code>CorpServers</code>, then select <strong>Next</strong>.</li>
+                  <li>Review and save the configuration.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p95-img1.png" alt="Review step showing the PRA_RDP1_win Svr segment, CorpApps segment group, CorpServers server group and OnPrem connector group" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
               </li>
-              <li>Select <strong>Save</strong>.</li>
-            </ol>
-
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">App Segment 2 — Log Streaming Connector SSH</h4>
-            <ol class="step-list">
-              <li>Select <strong>Add Application Segment</strong> again and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_SSH2_Log_Streaming_Connector_PC</code></li>
-                  <li><strong>Applications:</strong> <code>10.0.0.20</code> (IP address of the Corp: Log Streaming Connector)</li>
-                  <li><strong>Access Type:</strong> Privileged Remote Access</li>
-                  <li><strong>Protocol:</strong> SSH</li>
-                  <li><strong>Port:</strong> <code>22</code></li>
-                </ul>
+              <li>Verify the settings and select <strong>Save</strong>.</li>
+              <li><strong>Create the access policy rule for the PRA application segments.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open the Access Policy editor using one of these methods: in the Add Application Segment window, select <strong>Edit Policy</strong>; or in the portal, go to <strong>Policies &gt; Access Policy</strong> and edit the policy.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p96-img1.png" alt="Policies step of the wizard with Edit Policy highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Add</strong> and configure:
+                    <ul class="sub-steps">
+                      <li>Rule Name: <code>PRA_Allow_Access</code></li>
+                      <li>Rule Action: <strong>Allow Access</strong></li>
+                      <li>App Connector Selection Method: <strong>All App Connector Groups</strong></li>
+                    </ul>
+                  </li>
+                  <li>Define the criteria: select <strong>Applications</strong> and choose the <code>PRA_RDP1_win Svr</code> application segment.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p97-img1.png" alt="Access policy named PRA_Allow_Access with Allow Access and the PRA_RDP1_win Svr application segment" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Save</strong>.</li>
+                </ol>
               </li>
-              <li>Under <strong>Client Connector Access</strong>, set <strong>Default Port Ranges:</strong> SSH (22).</li>
-              <li>Under <strong>Common Configuration</strong>, keep values as-is. Select <strong>Next</strong>.</li>
-              <li>Select Segment Group: <strong>CorpApps</strong>. Select <strong>Next</strong>.</li>
-              <li>Select Server Group: <strong>CorpServers</strong>. Select <strong>Next</strong>.</li>
-              <li>Review and select <strong>Save</strong>.</li>
-              <li>Edit the <code>PRA_Allow_Access</code> policy rule and add <code>PRA_SSH2_Log_Streaming_Connector_PC</code> to the Application Segments criteria. Select <strong>Save</strong>.</li>
+              <li><strong>Create an application segment for the Corp Log Streaming Connector VM.</strong> Repeat the same process for the VM at <code>10.0.0.20</code>:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add Application Segment</strong> and configure: Name <code>PRA_SSH2_Log_Streaming_Connector_PC</code>; Applications <code>10.0.0.20</code> (IP address of the Corp Log Streaming Connector); Access Type <strong>Privileged Remote Access</strong>; Protocol <strong>SSH</strong>; Port <code>22</code></li>
+                  <li>In Client Connector Access, set Default Port Ranges to <strong>SSH (22)</strong>.</li>
+                  <li>Under Common Configuration, keep everything as it is, then select <strong>Next</strong>.</li>
+                  <li>Select the segment group <code>CorpApps</code>, then <strong>Next</strong>. Select the server group <code>CorpServers</code>, then <strong>Next</strong>.</li>
+                  <li>Review and save the configuration. Verify the settings and select <strong>Save</strong>.</li>
+                  <li>Edit the <code>PRA_Allow_Access</code> access policy: in the criteria, also select the <code>PRA_SSH2_Log_Streaming_Connector_PC</code> application segment, then select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p99-img1.png" alt="PRA_Allow_Access policy with both PRA application segments selected in the criteria" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> Both app segments must appear in the <code>PRA_Allow_Access</code> rule criteria before PRA sessions can be established. The Access Policy controls whether ZPA will proxy the traffic at all; the PRA-specific policies (Consoles Policy, Credential Policy) control session behaviour and credential injection.</p>
+              <p><strong>Note:</strong> Both application segments must appear in the PRA_Allow_Access rule criteria before PRA sessions can be established. The Access Policy controls whether ZPA will proxy the traffic at all; the PRA-specific policies (Consoles Policy, Credential Policy) control session behaviour and credential injection.</p>
             </div>
           </div>
 
@@ -183,37 +199,33 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 5.2 -->
       <div class="task-collapsible open" id="task-5-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.2</span>
-          <span class="task-collapsible-title">Create the Privileged Portal</span>
+          <span class="task-collapsible-title">Creating the Portal</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">The Privileged Portal is the HTTPS URL that users access to reach their assigned Consoles. It acts as the authenticated entry point for all PRA sessions.</p>
+            <p style="margin-bottom:12px;">In this task, you create a Privileged Remote Access portal that third-party users and internal users can use to access the systems you configured.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Access Methods &gt; Privileged Portals</strong>.</li>
-              <li>Select <strong>Add</strong>.</li>
-              <li>Configure the following values:
+              <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Access Methods &gt; Privileged Portals</strong>.</li>
+              <li>Select <strong>Add</strong> and configure the following values:
                 <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>Privileged_Portal</code></li>
-                  <li><strong>Status:</strong> Enabled</li>
-                  <li><strong>Certificate Type:</strong> Managed</li>
-                  <li><strong>Portal URL:</strong> <code>praportal</code> (Zscaler appends the domain suffix automatically)</li>
-                  <li><strong>Domain Suffix:</strong> Select any available option from the drop-down menu</li>
-                  <li><strong>User Portal for Portal Links:</strong> None</li>
+                  <li>Name: <code>Privileged_Portal</code></li>
+                  <li>Certificate Type: <strong>Managed</strong></li>
+                  <li>Portal URL: <code>praportal</code> (Zscaler appends the domain suffix automatically)</li>
+                  <li>Domain Suffix: select any one from the drop-down menu</li>
+                  <li>User Portal for Portal Links: <strong>None</strong></li>
                 </ul>
-              </li>
-              <li>Select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p85-img1.png" alt="Add Portal form: Name 'Privileged_Portal', Certificate Type Managed, Portal URL 'praportal' with domain suffix, User Portal None" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p101-img1.png" alt="Add Portal form with the name Privileged_Portal, Managed certificate and the portal URL highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
+              <li>Select <strong>Save</strong>.</li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> The full portal URL will be <code>https://praportal-&lt;student-id&gt;.labtenant.com.pra.two.zscalerportal.net</code> (or similar). This URL is where users will navigate to start PRA sessions — bookmark it for Task 5.7.</p>
+              <p><strong>Note:</strong> The full portal URL has the form <code>https://praportal-&lt;student-id&gt;-labtenant-com.pra.two.zscalerportal.net</code>. This is where users navigate to start PRA sessions — you use it in Task 5.7.</p>
             </div>
           </div>
 
@@ -242,41 +254,52 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 5.3 -->
       <div class="task-collapsible open" id="task-5-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.3</span>
-          <span class="task-collapsible-title">Create Privileged Consoles</span>
+          <span class="task-collapsible-title">Creating the Consoles</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Consoles represent the devices that users can access via the portal. Each console maps a protocol (RDP/SSH) and port to a specific App Segment.</p>
+            <p style="margin-bottom:12px;">In this task, you create the consoles that appear on the portal. Consoles represent the devices that users can access.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Resources &gt; Privileged Consoles</strong>.</li>
-              <li>Select <strong>Add</strong>.</li>
-              <li>On the <strong>Console Type</strong> tab, configure:
+              <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Resources &gt; Privileged Consoles</strong> and select <strong>Add</strong>.</li>
+              <li>Configure the consoles with the following values:
                 <ul class="sub-steps">
-                  <li><strong>Privileged Remote Access Portal:</strong> <code>Privileged_Portal</code></li>
-                  <li><strong>Privileged Remote Access Applications:</strong> Select all application segments created in Task 5.1 — <code>10.0.0.1:3389</code> (RDP) and <code>10.0.0.20:22</code> (SSH)</li>
+                  <li>Privileged Remote Access Portal: <code>Privileged_Portal</code></li>
+                  <li>Privileged Remote Access Applications: select all the application segments created in Task 5.1</li>
                 </ul>
-              </li>
-              <li>Select <strong>Next</strong>.</li>
-              <li>On the <strong>Consoles</strong> tab, verify the details for each application:
-                <ul class="sub-steps">
-                  <li>Console <strong>10.0.0.1</strong> — Protocol: RDP, Port: 3389, Connection Security: Any, Display on Console: Enabled</li>
-                  <li>Console <strong>10.0.0.20</strong> — Protocol: SSH, Port: 22, Display on Console: Enabled</li>
-                </ul>
-              </li>
-              <li>Select <strong>Next</strong>.</li>
-              <li>Review all details and select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p88-img1.png" alt="Add Console form: Console 10.0.0.20 showing Protocol SSH, Port 22, Display on Console Enabled" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p102-img1.png" alt="Add Console Console Type step with Privileged_Portal and the two application segments selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                Select <strong>Next</strong>.
+              </li>
+              <li>On the <strong>Consoles</strong> tab, verify that the details for each application are correct:
+                <ul class="sub-steps">
+                  <li>Protocol: <strong>SSH</strong> or <strong>RDP</strong></li>
+                  <li>Port: <code>22</code> or <code>3389</code></li>
+                  <li>Connection Security for RDP: <strong>Any</strong> (as set in Task 5.1)</li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p103-img1.png" alt="Consoles step showing the RDP console 10.0.0.1 on port 3389" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p104-img1.png" alt="Consoles step showing the SSH console 10.0.0.20 on port 22" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                Select <strong>Next</strong>.
+              </li>
+              <li>Review the details and select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p105-img1.png" alt="Review step listing the consoles with Save highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p105-img2.png" alt="Privileged Consoles list showing the RDP console 10.0.0.1 and the SSH console 10.0.0.20" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> Consoles are named after the IP address / domain by default (e.g. "10.0.0.1"). The Windows icon appears on the RDP console and a terminal icon on the SSH console, making them easy to identify on the portal.</p>
+              <p><strong>Note:</strong> Consoles are named after the IP address or domain by default (for example, 10.0.0.1). A Windows icon appears on the RDP console and a terminal icon on the SSH console, which makes them easy to identify in the portal.</p>
             </div>
           </div>
 
@@ -305,47 +328,43 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 5.4 -->
       <div class="task-collapsible open" id="task-5-4">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.4</span>
-          <span class="task-collapsible-title">Create Privileged Credentials</span>
+          <span class="task-collapsible-title">Creating Privileged Credentials</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Privileged Credentials let third-party users or contractors sign in to a console without entering credentials directly — ZPA injects them automatically at session time.</p>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Credential 1 — Windows Server</h4>
+            <p style="margin-bottom:12px;">Privileged Credentials let third-party users or contractors sign in to a console without entering credentials. Access to the stored credentials is controlled by a Privileged Credentials policy. In this task, you create a privileged credential for the Windows server and one for the Linux system. In a later task, you assign these credentials to users who access the console through the privileged portal.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Resources &gt; Privileged Credentials</strong>.</li>
-              <li>Select <strong>Add</strong> and configure:
+              <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Resources &gt; Privileged Credentials</strong> and select <strong>Add</strong>.</li>
+              <li><strong>Create a privileged credential for the Windows server:</strong>
                 <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_windows</code></li>
-                  <li><strong>Type:</strong> Username-Password</li>
-                  <li><strong>User Name:</strong> <code>administrator</code></li>
-                  <li><strong>Password:</strong> <code>Admin-123!</code></li>
+                  <li>Name: <code>PRA_windows</code></li>
+                  <li>Type: <strong>Username-Password</strong></li>
+                  <li>User Name: <code>administrator</code></li>
+                  <li>Password: <code>Admin-123!</code></li>
                 </ul>
-              </li>
-              <li>Select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p91-img1.png" alt="Add Privileged Credential form: Name 'PRA_windows', Type Username-Password, Username 'administrator'" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p107-img1.png" alt="Add Privileged Credential form for PRA_windows with the Username-Password type and administrator user" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                Select <strong>Save</strong>.
+              </li>
+              <li><strong>Create a privileged credential for the Linux system.</strong> Repeat the same steps with these details:
+                <ul class="sub-steps">
+                  <li>Name: <code>PRA_Log_Streamming_Connector</code></li>
+                  <li>Type: <strong>Username-Password</strong></li>
+                  <li>User Name: <code>admin</code></li>
+                  <li>Password: <code>Zscaler1!</code></li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p108-img1.png" alt="Privileged Credentials list showing PRA_Log_Streamming_Connector and PRA_windows" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Credential 2 — Linux (Log Streaming Connector)</h4>
-            <ol class="step-list">
-              <li>Select <strong>Add</strong> again and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_Log_Streamming_Connector</code></li>
-                  <li><strong>Type:</strong> Username-Password</li>
-                  <li><strong>User Name:</strong> <code>admin</code></li>
-                  <li><strong>Password:</strong> <code>zscaler</code></li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
-            </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> The password is stored encrypted in the ZPA vault and never transmitted to the user's browser. Rotating the password requires only editing the credential here — no policy changes needed.</p>
+              <p><strong>Note:</strong> The password is stored encrypted in the ZPA vault and is never transmitted to the user's browser. Rotating the password only requires editing the credential here — no policy changes are needed.</p>
             </div>
           </div>
 
@@ -374,42 +393,46 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 5.5 -->
       <div class="task-collapsible open" id="task-5-5">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.5</span>
-          <span class="task-collapsible-title">Create Privileged Credential Policies</span>
+          <span class="task-collapsible-title">Creating Privileged Credential Policy</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Credential Policies map stored credentials to specific consoles. Without a matching Credential Policy, ZPA will not inject credentials — the user would need to type them manually.</p>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Credential Policy 1 — RDP (Windows)</h4>
+            <p style="margin-bottom:12px;">In this task, you create credential policies that map privileged credentials to specific systems. Without a matching Credential Policy, ZPA does not inject credentials, and the user would need to type them manually.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Privileged Remote Access &gt; Credentials Policy</strong>.</li>
-              <li>Select <strong>Add</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_Credential_policy_RDP</code></li>
-                  <li><strong>Privileged Credentials:</strong> <code>PRA_windows</code></li>
-                  <li>Under <strong>Criteria</strong>, select <strong>Privileged Consoles</strong> and choose <code>10.0.0.1</code></li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.
+              <li><strong>Create the credential policy for RDP.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Privileged Remote Access &gt; Credentials Policy</strong>.</li>
+                  <li>Select <strong>Add</strong> and configure the following values:
+                    <ul class="sub-steps">
+                      <li>Name: <code>PRA_Credential_policy_RDP</code></li>
+                      <li>Privileged Credentials: <code>PRA_windows</code></li>
+                      <li>Criteria: select the IP address for the Windows system (<code>10.0.0.1</code>)</li>
+                    </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p93-img1.png" alt="Add Privileged Credentials Policy: Name 'PRA_Credential_policy_RDP', Credential 'PRA_windows', Criteria: Privileged Consoles 10.0.0.1" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p109-img1.png" alt="Add Privileged Credentials Policy form for PRA_Credential_policy_RDP using PRA_windows for console 10.0.0.1" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Save</strong>.</li>
+                </ol>
+              </li>
+              <li><strong>Create the credential policy for SSH.</strong> Repeat the same steps for the Docker/Linux server with these details:
+                <ul class="sub-steps">
+                  <li>Name: <code>PRA_Credential_policy_SSH</code></li>
+                  <li>Privileged Credentials: <code>PRA_Log_Streamming_Connector</code></li>
+                  <li>Criteria: select the IP address for the Linux system (<code>10.0.0.20</code>)</li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p110-img1.png" alt="Add Privileged Credentials Policy form for PRA_Credential_policy_SSH using PRA_Log_Streamming_Connector for console 10.0.0.20" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                Select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p111-img1.png" alt="Privileged Credentials Policy list showing the RDP and SSH credential policies" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-            </ol>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Credential Policy 2 — SSH (Linux)</h4>
-            <ol class="step-list">
-              <li>Select <strong>Add</strong> again and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_Credential_policy_SSH</code></li>
-                  <li><strong>Privileged Credentials:</strong> <code>PRA_Log_Streamming_Connector</code></li>
-                  <li>Under <strong>Criteria</strong>, select <strong>Privileged Consoles</strong> and choose <code>10.0.0.20</code></li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
             </ol>
           </div>
 
@@ -438,42 +461,40 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 5.6 -->
       <div class="task-collapsible open" id="task-5-6">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.6</span>
-          <span class="task-collapsible-title">Create a Consoles Policy</span>
+          <span class="task-collapsible-title">Create Consoles Policy</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">The Consoles Policy controls session behaviour — clipboard access, recording, session join/share — for matched consoles. These controls are independent from credential injection.</p>
+            <p style="margin-bottom:12px;">In this task, you create a consoles policy for your Privileged Remote Access consoles. The Consoles Policy controls session behaviour — clipboard access, recording, and session join/share — and is independent of credential injection.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Privileged Remote Access &gt; Consoles Policy</strong>.</li>
-              <li>Select <strong>Add</strong>.</li>
-              <li>Configure the policy:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>PRA_Console_Policy</code></li>
-                </ul>
-              </li>
-              <li>Under <strong>Console Configuration</strong>, set the following:
-                <ul class="sub-steps">
-                  <li><strong>Clipboard Copy:</strong> Enable</li>
-                  <li><strong>Record Sessions:</strong> Enable</li>
-                  <li><strong>Join Sessions:</strong> Enable</li>
-                  <li><strong>Share Sessions:</strong> Monitor</li>
-                </ul>
-              </li>
-              <li>On the <strong>Criteria</strong> tab, select <strong>Add Criteria</strong> → <strong>Applications</strong>.</li>
-              <li>In <strong>Application Segments</strong>, select both segments from Task 5.1: <code>PRA_RDP1_win Svr</code> and <code>PRA_SSH2_Log_Streaming_Connector_PC</code>.</li>
-              <li>Select <strong>Save</strong>.
+              <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Privileged Remote Access &gt; Consoles Policy</strong> and select <strong>Add</strong>.</li>
+              <li>Configure the console policy:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Name: <code>PRA_Console_Policy</code></li>
+                  <li>Under <strong>Console Configuration</strong>, configure the following values:
+                    <ul class="sub-steps">
+                      <li>Clipboard Copy: <strong>Enable</strong></li>
+                      <li>Record Session: <strong>Enable</strong></li>
+                      <li>Join Session: <strong>Enable</strong></li>
+                      <li>Share Session: <strong>Monitor</strong></li>
+                    </ul>
+                  </li>
+                  <li>On the <strong>Criteria</strong> tab, select <strong>Add Criteria</strong> and select <strong>Applications</strong>.</li>
+                  <li>In Application Segments, select all the application segments created in Task 5.1.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p97-img1.png" alt="Add Consoles Policy: Name 'PRA_Console_Policy', Clipboard Copy Enable, Record Sessions Enable, Share Sessions Monitor, Application Segments showing both PRA segments" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p113-img1.png" alt="Add Consoles Policy form with the name PRA_Console_Policy, the console configuration and both application segments in the criteria" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
+              <li>Select <strong>Save</strong>.</li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> <em>Share Sessions: Monitor</em> means an admin can view the session in real time (read-only) but cannot take control. <em>Join Sessions: Enable</em> with <em>Control</em> would allow the admin to interact with the session.</p>
+              <p><strong>Note:</strong> Share Sessions: Monitor means an admin can view the session in real time (read-only) but cannot take control.</p>
             </div>
           </div>
 
@@ -502,47 +523,56 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 5.7 -->
       <div class="task-collapsible open" id="task-5-7">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 5.7</span>
-          <span class="task-collapsible-title">Test and Verify PRA Sessions</span>
+          <span class="task-collapsible-title">Testing and Verifying</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">Now that you have created the Privileged Remote Access (PRA) components, test connectivity and verify the sessions in the admin portal.</p>
             <ol class="step-list">
-              <li><strong>Log out</strong> of Zscaler Client Connector on <strong>Corp: Client PC 1</strong>. PRA is clientless — ZCC must not be running to simulate a third-party vendor accessing from an unmanaged device.</li>
-              <li>On <strong>Corp: Client PC 1</strong>, sign in to the Experience Center at <code>console.zscaler.com</code>.</li>
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Access Methods &gt; Privileged Portals</strong>.</li>
-              <li>Locate <code>Privileged_Portal</code> and select <strong>Launch</strong> (the external link icon next to the portal URL).</li>
-              <li>If prompted, log in with your student credentials: <code class="d-username-student">student@&lt;Student FQDN&gt;</code> and your session password.</li>
-              <li>The portal opens showing <strong>My Consoles (2)</strong>:
-                <ul class="sub-steps">
-                  <li>A Windows icon tile labelled <strong>10.0.0.1</strong> (RDP)</li>
-                  <li>A terminal icon tile labelled <strong>10.0.0.20</strong> (SSH)</li>
-                </ul>
-              </li>
-              <li>Select the Windows VM tile <strong>(10.0.0.1)</strong>. An RDP session opens in the browser with the Windows Server desktop visible — credentials were injected automatically.</li>
-              <li>Verify the session in the admin portal:
-                <ul class="sub-steps">
-                  <li>Go to <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics</strong>.</li>
-                  <li>Navigate to <strong>Privileged Remote Access &gt; Live Sessions</strong>.</li>
-                  <li>Confirm the active RDP session shows: Policy=<code>PRA_Console_Policy</code>, Host=<code>10.0.0.1</code>, Console Type=RDP.</li>
-                </ul>
-              </li>
-              <li>Return to the portal and select the SSH tile <strong>(10.0.0.20)</strong>. A terminal session opens — you should be logged in as <code>admin</code> on the Log Streaming Connector VM.
+              <li><strong>Log out of Zscaler Client Connector</strong> on Corp Client PC 1. PRA is clientless, so ZCC must not be running — this simulates a third-party vendor on an unmanaged device.</li>
+              <li><strong>Launch the privileged portal.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Corp Client PC 1 VM, sign in to the Experience Center console at <code>console.zscaler.com</code>.</li>
+                  <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Access Methods &gt; Privileged Portals</strong>.</li>
+                  <li>Select <strong>Launch</strong> to open the portal.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p100-img1.png" alt="Browser-based RDP session to 10.0.0.1: Windows Server desktop visible inside the PRA portal with session toolbar at top" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p114-img1.png" alt="Privileged Portals list with the Launch icon next to the portal URL highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                  <li>If prompted, log in with your student tenant credentials (for example, <code>student@&lt;Student FQDN&gt;</code>) and your session password.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab5/lab5-p102-img1.png" alt="Browser-based SSH session to 10.0.0.20: terminal showing [admin@zpa-connector ~]$ prompt confirming successful credential injection" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab5/lab5-p115-img1.png" alt="Privileged portal showing My Consoles (2): 10.0.0.1 and 10.0.0.20" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Connect to the Windows VM.</strong> Select the Windows VM (<code>10.0.0.1</code>) in the privileged portal and log in to the Windows system. The credentials are injected automatically.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p116-img1.png" alt="RDP session to 10.0.0.1 open in the browser showing the Windows desktop" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-              <li>Verify the SSH session appears in <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics &gt; Privileged Remote Access &gt; Live Sessions</strong> (SSH=1).</li>
+              <li><strong>Verify the session details in the admin portal.</strong> Go to <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics</strong>, then go to <strong>Privileged Remote Access &gt; Live Sessions</strong> and view the active RDP session.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p117-img1.png" alt="Live Sessions showing one active RDP session with policy PRA_Console_Policy and console 10.0.0.1" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Connect to the Linux VM.</strong> In the privileged portal, select the Log Streaming Connector VM (<code>10.0.0.20</code>). After you log in, you should be signed in as <code>admin</code>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p118-img1.png" alt="SSH session to 10.0.0.20 open in the browser showing a terminal prompt" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Verify the SSH session.</strong> In the admin portal, go to <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics</strong>, then <strong>Privileged Remote Access &gt; Live Sessions</strong>, and verify that the active SSH session appears.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab5/lab5-p119-img1.png" alt="Live Sessions showing one active SSH session with console 10.0.0.20" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Success indicators:</strong> Both sessions open in the browser without a ZCC connection or VPN. The Live Sessions dashboard shows active RDP and SSH sessions. The vendor never typed a password — ZPA injected <code>administrator/Admin-123!</code> and <code>admin/zscaler</code> automatically.</p>
+              <p><strong>Note:</strong> Both sessions open in the browser without a ZCC connection or VPN. The vendor never typed a password — ZPA injected the stored credentials automatically.</p>
             </div>
           </div>
 
@@ -600,7 +630,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -612,7 +642,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -621,7 +651,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -630,17 +660,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 

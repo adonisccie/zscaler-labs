@@ -72,7 +72,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 6</div>
-        <p><strong>Scenario:</strong> You are a security engineer responsible for protecting internal web applications from common vulnerabilities such as SQL injection and cross-site scripting (XSS). You will configure Zscaler Private Access™ (ZPA) AppProtection to inspect traffic and enforce security controls for the Damn Vulnerable Web App (DVWA) — an intentionally insecure application used for security training.</p>
+        <p><strong>Scenario:</strong> You are a security engineer responsible for protecting internal web applications from common vulnerabilities such as SQL injection and cross-site scripting (XSS). You configure Zscaler Private Access™ (ZPA) AppProtection to inspect traffic and enforce security controls for the Damn Vulnerable Web App (DVWA).</p>
         <figure class="lab-hero">
           <img src="images/lab6-hero.png" alt="Lab 6 — ZPA AppProtection" loading="lazy">
         </figure>
@@ -87,49 +87,96 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-6-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 6.1</span>
-          <span class="task-collapsible-title">Create DVWA App Segment with AppProtection</span>
+          <span class="task-collapsible-title">Creating Application Segment</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">DVWA runs in a Docker container on the <strong>Corp: Docker Server</strong> (<code>10.0.0.2</code>), published on TCP port <code>8081</code>. Before creating the App Segment, you need to spin up the container and add a DNS A record on the Corp: Win Svr so the ZPA connector can resolve the app hostname.</p>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Step 1 — Spin Up the DVWA Docker Container</h4>
+            <p style="margin-bottom:12px;">In this task, you create the DVWA application segment, define the necessary access policy, and add the DNS entry that lets the App Connector resolve the DVWA hostname.</p>
             <ol class="step-list">
-              <li>Log in to the <strong>Corp: Docker Server</strong> (<code>10.0.0.2</code>).</li>
-              <li>Open a terminal and run:
-                <div style="margin:8px 0;"><code>docker run --rm -it -p 8081:80 vulnerables/web-dvwa:latest</code></div>
-              </li>
-              <li>Confirm the container starts and DVWA is listening — the <code>-p 8081:80</code> flag maps container port 80 to host port <code>8081</code>, so the app is reachable at <code>http://10.0.0.2:8081</code>.</li>
-            </ol>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 2 — Create the DVWA App Segment</h4>
-            <ol class="step-list">
-              <li>In the Experience Center, go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; App Segments</strong>.</li>
-              <li>Select <strong>Add Application Segment</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>DVWA</code></li>
-                  <li><strong>Applications:</strong><code>10.0.0.2:8081</code></li>
-                  <li><strong>Access Type:</strong> Check <strong>AppProtection</strong></li>
-    
-                </ul>
-              </li>
-              <li>Under <strong>Client Connector Access</strong>, configure Web Server ports (keep defaults for HTTP traffic).</li>
-              <li>Select <strong>Next</strong>, choose Segment Group <strong>CorpApps</strong>, select <strong>Next</strong>, choose Server Group <strong>CorpServers</strong>, select <strong>Next</strong>.</li>
-              <li>Review and select <strong>Save</strong>.
+              <li>On the <strong>Corp Client PC 1</strong>, open the Experience Center portal.</li>
+              <li>Go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+              <li>Select <strong>Add Application Segment</strong>.</li>
+              <li><strong>Configure the application segment.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Enter the following values:
+                    <ul class="sub-steps">
+                      <li>Name: <code>DVWA</code></li>
+                      <li>Applications: <code>dvwa-&lt;XYZ&gt;.patraining.safemarch.com</code> (XYZ is the last 3 digits of the tenant assigned to you. For example, if your tenant is ZS000205, the application name is <code>dvwa-205.patraining.safemarch.com</code>)</li>
+                      <li>Access Type: <strong>Browser Access</strong> and <strong>App Protection</strong></li>
+                    </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p106-img1a.png" alt="Add Application Segment form for DVWA: hostname dvwa-xxx.patraining.safemarch.com, Access Type showing Browser Access and AppProtection both checked" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab6/lab6-p121-img1.png" alt="Add Application Segment form with the name DVWA highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p122-img1.png" alt="Applications field with the DVWA domain and Browser Access and AppProtection access types selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                    <ul class="sub-steps">
+                      <li>Certificate Type: <strong>Managed</strong></li>
+                      <li>Under <strong>External URL</strong>: Domain Prefix <code>dvwa</code>; Domain Suffix: select any one from the drop-down</li>
+                      <li>Under <strong>Internal URL</strong>: Protocol <code>HTTP</code>; Port <code>80</code></li>
+                      <li>Under <strong>Client Connector Access</strong>: Default Port Ranges <strong>Web Server</strong></li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p124-img1.png" alt="External URL, Internal URL and Client Connector Access settings for DVWA" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                    Select <strong>Next</strong>.
+                  </li>
+                  <li>Select the segment group: Name <code>CorpApps</code>, Status <strong>Enabled</strong>. Select <strong>Next</strong>.</li>
+                  <li>Select the server group: Name <code>CorpServers</code>. Select <strong>Next</strong>.</li>
+                  <li>Review and save the configuration.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p125-img1.png" alt="Review step showing the DVWA segment, CorpApps segment group, CorpServers server group and OnPrem connector group" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Verify the settings and select <strong>Save</strong>.</li>
+              <li>After you save, in the Add Application Segment window, select <strong>Edit Policy</strong> to verify the addition. Alternatively, go to <strong>Policies &gt; Access Policy</strong>.</li>
+              <li><strong>Create the access policy rule.</strong> Select <strong>Add</strong> and configure the following:
+                <ul class="sub-steps">
+                  <li>Rule Name: <code>dvwa_allow_policy</code></li>
+                  <li>Rule Action: <strong>Allow Access</strong></li>
+                  <li>Criteria: select <strong>Applications</strong> and choose the <strong>DVWA</strong> application segment</li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p127-img1.png" alt="Access policy dvwa_allow_policy with Allow Access and the DVWA application segment" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                Select <strong>Save</strong>.
+              </li>
+              <li>In the <strong>Corp Win Svr 2025</strong> VM, open <strong>Server Manager</strong>, select <strong>Tools</strong> at the top-right corner, and select <strong>DNS</strong> to open the DNS Manager.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p128-img1.png" alt="Server Manager Tools menu with DNS highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-              <li>Create the Access Policy rule for DVWA. Navigate to <strong>Policies &gt; Access Policy</strong> and select <strong>Add</strong>:
-                <ul class="sub-steps">
-                  <li><strong>Rule Name:</strong> <code>dvwa_allow_policy</code></li>
-                  <li><strong>Rule Action:</strong> Allow Access</li>
-                  <li>Under <strong>Criteria</strong> → Applications, select the <code>DVWA</code> app segment</li>
-                </ul>
+              <li>In the left panel of DNS Manager, locate the entry for <code>host-1.patraining.safemarch.com</code>. Expand the forward lookup zone to find <code>patraining.safemarch.com</code>. Right-click the entry and select <strong>New Host (A or AAAA)</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p129-img1.png" alt="DNS Manager forward lookup zone context menu with New Host highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
               </li>
-              <li>Select <strong>Save</strong>.</li>
+              <li>In the <strong>New Host</strong> window, enter:
+                <ul class="sub-steps">
+                  <li>Name: <code>dvwa-XYZ</code> (XYZ is the last 3 digits of the tenant assigned to you)</li>
+                  <li>Fully Qualified Domain Name (FQDN): populated automatically from the name you provide</li>
+                  <li>IP address: <code>10.0.0.128</code></li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p130-img1.png" alt="New Host dialog with the dvwa name and IP address 10.0.0.128" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>Click <strong>Add Host</strong> to add the entry.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p131-img1.png" alt="DNS confirmation that the host record was successfully created" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>Verify that the entry was added successfully.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p132-img1.png" alt="DNS Manager list showing the new dvwa host record pointing to 10.0.0.128" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> The Access URL for DVWA will be <code>http://10.0.0.2:8081</code>. You will use this URL in Task 6.4.</p>
+              <p><strong>Note:</strong> The DVWA application runs in a Docker container (<code>10.0.0.128</code>), so you add a DNS entry that redirects the traffic to the container hosting DVWA. After you add the DNS entry on the Corp Win Svr 2025 VM, it can take 3–5 minutes for the change to take effect.</p>
             </div>
           </div>
 
@@ -158,45 +205,63 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 6.2 -->
       <div class="task-collapsible open" id="task-6-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 6.2</span>
-          <span class="task-collapsible-title">Create DVWA Protection Profile</span>
+          <span class="task-collapsible-title">Set Up AppProtection Profiles</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">A Protection Profile defines which control groups are active and at what enforcement level. You will add all available controls and set Override Actions to Allow (Report mode) — attacks are logged but not blocked.</p>
+            <p style="margin-bottom:12px;">In this task, you create a profile for reporting. A Protection Profile defines which control groups are active and at what enforcement level.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Cybersecurity &gt; Inline Security &gt; Private App Protection &gt; Protection Profiles</strong>.</li>
-              <li>Select <strong>Add Profile</strong>.</li>
-              <li><strong>Name:</strong> <code>DVWA_Protection_Profile</code></li>
-              <li>Add the following control groups by clicking <strong>+ Add Controls</strong> for each:
-                <ul class="sub-steps">
-                  <li><strong>OWASP CRS/4.8.0</strong> — select <strong>All</strong> controls (298 rules). These cover SQL injection, XSS, command injection, path traversal, and more.</li>
-                  <li><strong>ThreatLabZ Controls</strong> — select <strong>All</strong> controls (~200 rules). Zscaler's threat intelligence-based signatures.</li>
-                  <li><strong>WebSocket Controls</strong> — select <strong>All</strong> controls (11 rules).</li>
-                  <li><strong>API Controls</strong> — select <strong>All</strong> controls.</li>
-                  <li><strong>Active Directory Controls</strong> — select all 4 controls: KRB (Kerberos), SMB, LDAP.</li>
-                </ul>
-              </li>
-              <li>Set <strong>Predefined Paranoia Level: 3</strong>.</li>
-              <li>Configure <strong>Override Controls</strong> for each control group:
-                <ul class="sub-steps">
-                  <li><strong>Alternate Action:</strong> Override All Controls</li>
-                  <li><strong>Transaction:</strong> Allow (this puts all controls in Report mode — violations are logged but traffic passes)</li>
-                  <li>Apply this Override to: OWASP CRS, ThreatLabZ Controls, WebSocket Controls, API Controls, Active Directory Controls</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.
+              <li><strong>Create the reporting profile.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center console, go to <strong>Policies &gt; Cybersecurity &gt; Inline Security &gt; Private App Protection &gt; Protection Profiles</strong>.</li>
+                  <li>On the <strong>App Protection</strong> tab, select <strong>Add (+)</strong>.</li>
+                  <li>Configure the profile: Name <code>DVWA_Protection_Profile</code>; Description optional.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p118-img1.png" alt="Add AppProtection Profile wizard: Name 'DVWA_Protection_Profile' on the Profile Details tab, navigation showing Select Controls → Paranoia Level → Override Controls → Review" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab6/lab6-p134-img1.png" alt="Add AppProtection Profile form with the name DVWA_Protection_Profile" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                    Select <strong>Next</strong>.
+                  </li>
+                  <li>On the <strong>Controls</strong> tab, select <code>OWASP_CRS/4.8.0</code> from the OWASP Predefined Control drop-down, and select all the OWASP predefined controls.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p135-img1.png" alt="Controls tab with OWASP_CRS/4.8.0 selected and all OWASP predefined controls checked" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Similarly, on the <strong>ThreatLabZ Controls</strong>, <strong>WebSocket Controls</strong>, <strong>API Controls</strong>, and <strong>Active Directory Controls</strong> tabs, select all controls.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p136-img1.png" alt="ThreatLabZ Controls tab with all controls selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p137-img1.png" alt="WebSocket Controls tab with all controls selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p138-img1.png" alt="Active Directory Controls tab with all controls selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Next</strong>.</li>
+                  <li>Set the Predefined Paranoia Level to <code>3</code>, then select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p139-img1.png" alt="Paranoia Level and Execution Order step with the Paranoia Level set to 3" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Configure the <strong>Override Controls</strong>: set Alternate Action to <strong>Override All Controls</strong>, and set Transaction to <strong>Allow</strong> for the OWASP Predefined Controls, WebSocket Controls, ThreatLabZ Controls, API Controls, and Active Directory Controls.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p140-img1.png" alt="Override Controls step with Override All Controls selected and Transaction set to Allow for each control group" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Next</strong>, then <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p141-img1.png" alt="Review step with the Save button highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>What "Paranoia Level 3" means:</strong> At level 3, OWASP CRS activates rules with moderate confidence — good for detecting real attacks while keeping false-positive rates manageable. Level 1 is most lenient; level 4 is most aggressive and requires significant tuning before blocking.</p>
+              <p><strong>Note:</strong> Higher paranoia levels execute checks using a wide net of matches, which increases the potential for false positives. Lower paranoia levels execute checks using a precise set of matches, which results in fewer false positives.</p>
             </div>
           </div>
 
@@ -225,35 +290,38 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 6.3 -->
       <div class="task-collapsible open" id="task-6-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 6.3</span>
-          <span class="task-collapsible-title">Create DVWA AppProtection Policy</span>
+          <span class="task-collapsible-title">Set Up AppProtection Policies</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">The Protection Policy links the Protection Profile to the App Segment. Without this policy, AppProtection is defined but never applied to DVWA traffic.</p>
+            <p style="margin-bottom:12px;">In this task, you apply the protection profile to the DVWA application segment and enable inspection.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Cybersecurity &gt; Inline Security &gt; Private App Protection &gt; Protection Policies</strong>.</li>
-              <li>Select <strong>Add Policy</strong>.</li>
-              <li>Configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>DVWA_AppProtection_policy</code></li>
-                  <li><strong>Rule Action:</strong> Inspect</li>
-                  <li><strong>AppProtection Profile:</strong> <code>DVWA_Protection_Profile</code></li>
-                </ul>
-              </li>
-              <li>Under <strong>Criteria</strong>, add the <code>DVWA</code> Application Segment.</li>
-              <li>Select <strong>Save</strong>.
+              <li>In the Experience Center console, go to <strong>Policies &gt; Cybersecurity &gt; Inline Security &gt; Protection Policies &gt; AppProtection Policy</strong>.
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add (+)</strong>.</li>
+                  <li>Configure the policy:
+                    <ul class="sub-steps">
+                      <li>Name: <code>DVWA_AppProtection_policy</code></li>
+                      <li>Description: optional</li>
+                      <li>Rule Action: <strong>Inspect</strong></li>
+                      <li>AppProtection Profile: <code>DVWA_Protection_Profile</code> (created in Task 6.2)</li>
+                    </ul>
+                  </li>
+                  <li>Select <strong>Add Criteria</strong>, select <strong>Applications</strong>, and choose the <strong>DVWA</strong> app segment.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p127-img1.png" alt="Add AppProtection Rule: Name 'DVWA_AppProtection_policy', Rule Action Inspect, AppProtection Profile 'DVWA_Protection_Profile', Application Segments: DVWA" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab6/lab6-p143-img1.png" alt="Add AppProtection Rule form with the policy name, the DVWA_Protection_Profile and the DVWA application segment" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                  <li>Select <strong>Save</strong>.</li>
+                </ol>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Rule Action: Inspect</strong> means ZPA runs traffic through the Protection Profile rules. The Profile's Override Controls (Allow) determine whether matching requests are blocked or merely logged. If you set Rule Action to <em>Bypass</em>, AppProtection would be skipped entirely for this traffic.</p>
+              <p><strong>Note:</strong> Rule Action: Inspect means ZPA runs traffic through the Protection Profile. The profile's Override Controls (Allow) determine whether matching requests are blocked or merely logged. If you set Rule Action to Bypass, AppProtection is skipped entirely for this traffic.</p>
             </div>
           </div>
 
@@ -282,81 +350,82 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 6.4 -->
       <div class="task-collapsible open" id="task-6-4">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 6.4</span>
-          <span class="task-collapsible-title">Test DVWA — SQL Injection, XSS and Verify Violations</span>
+          <span class="task-collapsible-title">Testing &amp; Verification</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Step 1 — Access DVWA via Browser Access</h4>
+            <p style="margin-bottom:12px;">In this task, you perform sample attacks to verify logging, and then update the protection profile to block those attacks.</p>
             <ol class="step-list">
-              <li>Make sure you have login Zscaler Client Connector on <strong>Corp: Client PC 1</strong> to simulate the DVWAsession.</li>
-              <li>Open Chrome and navigate to the DVWA Browser Access URL. You can find this URL in the App Segment details — it resembles <code>http://10.0.0.2:8081</code>.</li>
-              <li>Log in to DVWA using:
-                <ul class="sub-steps">
-                  <li><strong>Username:</strong> <code>admin</code></li>
-                  <li><strong>Password:</strong> <code>password</code></li>
-                </ul>
-              </li>
-              <li>On the DVWA home page, select <strong>Create / Reset Database</strong> to initialise the database. The page refreshes and you are prompted to log in again.</li>
-              <li>Log in again with <code>admin</code> / <code>password</code>.</li>
-            </ol>
-
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 2 — SQL Injection Test</h4>
-            <ol class="step-list">
-              <li>In the DVWA left menu, select <strong>SQL Injection</strong>.</li>
-              <li>In the <em>User ID</em> field, enter the following payload and select <strong>Submit</strong>:
-                <div style="margin:8px 0;"><code>1' or '1'='1</code></div>
-              </li>
-              <li>DVWA displays multiple user records — the query was successfully injected. Because AppProtection is in Report (Allow) mode, the request passes through and ZPA logs the violation.
+              <li><strong>Access DVWA through Browser Access.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Log out of Zscaler Client Connector (ZCC).</li>
+                  <li>On Corp Client PC 1, open a browser and sign in to the Experience Center tenant at <code>www.console.zscaler.com</code> by using the credentials provided to you.</li>
+                  <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Access Methods &gt; Browser Access</strong>.</li>
+                  <li>Copy the <strong>External Domain</strong> for the application (internal domain <code>dvwa.patraining.safemarch.com</code>).
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p131-img1.png" alt="DVWA SQL Injection page showing payload '1' or '1'='1' entered in the User ID field — attack passes through in Report mode" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab6/lab6-p144-img1.png" alt="Browser Access list with the DVWA internal domain and the External Domain copy icon highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Open a new browser window, paste the External Domain, and authenticate by using your lab access credentials.</li>
+                  <li>Sign in to DVWA with Username <code>admin</code> and Password <code>password</code>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p145-img1.png" alt="DVWA login page with the username and password fields highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Initialize the DVWA database.</strong> Scroll down and select <strong>Create / Reset Database</strong>. After the reset completes, sign in to DVWA again.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p146-img1.png" alt="DVWA Database Setup page with Create / Reset Database highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-            </ol>
-
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 3 — Stored XSS Test</h4>
-            <ol class="step-list">
-              <li>In the DVWA left menu, select <strong>XSS (Stored)</strong>.</li>
-              <li>In the <em>Name</em> field, enter: <code>JSAttack</code></li>
-              <li>In the <em>Message</em> field, enter:
-                <div style="margin:8px 0;"><code>&lt;script&gt;alert("You've been HACKED!")&lt;/script&gt;</code></div>
-              </li>
-              <li>Select <strong>Sign Guestbook</strong>. The script tag is stored. When the page reloads, you may see the alert pop up (Report mode allows it through). ZPA logs the XSS violation.</li>
-            </ol>
-
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 4 — Verify Violations in Admin Portal</h4>
-            <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics</strong>.</li>
-              <li>Set <strong>Log Type:</strong> <code>AppProtection</code>.</li>
-              <li>Confirm that <strong>Security Profile Violations</strong> appear — you should see entries for the SQL injection and XSS payloads, showing the matched rule name, severity, and that the transaction was Allowed (not Blocked).
+              <li><strong>Perform a SQL injection test</strong> (expected: allowed and logged). In DVWA, go to <strong>SQL Injection</strong>, enter <code>1' or '1'='1</code> in the User ID field, and select <strong>Submit</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p133-img1.png" alt="AppProtection Diagnostics log: Log Type AppProtection, showing 31 Security Profile Violations across 51 transactions, listing matched OWASP rules for SQL injection and command injection" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 5 — Switch to Block Mode</h4>
-            <ol class="step-list">
-              <li>Return to <strong>Policies &gt; Cybersecurity &gt; Inline Security &gt; Private App Protection &gt; Protection Profiles</strong>.</li>
-              <li>Edit <code>DVWA_Protection_Profile</code>.</li>
-              <li>Update the Override Controls for each control group:
-                <ul class="sub-steps">
-                  <li>Change <strong>Transaction:</strong> from <em>Allow</em> to <strong>Block</strong></li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
-              <li>Retry the SQL injection payload in DVWA — the request should now be blocked with an error page. Verify the block event appears in the AppProtection diagnostics logs.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6/lab6-p136-img1.png" alt="DVWA page showing 'Result = 403 FORBIDDEN' — the SQL injection payload is blocked by AppProtection in Block mode" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab6/lab6-p147-img1.png" alt="DVWA SQL Injection page with the payload entered in the User ID field" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Verify:</strong> In Block mode, the SQL injection payload <code>1' or '1'='1</code> should return a ZPA block page rather than database records. The AppProtection log entry will show Transaction = <em>Blocked</em>.</p>
+              <p><strong>Note:</strong> The attack is successful because the policy is set to Allow (Report mode).</p>
+            </div>
+            <ol class="step-list" start="4">
+              <li><strong>Perform an XSS (Stored) test</strong> (expected: allowed and logged). In DVWA, select <strong>XSS (Stored)</strong> and enter Name <code>JSAttack</code> and Message <code>&lt;script&gt;alert("You've been HACKED!")&lt;/script&gt;</code>, then select <strong>Sign Guestbook</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p148-img1.png" alt="DVWA Stored XSS page with the JSAttack name and script message entered" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Verify violations in Private Application Diagnostics.</strong> In the Experience Center console, go to <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics</strong>. Set the Log Type to <strong>AppProtection</strong>, then scroll to <strong>Security Profile Violations</strong> to view the logged events. Confirm that the Protection Profile allowed the attack to reach the application through ZPA.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p149-img1.png" alt="Diagnostics with Log Type AppProtection and the Security Profile Violations count highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p150-img1.png" alt="Violation detail showing the control action Allow for the SQL injection" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Update the protection profile to block, then re-test.</strong> Go to <strong>Policies &gt; Cybersecurity &gt; Inline Security &gt; Protection Profiles</strong> and edit <code>DVWA_Protection_Profile</code>. Set the control action to <strong>Block</strong> for each control group.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p151-img1.png" alt="Edit AppProtection Profile with Transaction set to Block for each control group" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>Sign in to DVWA again with Username <code>admin</code> and Password <code>password</code>.</li>
+              <li>Attempt the SQL injection test again.</li>
+              <li>Confirm that the application access is now blocked.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p152-img1.png" alt="Browser showing Result = 403 FORBIDDEN" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Review the logs again.</strong> Return to <strong>Logs &gt; Insights &gt; Private Applications &gt; Diagnostics</strong>, set the Log Type to <strong>AppProtection</strong>, and scroll to <strong>Security Profile Violations</strong> to view the logged events.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab6/lab6-p153-img1.png" alt="Diagnostics showing the control action Block for the new violations" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+            </ol>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Earlier, the control action was set to Allow, so attack traffic was permitted through ZPA and logged. After you change the control action to Block, the attacks are blocked and the corresponding events appear in diagnostics.</p>
             </div>
           </div>
 
@@ -414,7 +483,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -426,7 +495,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -435,7 +504,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -444,17 +513,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 

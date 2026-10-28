@@ -72,7 +72,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 4</div>
-        <p><strong>Scenario:</strong> Your organisation wants to allow access to social networking sites (X, Instagram, Facebook, LinkedIn) but prevent data exfiltration and malware download by rendering them in a remote isolated browser. You configure a Browser Isolation Profile with watermarking, then enforce it via a URL Filtering policy rule.</p>
+        <p><strong>Scenario:</strong> Your organization needs to let users access social networking sites while reducing risk from downloads, uploads, and data exfiltration. You configure Zero Trust Browser (Browser Isolation) so sites are rendered in an isolated session and users can view content without being able to copy, paste, or transfer files. You also validate how isolation behaves when applied through URL Filtering and Cloud App Control policies.</p>
         <figure class="lab-hero">
           <img src="images/lab4-hero.png" alt="Lab 4 — ZIA Browser Isolation" loading="lazy">
         </figure>
@@ -86,35 +86,61 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-4-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 4.1</span>
-          <span class="task-collapsible-title">Create a Browser Isolation Profile</span>
+          <span class="task-collapsible-title">Build Isolation Profile</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you build an Isolation Profile that defines how users interact with an isolation session. The profile lets users view and interact with content, but prevents them from downloading, uploading, copying, or pasting content.</p>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Policies &gt; Internet Access &gt; Browser Isolation &gt; Isolation Profiles</strong>.</li>
-              <li>Select <strong>+ Add Isolation Profile</strong>.</li>
-              <li>Configure the profile with the following settings:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>isolate_profile-social_networking-internet</code></li>
-                  <li><strong>Status:</strong> Enabled</li>
-                  <li><strong>Preserve Original URL:</strong> Enabled</li>
-                  <li><strong>Watermark:</strong> Enabled</li>
-                  <li><strong>Watermark Content:</strong> Date &amp; Timestamp</li>
-                </ul>
+              <li><strong>Go to the Browser Isolation Threat profiles page.</strong> In the Experience Center portal, go to <strong>Policies &gt; Common Configuration &gt; Resources &gt; Browser Isolation Threat</strong>.</li>
+              <li><strong>Add an isolation profile.</strong> Select <strong>Add Isolation Profile</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p74-img1.png" alt="Browser Isolation Threat page with Isolation Profiles and Add Isolation Profile highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
               </li>
-              <li>Leave all other settings at their defaults and select <strong>Save</strong>.
+              <li><strong>Configure the profile under General.</strong>
+                <ul class="sub-steps">
+                  <li>Name: <code>isolate_profile-social_networking-internet</code></li>
+                  <li>Description: <code>Isolate Social Networking Sites to view only</code></li>
+                  <li>Leave all other settings at their default values.</li>
+                </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p59-img1.png" alt="Add Isolation Profile form showing name 'isolate_profile-social_networking-internet' and Turbo Mode enabled" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab4/lab4-p75-img1.png" alt="General Information step with the profile name and description highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                Select <strong>Next</strong>.
+              </li>
+              <li><strong>Review Company Settings.</strong> Leave all settings at their default values, then select <strong>Next</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p64-img1.png" alt="Isolation Profile watermarking settings: Enable Watermarking on, Date &amp; Timestamp selected, Save button highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab4/lab4-p76-img1.png" alt="Company Settings step with default values and Next highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+              </li>
+              <li><strong>Configure Security.</strong> Enable <strong>Original URL</strong>. (This configuration restricts users to the original URL by disabling features such as copy, paste, and file transfer.) Leave all other settings at their default values, then select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p77-img1.png" alt="Security step with Enable Original URL set to Enabled" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Configure Regions.</strong> Under <strong>Regions</strong>, select Isolation Regions — any two regions closer to the user — then select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p78-img1.png" alt="Regions step with two isolation regions selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Configure Isolation Experience and save.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Under <strong>Isolation Experience</strong>, enable <strong>Watermarking</strong>, and then select your preferred <strong>Date &amp; Timestamp</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p79-img1.png" alt="Isolation Experience step with Watermarking and Date and Timestamp enabled" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Leave all other settings at their default values, then select <strong>Next</strong>.</li>
+                  <li>Review the isolation profile and select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p80-img1.png" alt="Review step summarizing the isolation profile with Save highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
               </li>
             </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> The watermark overlays a semi-transparent timestamp on every rendered page, making screenshots or photos of the screen attributable to a specific session. This deters exfiltration via screen capture.</p>
-            </div>
           </div>
 
           <div class="section-qa" data-section="t4-1">
@@ -142,40 +168,74 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 4.2 -->
       <div class="task-collapsible open" id="task-4-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 4.2</span>
-          <span class="task-collapsible-title">Create a URL Filtering Rule to Enforce Isolation</span>
+          <span class="task-collapsible-title">Implement Isolation Policy</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you add a URL Filtering rule that directs users to Browser Isolation when they browse to a set of URL categories, so you can test the end-user experience.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Internet Access &gt; URL &amp; Cloud App Control &gt; URL Filtering</strong>.</li>
-              <li>Select <strong>+ Add Rule</strong>.</li>
-              <li>Configure the rule:
-                <ul class="sub-steps">
-                  <li><strong>Rule Name:</strong> <code>isolate-outbound-socialsite</code></li>
-                  <li><strong>Rule Order:</strong> 1 (drag to top)</li>
-                  <li><strong>Status:</strong> Enabled</li>
-                  <li><strong>URL Categories:</strong> Social Networking</li>
-                  <li><strong>Action:</strong> Isolate</li>
-                  <li><strong>Isolation Profile:</strong> <code>isolate_profile-social_networking-internet</code></li>
-                </ul>
+              <li>In the portal, go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; URL Control &gt; URL Filtering</strong>. On the URL Filtering Policy tab, select <strong>Add URL Filtering Rule</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p81-img1.png" alt="URL Filtering Policy page with Add URL Filtering Rule highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
               </li>
-              <li>Select <strong>Save</strong> and <strong>Activate</strong>.
+              <li>Configure the URL Filtering rule by setting the following values:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Rule Order: <code>1</code></li>
+                  <li>Rule Name: <code>isolate-outbound-socialsite</code></li>
+                  <li>URL Categories: <strong>Social Networking</strong>, <strong>Social Networking Adult</strong>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p66-img1.png" alt="Add URL Filtering Rule form: Rule Order 1, Rule Name 'isolate-outbound-socialsite', URL Categories: Social Networking" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab4/lab4-p82-img1.png" alt="Add URL Filtering Rule form with Rule Order 1, the rule name and the Social Networking URL categories highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Under <strong>Criteria</strong>, set:
+                    <ul class="sub-steps">
+                      <li>Protocols: <strong>HTTP</strong>, <strong>HTTPS</strong></li>
+                      <li>User Agent: <strong>Chrome</strong>, <strong>Firefox</strong>, <strong>Microsoft Edge</strong>, <strong>Microsoft Internet Explorer</strong>, <strong>Safari</strong></li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p83-img1.png" alt="Criteria with the HTTP and HTTPS protocols and the five user agents selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Under <strong>Action</strong>, set:
+                    <ul class="sub-steps">
+                      <li>Web Traffic: <strong>Isolate</strong></li>
+                      <li>Isolation Profile: <code>isolate_profile-social_networking-internet</code></li>
+                    </ul>
+                    Select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p84-img1.png" alt="Action section with Web Traffic set to Isolate, the isolation profile selected and Save highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Activate the changes.</strong>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p84-img2.png" alt="Activation panel with the Activate button highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li><strong>Test isolation for social networking sites.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open your Zscaler Client Connector and verify that you are logged in to it.</li>
+                  <li>Open each of the following sites and confirm they open in isolation: <code>x.com</code>, <code>instagram.com</code>, <code>linkedin.com</code>, <code>facebook.com</code></li>
+                  <li>Verify that each site opens in an isolated session. (Open Incognito Mode for it.) If you cannot see the watermarks, you can check the changed isolation URL instead.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p85-img1.png" alt="LinkedIn open in an isolated session with the watermark and an isolation.zscaler.com address" onclick="openLightbox(this.src,this.alt)">
                 </div>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p68-img1.png" alt="URL Filtering Rule action section: Web Traffic set to Isolate, Isolation Profile 'isolate_profile-social_networking-internet' selected" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab4/lab4-p85-img2.png" alt="Instagram open in an isolated session" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p85-img3.png" alt="X open in an isolated session" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
               </li>
             </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> Rule Order 1 ensures this rule is evaluated before any existing Allow rules for social sites. If an Allow rule had a lower order number, it would match first and the Isolate rule would never fire.</p>
-            </div>
           </div>
 
           <div class="section-qa" data-section="t4-2">
@@ -203,40 +263,68 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 4.3 -->
       <div class="task-collapsible open" id="task-4-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 4.3</span>
-          <span class="task-collapsible-title">Test Browser Isolation on Social Networking Sites</span>
+          <span class="task-collapsible-title">Add Cloud App Isolate Control Policies</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you create a Cloud App Control policy rule to allow LinkedIn while URL Filtering continues to isolate other social networking sites. Then you activate the changes and verify that <code>linkedin.com</code> is allowed (not isolated) and that other social networking sites still open in isolation.</p>
             <ol class="step-list">
-              <li>On the Linux Client VM, open <strong>Chrome</strong> (ensure ZCC is running and connected).</li>
-              <li>Navigate to <code>https://x.com</code> (formerly Twitter).</li>
-              <li>Confirm that:
-                <ul class="sub-steps">
-                  <li>The page loads (not blocked).</li>
-                  <li>A <strong>watermark with date and timestamp</strong> is overlaid on the page.</li>
-                  <li>The address bar shows <code>x.com</code> (Preserve Original URL is working).</li>
-                </ul>
-              </li>
-              <li>Repeat the test for:
-                <ul class="sub-steps">
-                  <li><code>https://www.instagram.com</code></li>
-                  <li><code>https://www.facebook.com</code></li>
-                </ul>
-              </li>
-              <li>Optionally test <code>https://www.linkedin.com</code> — if a SaaS App Control policy allows LinkedIn without isolation, it should open normally (no watermark). If it is also categorised as Social Networking, it will be isolated.</li>
-              <li>In the Experience Center, check <strong>Analytics &gt; Insights</strong> to verify Isolation sessions appear in the activity log.
+              <li><strong>Go to the SaaS Application Control policies page.</strong> In the portal, go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Cloud App Control</strong>.</li>
+              <li><strong>Add a Social Networking policy rule.</strong> Select the <strong>Add</strong> drop-down and select <strong>Social Networking</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p73-img1.png" alt="x.com loaded inside Zscaler Browser Isolation with date/timestamp watermark overlaid diagonally across the page" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab4/lab4-p86-img1.png" alt="Cloud App Control Policy page with the Add drop-down open and Social Networking highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+              </li>
+              <li><strong>Configure the Cloud App Control rule.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Enter the following settings:
+                    <ul class="sub-steps">
+                      <li>Rule Order: <code>1</code></li>
+                      <li>Rule Name: <code>allow-outbound-linkedin-any</code></li>
+                      <li>Cloud Application: <strong>LinkedIn</strong></li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p87-img1.png" alt="Add Social Networking Rule form with Rule Order 1, the rule name and the LinkedIn cloud application" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Under <strong>Action</strong>, set:
+                    <ul class="sub-steps">
+                      <li>Viewing: <strong>Allow</strong></li>
+                      <li>Description: <code>Not isolating the LinkedIn Social Networking Site</code></li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p88-img1.png" alt="Action section with Viewing set to Allow, the description entered and Save highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Save</strong>.</li>
+                </ol>
+              </li>
+              <li><strong>Activate the changes.</strong></li>
+              <li><strong>Verify the behavior.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open <code>linkedin.com</code> and confirm it is allowed (not isolated).
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p89-img3.png" alt="linkedin.com opened directly with a normal address bar and no isolation watermark" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Open other social networking sites and confirm they still open in isolation.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p89-img1.png" alt="X still opening in an isolated session" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p89-img2.png" alt="Instagram still opening in an isolated session" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Confirm that <code>linkedin.com</code> is not isolated, and that the other social networking sites are isolated.</li>
+                </ol>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Verify:</strong> The watermark and isolation chrome (Zscaler border or toolbar) confirm that content is being rendered in the remote container. Right-clicking the page should show limited or no standard context menu options — another sign of isolation.</p>
+              <p><strong>Note:</strong> Cloud App Control policies take priority over URL Filtering policies, so the LinkedIn rule is matched first and LinkedIn bypasses the Isolate rule. The other Social Networking sites have no specific Cloud App Control rule and fall through to the Isolate URL Filtering rule.</p>
             </div>
           </div>
 
@@ -258,78 +346,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
                   <textarea class="section-qa-textarea" id="sn-t4-3" placeholder="Key takeaways from this section…"></textarea>
                   <button class="section-qa-save" onclick="saveSectionN('t4-3',this)">Save</button>
                   <div class="section-qa-list" id="sn-list-t4-3"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Task 4.4 -->
-      <div class="task-collapsible open" id="task-4-4">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 4.4</span>
-          <span class="task-collapsible-title">Exempt LinkedIn via SaaS App Control Policy</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">The URL Filtering "Isolate" rule applies to the entire Social Networking category — this includes LinkedIn. In this task you create a SaaS App Control policy that specifically allows LinkedIn with no isolation, overriding the URL Filtering rule for that single app.</p>
-            <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Policies</strong>.</li>
-              <li>Select the <strong>Add</strong> drop-down and choose <strong>Social Networking</strong>.</li>
-              <li>Configure the Cloud App Control rule:
-                <ul class="sub-steps">
-                  <li><strong>Rule Order:</strong> 1</li>
-                  <li><strong>Rule Name:</strong> <code>allow-outbound-linkedin-any</code></li>
-                  <li><strong>Cloud Application:</strong> LinkedIn</li>
-                </ul>
-              </li>
-              <li>Under <strong>Action</strong>, set:
-                <ul class="sub-steps">
-                  <li><strong>Viewing:</strong> Allow</li>
-                  <li><strong>Description:</strong> <code>Not isolating the LinkedIn Social Networking site</code></li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
-              <li>Select <strong>Activate</strong> to push the policy change.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p71-img1.png" alt="Add Social Networking Rule form: Rule Order 1, Rule Name 'allow-outbound-linkedin-any', Cloud Applications: LinkedIn" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p72-img1.png" alt="SaaS App Control rule action: Viewing set to Allow, description 'Not Isolating the LinkedIn Social Networking site'" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>Verify the behaviour:
-                <ul class="sub-steps">
-                  <li>Open <code>linkedin.com</code> — it should load normally with <strong>no isolation watermark</strong> (direct access).</li>
-                  <li>Open <code>x.com</code> and <code>instagram.com</code> — both should still open in isolation with the watermark visible.</li>
-                </ul>
-              </li>
-            </ol>
-            <div class="callout callout-note">
-              <p><strong>Why this works:</strong> SaaS App Control policies are evaluated before the URL Filtering "Isolate" rule. When ZIA matches linkedin.com to the <code>allow-outbound-linkedin-any</code> Cloud App Control rule (Action: Allow), it does not proceed to the Isolate URL Filtering rule for that specific app. Other Social Networking sites that lack a specific Cloud App Control rule fall through to the Isolate rule.</p>
-            </div>
-          </div>
-
-          <div class="section-qa" data-section="t4-4">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 4.4</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t4-4" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t4-4',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t4-4"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t4-4" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t4-4',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t4-4"></div>
                 </div>
               </div>
             </div>
@@ -366,7 +382,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -378,7 +394,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -387,7 +403,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -396,17 +412,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 
@@ -498,7 +505,7 @@ function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
 function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
 function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
-var SECTION_IDS=['t4-1','t4-2','t4-3','t4-4'];
+var SECTION_IDS=['t4-1','t4-2','t4-3'];
 function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
 function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
 function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}

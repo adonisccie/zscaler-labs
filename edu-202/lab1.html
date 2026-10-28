@@ -35,7 +35,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   </div>
   <h1>Environment <em>Setup</em></h1>
   <div class="motivation-banner">
-    <p>Before any configuration can begin, you need your virtual lab environment running and your admin portal accessible. This lab gets you oriented in Skytap and signed into the Zscaler Experience Center — the launchpad for everything that follows.</p>
+    <p>Before any configuration can begin, you need your virtual lab environment running and your admin portal accessible. This lab gets you oriented in CloudShare and signed into the Zscaler Experience Center — the launchpad for everything that follows.</p>
   </div>
 </header>
 
@@ -72,38 +72,81 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 1</div>
-        <p><strong>Scenario:</strong> You are preparing to configure Zscaler services for your organisation. Before diving into policy configuration, you must verify your Skytap virtual lab environment is running and confirm you can sign into the Zscaler Experience Center console.</p>
+        <p><strong>Scenario:</strong> You are preparing to configure Zscaler services for your organisation. Before diving into policy configuration, you connect to CloudShare, start all of your virtual machines (VMs), and become familiar with the sign-in and clipboard copy/paste features. You then sign into the Zscaler Experience Center console.</p>
         <figure class="lab-hero">
           <img src="images/lab1-hero.png" alt="Lab 1 — Environment Setup" loading="lazy">
         </figure>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
-          <div class="lab-meta-item"><strong>Environment:</strong> Skytap + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> CloudShare + Zscaler Experience Center</div>
         </div>
       </div>
 
       <div class="task-collapsible open" id="task-1-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 1.1</span>
-          <span class="task-collapsible-title">Start the Skytap Lab Environment</span>
+          <span class="task-collapsible-title">Test Your Lab Access and Start Your Environment</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
             <ol class="step-list">
-              <li>Using the <strong>Skytap access URL</strong> from your Lab Access Instructions, open the Skytap environment in your browser.</li>
-              <li>In the Skytap environment view, select <strong>all VMs</strong> in the pod.</li>
-              <li>Click the <strong>Play</strong> button to start all virtual machines simultaneously.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p14-img1.png" alt="Skytap pod — all 7 VMs selected with Play button highlighted" loading="lazy">
-                  <div class="screenshot-caption">Skytap pod — check the top-level checkbox to select all VMs, then click Play. Corp: Client PC 1, Docker Server, Log Streaming Connector and the remaining VMs will all start together.</div>
+              <li><strong>Locate the CloudShare lab URL.</strong> Your unique CloudShare lab URL and passphrase are displayed on the classroom screen at the start of the session. Note these carefully — you need them to access your lab environment. (Example: <code>https://use.cloudshare.com/…</code>)</li>
+              <li><strong>Access the Lab Login Page.</strong> Open a web browser and navigate to the CloudShare lab URL displayed on the classroom screen.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1/lab1-p14-img1.png" alt="CloudShare lab login page with email and passphrase fields" loading="lazy">
+                  <div class="screenshot-caption">CloudShare login page — enter the email address and passphrase from your invitation email.</div>
                 </div>
               </li>
-              <li>Wait for all VMs to reach <strong>Running</strong> state before proceeding.</li>
+              <li><strong>Enter your credentials.</strong> On the login page, enter the email address and passphrase provided in your invitation email.</li>
+              <li><strong>Review the Lab Overview.</strong> After you sign in, you are taken to the lab environment dashboard. The screen displayed corresponds to the lab you have been assigned.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p16-img1.png" alt="CloudShare lab environment Overview tab" loading="lazy">
+                  <div class="screenshot-caption">Overview tab of your CloudShare lab environment.</div>
+                </div>
+              </li>
+              <li><strong>Navigate to the VM List.</strong> In the <strong>Overview</strong> tab, click <strong>Go to My VM List</strong> to open the Virtual Machines (VM) List tab. This tab displays all virtual machines assigned to your lab session.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p17-img1.png" alt="Go to my VM List button highlighted on the Overview tab" loading="lazy">
+                  <div class="screenshot-caption">Select <strong>Go to my VM List</strong>.</div>
+                </div>
+              </li>
+              <li><strong>Run the virtual machine.</strong> In the VM List tab, click the <strong>Run</strong> button next to the virtual machine name to start the VM.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p18-img1.png" alt="VM List tab showing 6 virtual machines with the Run button highlighted" loading="lazy">
+                  <div class="screenshot-caption">VM List — the environment contains 6 virtual machines. Click Run next to a VM to start it.</div>
+                </div>
+              </li>
+              <li><strong>Verify the VM is running.</strong> Once started, the virtual machine's tab displays its active running state, confirming that the environment is ready for use.
+                <div class="screenshot-embed narrow">
+                  <img src="screenshots/lab1/lab1-p19-img1.png" alt="Corp Client PC 1 tab showing the Windows sign-in screen" loading="lazy">
+                  <div class="screenshot-caption">Corp Client PC 1 — the VM tab opens on the Windows sign-in screen once the VM is running.</div>
+                </div>
+              </li>
+              <li><strong>Use the clipboard feature in the lab interface.</strong> To copy text from your host or this lab guide into the VM:
+                <ol class="sub-steps" style="list-style:lower-roman;">
+                  <li>In the left panel, open <strong>Actions</strong> and choose <strong>Send Text</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p20-img1.png" alt="Actions menu open with Send Text highlighted" loading="lazy">
+                  <div class="screenshot-caption">Actions menu — choose Send Text.</div>
+                </div>
+                  </li>
+                  <li>Paste the text into the text box and click <strong>Send</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p21-img1.png" alt="Send Text dialog with the Send button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Send Text dialog — paste your text and click Send.</div>
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Open the Lab Guide.</strong> Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. The guide opens in a new browser tab and provides detailed instructions for completing the lab exercises.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p22-img1.png" alt="Lab Guide tab highlighted on the Overview page" loading="lazy">
+                  <div class="screenshot-caption">Lab Guide tab.</div>
+                </div>
+              </li>
+              <li><strong>Find your credentials.</strong> To access the Zscaler tenant and Solutions Demo Center (SDC) credentials, click the <strong>Credentials</strong> tab in the left panel. View the Zscaler tenant and SDC credentials to use in the lab.</li>
             </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> Starting all VMs together ensures App Connectors are online before you configure ZPA objects in later labs.</p>
-            </div>
           </div>
 
           <div class="section-qa" data-section="t1-1">
@@ -139,44 +182,67 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you sign in to <strong>Corp Client PC 1</strong> and authenticate to the Experience Center console (<code>console.zscaler.com</code>).</p>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Throughout this lab guide, <code>&lt;Student FQDN&gt;</code> represents the domain assigned to your pod. For example, for Student ID <code>zs000834</code> with fully qualified domain name (FQDN) <code>zs000834.labtenant.com</code>, <code>student@&lt;Student FQDN&gt;</code> becomes <code>student@zs000834.labtenant.com</code>.</p>
+            </div>
             <ol class="step-list">
-              <li>From the Skytap portal, open <strong>Corp: Client PC 1</strong> in a browser window. Click the <strong>Keys icon</strong> in the Skytap toolbar and select <strong>Insert Credentials</strong> to sign into Windows automatically.
+              <li><strong>Log in to Corp Client PC 1</strong> as the local Student user:
+                <ol class="sub-steps" style="list-style:lower-roman;">
+                  <li>Launch <strong>Corp Client PC 1</strong> from the CloudShare portal.</li>
+                  <li>Open <strong>Actions</strong> and click <strong>Send Password</strong>.
                 <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p17-img1.png" alt="Corp: Client PC 1 Windows login screen inside Skytap VM window" loading="lazy">
-                  <div class="screenshot-caption">Corp: Client PC 1 — the Windows VM opens in a browser tab. Use the Skytap toolbar to insert credentials.</div>
+                  <img src="screenshots/lab1/lab1-p26-img1.png" alt="Actions menu with Send Password highlighted on the Corp Client PC 1 sign-in screen" loading="lazy">
+                  <div class="screenshot-caption">Actions &gt; Send Password signs the student user into Windows.</div>
                 </div>
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p15-img1.png" alt="Skytap toolbar Keys icon showing student username and password" loading="lazy">
-                  <div class="screenshot-caption">Keys icon (padlock) in the Skytap toolbar — click the insert arrow next to <strong>student</strong> to auto-fill the Windows login.</div>
-                </div>
+                  </li>
+                </ol>
               </li>
-              <li>Once on the Client PC desktop, open a browser and navigate to <code>console.zscaler.com</code>.</li>
-              <li>Enter your Student Admin credentials:
+              <li>In a browser window, open <code>www.console.zscaler.com</code>.</li>
+              <li>Authenticate with your student admin account:
                 <ul class="sub-steps">
                   <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
-                  <li>Password: <span class="var var-pass">&lt;Session Password&gt;</span></li>
+                  <li>Password: <span class="var var-pass">&lt;Session Password&gt;</span> (as provided in your Lab Access Instructions)</li>
+                  <li>Select <strong>Sign in</strong></li>
                 </ul>
                 <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p18-img1.png" alt="ZIdentity sign-in page with student credentials entered" loading="lazy">
-                  <div class="screenshot-caption">ZIdentity sign-in — <code>console.zscaler.com</code> redirects here. Enter <code>student@&lt;Student FQDN&gt;</code>, your session password, then click Sign In.</div>
+                  <img src="screenshots/lab1/lab1-p27-img1.png" alt="Zscaler sign-in page with the student login ID and password fields highlighted" loading="lazy">
+                  <div class="screenshot-caption">Zscaler sign-in — console.zscaler.com redirects here. Enter <code>student@&lt;Student FQDN&gt;</code>, your session password, then click Sign In.</div>
                 </div>
               </li>
-              <li>Once signed in, explore the <strong>Experience Center (EC) dashboard</strong>. Note the top navigation: <strong>Analytics</strong>, <strong>Administration</strong>, <strong>Policies</strong>, <strong>Infrastructure</strong>, and <strong>Logs</strong>.
+              <li>Once signed in, explore the <strong>Experience Center dashboard</strong> by navigating to <strong>Analytics</strong>, <strong>Administration</strong>, <strong>Policies</strong>, <strong>Infrastructure</strong>, or <strong>Logs</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p19-img1.png" alt="Experience Center dashboard with top navigation items highlighted" loading="lazy">
-                  <div class="screenshot-caption">Experience Center — unified console at <code>console.zscaler.com</code>. The five top-nav menus span ZIA, ZPA, ZDX, and ZIdentity administration.</div>
+                  <img src="screenshots/lab1/lab1-p28-img1.png" alt="Experience Center home page with the top navigation items highlighted" loading="lazy">
+                  <div class="screenshot-caption">Experience Center — the five top-navigation menus.</div>
                 </div>
               </li>
-              <li>Under <strong>Administration</strong>, observe the unified management options including ZIA, ZPA, ZDX, and ZIdentity configuration. Use the <strong>Search</strong> icon (or <kbd>Ctrl+K</kbd>) to quickly jump to any feature — you'll use this constantly throughout the labs.
+              <li>Use the <strong>Search</strong> option (or <kbd>Ctrl+K</kbd>) to navigate to the required feature in the Experience Center tenant assigned to you.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p20-img1.png" alt="Experience Center Search menu open with recent searches visible" loading="lazy">
-                  <div class="screenshot-caption">Search menu (Ctrl+K) — type any feature name to navigate instantly. Recent searches are shown for quick access.</div>
+                  <img src="screenshots/lab1/lab1-p29-img1.png" alt="Experience Center search menu open with recent searches visible" loading="lazy">
+                  <div class="screenshot-caption">Search menu — type any feature name to jump straight to it.</div>
                 </div>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> The Experience Center is the single pane of glass for all Zscaler service administration. Your Student FQDN and password are used throughout all labs — save them in the Lab Configuration panel above.</p>
+              <p><strong>Note:</strong> Use the Search menu to quickly navigate to the features required in the upcoming lab tasks.</p>
             </div>
+
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Navigating to the Experience Center Nav 1.0 User Interface</h4>
+            <p style="margin-bottom:12px;">After you log in to your assigned Zscaler lab tenant or Solutions Demo Center tenant, you should see the Experience Center <strong>Nav 1.0</strong> user interface. If you see the Experience Center <strong>Nav 2.0</strong> instead, switch to Nav 1.0 — this lab is designed around it. Follow these steps to make the switch:</p>
+            <ol class="step-list">
+              <li>In the Experience Center Nav 2.0 tenant, click the <strong>account settings</strong> icon in the top-right corner and select <strong>Account Settings</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p30-img1.png" alt="Experience Center Nav 2.0 home page with the account settings icon highlighted in the top-right corner" loading="lazy">
+                  <div class="screenshot-caption">Nav 2.0 — the account settings icon is in the top-right corner.</div>
+                </div>
+              </li>
+              <li>Under <strong>Settings &gt; New Navigation Experience</strong>, select <strong>Original</strong>, then click <strong>Save</strong> at the bottom to switch to the Nav 1.0 user interface.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p31-img1.png" alt="Settings page with New Navigation Experience set to Original and the Save button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Select Original under New Navigation Experience, then click Save.</div>
+                </div>
+              </li>
+            </ol>
           </div>
 
           <div class="section-qa" data-section="t1-2">
@@ -233,7 +299,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -245,7 +311,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -254,7 +320,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -263,17 +329,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 

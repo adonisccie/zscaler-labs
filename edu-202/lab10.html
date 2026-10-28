@@ -142,16 +142,22 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Zscaler publishes an official Postman collection for OneAPI that includes pre-built request templates for all product areas. You download it from the Zscaler developer portal and import it into your workspace.</p>
+            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Zscaler publishes an official Postman collection for OneAPI that includes pre-built request templates for all product areas. You fork the verified public collection from the Postman Public API Network into your workspace.</p>
             <ol class="step-list">
-              <li>Open a new browser tab and navigate to <a href="https://automate.zscaler.com" target="_blank" rel="noopener">automate.zscaler.com</a>.
+              <li>In Postman, select the <strong>Home</strong> icon, then select <strong>Public API Network</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p199-img1.png" alt="Zscaler Automation Hub page showing Adding OneAPI Postman Collection instructions with download link highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab10/lab10-p215-img1.png" alt="Postman Home menu with Public API Network highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-              <li>Locate and download the <strong>Zscaler OneAPI Postman Collection</strong> file (a <code>.json</code> file).</li>
-              <li>Return to Postman. Select <strong>File &gt; Import</strong> (or use the <strong>Import</strong> button in the left-hand Collections sidebar).</li>
-              <li>Drag and drop the downloaded <code>.json</code> file, or browse to it. Select <strong>Import</strong>.</li>
+              <li>In the search bar, type <code>Zscaler OneAPI</code> and select the <strong>Verified</strong> public API collection from the drop-down.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab10/lab10-p215-img2.png" alt="Postman Public API Network page with the search icon highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>Right-click the <strong>Zscaler OneAPI</strong> collection and select <strong>Fork</strong>.</li>
+              <li>Enter a fork label name of your choice.</li>
+              <li>Under <strong>Environments to Fork</strong>, select <strong>Zscaler OneAPI</strong>.</li>
+              <li>Select <strong>Fork Collection</strong> to import the collection and its environment into your Postman workspace.</li>
               <li>Verify that a collection named <strong>OneAPI</strong> appears in the <strong>Collections</strong> panel on the left, with sub-folders including:
                 <ul class="sub-steps">
                   <li>ZIA (Zscaler Internet Access)</li>
@@ -201,15 +207,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">OAuth 2.0 authentication requires four variables: the ZIdentity base URL, a Client ID, a Client Secret, and your ZPA Customer ID. You collect these from different areas of the administration portal.</p>
+            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">OAuth 2.0 authentication requires four variables: the Authentication Service (formerly ZIdentity) base URL, a Client ID, a Client Secret, and your ZPA Customer ID. You collect these from different areas of the administration portal.</p>
 
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Step A — Find the ZIdentity Base URL</h4>
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Step A — Find the Authentication Service Base URL</h4>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Administration &gt; Identity &gt; ZIdentity &gt; ZIdentity Portal</strong>.</li>
-              <li>The ZIdentity portal opens in a new browser tab. Copy the base URL from the browser address bar (e.g. <code>https://zs000149.zslogin.net</code>). This is your <strong><code>zidentityBaseUrl</code></strong>. Note it for later.</li>
+              <li>In the Experience Center, navigate to <strong>Administration &gt; Identity &gt; Authentication Service &gt; Service Portal (formerly ZIdentity)</strong>.</li>
+              <li>The Service Portal opens in a new browser tab. Find the BaseUrl in the browser address bar and copy it (e.g. <code>https://zs000149.zslogin.net</code>). This is your <strong><code>zIdentityBaseUrl</code></strong>. Note it for later.</li>
             </ol>
 
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step B — Create an API Client in ZIdentity</h4>
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step B — Create an API Client in the Service Portal</h4>
             <ol class="step-list" start="3">
               <li>In the Experience Center, navigate to <strong>Administration &gt; API Configuration &gt; OneAPI &gt; API Clients</strong>.</li>
               <li>Select <strong>Add API Client</strong>. In the <strong>Add API Client</strong> dialog, enter:
@@ -290,11 +296,11 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Step A — Set Collection Variables</h4>
             <ol class="step-list">
-              <li>In Postman, select the <strong>OneAPI</strong> collection in the left panel.</li>
-              <li>Select the <strong>Variables</strong> tab.</li>
+              <li>In Postman, open the <strong>Environments</strong> section and select <strong>Zscaler OneAPI</strong>.</li>
+              <li>Go to the <strong>Variables</strong> table.</li>
               <li>Update the following variables with the values you collected in Task 10.3:
                 <ul class="sub-steps">
-                  <li><strong><code>zidentityBaseUrl</code></strong> — your ZIdentity portal URL (e.g. <code>https://zs000149.zslogin.net</code>)</li>
+                  <li><strong><code>zIdentityBaseUrl</code></strong> — your Service Portal base URL (e.g. <code>https://zs000149.zslogin.net</code>)</li>
                   <li><strong><code>clientSecret</code></strong> — the Client Secret copied when you created <code>TestClient</code></li>
                   <li><strong><code>clientID</code></strong> — the Client ID shown on the <code>TestClient</code> row</li>
                   <li><strong><code>customerid</code></strong> — the ZPA Tenant/Customer ID from Linked Services</li>
@@ -302,7 +308,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </li>
               <li>Select <strong>Save</strong> (or press <kbd>Ctrl+S</kbd> / <kbd>Cmd+S</kbd>).
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p207-img1.png" alt="Postman OneAPI collection Variables tab showing zidentityBaseUrl, clientID, clientSecret, and customerId fields filled in with student values" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab10/lab10-p207-img1.png" alt="Postman OneAPI collection Variables tab showing zIdentityBaseUrl, clientID, clientSecret, and customerId fields filled in with student values" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
@@ -311,7 +317,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
             <ol class="step-list" start="5">
               <li>With the <strong>OneAPI</strong> collection selected, select the <strong>Authorization</strong> tab.</li>
               <li>Scroll down to the bottom of the Authorization panel and select <strong>Get New Access Token</strong>.</li>
-              <li>Postman performs the OAuth 2.0 flow against ZIdentity. When complete, a dialog displays <strong>"Authentication complete"</strong>.</li>
+              <li>Postman performs the OAuth 2.0 flow against the Authentication Service. When complete, a dialog displays <strong>"Authentication complete"</strong>.</li>
               <li>Select <strong>Use Token</strong> to apply the token to the collection.
                 <div class="screenshot-embed">
                   <img src="screenshots/lab10/lab10-p209-img1.png" alt="Postman Manage Access Tokens dialog showing ZIdentity Token with Use Token button highlighted, and Current Token panel showing expiry time" onclick="openLightbox(this.src,this.alt)">
@@ -319,7 +325,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               </li>
             </ol>
 
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step C — Verify the Active Token in ZIdentity</h4>
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step C — Verify the Active Token</h4>
             <ol class="step-list" start="9">
               <li>In the Experience Center, navigate to <strong>Administration &gt; API Configuration &gt; OneAPI &gt; Tokens</strong>.</li>
               <li>Filter or search by your Client ID (or filter by <strong>Last 15 minutes</strong>). Confirm an active token appears for <code>TestClient</code>.</li>
@@ -497,7 +503,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -509,7 +515,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -518,7 +524,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -527,17 +533,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 

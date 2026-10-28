@@ -72,7 +72,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 7</div>
-        <p><strong>Scenario:</strong> Your organisation allows contractors to access the internal DVWA application through a browser without installing the Zscaler Client Connector. You need to ensure that these clientless users get a render-only view — they can see and interact with the app, but cannot download files, copy sensitive data, or upload malicious content to the endpoint. You will configure ZPA Browser Isolation with a render-only profile and validate the controls on the endpoint.</p>
+        <p><strong>Scenario:</strong> You are an IT engineer responsible for enabling secure, browser-based access to sensitive internal web applications for users who may not be connected through Zscaler Client Connector. You use browser isolation in Zscaler Private Access™ (ZPA) to reduce data exposure by limiting user actions (for example, downloading, uploading, copying and pasting, and printing).</p>
         <figure class="lab-hero">
           <img src="images/lab7-hero.png" alt="Lab 7 — ZPA Zero Trust Browser" loading="lazy">
         </figure>
@@ -87,44 +87,63 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-7-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 7.1</span>
-          <span class="task-collapsible-title">Create Isolation Profile</span>
+          <span class="task-collapsible-title">Creating Isolation Profiles</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">An Isolation Profile defines the security controls applied during a browser isolation session — what users can and cannot do in the cloud browser. You will create a render-only profile that disables data transfer but allows viewing office files.</p>
+            <p style="margin-bottom:12px;">In this task, you create an isolation profile for render-only access.</p>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Before applying the isolation policy, access the DVWA application and note how copy/paste works. For example, try pasting text into features such as XSS (Stored) or SQL Injection, and check the file upload feature by uploading a file. After you apply the policy, repeat the same actions during final testing to compare the behavior and identify any differences.</p>
+            </div>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Browser Isolation &gt; Profiles</strong>.</li>
-              <li>Select <strong>Add</strong> to create a new profile.</li>
-              <li>Under <strong>General</strong>, enter:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>render_only_profile</code></li>
-                  <li><strong>Turbo Mode:</strong> <strong>Enabled</strong></li>
-                </ul>
-              </li>
-              <li>Under <strong>Company Settings</strong>, leave all values at their defaults.</li>
-              <li>Under <strong>Security</strong>, configure the controls:
-                <ul class="sub-steps">
-                  <li><strong>Copy:</strong> Disabled</li>
-                  <li><strong>Paste:</strong> Disabled</li>
-                  <li><strong>Upload:</strong> Disabled</li>
-                  <li><strong>Download:</strong> Disabled</li>
-                  <li><strong>Print:</strong> Disabled</li>
-                  <li><strong>View Office Files in Isolation:</strong> <strong>Enabled</strong> (leave this one on)</li>
-                </ul>
-              </li>
-              <li>Under <strong>Regions</strong>, select <strong>Select All</strong> to allow isolation from any Zscaler data centre region.</li>
-              <li>Under <strong>Isolation Experience</strong>, leave defaults:
-                <ul class="sub-steps">
-                  <li><strong>Browser Experience:</strong> Native browser experience</li>
-                  <li><strong>Watermark:</strong> Disabled</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.
+              <li><strong>Create the isolation profile.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Browser Isolation &gt; Profiles</strong>.</li>
+                  <li>Select <strong>+ Add</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p140-img1.png" alt="Browser Isolation Profiles page in Experience Center showing the + Add button and empty profiles list — navigate to Clientless > Browser Isolation > Profiles" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p156-img1.png" alt="Browser Isolation Profiles page with Add highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Configure the isolation profile: Name <code>render_only_profile</code>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p157-img1.png" alt="Add Isolation Profile General Information step with the name render_only_profile" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Isolation profile names in ZPA cannot include special characters and cannot match names used by ZIA isolation profiles.</p>
+            </div>
+            <ol class="step-list" start="2">
+              <li>Select <strong>Next</strong>.</li>
+              <li>On the <strong>Company Settings</strong> tab, leave the default settings, then select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p158-img1.png" alt="Company Settings step with default values" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
+              <li><strong>Configure the render-only settings.</strong> Enable <strong>View Office Files in Isolation</strong> only, then select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p159-img1.png" alt="Security step with View Office Files in Isolation enabled and all other settings disabled" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>On the <strong>Regions</strong> page, select all regions and select <strong>Next</strong>. (The Regions page controls which regional deployments the profile applies to.)
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p160-img1.png" alt="Regions step with Select All highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>On the <strong>Isolation Banner</strong> page, leave the default settings. (Optional) add watermarks if necessary. Select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p161-img1.png" alt="Isolation Experience and banner step with default settings" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>Review your profile settings, then select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p162-img1.png" alt="Review step with the Save button highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+              <li>Confirm that the <code>render_only_profile</code> isolation profile appears in the profiles list.</li>
             </ol>
           </div>
 
@@ -153,42 +172,40 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 7.2 -->
       <div class="task-collapsible open" id="task-7-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 7.2</span>
-          <span class="task-collapsible-title">Create Isolation Policy</span>
+          <span class="task-collapsible-title">Creating Isolation Policies</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">An Isolation Policy determines which sessions are sent to the cloud browser. You will create a policy that routes Web Browser clients accessing the DVWA app segment through the render-only isolation profile you created in Task 7.1.</p>
+            <p style="margin-bottom:12px;">In this task, you create an isolation policy that allows the DVWA application to be viewed only within the isolated browser. Users cannot upload or download files, copy or paste data, or print.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Clientless &gt; Browser Isolation &gt; Isolation Policy</strong>.</li>
-              <li>Select <strong>Add</strong> to create a new policy rule.</li>
-              <li>Configure the rule:
-                <ul class="sub-steps">
-                  <li><strong>Policy name:</strong> <code>isolate_policy_render_only</code></li>
-                  <li><strong>Rule Action:</strong> Allow Isolation</li>
-                  <li><strong>Isolation Profile:</strong> <code>render_only_profile</code> (the profile created in Task 7.1)</li>
-                </ul>
-              </li>
-              <li>Under <strong>Criteria</strong>, configure:
-                <ul class="sub-steps">
-                  <li><strong>Client Types:</strong> <strong>Web Browser</strong></li>
-                  <li><strong>Applications:</strong> Select the <code>DVWA</code> app segment</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
-              <li>Verify the policy rule appears in the Isolation Policy list with Status = Enabled.
+              <li>In the console left navigation bar, go to <strong>Isolation Policy</strong> and select the <strong>+ Add</strong> icon to create a new policy.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p147-img1.png" alt="Isolation Policy page showing the + Add button and empty policy list — navigate to Clientless > Browser Isolation > Isolation Policy" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p163-img1.png" alt="Isolation Policy page with the Isolation Policy menu item and Add highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
+              <li><strong>Configure the isolation policy.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Policy name: <code>isolate_policy_render_only</code></li>
+                  <li>Under Isolation Profile, select <code>render_only_profile</code>.</li>
+                  <li>Add criteria for the DVWA application segment: select <strong>+ Add Criteria</strong>, then select <strong>Applications</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p164-img1.png" alt="Add Isolation Policy form with the policy name, the render_only_profile and the Add Criteria menu" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Under Application Segments, select your <strong>DVWA</strong> segment. Add the <strong>Web Browser</strong> client type so the policy applies to clientless users.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p165-img1.png" alt="Criteria with the DVWA application segment and the Web Browser client type" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Save</strong>.</li>
+                </ol>
+              </li>
+              <li>Confirm that the <code>isolate_policy_render_only</code> policy is created and includes the DVWA application segment in its criteria.</li>
             </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> The Isolation Policy evaluates against <em>Client Types</em>. Selecting "Web Browser" ensures the policy applies to clientless users accessing DVWA through Browser Access. Users with ZCC installed would match a different client type and could be exempted if needed.</p>
-            </div>
           </div>
 
           <div class="section-qa" data-section="t7-2">
@@ -216,46 +233,43 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 7.3 -->
       <div class="task-collapsible open" id="task-7-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 7.3</span>
-          <span class="task-collapsible-title">Test Render-Only Isolation</span>
+          <span class="task-collapsible-title">Testing and Verifying</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">With the isolation profile and policy in place, you will simulate a clientless user accessing DVWA through Browser Access and verify that the render-only controls are enforced.</p>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin-bottom:8px;">Step 1 — Disconnect ZCC</h4>
+            <p style="margin-bottom:12px;">Now that you have created policies to isolate specific applications, verify that your configuration works as expected. To simulate a third-party user, disconnect from Zscaler Client Connector and then browse to the protected application.</p>
             <ol class="step-list">
-              <li>On <strong>Corp: Client PC 1</strong>, right-click the Zscaler Client Connector icon in the system tray and select <strong>Sign Out</strong> (or Disconnect).</li>
-              <li>This simulates a clientless user — no ZCC tunnel is active, so the user must access private apps through Browser Access.</li>
-            </ol>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 2 — Access DVWA via Browser Access URL</h4>
-            <ol class="step-list">
-              <li>Open a browser and navigate to the DVWA Browser Access URL. You can find this in the App Segment details under the <strong>Access Method &gt; Browser Access</strong> section — it will be in the format <code>https://dvwa-&lt;studentid&gt;.labtenant.com.clientless.two.zscalerportal.net</code>.</li>
-              <li>You will be redirected to the SAML IdP for authentication. Sign in with your student admin credentials.</li>
-              <li>After authentication, the DVWA application loads in the cloud browser isolation session. Confirm you can see the DVWA login page rendered in the browser with a Zscaler banner or render-only indicator.
+              <li><strong>Disconnect from Zscaler Client Connector.</strong> Open the DVWA application in a new browser tab using one of the following:
+                <ul class="sub-steps">
+                  <li><code>dvwa.patraining.safemarch.com</code></li>
+                  <li>The External Domain for DVWA (copied from the console)</li>
+                </ul>
+                (Optional) To copy the External Domain from the console, go to <strong>Access Methods &gt; Browser Access</strong>, copy the External Domain, and paste it into a browser address bar.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p150-img1.png" alt="Browser Access list showing DVWA external URL (https://dvwa-cyz-zs000205-labtenant-com...) mapped to dvwa.patraining.safemarch.com — copy this URL to test isolation" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p151-img1.png" alt="DVWA login page loading inside Zscaler Browser Isolation with the Zscaler notification banner: 'Heads up, you've been redirected to Browser Isolation!'" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p166-img1.png" alt="Browser Access list with the DVWA internal domain and External Domain highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
+              <li><strong>Authenticate to the application.</strong> If prompted, sign in to your SAML IdP. (This may be transparent if you already have an active session.)</li>
+              <li><strong>Validate render-only behavior.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Sign in to the DVWA application.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p167-img1.png" alt="DVWA opened in an isolated session with the Zscaler isolation banner highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Attempt to manipulate files or data — for example, try to copy text, print, or upload a file on the File Upload page.</li>
+                  <li>Confirm that you can open and view content in the isolated browser, but you cannot download, upload, copy, paste, or print.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p167-img2.png" alt="File Upload dialog showing that protected storage is empty so no files can be selected" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
             </ol>
-            <h4 style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);margin:18px 0 8px;">Step 3 — Validate Render-Only Controls</h4>
-            <ol class="step-list">
-              <li>Log in to DVWA with credentials <strong>admin / password</strong>.</li>
-              <li>Try to <strong>copy</strong> text from the DVWA page — the clipboard operation should be blocked.</li>
-              <li>Try to <strong>right-click</strong> and access browser context menus — these may be restricted or limited.</li>
-              <li>Navigate to <strong>DVWA Security &gt; File Upload</strong>. Attempt to upload a file. The page should show <strong>"Protected Storage is empty"</strong> — the cloud browser has no access to the local filesystem, so no files can be selected for upload.</li>
-              <li>Try to <strong>print</strong> or use <strong>Ctrl+P</strong> — print functionality should be disabled.</li>
-              <li>Confirm the Zscaler isolation banner is visible on the page, indicating the session is running through browser isolation.</li>
-            </ol>
-            <div class="callout callout-success">
-              <p><strong>Expected result:</strong> Users can VIEW and interact with DVWA content through the cloud browser, but cannot download files, upload files from the endpoint, copy application data to the local clipboard, or print. The isolation profile's render-only controls are enforced at the cloud browser layer.</p>
-            </div>
           </div>
 
           <div class="section-qa" data-section="t7-3">
@@ -312,7 +326,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -324,7 +338,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -333,7 +347,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -342,17 +356,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 

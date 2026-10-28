@@ -72,7 +72,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 2</div>
-        <p><strong>Scenario:</strong> Your organisation runs an internal HVAC control web application on <code><span class="var var-fqdn">&lt;Student FQDN&gt;</span></code>. You need to make it accessible to HVAC technicians via a browser without a VPN or ZCC, using ZPA Browser Access with a managed certificate.</p>
+        <p><strong>Scenario:</strong> You are an IT Engineer tasked with provisioning third-party vendor access to an internal heating, ventilation, and air conditioning (HVAC) application. Because the vendor does not use Zscaler Client Connector, you configure Browser Access to provide secure, clientless connectivity through a web browser. To meet security and usability requirements, you implement a web server certificate and a DNS-resolvable URL. By the end of this lab, the vendor can securely access the HVAC application through Browser Access by using the application URL.</p>
         <figure class="lab-hero">
           <img src="images/lab2-hero.png" alt="Lab 2 — ZPA App Connector and Browser Access" loading="lazy">
         </figure>
@@ -86,28 +86,53 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-2-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 2.1</span>
-          <span class="task-collapsible-title">Create an App Connector Group</span>
+          <span class="task-collapsible-title">Provision an App Connector</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you configure the App Connector by creating an App Connector Group and registering the App Connector in the Zero Trust Exchange.</p>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; App Connectors &gt; App Connector Groups</strong>.</li>
-              <li>Select <strong>+ Add App Connector Group</strong>.</li>
-              <li>Enter the following settings:
+              <li><strong>Access the Admin Portal.</strong> On the <strong>Corp Client PC 1</strong> VM, sign in with the following credentials:
                 <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>OnPrem</code></li>
-                  <li><strong>Status:</strong> Enabled</li>
-                  <li><strong>App Connector Certificate:</strong> select the Connector certificate from the dropdown</li>
-                  <li><strong>City:</strong> enter your location city</li>
+                  <li>Username: <code>student</code></li>
+                  <li>Password: <code>Admin-123!</code></li>
                 </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p23-img1.png" alt="Add App Connector Group form — Name: OnPrem, Status: Enabled, Signing Certificate selected, Location set" onclick="openLightbox(this.src,this.alt)">
-                </div>
               </li>
-              <li>Select <strong>Save</strong>.
+              <li><strong>Configure the App Connector Group.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center, go to <strong>Infrastructure &gt; Private Access &gt; App Connector Groups</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p24-img1.png" alt="App Connector Groups list confirming OnPrem group created with Enabled status" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p33-img1.png" alt="Infrastructure menu open with Private Access and App Connector Groups highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>+ Add</strong> and enter the following values in <strong>Add App Connector Group</strong>:
+                    <ul class="sub-steps">
+                      <li>Name: <code>OnPrem</code></li>
+                      <li>Status: <strong>Enabled</strong></li>
+                      <li>Description: optional</li>
+                      <li>Signing (Enrollment) Certificate: <code>Connector</code></li>
+                      <li>Other configurations: leave as default</li>
+                      <li>App Connector Location: enter your current city</li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p34-img1.png" alt="Add App Connector Group form with Name OnPrem, Status Enabled and Enrollment Certificate Connector highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p35-img1.png" alt="App Connector Location set to a city on the map with the Save button highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> Choose an App Connector location that aligns with your closest geographic proximity. If a maintenance window warning appears, select <strong>I understand</strong> to proceed with the configuration.</p>
+            </div>
+            <ol class="step-list" start="3">
+              <li>Select <strong>Save</strong>.</li>
+              <li>Verify that the App Connector Group was created.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p36-img1.png" alt="App Connector Groups list showing the OnPrem group Enabled" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
@@ -138,46 +163,85 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 2.2 -->
       <div class="task-collapsible open" id="task-2-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 2.2</span>
-          <span class="task-collapsible-title">Enrol the App Connector VM</span>
+          <span class="task-collapsible-title">Activate the App Connector</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you activate the App Connector and verify secure traffic flow to ZPA.</p>
             <ol class="step-list">
-              <li>In Skytap, open the <strong>Corp: ZPA App Connector</strong> VM console.</li>
-              <li>Run the following command to retrieve the pre-generated provisioning key (OAuth token):
-                <ul class="sub-steps">
-                  <li><code>cat /etc/issue</code></li>
-                </ul>
+              <li><strong>Configure the App Connector.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Launch the <strong>Corp ZPA Connector</strong> VM.</li>
+                  <li>Log in to the Corp ZPA Connector VM by clicking <strong>SSH</strong> in the left side panel to log in automatically.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p26-img1.png" alt="ZPA App Connector VM terminal — cat /etc/issue output showing OAuth Token value" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p37-img1.png" alt="Corp ZPA Connector VM tab with the SSH option highlighted and a terminal prompt" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Alternatively, use the <strong>CON</strong> option to sign in to the Corp ZPA Connector VM with the following credentials, then generate a new token:
+                    <ul class="sub-steps">
+                      <li>Username: <code>admin</code></li>
+                      <li>Password: <code>Zscaler1!</code></li>
+                    </ul>
+                  </li>
+                  <li>To view the token, type: <code>cat /etc/issue</code>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p38-img1.png" alt="Terminal output of cat /etc/issue showing the OAuth Token" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Use the CLI to regenerate a new authentication token</strong> by running the following commands:
+                <ol class="sub-steps" style="list-style:lower-roman;">
+                  <li>Stop the ZPA Connector service: <code>sudo systemctl stop zpa-connector</code></li>
+                  <li>Switch to root user privileges: <code>sudo su</code></li>
+                  <li>Delete the existing OAuth token files: <code>rm -rf /opt/zscaler/var/*</code></li>
+                  <li>Restart the ZPA Connector service to generate a new OAuth token: <code>sudo systemctl start zpa-connector</code></li>
+                  <li>View the new token: <code>cat /etc/issue</code></li>
+                </ol>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p39-img1.png" alt="Terminal showing the commands that stop the connector, delete the token files, restart it and print the new OAuth token" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
-              <li>Copy the token value displayed.</li>
-              <li>Back in the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; App Connectors &gt; App Connectors</strong>.</li>
-              <li>Select <strong>+ Add App Connector</strong> and enter:
-                <ul class="sub-steps">
-                  <li><strong>App Connector Group:</strong> <code>OnPrem</code></li>
-                  <li><strong>Provisioning Key / OAuth Token:</strong> paste the token from the VM</li>
-                  <li><strong>Certificate:</strong> select the Connector certificate</li>
-                </ul>
+              <li><strong>Update the token in the App Connector to deploy it.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center landing page (Corp Client PC 1), go to <strong>Infrastructure &gt; Private Access &gt; App Connectors</strong>.</li>
+                  <li>Select <strong>Add</strong>, then enter:
+                    <ul class="sub-steps">
+                      <li>Group: <code>OnPrem</code> (the App Connector Group created in Task 2.1)</li>
+                      <li>Enrollment Tokens: add the token generated in Step 2 (for example, <code>RPSTV – QZLJM</code>)</li>
+                    </ul>
+                    Select <strong>Add</strong>, then select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p27-img1.png" alt="Add App Connectors form — Group: OnPrem, Signing Certificate: Connector, OAuth token pasted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p40-img1.png" alt="Add App Connector form with Group OnPrem and an enrollment token entered" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
-              <li>Select <strong>Save</strong> and wait for the connector to show a green <strong>Connected</strong> status.
+            </ol>
+            <div class="callout callout-note">
+              <p><strong>Note:</strong> If the generated token is not working or has expired, repeat Step 2 to generate a new one.</p>
+            </div>
+            <ol class="step-list" start="4">
+              <li>Confirm that the App Connector appears in the list.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p27-img2.png" alt="App Connectors list showing OnPrem connector with Connected status and Enabled" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p41-img1.png" alt="App Connectors list showing the OnPrem connector with Connected status" onclick="openLightbox(this.src,this.alt)">
                 </div>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> The App Connector uses the provisioning key to authenticate with ZPA and establish its outbound tunnel. Once connected, it appears in the App Connectors list with its public and private IP addresses.</p>
+              <p><strong>Note:</strong> The App Connector Connection Health may take about 30 seconds to change from Disconnected to Connected. Continue with the next task and check the status again after a short time.</p>
             </div>
+            <ol class="step-list" start="5">
+              <li>Select the App Connector name to view details, including Host OS, PSE, Location, IP addresses, and Uptime.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p42-img1.png" alt="App Connector Details panel showing host platform, host OS, location, public and private IP addresses and uptime" onclick="openLightbox(this.src,this.alt)">
+                </div>
+              </li>
+            </ol>
           </div>
 
           <div class="section-qa" data-section="t2-2">
@@ -205,66 +269,92 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 2.3 -->
       <div class="task-collapsible open" id="task-2-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 2.3</span>
-          <span class="task-collapsible-title">Create the HVAC App Segment and Access Policy</span>
+          <span class="task-collapsible-title">Create the HVAC Application and Access Policy</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:13px;color:var(--text-soft);margin-bottom:12px;"><strong>App Segment — HVAC</strong></p>
+            <p style="margin-bottom:12px;">In this task, you add the HVAC application segment and an access policy to enable third-party vendor access by using Browser Access.</p>
             <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Private Access &gt; App Segments</strong>.</li>
-              <li>Select <strong>+ Add App Segment</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>HVAC</code></li>
-                  <li><strong>Applications:</strong> <code><span class="var var-fqdn">&lt;Student ID&gt;</span>.hvac.safemarch.com</code></li>
-                  <li><strong>Access Type:</strong> Browser Access</li>
-                  <li><strong>Certificate:</strong> Managed</li>
-                  <li><strong>External URL:</strong> prefix <code>hvac</code></li>
-                  <li><strong>Internal URL:</strong> HTTP, port 80</li>
-                  <li><strong>TCP Ports:</strong> 80–80</li>
-                  <li><strong>Segment Group:</strong> CorpApps</li>
-                  <li><strong>Server Group:</strong> CorpServers</li>
-                </ul>
+              <li><strong>Add an application segment.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center, go to <strong>Policies &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+                  <li>Select <strong>Add Application Segment</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p30-img1.png" alt="Add Application Segment — Name: HVAC, Status: Enabled, Application FQDN entered, Access Type: Browser Access checked" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p43-img1.png" alt="Defined Application Segments page with Add Application Segment highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                  <li>Configure the application segment settings:
+                    <ul class="sub-steps">
+                      <li>Name: <code>HVAC</code></li>
+                      <li>Status: <strong>Enabled</strong></li>
+                      <li>Applications: <code>&lt;Student ID&gt;.hvac.safemarch.com</code></li>
+                      <li>Access Type: <strong>Browser Access</strong></li>
+                    </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p31-img1.png" alt="App Segment browser access settings — Certificate: Managed, External URL prefix hvac, Internal HTTP, TCP port 80-80" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p44-img1.png" alt="Add Application Segment form with Name HVAC, the application domain and Browser Access selected" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                    <ul class="sub-steps">
+                      <li>Certificate Type: <strong>Managed</strong></li>
+                      <li>Under <strong>External URL</strong>: Domain Prefix <code>hvac</code>; Domain Suffix: select any one from the drop-down</li>
+                      <li>Under <strong>Internal URL</strong>: Protocol <code>HTTP</code>; Port <code>80</code></li>
+                    </ul>
+                  </li>
+                  <li>Under <strong>Client Connector Access</strong>, set TCP Port Ranges to <code>80</code> through <code>80</code>, then select <strong>Next</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p45-img1.png" alt="External URL, Internal URL and Client Connector Access settings with the TCP port range 80 to 80" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
               </li>
-              <li>Select <strong>Save</strong>.
+              <li><strong>Add the segment group and server group, then save.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Add a segment group: Name <code>CorpApps</code>; Status <strong>Enabled</strong>. Select <strong>Next</strong>.</li>
+                  <li>Add a server group: Name <code>CorpServers</code>; App Connector Groups <code>OnPrem</code>. Select <strong>Next</strong>.</li>
+                  <li>Review the configuration, then select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p32-img1.png" alt="App Segment review page confirming HVAC, Segment Group: CorpApps, Server Group: CorpServers, App Connector Group: OnPrem" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p46-img1.png" alt="Review step showing the HVAC application segment, CorpApps segment group, CorpServers server group and OnPrem connector group" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
-            </ol>
-          </div>
-          <div class="task-block" style="margin-top:16px;">
-            <p style="font-size:13px;color:var(--text-soft);margin-bottom:12px;"><strong>Access Policy</strong></p>
-            <ol class="step-list">
-              <li>Navigate to <strong>Policies &gt; Private Access &gt; Access Policies</strong>.</li>
-              <li>Select <strong>+ Add Policy Rule</strong> and configure:
-                <ul class="sub-steps">
-                  <li><strong>Rule Name:</strong> <code>Allow HVAC</code></li>
-                  <li><strong>Action:</strong> Allow</li>
-                  <li><strong>App Segments:</strong> HVAC</li>
-                  <li><strong>Client Types:</strong> Web Browser</li>
-                </ul>
+              <li><strong>Add the access policy rule.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>After you save, in the Add Application Segment window, select <strong>Edit Policy</strong>. Alternatively, go to <strong>Policies &gt; Access Policy</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p34-img1.png" alt="Add Access Policy form — Name: Allow HVAC, Rule Action: Allow Access, App Segments: HVAC" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p47-img1.png" alt="Policies step of the Add Application Segment wizard with Edit Policy highlighted" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Select <strong>Add</strong>, then configure the rule:
+                    <ul class="sub-steps">
+                      <li>Rule Name: <code>Allow HVAC</code></li>
+                      <li>Rule Action: <strong>Allow Access</strong></li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p48-img1.png" alt="Add Access Policy form with Name Allow HVAC, Rule Action Allow Access and the HVAC application segment criteria" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                  <li>Define the criteria:
+                    <ul class="sub-steps">
+                      <li>Select <strong>Applications</strong> and choose the <strong>HVAC</strong> application segment.</li>
+                      <li>Select <strong>Add Criteria</strong> &gt; <strong>Client Types</strong> and choose <strong>Web Browser</strong>.</li>
+                    </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p49-img1.png" alt="Add Criteria menu with Client Types highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p35-img2.png" alt="Access Policy criteria — Client Types: Web Browser added alongside App Segments: HVAC" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p49-img2.png" alt="Client Types criteria set to Web Browser with the Save button highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
-              </li>
-              <li>Select <strong>Save</strong> and <strong>Activate</strong>.
+                  </li>
+                  <li>Select <strong>Save</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p36-img1.png" alt="Access Policy list confirming Allow HVAC rule at Rule Order 2 with Allow Access action" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p50-img1.png" alt="Access Policy list showing the Allow HVAC rule with Application Segments HVAC and Client Types Web Browser" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
             </ol>
           </div>
@@ -294,7 +384,6 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
-      <!-- Task 2.4 -->
       <div class="task-collapsible open" id="task-2-4">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 2.4</span>
@@ -303,37 +392,58 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you access the HVAC application from a remote Linux client to simulate a third-party contractor connection.</p>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; Browser Access</strong> and copy your <strong>External Domain</strong>.
+              <li><strong>Access the HVAC application through Browser Access.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Access Methods &gt; Browser Access</strong>.</li>
+                  <li>Copy the <strong>External Domain</strong> for the HVAC application (internal domain <code>zs000XYZ.hvac.safemarch.com</code>).
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p37-img1.png" alt="Browser Access page showing HVAC entry with internal and external domain — copy icon highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p51-img1.png" alt="Browser Access list with the HVAC internal domain highlighted and the External Domain copy icon highlighted" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
-              <li>On the Linux Client VM, open a terminal and run:
+              <li><strong>Sign in to the Remote: Linux Client PC</strong> with these credentials:
                 <ul class="sub-steps">
-                  <li><code>dig &lt;your external domain&gt;</code></li>
-                  <li>Verify DNS resolves to a Zscaler IP.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p38-img1.png" alt="Terminal dig output confirming HVAC external domain resolves to Zscaler CNAME and IP addresses" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>Open <strong>Chrome</strong> and paste the External Domain URL into the address bar.</li>
-              <li>Authenticate using:
-                <ul class="sub-steps">
-                  <li>Username: <code class="d-username-hvac">hvac@&lt;Student FQDN&gt;</code></li>
+                  <li>Username: <code>admin</code></li>
                   <li>Password: <code>Admin-123!</code></li>
                 </ul>
               </li>
-              <li>Confirm the <strong>HVAC Control</strong> page loads successfully.
+              <li><strong>Verify the DNS resolution.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open <strong>Terminal</strong>.</li>
+                  <li>Run a DNS lookup for your application: <code>dig &lt;paste the external domain you copied&gt;</code></li>
+                  <li>Confirm that the results resolve to Zscaler public IP addresses and include hostnames that start with <code>exporter.gslb</code>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab2/lab2-p39-img1.png" alt="Safemarch HVAC Control dashboard loaded in Chrome browser via ZPA Browser Access — no VPN required" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab2/lab2-p52-img1.png" alt="dig output resolving the external domain through exporter.gslb hostnames to Zscaler public IP addresses" onclick="openLightbox(this.src,this.alt)">
                 </div>
+                  </li>
+                </ol>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Verify:</strong> The HVAC application is accessible via browser without any client software installed, confirming ZPA Browser Access is working end-to-end.</p>
+              <p><strong>Note:</strong> If resolution fails, flush the DNS cache with <code>sudo systemd-resolve --flush-caches</code>. If it prompts for a password, enter <code>Admin-123!</code>, or restart the VM.</p>
             </div>
+            <ol class="step-list" start="4">
+              <li><strong>Test application access.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open Chrome and go to the URL: paste the External Domain you copied from Browser Access.</li>
+                  <li>If prompted with a privacy warning, select <strong>Advanced</strong> and proceed to the site.</li>
+                  <li>Authenticate with your HVAC user credentials (see Lab Access Info):
+                    <ul class="sub-steps">
+                      <li>Username: <code>hvac@&lt;Student FQDN&gt;</code> (for example, <code>hvac@zs000136.labtenant.com</code>)</li>
+                      <li>Password: <code>Admin-123!</code></li>
+                    </ul>
+                  </li>
+                  <li>Confirm that the <strong>Safemarch HVAC Control</strong> page opens.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab2/lab2-p53-img1.png" alt="Safemarch HVAC Control page open in the browser" onclick="openLightbox(this.src,this.alt)">
+                </div>
+                  </li>
+                </ol>
+              </li>
+            </ol>
           </div>
 
           <div class="section-qa" data-section="t2-4">
@@ -390,7 +500,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
 
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
@@ -402,7 +512,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('zscaler123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -411,7 +521,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -420,17 +530,8 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: DNS Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.252</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.252',this)" title="Copy">⎘</button></div>
           </div>
         </div>
 
