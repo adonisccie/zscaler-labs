@@ -10,17 +10,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.ann{color:var(--blue);font-weight:700;font-size:0.9em;}
+.callout-why{background:#f5eef8;border-left:3px solid #6c3483;}.callout-why p{color:#3f1d52;}
+.callout-see{background:#e8f0fb;border-left:3px solid #1a56db;}.callout-see p{color:#0f2f66;}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.term-card{border-radius:10px;overflow:hidden;margin:14px 0;border:1px solid #0b1f44;}
+.term-head{background:#001744;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;}
+.term-body{background:#0b1f44;padding:12px 16px;}
+.term-line{display:flex;gap:10px;align-items:center;margin:3px 0;}
+.term-prompt{color:#9db8f5;font-family:Consolas,monospace;font-size:13px;}
+.term-line code{background:transparent!important;color:#e6eefc;font-family:Consolas,monospace;font-size:13px;padding:0;white-space:pre-wrap;word-break:break-word;}
+.term-line .copy-inline{margin-left:4px;}
+.term-expected{background:#e9f7ef;border-top:3px solid #17683a;padding:10px 14px;font-size:13px;color:#0f4a27;line-height:1.6;}
+.term-exp-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;background:#17683a;color:#fff;border-radius:4px;padding:1px 7px;margin-right:8px;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:34%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › EDU-280</div>
   <div class="header-top">
-    <span class="eyebrow-chip">EDU-280 · Hands-On Lab</span>
+    <span class="eyebrow-chip">EDU-280 · Hands-On Lab · Rev 6.0 · Oct 2026</span>
   </div>
   <h1>Zscaler <em>Zero Trust Branch</em></h1>
   <div class="motivation-banner">
-    <p>Hands-on labs deploying Zero Trust Branch devices with High Availability — segmentation, policy-based routing, DNS security, monitoring, and a ransomware kill switch</p>
+    <p>Build a Zero Trust Branch (ZTB 8.1.x) end to end — HA site, segmentation, DTLS to ZIA, ZPA access, policy-based routing, DNS policy and operational troubleshooting.</p>
   </div>
 </header>
 
@@ -28,38 +69,50 @@
 <details class="zscaler-one-min">
   <summary>&#9432; Zero Trust Branch in one minute — key terms</summary>
   <div class="zom-body">
-    <div class="zom-term"><strong>ZTB</strong><span>Zscaler Zero Trust Branch device — brings Zero Trust segmentation and secure Direct Internet Access to a branch. Deployed as an active/standby HA pair.</span></div>
-    <div class="zom-term"><strong>DIA</strong><span>Direct Internet Access — the WAN uplinks each ZTB device uses to reach the Internet via the Zero Trust Exchange.</span></div>
-    <div class="zom-term"><strong>Macrosegmentation</strong><span>Policy controlling traffic between VLANs/segments (east-west) — e.g. block VLAN10 → VLAN20.</span></div>
-    <div class="zom-term"><strong>Microsegmentation</strong><span>Policy controlling traffic within a VLAN — e.g. block OT1 → OT2 on VLAN30.</span></div>
-    <div class="zom-term"><strong>PBR</strong><span>Policy-Based Routing — steers selected traffic (SaaS, ICMP) down a specific path instead of the default.</span></div>
-    <div class="zom-term"><strong>Ransomware Kill Switch</strong><span>Rapid block mode (e.g. SSH between private subnets) to contain lateral movement during an incident.</span></div>
-  </div>
+    <div class="zom-term"><strong>ZTB / ZTE</strong><span>Zero Trust Branch — Zscaler’s branch gateway; Zero Trust Exchange — the Zscaler cloud platform.</span></div>
+    <div class="zom-term"><strong>HA / VRRP</strong><span>Active/Standby gateway pair; the protocol that elects the Active unit.</span></div>
+    <div class="zom-term"><strong>Macro / microsegmentation</strong><span>Policy between VLANs; policy between devices on the same VLAN.</span></div>
+    <div class="zom-term"><strong>PBR</strong><span>Policy-based routing — send selected traffic out a chosen path.</span></div>
+    <div class="zom-term"><strong>Z-Tunnel / DTLS</strong><span>Auto-provisioned ZIA tunnels over UDP 443 with TLS fallback.</span></div>
+    <div class="zom-term"><strong>Kill Switch</strong><span>Pre-staged emergency policy modes (Green → Red) applied in one action.</span></div>
+    </div>
 </details>
+
+<div class="phase-section"><div class="phase-header"><span class="phase-label">BEFORE YOU BEGIN</span><div class="phase-title">Your Pod, Values and Tools</div><div class="phase-range">Core labs 0–6 take about 3 hours 20 minutes; optional labs 7–11 are not counted in the 4-hour session</div></div>
+<p class="hero-lead">Welcome to the Zscaler Zero Trust Branch (EDU-280) hands-on lab. You play the network administrator for a company rolling out Zero Trust Branch (ZTB 8.1.x) to a branch office that hosts users, IoT devices and OT devices. Over the core labs you build the branch from scratch, protect traffic inside the branch, secure its internet and private-application access, and fine-tune how traffic and DNS are handled.</p><p class="hero-lead"><strong>Core labs 0–6 take about 3 hours 20 minutes</strong> and fit inside the 4-hour session with time for questions. The optional labs go deeper into operations — monitoring, troubleshooting, incident response and resilience — and are not counted in the 4 hours.</p><details class="zscaler-one-min" open><summary>Your pod</summary><div class="zom-body" style="display:block;padding:14px 18px;"><p>Every student has an identical pod: two ZTB gateways between the branch VLANs, two WAN links and the Zscaler Zero Trust Exchange.</p>
+<div class="screenshot-embed"><a href="screenshots/intro-s01.png" target="_blank"><img src="screenshots/intro-s01.png" alt="Your pod" style="max-height:420px;cursor:zoom-in;border:1px solid var(--border);border-radius:8px;max-width:100%"></a></div>
+<p>Figure — Your pod. Subnet10 and Subnet20 use Network (/24) segmentation; Subnet30 uses Device (/32) so every OT device is isolated.</p>
+<ul><li><strong>•</strong> <strong>Two virtual ZTB gateways</strong> — ZTB-1 (Active) and ZTB-2 (Standby), each with 2 WAN, 3 LAN, 1 HA and 1 management interface</li><li><strong>•</strong> <strong>Subnet10 10.1.10.0/24</strong> — Windows Server (10.1.10.10)</li><li><strong>•</strong> <strong>Subnet20 10.1.20.0/24</strong> — IoT Ubuntu host (10.1.20.10)</li><li><strong>•</strong> <strong>Subnet30 10.1.30.0/24</strong> — OT1 and OT2 Ubuntu hosts (10.1.30.x)</li><li><strong>•</strong> <strong>WAN GE1 10.120.1.1 / .2</strong>, gateway .254</li><li><strong>•</strong> <strong>WAN GE2 10.130.1.1 / .2</strong>, gateway .254</li><li><strong>•</strong> <strong>Private DNS</strong> 10.73.50.20 / .21</li><li><strong>•</strong> <strong>WAS DNS</strong> 1.1.1.1 / 8.8.8.8</li><li><strong>•</strong> <strong>Corp Client PC</strong> with Zscaler Client Connector, outside the branch</li></ul></div></details>
+<details class="zscaler-one-min" ><summary>Your values</summary><div class="zom-body" style="display:block;padding:14px 18px;"><p>Wherever this guide shows a token, replace it with your own value. Screenshots show example pods such as POD01 or POD06.</p>
+<table class="creds-table"><thead><tr><th>Token</th><th>Value</th><th>Used for</th></tr></thead><tbody><tr><td><span class="var var-podL">pod##</span></td><td>Your pod number, for example 01</td><td>Names: <span class="var var-podU">POD##</span>-Student-Lab, <span class="var var-podU">POD##</span>-Subnet10, <span class="var var-podU">POD##</span>-… policies</td></tr><tr><td><span class="var var-fqdn">&lt;FQDN&gt;</span></td><td>Tenant domain from your email, for example zs2115.safemarch.com</td><td><span class="var var-podL">pod##</span>-student@<span class="var var-fqdn">&lt;FQDN&gt;</span> for the portal and Client Connector</td></tr><tr><td>Portal password</td><td>From your email</td><td>Experience Center and Zscaler Client Connector</td></tr><tr><td>CloudShare Environment</td><td>URL on the classroom screen + passphrase from your email</td><td>Lab virtual machines</td></tr><tr><td>Gateway first login</td><td><code>admin / a!rg@p</code> — you must change it at first login</td><td>ZTB-1 / ZTB-2; keep the new password safe</td></tr><tr><td>VM passwords</td><td><code>Zscaler123!</code></td><td>Windows Server (administrator), <code>ssh student@10.1.30.10</code></td></tr></tbody></table></div></details>
+<details class="zscaler-one-min" ><summary>Where to run commands</summary><div class="zom-body" style="display:block;padding:14px 18px;"><p>You will type commands in four different places. The heading of each command box in this guide tells you which one to use.</p>
+<table class="creds-table"><thead><tr><th>Console</th><th>Open it from</th><th>Use it for</th></tr></thead><tbody><tr><td>Gateway VM console</td><td>CloudShare &gt; ZTB-1 / ZTB-2 (CON mode)</td><td>First login and activation only (Lab 1)</td></tr><tr><td>Appliance Admin Console</td><td>Site &gt; Troubleshooting &gt; Appliance Admin Console &gt; Connect</td><td>Appliance Admin Console commands: show …, run …, config …</td></tr><tr><td>Console tab</td><td>Site &gt; Troubleshooting &gt; Console</td><td>Linux tools: ip, tcpdump, docker, iptables, cat</td></tr><tr><td>Endpoint VMs</td><td>CloudShare &gt; Server / IoT / OT1 / OT2 / Corp Client PC</td><td>ping, nslookup, ssh and browser tests</td></tr></tbody></table></div></details>
+<details class="zscaler-one-min" ><summary>How to read this guide</summary><div class="zom-body" style="display:block;padding:14px 18px;"><table class="creds-table"><thead><tr><th>You see</th><th>It means</th></tr></thead><tbody><tr><td>Numbered lists on a guide line</td><td>One step. Do it; the screenshot under it shows what your screen should look like afterwards</td></tr><tr><td>Blue numbers such as [3]</td><td>The matching highlight in the screenshot or form</td></tr><tr><td>Dark terminal card</td><td>Type the commands; the green EXPECTED panel describes a correct result</td></tr><tr><td>ENTER THESE VALUES card</td><td>Enter the values in the form shown beside the table</td></tr><tr><td>Purple WHY card</td><td>Why the step matters</td></tr><tr><td>TIP / NOTE / CAUTION cards</td><td>Shortcuts, background, and things that can break your lab</td></tr><tr><td>Success criteria and watch out cards</td><td>Tick each item at the end of the lab before you move on</td></tr><tr><td></td><td></td><td>TIP To paste text into a VM, use CloudShare Actions &gt; Send Text. At a password prompt, use Actions &gt; Send Password.</td></tr></tbody></table></div></details>
+</div>
 
   <div class="phase-section">
     <div class="phase-header">
-      <span class="phase-label">SETUP</span>
-      <div class="phase-title">Access &amp; Device Configuration</div>
-      <div class="phase-range">Labs 0–1 · Reach the POD, then deploy the ZTB site with HA and all interfaces</div>
+      <span class="phase-label ">SETUP</span>
+      <div class="phase-title">Access &amp; Deploy the Branch</div>
+      <div class="phase-range">Labs 0–1 · Reach the lab, then build the HA branch site from scratch</div>
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab0.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 0</span>
-          <span class="lab-card-time">~15 min</span>
+          <span class="lab-card-time">10 min</span>
         </div>
-        <div class="lab-card-title">Lab Access Details</div>
-        <div class="lab-card-desc">Access your POD via the Experience Center admin portal, log into the Skytap console VMs, and learn the three navigation paths used across the course.</div>
+        <div class="lab-card-title">Access Your Lab</div>
+        <div class="lab-card-desc">Start the CloudShare VMs, learn the lab clipboard and sign in to the Experience Center with the new navigation.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab1.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 1</span>
-          <span class="lab-card-time">~45 min</span>
+          <span class="lab-card-time">50 min</span>
         </div>
-        <div class="lab-card-title">Device Interface Configuration</div>
-        <div class="lab-card-desc">Add a Site, activate the active and standby ZT800 devices, validate site-level settings, and configure the LAN VLANs (10/20/30) and WAN (GE2) interfaces.</div>
+        <div class="lab-card-title">Deploy the HA Branch Site</div>
+        <div class="lab-card-desc">Create the site from the vm-ha-edu280 template, activate both gateways, apply site settings, connect the App Connector and add VLANs and GE2.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
     </div>
@@ -67,64 +120,64 @@
 
   <div class="phase-section">
     <div class="phase-header">
-      <span class="phase-label amber">SEGMENTATION &amp; TRAFFIC POLICY</span>
-      <div class="phase-title">Segmentation, Routing &amp; DNS</div>
-      <div class="phase-range">Labs 2–5 · East-west filtering, policy-based routing, microsegmentation, and DNS security</div>
+      <span class="phase-label amber">SEGMENT &amp; SECURE</span>
+      <div class="phase-title">Segmentation and Secure Access</div>
+      <div class="phase-range">Labs 2–4 · East-west policy, DTLS to ZIA, ZPA private access and OT microsegmentation</div>
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab2.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 2</span>
-          <span class="lab-card-time">~25 min</span>
+          <span class="lab-card-time">30 min</span>
         </div>
-        <div class="lab-card-title">Secure Internal Communication</div>
-        <div class="lab-card-desc">Verify default inter-VLAN forwarding, then apply macrosegmentation to block VLAN10 → VLAN20 and a site-level policy to allow OT → IoT.</div>
+        <div class="lab-card-title">Segment East-West Traffic</div>
+        <div class="lab-card-desc">Prove VLANs reach each other by default, block Subnet10 → Subnet20, see what Skip does and allow OT → IoT at this site only.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab3.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 3</span>
-          <span class="lab-card-time">~20 min</span>
+          <span class="lab-card-time">45 min</span>
         </div>
-        <div class="lab-card-title">Policy-Based Routing (PBR)</div>
-        <div class="lab-card-desc">Validate traffic through ZIA-IPSec, create a SaaS application object (Adobe), then configure PBR to send direct ICMP traffic and verify the change.</div>
+        <div class="lab-card-title">Secure Internet and Private Access</div>
+        <div class="lab-card-desc">Switch ZIA tunnels to DTLS, validate internet security and ZPA web access, connect a remote user and RDP to the server through ZPA.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab4.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 4</span>
-          <span class="lab-card-time">~15 min</span>
+          <span class="lab-card-time">20 min</span>
         </div>
-        <div class="lab-card-title">Microsegmentation Policy</div>
-        <div class="lab-card-desc">Validate microsegmentation for an OT endpoint, block connectivity between OT endpoints on VLAN30, and confirm the traffic is blocked.</div>
+        <div class="lab-card-title">Microsegment OT Devices</div>
+        <div class="lab-card-desc">Find OT2 with Asset Intelligence, prove OT1 can reach OT2, then block traffic inside Subnet30 and verify hit counts.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label green">STEER &amp; FILTER</span>
+      <div class="phase-title">Routing and DNS Control</div>
+      <div class="phase-range">Labs 5–6 · Policy-based routing for SaaS and DNS policies at the branch</div>
+    </div>
+    <div class="lab-grid">
       <a class="lab-card" href="lab5.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 5</span>
-          <span class="lab-card-time">~25 min</span>
+          <span class="lab-card-time">25 min</span>
         </div>
-        <div class="lab-card-title">Configure DNS Policies</div>
-        <div class="lab-card-desc">Redirect google.com and block web.whatsapp.com using branch DNS policies with domain objects, validating traffic before and after each rule.</div>
+        <div class="lab-card-title">Steer SaaS Traffic with Policy-Based Routing</div>
+        <div class="lab-card-desc">Create an Adobe SaaS object, add a PBR rule with Best link selection and prove the steering with tcpdump and counters.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
-    </div>
-  </div>
-
-  <div class="phase-section">
-    <div class="phase-header">
-      <span class="phase-label green">VALIDATION</span>
-      <div class="phase-title">End-to-End Validation</div>
-      <div class="phase-range">Lab 6 · Prove the internal and external communication policies across every VLAN</div>
-    </div>
-    <div class="lab-grid">
       <a class="lab-card" href="lab6.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 6</span>
-          <span class="lab-card-time">~30 min</span>
+          <span class="lab-card-time">20 min</span>
         </div>
-        <div class="lab-card-title">Validate Securing Communication</div>
-        <div class="lab-card-desc">From the OT, IoT, and Windows hosts, confirm cloud routing, Internet access, blocked gambling/gaming sites, VLAN restrictions, and RDP into a Windows server over ZPA.</div>
+        <div class="lab-card-title">Redirect and Block Domains with DNS Policies</div>
+        <div class="lab-card-desc">Create domain objects, override google.com for Subnet30 and reject *.whatsapp.com for Subnet20, then verify from the endpoints.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
     </div>
@@ -132,51 +185,86 @@
 
   <div class="phase-section">
     <div class="phase-header">
-      <span class="phase-label purple">OPERATIONS &amp; PROTECTION</span>
-      <div class="phase-title">Monitor, Troubleshoot &amp; Protect</div>
-      <div class="phase-range">Labs 7–9 · Logs and insights, diagnostics, and the ransomware kill switch</div>
+      <span class="phase-label purple">OPTIONAL</span>
+      <div class="phase-title">Operate, Troubleshoot and Recover</div>
+      <div class="phase-range">Labs 7–11 · Monitoring, diagnostics, incident response and WAN resilience (not counted in the 4-hour session)</div>
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab7.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 7</span>
-          <span class="lab-card-time">~20 min</span>
+          <span class="lab-card-badge optional">Optional</span>
+          <span class="lab-card-time">25 min</span>
         </div>
-        <div class="lab-card-title">Logs and Monitoring</div>
-        <div class="lab-card-desc">View Packet logs, Flow logs, and Alarms for the Zero Trust Branch, and review Web logs in the Experience Center portal.</div>
+        <div class="lab-card-title">Monitor the Branch</div>
+        <div class="lab-card-desc">Filter Packet and Flow logs, review alarms and Web Insights, and read system and WAN health including the WAN score.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab8.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 8</span>
-          <span class="lab-card-time">~15 min</span>
+          <span class="lab-card-badge optional">Optional</span>
+          <span class="lab-card-time">30 min</span>
         </div>
-        <div class="lab-card-title">Troubleshoot &amp; Debug</div>
-        <div class="lab-card-desc">Analyse and manage network interfaces and run network and systems diagnostics on the Zero Trust Branch environment.</div>
+        <div class="lab-card-title">Troubleshoot with Admin Console Diagnostics</div>
+        <div class="lab-card-desc">Read interfaces and routes, inspect neighbours, ZPA mappings, containers and VRRP, then capture live traffic and confirm policy hits.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab9.html">
         <div class="lab-card-header">
           <span class="lab-card-num">LAB 9</span>
-          <span class="lab-card-time">~20 min</span>
+          <span class="lab-card-badge optional">Optional</span>
+          <span class="lab-card-time">25 min</span>
         </div>
-        <div class="lab-card-title">Ransomware Kill Switch Policy</div>
-        <div class="lab-card-desc">Configure Allow then Block SSH policies between private subnets, and validate the Ransomware Kill Switch containing lateral movement in action.</div>
+        <div class="lab-card-title">Contain an Attack with the Ransomware Kill Switch</div>
+        <div class="lab-card-desc">Stage an SSH allow rule (Green) and an SSH block rule (Orange), switch to Orange and watch SSH get refused, then return to Green.</div>
         <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab10.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 10</span>
+          <span class="lab-card-badge optional">Optional</span>
+          <span class="lab-card-time">30 min</span>
+        </div>
+        <div class="lab-card-title">Test WAN Link Failover</div>
+        <div class="lab-card-desc">Review HA settings, start Adobe and 8.8.8.8 pings, turn GE1 off on both gateways and prove Adobe leaves on GE2.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+      <a class="lab-card" href="lab11.html">
+        <div class="lab-card-header">
+          <span class="lab-card-num">LAB 11</span>
+          <span class="lab-card-badge optional">Optional</span>
+          <span class="lab-card-time">20 min</span>
+        </div>
+        <div class="lab-card-title">Troubleshoot WAN Failover from the Gateway</div>
+        <div class="lab-card-desc">Confirm gateway health and HA role, see how marks map to routing tables, and read link and tunnel history in the portal.</div>
+        <div class="lab-card-cta">Start Lab →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <span class="phase-label">WRAP-UP</span>
+      <div class="phase-title">Operational Readiness and Evidence</div>
+      <div class="phase-range">Confirm the branch is ready for production and collect your evidence</div>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" href="wrapup.html">
+        <div class="lab-card-header"><span class="lab-card-num">WRAP-UP</span></div>
+        <div class="lab-card-title">Wrap-Up</div>
+        <div class="lab-card-desc">Operational readiness checklist, evidence checklist and terms.</div>
+        <div class="lab-card-cta">Open →</div>
       </a>
     </div>
   </div>
 </div>
 
 <footer>
-  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
-  <span>Labs 0–9</span>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Rev 6.0</span>
+  <span>Labs 0–11</span>
 </footer>
 
-<script>
-document.body.style.transition='opacity 0.3s ease';
-document.body.style.opacity='1';
-sessionStorage.setItem('pt','1');
-</script>
+<script>document.addEventListener('DOMContentLoaded',function(){document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');});</script>
 </body>
 </html>

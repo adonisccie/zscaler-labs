@@ -7,7 +7,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 5: Configure DNS Policies — EDU-280</title>
+<title>Lab 5: Steer SaaS Traffic with Policy-Based Routing — EDU-280</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,14 +24,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
 .task-collapsible-body{display:none;padding:18px 20px 12px;}
 .task-collapsible.open>.task-collapsible-body{display:block;}
-.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
 .screenshot-embed img:hover{opacity:0.8;}
 .img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
 .img-lightbox.active{display:flex;}
-.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
 .img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.ann{color:var(--blue);font-weight:700;font-size:0.9em;}
+.callout-why{background:#f5eef8;border-left:3px solid #6c3483;}.callout-why p{color:#3f1d52;}
+.callout-see{background:#e8f0fb;border-left:3px solid #1a56db;}.callout-see p{color:#0f2f66;}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.term-card{border-radius:10px;overflow:hidden;margin:14px 0;border:1px solid #0b1f44;}
+.term-head{background:#001744;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;}
+.term-body{background:#0b1f44;padding:12px 16px;}
+.term-line{display:flex;gap:10px;align-items:center;margin:3px 0;}
+.term-prompt{color:#9db8f5;font-family:Consolas,monospace;font-size:13px;}
+.term-line code{background:transparent!important;color:#e6eefc;font-family:Consolas,monospace;font-size:13px;padding:0;white-space:pre-wrap;word-break:break-word;}
+.term-line .copy-inline{margin-left:4px;}
+.term-expected{background:#e9f7ef;border-top:3px solid #17683a;padding:10px 14px;font-size:13px;color:#0f4a27;line-height:1.6;}
+.term-exp-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;background:#17683a;color:#fff;border-radius:4px;padding:1px 7px;margin-right:8px;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:34%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -42,9 +63,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 5 · EDU-280</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Configure DNS Policies</h1>
+  <h1>Lab 5: Steer SaaS Traffic with Policy-Based Routing</h1>
   <div class="motivation-banner">
-    <p>Control resolution itself: build a DNS Override that redirects google.com from VLAN30 to 8.8.8.8, and a DNS Reject that blocks *.whatsapp.com from VLAN20 — proving both before and after with ping, nslookup, and the browser.</p>
+    <p>Send selected SaaS traffic straight out the best WAN link while everything else still goes through ZIA.</p>
   </div>
 </header>
 
@@ -61,14 +82,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="config-body" id="config-body">
     <div class="config-grid">
       <div class="config-field">
-        <label for="pod-input">POD Number</label>
+        <label for="pod-input">Pod Number</label>
         <div class="config-field-row">
           <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-field">
-        <label for="fqdn-input">Student FQDN</label>
+        <label for="fqdn-input">Tenant FQDN</label>
         <div class="config-field-row">
           <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
@@ -82,10 +103,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
       </div>
       <div class="config-field">
-        <label for="skytap-input">Skytap Passcode</label>
+        <label for="cs-input">CloudShare Passphrase</label>
         <div class="config-field-row">
-          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
-          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+          <input type="text" id="cs-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('cs-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-actions">
@@ -94,10 +115,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
     </div>
     <div class="config-derived" id="config-derived">
-      <span><strong>Admin login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Portal login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
       <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
-      <span><strong>Override rule:</strong> <code id="d-override">POD##-Override-Google</code></span>
-      <span><strong>Block rule:</strong> <code id="d-block">POD##-Block-Whatsapp</code></span>
+      <span><strong>App Connector:</strong> <code id="d-appc">pod##StudentAppC</code></span>
     </div>
   </div>
 </div>
@@ -111,7 +131,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
     </button>
     <div class="qpanel-body" id="qpanel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
   <div class="notes-panel" id="notes-panel">
     <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
@@ -121,7 +141,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
     <div class="notes-panel-body" id="notes-panel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
 
@@ -129,136 +149,223 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="content-col">
 
     <div class="section-block" id="section-lab5">
-      <h2>Lab 5: Configure DNS Policies</h2>
+      <h2>Lab 5: Steer SaaS Traffic with Policy-Based Routing</h2>
 
       <div class="lab-header-card">
-        <div class="lab-badge">DNS SECURITY</div>
-        <p>In a Zero Trust architecture, <strong>DNS policies</strong> give fine-grained control over how requests to specific domains are handled — redirecting traffic for enforcement/monitoring, blocking risky domains, and reducing the attack surface by restricting resolution per user group, subnet, and zone.</p>
-        <p>You'll perform two tasks:</p>
-        <ul style="margin-top:10px;">
-          <li><strong>Redirect</strong> Google traffic from <code>10.1.30.0/24</code> to override IP <code>8.8.8.8</code> (DNS <em>Override</em>)</li>
-          <li><strong>Block</strong> WhatsApp from <code>10.1.20.0/24</code> with error code 5 – Query Refused (DNS <em>Reject</em>)</li>
+        <div class="lab-badge">CORE LAB</div>
+        <p>Policy-based routing (PBR) overrides the default route for selected traffic. Here ICMP to Adobe goes straight out the best WAN link, while everything else still goes through ZIA.</p>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> The branch uses a SaaS application whose monitoring traffic should go direct to the internet over the best-performing link instead of through the ZIA tunnel.</p></div>
+        <p style="margin-top:10px;"><strong>In this lab you will:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Confirm that traffic goes through ZIA before the change.</li>
+          <li>Create a SaaS application object for Adobe.</li>
+          <li>Route ICMP to Adobe direct to WAN with “Best” link selection.</li>
+          <li>Prove the steering with tcpdump and PBR counters.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria — tick when done</strong></p><ul class="criteria-list"><li>☐ <span class="var var-podU">POD##</span>-SaaS Apps object and <span class="var var-podL">pod##</span>-SaaS-Apps-WAN rule committed.</li><li>☐ tcpdump shows Adobe ICMP on the best WAN link; PBR-RULES counters increase.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ No packets on ge1 — the best link may be ge2 — capture there.</li><li>⚠ Adobe IP differs — Akamai addresses change; use the IP from your own ping.</li></ul></div>
         <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> 25 min</div>
+          <div class="lab-meta-item"><strong>Type:</strong> Core</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 3 (DTLS)</div>
+          <div class="lab-meta-item"><strong>You’ll use:</strong> Experience Center, Server, Appliance Admin Console</div>
           <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
-          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 6.0 · Oct 2026</div>
         </div>
-        <figure class="lab-hero">
-          <img src="images/lab5-hero.png" alt="Lab 5 — DNS Policies" loading="lazy">
-        </figure>
       </div>
 
+      <div class="socratic-block" id="soc-lab5">
+  <div class="socratic-header">
+    <span class="socratic-icon">💭</span>
+    <span class="socratic-label">THINK FIRST · SAAS TRAFFIC WITH PBR</span>
+  </div>
+  <p class="socratic-insight">Policy-based routing overrides the default path for matching traffic only.</p>
+  <ul class="socratic-questions">
+    <li>Why use a SaaS Application object for Adobe instead of typing IP addresses?
+      <div class="answer-area" data-section="lab5-q1">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+            <div class="model-answer-text">Zscaler maintains the SaaS address ranges in the object, so your rule keeps working when Adobe changes addresses.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>With Traffic Distribution = Best, how does the gateway choose a link?
+      <div class="answer-area" data-section="lab5-q2">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+            <div class="model-answer-text">It picks the WAN link with the best score from latency, loss and jitter. If scores are equal it uses the primary WAN of the HA pair with the better overall metrics.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>How do the tcpdump captures prove which traffic is steered?
+      <div class="answer-area" data-section="lab5-q3">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+            <div class="model-answer-text">Adobe ICMP appears in clear text on the best WAN link (ge1 or ge2), so it leaves direct. Non-Adobe traffic such as YouTube shows 0 packets on the WAN and appears on zia0/zia1 instead, so it still goes through the ZIA tunnel.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
 
-      <!-- 5.1 -->
       <div class="task-collapsible open" id="tc-5-1">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 5.1</span>
-          <span class="task-collapsible-title">Redirect Google (DNS Override, VLAN30 → 8.8.8.8)</span>
+          <span class="task-collapsible-title">Check the baseline</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <h4>5.1.1 · Validate before configuring</h4>
-          <ul class="step-list">
-            <li>In Skytap, open the Ubuntu host <strong>OT1</strong>, and from the terminal confirm <code>google.com</code> resolves normally (ping returns Google's default IPs).</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p132-a.png" alt="Open OT1 in Skytap"><div class="screenshot-caption">Open OT1 (VLAN30).</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p133-a.png" alt="ping google.com resolving to Google default IPs"><div class="screenshot-caption">Baseline: <code>ping google.com</code> resolves to Google's default IPs.</div></div>
-          <h4>5.1.2 · Create the Google domain object</h4>
-          <ul class="step-list">
-            <li>Navigate to <strong>Policies</strong> [1] › Access Control › Segmentation › Zero Trust Branch › <strong>Objects &amp; Groups</strong> [2]. Click <strong>Add</strong> [3] › <strong>Domains</strong> [4].</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p134-a.png" alt="Objects and Groups Add Domains"><div class="screenshot-caption">Objects &amp; Groups › Add › Domains.</div></div>
-          <div class="task-block">
-            <ul class="step-list">
-              <li><strong>Rule Name</strong>: <code class="d-google">POD##-Google</code> [1]</li>
-              <li><strong>Domains</strong>: <code>google.com</code> [2] › Add [3]</li>
-              <li>Click <strong>Add</strong> [4] to save the object.</li>
-            </ul>
-          </div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p135-a.png" alt="Google domain object form"><div class="screenshot-caption">Create the <code class="d-google">POD##-Google</code> domain object for google.com.</div></div>
-          <h4>5.1.3 · Configure the Override DNS policy</h4>
-          <ul class="step-list">
-            <li>Go to <strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Sites</strong> [1], select <code class="d-site">POD##-Student-Lab</code>, open the <strong>DNS Policies</strong> tab [2], click <strong>Configure</strong> [3], then <strong>Add Policy</strong>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p136-a.png" alt="Site DNS Policies Configure"><div class="screenshot-caption">Site › DNS Policies › Configure.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p137-a.png" alt="Add Policy DNS"><div class="screenshot-caption">Add Policy.</div></div>
-          <div class="task-block">
-            <ul class="step-list">
-              <li><strong>Rule Name</strong>: <code class="d-override">POD##-Override-Google</code> [1]</li>
-              <li><strong>Sources</strong>: Subnet/Host [2] › <code>10.1.30.0/24</code> [3] › Add [4]</li>
-              <li><strong>Destination Domains</strong>: <code class="d-google">POD##-Google</code> [5]</li>
-              <li><strong>Action</strong>: Override [6] · <strong>Override IP</strong>: <code>8.8.8.8</code> [7]</li>
-              <li>Click <strong>Add</strong> [8], then <strong>Commit</strong> to enforce.</li>
-            </ul>
-          </div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p138-a.png" alt="Override DNS policy form"><div class="screenshot-caption">Override rule: source 10.1.30.0/24 → Google object → Override IP 8.8.8.8.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p139-a.png" alt="Commit DNS override policy"><div class="screenshot-caption">Commit to activate the policy.</div></div>
-          <h4>5.1.4 · Validate after</h4>
-          <ul class="step-list">
-            <li>In Skytap, reopen <strong>OT1</strong> and run <code>ping google.com</code>. It now resolves to <code>8.8.8.8</code> instead of Google's default IPs — the redirection works.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p140-a.png" alt="Select OT1 again"><div class="screenshot-caption">Reopen OT1.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p141-a.png" alt="ping google.com resolving to 8.8.8.8"><div class="screenshot-caption"><code>google.com</code> now resolves to the overridden <code>8.8.8.8</code>.</div></div>
+<ul class="step-list">
+<li>On <strong>OT1</strong>, browse to <strong>http://ip.zscaler.com</strong>: traffic goes through Zscaler before the rule.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s01.png" alt="On OT1, browse to http://ip.zscaler.com: traffic goes through Zscaler before the rule." loading="lazy"><div class="screenshot-caption">On OT1, browse to http://ip.zscaler.com: traffic goes through Zscaler before the rule.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> Recording the baseline proves that traffic goes through Zscaler today. After the PBR rule you can then show that only Adobe traffic changed path.</p></div>
         </div>
       </div>
 
-      <!-- 5.2 -->
       <div class="task-collapsible" id="tc-5-2">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 5.2</span>
-          <span class="task-collapsible-title">Block WhatsApp (DNS Reject, VLAN20)</span>
+          <span class="task-collapsible-title">Create the Adobe SaaS object</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <h4>5.2.1 · Validate before configuring</h4>
-          <ul class="step-list">
-            <li>In Skytap, open the Ubuntu host <strong>IoT</strong> (VLAN20).</li>
-            <li>Confirm <code>web.whatsapp.com</code> resolves: <code>nslookup web.whatsapp.com</code> or <code>ping web.whatsapp.com</code>.</li>
-            <li>In a browser on the same machine, load <code>web.whatsapp.com</code> — the login page appears.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p142-a.png" alt="Open IoT VM in Skytap"><div class="screenshot-caption">Open the IoT host (VLAN20).</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p143-a.png" alt="nslookup web.whatsapp.com resolves"><div class="screenshot-caption">Baseline: <code>web.whatsapp.com</code> resolves to a valid IP.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p144-a.png" alt="WhatsApp login page loads"><div class="screenshot-caption">The WhatsApp login page loads successfully.</div></div>
-          <h4>5.2.2 · Create the WhatsApp domain object</h4>
-          <ul class="step-list">
-            <li>Navigate to <strong>Policies</strong> [1] › Access Control › Segmentation › Zero Trust Branch › <strong>Objects &amp; Groups</strong> [2]. Click <strong>Add</strong> [3] › <strong>Domains</strong> [4].</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p145-a.png" alt="Objects and Groups Add Domains for WhatsApp"><div class="screenshot-caption">Objects &amp; Groups › Add › Domains.</div></div>
-          <div class="task-block">
-            <ul class="step-list">
-              <li><strong>Rule Name</strong>: <code class="d-whats">POD##-Whatsapp</code> [1]</li>
-              <li><strong>Domains</strong>: <code>*.whatsapp.com</code> [2] › Add [3] <em>(wildcard covers all subdomains)</em></li>
-              <li>Click <strong>Add</strong> [4] to save.</li>
-            </ul>
-          </div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p146-a.png" alt="WhatsApp domain object with wildcard"><div class="screenshot-caption">Wildcard object <code>*.whatsapp.com</code> blocks the whole domain family.</div></div>
-          <h4>5.2.3 · Configure the Reject DNS policy</h4>
-          <ul class="step-list">
-            <li>Go to <strong>Infrastructure › … › Sites</strong> [1], select <code class="d-site">POD##-Student-Lab</code>, open <strong>DNS Policies</strong> [2], click <strong>Configure</strong> [3], then <strong>Add Policy</strong>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p147-a.png" alt="Site DNS Policies Configure for WhatsApp"><div class="screenshot-caption">Site › DNS Policies › Configure.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p148-a.png" alt="Add Policy DNS reject"><div class="screenshot-caption">Add Policy.</div></div>
-          <div class="task-block">
-            <ul class="step-list">
-              <li><strong>Rule Name</strong>: <code class="d-block">POD##-Block-Whatsapp</code> [1]</li>
-              <li><strong>Sources</strong>: Subnet/Host [2] › <code>10.1.20.0/24</code> [3] › Add [4]</li>
-              <li><strong>Destination Domains</strong>: <code class="d-whats">POD##-Whatsapp</code> [5]</li>
-              <li><strong>Action</strong>: Reject [6] · <strong>Error Code</strong>: <code>5 – Query Refused</code> [7]</li>
-              <li>Click <strong>Add</strong> [8], then <strong>Commit</strong> to enforce.</li>
-            </ul>
-          </div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p149-a.png" alt="Reject DNS policy form for WhatsApp"><div class="screenshot-caption">Reject rule: source 10.1.20.0/24 → WhatsApp object → error 5 (Query Refused).</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p150-a.png" alt="Commit reject DNS policy"><div class="screenshot-caption">Commit to activate the policy.</div></div>
-          <h4>5.2.4 · Validate after</h4>
-          <ul class="step-list">
-            <li>Reopen the <strong>IoT</strong> VM and run <code>ping web.whatsapp.com</code> — resolution fails (e.g. <em>Name or service not known</em>).</li>
-            <li>In a browser on the VLAN20 machine, load <code>web.whatsapp.com</code> — it shows <em>This site can't be reached</em>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p151-a.png" alt="Reopen IoT VM"><div class="screenshot-caption">Reopen the IoT host (VLAN20).</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p152-a.png" alt="ping web.whatsapp.com name resolution fails"><div class="screenshot-caption">Resolution now fails — DNS Reject in effect.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab5-p153-a.png" alt="Browser This site cannot be reached"><div class="screenshot-caption">Browser: <em>This site can't be reached</em> — the DNS block works.</div></div>
-          <div class="callout callout-success"><p><strong>Done:</strong> DNS Override and Reject both verified — selective, name-based Zero Trust control. Next, validate all the policies end-to-end.</p></div>
+          <div class="task-purpose"><strong>Purpose:</strong> Objects are reusable building blocks for policies. This one matches traffic to Adobe’s SaaS addresses.</div>
+<ul class="step-list">
+<li>Go to <strong>Zero Trust Branch &gt; Resources &gt; Objects &gt; User Defined Groups</strong>, click <strong>Add</strong> and choose <strong>SaaS Application</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s02.png" alt="Go to Zero Trust Branch &gt; Resources &gt; Objects &gt; User Defined Groups, click Add and choose SaaS Application." loading="lazy"><div class="screenshot-caption">Go to Zero Trust Branch &gt; Resources &gt; Objects &gt; User Defined Groups, click Add and choose SaaS Application.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> Zscaler maintains the address ranges of SaaS applications in these objects, so your rule keeps working when Adobe changes its IP addresses.</p></div>
+<ul class="step-list">
+<li>Name it <strong><span class="var var-podU">POD##</span>-SaaS Apps</strong> <span class="ann">[1]</span>, select <strong>Adobe</strong> <span class="ann">[2]</span> from the SaaS Apps list and click <strong>Add</strong> <span class="ann">[3]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s03.png" alt="Name it POD##-SaaS Apps [1], select Adobe [2] from the SaaS Apps list and click Add [3]." loading="lazy"><div class="screenshot-caption">Name it POD##-SaaS Apps [1], select Adobe [2] from the SaaS Apps list and click Add [3].</div></div>
+<ul class="step-list">
+<li>The object appears in the list.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s04.png" alt="The object appears in the list." loading="lazy"><div class="screenshot-caption">The object appears in the list.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-5-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 5.3</span>
+          <span class="task-collapsible-title">Create the PBR rule</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+<ul class="step-list">
+<li>In your site open <strong>Routing Policy</strong> <span class="ann">[1]</span> and click <strong>Configure</strong> <span class="ann">[2]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s05.png" alt="In your site open Routing Policy [1] and click Configure [2]." loading="lazy"><div class="screenshot-caption">In your site open Routing Policy [1] and click Configure [2].</div></div>
+<ul class="step-list">
+<li>Click <strong>Add Forwarding Rule</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s06.png" alt="Click Add Forwarding Rule." loading="lazy"><div class="screenshot-caption">Click Add Forwarding Rule.</div></div>
+<div class="values-card"><div class="values-head">ENTER THESE VALUES</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td class="values-field"><strong>Rule Name</strong> <span class="ann">[1]</span></td><td><strong><span class="var var-podL">pod##</span>-SaaS-Apps-WAN</strong></td></tr><tr><td class="values-field"><strong>Sources</strong> <span class="ann">[2–4]</span></td><td><strong>Subnet/Host 10.1.10.0/24 &gt; Add</strong></td></tr><tr><td class="values-field"><strong>Destinations</strong> <span class="ann">[5]</span></td><td><strong><span class="var var-podU">POD##</span>-SaaS Apps</strong></td></tr><tr><td class="values-field"><strong>Ports</strong> <span class="ann">[6–8]</span></td><td><strong>Custom Port; icmp:0 &gt; Add</strong></td></tr><tr><td class="values-field"><strong>Gateway 1 next hop</strong> <span class="ann">[9]</span></td><td><code>LAN/WAN; primary ge1(wan) <span class="ann">[10]</span>, secondary ge2(wan) <span class="ann">[11]</span></code></td></tr><tr><td class="values-field"><strong>Gateway 2 next hop</strong> <span class="ann">[12]</span></td><td><code>LAN/WAN; primary ge1(wan) <span class="ann">[13]</span>, secondary ge2(wan) <span class="ann">[14]</span></code></td></tr><tr><td class="values-field"><strong>Traffic Distribution</strong> <span class="ann">[15]</span></td><td><strong>Best</strong></td></tr></tbody></table></div>
+<div class="screenshot-embed"><img src="screenshots/lab5-s07.png" alt="Enter these values in the form" loading="lazy"><div class="screenshot-caption">Enter these values in the form</div></div>
+<p>Click <strong>Save</strong> <span class="ann">[16]</span>. Next-hop IPs (10.120.1.254 and 10.130.1.254) fill in automatically.</p>
+<ul class="step-list">
+<li>Click <strong>Commit</strong>. The rule takes effect within seconds.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s08.png" alt="Click Commit. The rule takes effect within seconds." loading="lazy"><div class="screenshot-caption">Click Commit. The rule takes effect within seconds.</div></div>
+<div class="callout callout-see"><p><strong>What you see:</strong> With Traffic Distribution = Best, the gateway picks the WAN link with the best score from latency, loss and jitter.</p></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-5-4">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 5.4</span>
+          <span class="task-collapsible-title">Prove the steering</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+<ul class="step-list">
+<li>In your site open <strong>Interfaces</strong> <span class="ann">[1]</span> and select <strong>WAN</strong> <span class="ann">[2]</span> from the menu. Note which link has the best score <span class="ann">[3]</span> on the Active unit.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s09.png" alt="In your site open Interfaces [1] and select WAN [2] from the menu. Note which link has the best score [3] on the Active unit." loading="lazy"><div class="screenshot-caption">In your site open Interfaces [1] and select WAN [2] from the menu. Note which link has the best score [3] on the Active unit.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> With Traffic Distribution set to Best, Adobe traffic follows the link with the highest score. You need to know that link to capture on the right interface in the next steps. If all link scores are equal, the traffic will be directed to the primary WAN interface of the HA pair whose overall health metrics — latency, jitter, and loss — are better.</p></div>
+<ul class="step-list">
+<li>On the <strong>Server</strong>, run <code>ping adobe.com -t</code> and note the Adobe IP address (for example 23.193.117.142).</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s10.png" alt="On the Server, run ping adobe.com -t and note the Adobe IP address (for example 23.193.117.142)." loading="lazy"><div class="screenshot-caption">On the Server, run ping adobe.com -t and note the Adobe IP address (for example 23.193.117.142).</div></div>
+<ul class="step-list">
+<li>Open <strong>Troubleshooting &gt; Appliance Admin Console</strong> on the Active unit, connect and log in.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s11.png" alt="Open Troubleshooting &gt; Appliance Admin Console on the Active unit, connect and log in." loading="lazy"><div class="screenshot-caption">Open Troubleshooting &gt; Appliance Admin Console on the Active unit, connect and log in.</div></div>
+<div class="term-card"><div class="term-head">APPLIANCE ADMIN CONSOLE — ACTIVE UNIT</div><div class="term-body"><div class="term-line"><span class="term-prompt">$</span><code>tcpdump -i ge1 host &lt;Adobe IP&gt;</code></div></div><div class="term-expected"><span class="term-exp-label">EXPECTED</span><div>ICMP echo requests and replies appear on the best-score WAN link (ge1 or ge2): the traffic leaves direct, not through ZIA.</div></div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> Seeing the Adobe IP in clear text on the WAN interface proves the packets are not inside the ZIA tunnel — tunneled traffic would only show packets to the ZIA data center.</p></div>
+<ul class="step-list">
+<li>Your capture should look like this.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s12.png" alt="Your capture should look like this." loading="lazy"><div class="screenshot-caption">Your capture should look like this.</div></div>
+<ul class="step-list">
+<li>In the <strong>Appliance Admin Console</strong>, run <code>show ip route table zia_dtls_rt</code> to view the ZIA routing table. The output shows two default routes — <strong>zia0</strong> (metric 10) and <strong>zia1</strong> (metric 20). Since <strong>zia0</strong> has a lower metric, it is the preferred active path as it has the highest WAN monitor score.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s13.png" alt="In the Appliance Admin Console, run show ip route table zia_dtls_rt to view the ZIA routing table. The output shows two default routes — zia0 (metric…" loading="lazy"><div class="screenshot-caption">In the Appliance Admin Console, run show ip route table zia_dtls_rt to view the ZIA routing table. The output shows two default routes — zia0 (metric…</div></div>
+<ul class="step-list">
+<li>Please note of the IP address observed during the ping (e.g., <strong>23.193.117.142</strong>). In the <strong>Appliance Admin Console</strong> of your active unit, run <strong>tcpdump -i zia0</strong> (or <strong>tcpdump -i zia1</strong> if zia1 has the best metric score) and verify that ICMP echo request and reply packets between your client and the destination IP are captured on the active ZIA tunnel interface.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s14.png" alt="Please note of the IP address observed during the ping (e.g., 23.193.117.142). In the Appliance Admin Console of your active unit, run tcpdump -i…" loading="lazy"><div class="screenshot-caption">Please note of the IP address observed during the ping (e.g., 23.193.117.142). In the Appliance Admin Console of your active unit, run tcpdump -i…</div></div>
+<div class="screenshot-embed"><img src="screenshots/lab5-s15.png" alt="Please note of the IP address observed during the ping (e.g., 23.193.117.142). In the Appliance Admin Console of your active unit, run tcpdump -i…" loading="lazy"><div class="screenshot-caption">Please note of the IP address observed during the ping (e.g., 23.193.117.142). In the Appliance Admin Console of your active unit, run tcpdump -i…</div></div>
+<ul class="step-list">
+<li>You can also validate the PBR policy by <strong>ping adobe.com</strong> from the OT segment (Subnet30). [Make sure to stop the ping from the Windows Server.]</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s16.png" alt="You can also validate the PBR policy by ping adobe.com from the OT segment (Subnet30). [Make sure to stop the ping from the Windows Server.]" loading="lazy"><div class="screenshot-caption">You can also validate the PBR policy by ping adobe.com from the OT segment (Subnet30). [Make sure to stop the ping from the Windows Server.]</div></div>
+<ul class="step-list">
+<li>Duplicate the procedure by noting the destination IP identified during the ping test (e.g., <strong>23.219.1.202</strong> from the previous example). Access the active unit's Console and execute the command <code>tcpdump -i ge1 host 23.219.1.202</code> and then <code>tcpdump -i zia0 host 23.219.1.202</code> to confirm traffic routing through the Z-tunnel.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s17.png" alt="Duplicate the procedure by noting the destination IP identified during the ping test (e.g., 23.219.1.202 from the previous example). Access the…" loading="lazy"><div class="screenshot-caption">Duplicate the procedure by noting the destination IP identified during the ping test (e.g., 23.219.1.202 from the previous example). Access the…</div></div>
+<div class="screenshot-embed"><img src="screenshots/lab5-s18.png" alt="Duplicate the procedure by noting the destination IP identified during the ping test (e.g., 23.219.1.202 from the previous example). Access the…" loading="lazy"><div class="screenshot-caption">Duplicate the procedure by noting the destination IP identified during the ping test (e.g., 23.219.1.202 from the previous example). Access the…</div></div>
+<ul class="step-list">
+<li>Pinging any other SaaS application (YouTube) also yields the same results, i.e. no packets will be captured by the WAN interfaces.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s19.png" alt="Pinging any other SaaS application (YouTube) also yields the same results, i.e. no packets will be captured by the WAN interfaces." loading="lazy"><div class="screenshot-caption">Pinging any other SaaS application (YouTube) also yields the same results, i.e. no packets will be captured by the WAN interfaces.</div></div>
+<ul class="step-list">
+<li>Take note of the IP address observed during the ping (e.g., <strong>142.251.34.142</strong>). In the <strong>Appliance Admin Console</strong> of your active unit, run <code>tcpdump -i ge1 host 142.251.34.142</code> and <code>tcpdump -i ge2 host 142.251.34.142</code>. You will observe <strong>0 packets captured</strong> on both WAN interfaces, as YouTube traffic does not match the <strong>pod01-SaaS-Apps-WAN</strong> forwarding policy. Instead, run <code>tcpdump -i zia0 host 142.251.34.142</code> to confirm that the traffic is routed via the <strong>Z-Tunnel (zia0)</strong> interface.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s20.png" alt="Take note of the IP address observed during the ping (e.g., 142.251.34.142). In the Appliance Admin Console of your active unit, run tcpdump -i ge1…" loading="lazy"><div class="screenshot-caption">Take note of the IP address observed during the ping (e.g., 142.251.34.142). In the Appliance Admin Console of your active unit, run tcpdump -i ge1…</div></div>
+<div class="term-card"><div class="term-head">APPLIANCE ADMIN CONSOLE — ACTIVE UNIT</div><div class="term-body"><div class="term-line"><span class="term-prompt">$</span><code>show iptables PBR-RULES -t mangle</code></div></div><div class="term-expected"><span class="term-exp-label">EXPECTED</span><div>An icmp rule with comment PBR-Policy: <span class="var var-podL">pod##</span>-SaaS-Apps-WAN, a MARK value (for example 0x800) and packet counters that grow while the ping runs.</div></div></div>
+<ul class="step-list">
+<li>Compare with your output.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s21.png" alt="Compare with your output." loading="lazy"><div class="screenshot-caption">Compare with your output.</div></div>
+<div class="callout callout-see"><p><strong>What you see:</strong> The match-set numbers identify the source subnet and Adobe destination lists; they differ between pods.</p></div>
+<ul class="step-list">
+<li>Here, the first ICMP-related rule in the <strong>PBR-RULES</strong> chain shows:</li>
+<li><strong>Applied Action:</strong> The traffic is tagged with <strong>MARK set 0x800</strong>. (Please note that the specific mark value may vary in your environment.)</li>
+<li><strong>Protocol:</strong> <strong>icmp</strong></li>
+<li><strong>Criteria:</strong><ul class="sub-steps"><li>Matching source IP in <strong>match-set 75</strong> src. (The match-set number 75 is shown as an example and will be different in your lab.)</li><li>Matching destination IP in <strong>match-set 71</strong> dst. (The same applies to this destination IP list.)</li><li>Direction: <strong>ctdir ORIGINAL</strong></li><li>Policy comment: <strong>PBR-Policy: pod01-SaaS-Apps-WAN</strong></li></ul></li>
+</ul>
+<p>This confirms that ICMP traffic from the source subnet matching <strong>match-set 75</strong> destined for SaaS apps in <strong>match-set 71</strong> is marked and forwarded via the <strong>pod01-SaaS-Apps-WAN</strong> forwarding policy, with a <strong>RETURN</strong> rule immediately following to stop further processing once the mark is applied.</p>
+<div class="screenshot-embed"><img src="screenshots/lab5-s22.png" alt="This confirms that ICMP traffic from the source subnet matching match-set 75 destined for SaaS apps in match-set 71 is marked and forwarded via the…" loading="lazy"><div class="screenshot-caption">This confirms that ICMP traffic from the source subnet matching match-set 75 destined for SaaS apps in match-set 71 is marked and forwarded via the…</div></div>
+<p>Here the IP ranges, e.g. <strong>23.32.0.0 - 23.67.255.255, belong</strong> to <strong>Akamai Technologies, Inc.</strong>, which is a well-known global content delivery network (CDN) and cloud service provider for Adobe. [The addresses may change over time and therefore could be different during the lab.]</p>
+<ul class="step-list">
+<li>Matching destination IP in <strong>match-set 75</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab5-s23.png" alt="Matching destination IP in match-set 75." loading="lazy"><div class="screenshot-caption">Matching destination IP in match-set 75.</div></div>
+<div class="callout callout-info"><p><strong>Tip:</strong> For contrast, ping youtube.com and capture on ge1 and ge2: 0 packets, because non-Adobe traffic still uses the ZIA tunnel. Stop the Server ping before testing from Subnet30.</p></div>
         </div>
       </div>
 
@@ -266,7 +373,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">DNS policy acts on <strong>name resolution</strong>, not IP/port. <strong>Override</strong> = redirect a domain to a chosen IP (google.com → 8.8.8.8 from VLAN30). <strong>Reject</strong> = fail the lookup with an error code (<code>5 – Query Refused</code>) for *.whatsapp.com from VLAN20. Two-step build: create a <strong>Domain object</strong> (Objects &amp; Groups › Domains) then a <strong>DNS Policy</strong> (Site › DNS Policies). Use <code>*.</code> wildcards to catch all subdomains. Validate with <code>ping</code>/<code>nslookup</code> + browser, before and after.</div>
+          <div class="mental-note-block-text">PBR rule = source subnet + <strong>SaaS object</strong> + port <code>icmp:0</code> + next hops on ge1/ge2 + <strong>Best</strong>. Prove it: <code>tcpdump -i ge1 host &lt;Adobe IP&gt;</code> (or ge2) shows it direct; <code>tcpdump -i zia0</code> shows ZIA traffic; <code>show iptables PBR-RULES -t mangle</code> shows the mark and counters.</div>
         </div>
       </div>
 
@@ -275,7 +382,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab5" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab5','Lab 5: DNS Policies')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab5','Lab 5: SaaS Traffic with PBR')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -295,42 +402,31 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab5a" onchange="toggleDone(this)"><label for="chk-lab5a">Google Override redirect verified</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab5b" onchange="toggleDone(this)"><label for="chk-lab5b">WhatsApp Reject block verified</label></li>
-      </ul>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5a" onchange="toggleDone(this)"><label for="chk-lab5a"><span class="var var-podU">POD##</span>-SaaS Apps object and <span class="var var-podL">pod##</span>-SaaS-Apps-WAN rule committed.</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5b" onchange="toggleDone(this)"><label for="chk-lab5b">tcpdump shows Adobe ICMP on the best WAN link; PBR-RULES counters increase.</label></li>
+        </ul>
     </div>
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
-      <div class="qr-item"><div class="qr-term">DNS Policy</div><div class="qr-def">Rule controlling how a branch resolves specific domains — by source subnet, zone, and destination domain object.</div></div>
-      <div class="qr-item"><div class="qr-term">Domain Object</div><div class="qr-def">Named list of domains (Objects &amp; Groups › Domains) referenced as the Destination in a DNS policy.</div></div>
-      <div class="qr-item"><div class="qr-term">Action: Override</div><div class="qr-def">Redirects a domain to a specified Override IP (e.g. google.com → 8.8.8.8).</div></div>
-      <div class="qr-item"><div class="qr-term">Action: Reject</div><div class="qr-def">Fails resolution with a DNS error code (5 – Query Refused), blocking access.</div></div>
-      <div class="qr-item"><div class="qr-term">Override IP</div><div class="qr-def">The IP that a matched domain is forced to resolve to under an Override policy.</div></div>
-      <div class="qr-item"><div class="qr-term">Error Code 5</div><div class="qr-def">Query Refused — the DNS response code returned by the Reject action.</div></div>
-      <div class="qr-item"><div class="qr-term">*.whatsapp.com</div><div class="qr-def">Wildcard domain matching every subdomain, so the block can't be bypassed via an alternate host.</div></div>
-      <div class="qr-item"><div class="qr-term">nslookup / ping</div><div class="qr-def">Client tools used to verify resolution before and after applying the policy.</div></div>
-      <div class="qr-item"><div class="qr-term">Sources (subnet)</div><div class="qr-def">The subnet the policy applies to — 10.1.30.0/24 for Google override, 10.1.20.0/24 for WhatsApp block.</div></div>
+      <div class="qr-item"><div class="qr-term">PBR</div><div class="qr-def">Policy-based routing — send selected traffic out a chosen path.</div></div>
+      <div class="qr-item"><div class="qr-term">Traffic Distribution: Best</div><div class="qr-def">Chooses the WAN link with the best WANmon score.</div></div>
+      <div class="qr-item"><div class="qr-term">MARK</div><div class="qr-def">iptables mark set on packets that match a PBR rule.</div></div>
+      <div class="qr-item"><div class="qr-term">zia0 / zia1</div><div class="qr-def">ZIA DTLS tunnel interfaces, one per WAN link.</div></div>
       </div>
     </div>
   </aside>
 </main>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab4.html">
-    <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 4: Microsegmentation</span>
-  </a>
-  <div class="page-nav-message">You now control the branch down to the domain name.</div>
-  <a class="page-nav-btn page-nav-next" href="lab6.html">
-    <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 6: Validation</span>
-  </a>
+  <a class="page-nav-btn page-nav-prev" href="lab4.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 4: Microsegment OT Devices</span></a>
+  <div class="page-nav-message">SaaS goes direct; the rest stays inspected.</div>
+  <a class="page-nav-btn page-nav-next" href="lab6.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 6: DNS Policies</span></a>
 </div>
 
 <footer>
-  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 5: DNS Policies</span>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Rev 6.0</span>
+  <span>Lab 5: SaaS Traffic with PBR</span>
 </footer>
 
 <script>
@@ -342,25 +438,26 @@ function toggleConfig(){var panel=document.getElementById('config-panel');var bt
 function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
 function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
 function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
-function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
-function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
-function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('cs-input').value=cfg.cs||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),cs:document.getElementById('cs-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
 function applyConfig(){
   var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
   document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
   document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
   var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<Student FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
   var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
-  var g=up?up+'-Google':'POD##-Google';document.querySelectorAll('.d-google').forEach(function(el){el.textContent=g;});
-  var ov=up?up+'-Override-Google':'POD##-Override-Google';document.querySelectorAll('.d-override').forEach(function(el){el.textContent=ov;});var dov=document.getElementById('d-override');if(dov)dov.textContent=ov;
-  var w=up?up+'-Whatsapp':'POD##-Whatsapp';document.querySelectorAll('.d-whats').forEach(function(el){el.textContent=w;});
-  var bl=up?up+'-Block-Whatsapp':'POD##-Block-Whatsapp';document.querySelectorAll('.d-block').forEach(function(el){el.textContent=bl;});var dbl=document.getElementById('d-block');if(dbl)dbl.textContent=bl;
+  var appc=slug?slug+'StudentAppC':'pod##StudentAppC';document.querySelectorAll('.d-appc').forEach(function(el){el.textContent=appc;});var da=document.getElementById('d-appc');if(da)da.textContent=appc;
+  document.querySelectorAll('.var-podU').forEach(function(el){if(up){el.textContent=up;el.classList.add('filled');}else{el.textContent='POD##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podL').forEach(function(el){if(slug){el.textContent=slug;el.classList.add('filled');}else{el.textContent='pod##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podN').forEach(function(el){if(slug){el.textContent=slug.slice(3);el.classList.add('filled');}else{el.textContent='##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
 }
 function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
-['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
 
 const PAGE_KEY='edu-280-lab-lab5';
-const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+const SECTIONS={'lab0': 'Lab 0: Access Your Lab', 'lab1': 'Lab 1: Deploy the HA Branch Site', 'lab2': 'Lab 2: Segment East-West Traffic', 'lab3': 'Lab 3: Internet & Private Access', 'lab4': 'Lab 4: Microsegment OT Devices', 'lab5': 'Lab 5: SaaS Traffic with PBR', 'lab6': 'Lab 6: DNS Policies', 'lab7': 'Lab 7: Monitor the Branch', 'lab8': 'Lab 8: Admin Console Diagnostics', 'lab9': 'Lab 9: Ransomware Kill Switch', 'lab10': 'Lab 10: WAN Link Failover', 'lab11': 'Lab 11: Troubleshoot WAN Failover', 'wrapup': 'Wrap-Up'};
 
 function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
 document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
@@ -381,7 +478,7 @@ function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementBy
 function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
 function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
 function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.term-body code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
 function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();

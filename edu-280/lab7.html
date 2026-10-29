@@ -7,7 +7,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 7: Logs and Monitoring — EDU-280</title>
+<title>Lab 7: Monitor the Branch — EDU-280</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,14 +24,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
 .task-collapsible-body{display:none;padding:18px 20px 12px;}
 .task-collapsible.open>.task-collapsible-body{display:block;}
-.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
 .screenshot-embed img:hover{opacity:0.8;}
 .img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
 .img-lightbox.active{display:flex;}
-.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
 .img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.ann{color:var(--blue);font-weight:700;font-size:0.9em;}
+.callout-why{background:#f5eef8;border-left:3px solid #6c3483;}.callout-why p{color:#3f1d52;}
+.callout-see{background:#e8f0fb;border-left:3px solid #1a56db;}.callout-see p{color:#0f2f66;}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.term-card{border-radius:10px;overflow:hidden;margin:14px 0;border:1px solid #0b1f44;}
+.term-head{background:#001744;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;}
+.term-body{background:#0b1f44;padding:12px 16px;}
+.term-line{display:flex;gap:10px;align-items:center;margin:3px 0;}
+.term-prompt{color:#9db8f5;font-family:Consolas,monospace;font-size:13px;}
+.term-line code{background:transparent!important;color:#e6eefc;font-family:Consolas,monospace;font-size:13px;padding:0;white-space:pre-wrap;word-break:break-word;}
+.term-line .copy-inline{margin-left:4px;}
+.term-expected{background:#e9f7ef;border-top:3px solid #17683a;padding:10px 14px;font-size:13px;color:#0f4a27;line-height:1.6;}
+.term-exp-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;background:#17683a;color:#fff;border-radius:4px;padding:1px 7px;margin-right:8px;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:34%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -42,9 +63,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 7 · EDU-280</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Logs and Monitoring</h1>
+  <h1>Lab 7: Monitor the Branch</h1>
   <div class="motivation-banner">
-    <p>See what the branch sees: filter Packet Logs and Flow Logs to your POD, expand a record to read every field, review real-time Alarms by severity, and run a Web Insights query scoped to your POD location.</p>
+    <p>Prove policies are enforced and get an early warning when the branch degrades.</p>
   </div>
 </header>
 
@@ -61,14 +82,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="config-body" id="config-body">
     <div class="config-grid">
       <div class="config-field">
-        <label for="pod-input">POD Number</label>
+        <label for="pod-input">Pod Number</label>
         <div class="config-field-row">
           <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-field">
-        <label for="fqdn-input">Student FQDN</label>
+        <label for="fqdn-input">Tenant FQDN</label>
         <div class="config-field-row">
           <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
@@ -82,10 +103,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
       </div>
       <div class="config-field">
-        <label for="skytap-input">Skytap Passcode</label>
+        <label for="cs-input">CloudShare Passphrase</label>
         <div class="config-field-row">
-          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
-          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+          <input type="text" id="cs-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('cs-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-actions">
@@ -94,8 +115,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
     </div>
     <div class="config-derived" id="config-derived">
-      <span><strong>Log filter value:</strong> <code id="d-podid">pod##</code></span>
-      <span><strong>POD location:</strong> <code id="d-loc">pod##-student-location</code></span>
+      <span><strong>Portal login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
+      <span><strong>App Connector:</strong> <code id="d-appc">pod##StudentAppC</code></span>
     </div>
   </div>
 </div>
@@ -109,7 +131,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
     </button>
     <div class="qpanel-body" id="qpanel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
   <div class="notes-panel" id="notes-panel">
     <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
@@ -119,7 +141,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
     <div class="notes-panel-body" id="notes-panel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
 
@@ -127,114 +149,197 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="content-col">
 
     <div class="section-block" id="section-lab7">
-      <h2>Lab 7: Logs and Monitoring</h2>
+      <h2>Lab 7: Monitor the Branch</h2>
 
       <div class="lab-header-card">
-        <div class="lab-badge">MONITORING</div>
-        <p>Explore the monitoring and troubleshooting capabilities of the Zero Trust Branch platform. You'll analyse <strong>packet logs</strong>, <strong>flow logs</strong>, and real-time <strong>alarms</strong> to understand traffic patterns and validate policy enforcement, then review <strong>Web Insights</strong> for your POD.</p>
-        <ul style="margin-top:10px;">
-          <li>View and filter Packet Logs and Flow Logs scoped to your POD</li>
-          <li>Expand a log record to read all fields (tabular or JSON)</li>
-          <li>Review Alarms filtered by severity</li>
-          <li>Run a Web Insights query for your POD location</li>
+        <div class="lab-badge">OPTIONAL LAB</div>
+        <p>ZTB logs sit next to ZIA and ZPA telemetry in the Experience Center, and the 8.1.2 Health Monitor adds system and WAN health without logging in to the gateway.</p>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> Operations wants proof that policies are enforced and an early warning when the branch degrades.</p></div>
+        <p style="margin-top:10px;"><strong>In this lab you will:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Filter Packet and Flow logs for your pod.</li>
+          <li>Review alarms and Web Insights.</li>
+          <li>Read service, system and WAN health, including the WAN score.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria — tick when done</strong></p><ul class="criteria-list"><li>☐ Packet and Flow logs filtered by <span class="var var-podL">pod##</span>.</li><li>☐ Alarms and a Web Insights query viewed.</li><li>☐ WAN score, loss, latency and jitter recorded for ge1 and ge2.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ Logs empty — widen the time range; check the Policy filter value is <span class="var var-podL">pod##</span>.</li><li>⚠ Health shows white — metrics arrive every 60 seconds; wait or widen the range.</li></ul></div>
         <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> 25 min</div>
+          <div class="lab-meta-item"><strong>Type:</strong> Optional</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Labs 2–3</div>
+          <div class="lab-meta-item"><strong>You’ll use:</strong> Experience Center</div>
           <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
-          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 6.0 · Oct 2026</div>
         </div>
-        <figure class="lab-hero">
-          <img src="images/lab7-hero.png" alt="Lab 7 — Logs and Monitoring" loading="lazy">
-        </figure>
       </div>
 
+      <div class="socratic-block" id="soc-lab7">
+  <div class="socratic-header">
+    <span class="socratic-icon">💭</span>
+    <span class="socratic-label">THINK FIRST · MONITOR THE BRANCH</span>
+  </div>
+  <p class="socratic-insight">Monitoring answers two questions: did the policy fire, and is the branch healthy?</p>
+  <ul class="socratic-questions">
+    <li>Why filter logs by your pod number?
+      <div class="answer-area" data-section="lab7-q1">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+            <div class="model-answer-text">The tenant is shared by every student in the class, so filtering shows only the logs created by your own policies.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>How do Packet logs differ from Flow logs?
+      <div class="answer-area" data-section="lab7-q2">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+            <div class="model-answer-text">Packet logs record individual packets that matched ZTB policies for forensic detail; Flow logs summarize whole connections with bytes and the matching policy.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>What makes up the WAN score?
+      <div class="answer-area" data-section="lab7-q3">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+            <div class="model-answer-text">The WANmon score is built from loss, latency and jitter of the path.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
 
-      <!-- 7.1 -->
+<p>If you’re accessing console.zscaler.com in an Incognito/Private browser window, your browser may block third‑party cookies <span class="ann">[1]</span>. This can interfere with required session/authentication behavior and may prevent Packet Logs or Flow Logs from loading.</p>
+<p><strong>What to do</strong></p>
+<p><strong>•</strong> Open the Zscaler Experience Center console in a regular (non‑Incognito) browser window, or</p>
+<p><strong>•</strong> Select the <strong>eye icon [1]</strong> and then temporarily allow third‑party cookies <strong>[2]</strong> for console.zscaler.com, then reload the page and try again.</p>
+<div class="screenshot-embed"><img src="screenshots/lab7-s01.png" alt="• Select the eye icon [1] and then temporarily allow third‑party cookies [2] for console.zscaler.com, then reload the page and try again." loading="lazy"><div class="screenshot-caption">• Select the eye icon [1] and then temporarily allow third‑party cookies [2] for console.zscaler.com, then reload the page and try again.</div></div>
       <div class="task-collapsible open" id="tc-7-1">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 7.1</span>
-          <span class="task-collapsible-title">View Packet Logs</span>
+          <span class="task-collapsible-title">Packet logs</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list">
-            <li>Navigate to <strong>Logs</strong> [1] › <strong>Packet Logs</strong> [2]. Click the <strong>Calendar</strong> icon [3], set the time frame to <strong>3 hours</strong>, and click <strong>Apply</strong> [4].</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p185-a.png" alt="Packet Logs with 3-hour time filter"><div class="screenshot-caption">Logs › Packet Logs › Calendar → last 3 hours → Apply.</div></div>
-          <ul class="step-list">
-            <li>Click the <strong>+</strong> icon [1] and add a filter — Field: <strong>Policy</strong>, Operator: <strong>is</strong>, Value: <code class="d-podid">pod##</code> [2] — then <strong>Add Filter</strong> [3].</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p186-a.png" alt="Add filter Policy is pod##"><div class="screenshot-caption">Filter: Policy <em>is</em> <code class="d-podid">pod##</code>.</div></div>
-          <ul class="step-list"><li>Click the toggle/dialog icon on any log to view its details.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p187-a.png" alt="Expand a packet log record"><div class="screenshot-caption">Expand a record to inspect it.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p188-a.png" alt="Packet log detail pane tabular/JSON"><div class="screenshot-caption">The detail pane shows all fields in tabular or JSON format.</div></div>
+          <div class="task-purpose"><strong>Purpose:</strong> Packet logs record individual packets that matched ZTB policies — useful for forensic detail.</div>
+<ul class="step-list">
+<li>Open <strong>Data Explorer</strong> <span class="ann">[1]</span> &gt; <strong>Packet Logs</strong> <span class="ann">[2]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s02.png" alt="Open Data Explorer [1] &gt; Packet Logs [2]." loading="lazy"><div class="screenshot-caption">Open Data Explorer [1] &gt; Packet Logs [2].</div></div>
+<ul class="step-list">
+<li>Click the calendar <span class="ann">[1]</span>, choose <strong>3 hours</strong> and click <strong>Apply</strong> <span class="ann">[2]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s03.png" alt="Click the calendar [1], choose 3 hours and click Apply [2]." loading="lazy"><div class="screenshot-caption">Click the calendar [1], choose 3 hours and click Apply [2].</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> Logs open with a short default time window. Widening it includes the traffic you generated in earlier labs.</p></div>
+<ul class="step-list">
+<li>Click <strong>+</strong> <span class="ann">[1]</span> and add the filter <strong>Policy is <span class="var var-podL">pod##</span></strong> <span class="ann">[2]</span>, then <strong>Add Filter</strong> <span class="ann">[3]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s04.png" alt="Click + [1] and add the filter Policy is pod## [2], then Add Filter [3]." loading="lazy"><div class="screenshot-caption">Click + [1] and add the filter Policy is pod## [2], then Add Filter [3].</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> The tenant is shared by every student in the class. Filtering on your pod number shows only the logs created by your own policies.</p></div>
+<ul class="step-list">
+<li>Open a record with the toggle icon to see all its fields in table or JSON view.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s05.png" alt="Open a record with the toggle icon to see all its fields in table or JSON view." loading="lazy"><div class="screenshot-caption">Open a record with the toggle icon to see all its fields in table or JSON view.</div></div>
         </div>
       </div>
 
-      <!-- 7.2 -->
       <div class="task-collapsible" id="tc-7-2">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 7.2</span>
-          <span class="task-collapsible-title">View Flow Logs</span>
+          <span class="task-collapsible-title">Flow logs</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list">
-            <li>Navigate to <strong>Logs</strong> [1] › <strong>Flow Logs</strong> [2]. Click the <strong>Calendar</strong> [3], set <strong>3 hours</strong>, and <strong>Apply</strong> [4].</li>
-            <li>Click <strong>+</strong> [1] and add the same filter — Policy <em>is</em> <code class="d-podid">pod##</code> [2] — then <strong>Add Filter</strong> [3].</li>
-            <li>Expand any flow log to view its details (tabular or JSON).</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p189-a.png" alt="Flow Logs with 3-hour filter"><div class="screenshot-caption">Logs › Flow Logs › last 3 hours.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p190-a.png" alt="Flow Logs filter Policy is pod##"><div class="screenshot-caption">Filter: Policy <em>is</em> <code class="d-podid">pod##</code>.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p191-a.png" alt="Expand a flow log record"><div class="screenshot-caption">Expand a flow record.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p192-a.png" alt="Flow log detail pane"><div class="screenshot-caption">All flow fields in tabular or JSON.</div></div>
+          <div class="task-purpose"><strong>Purpose:</strong> Flow logs summaries whole connections — source, destination, bytes and the policy that matched.</div>
+<ul class="step-list">
+<li>Open <strong>Data Explorer</strong> <span class="ann">[1]</span> &gt; <strong>Flow Logs</strong> <span class="ann">[2]</span> and set the time range to <strong>3 hours</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s06.png" alt="Open Data Explorer [1] &gt; Flow Logs [2] and set the time range to 3 hours." loading="lazy"><div class="screenshot-caption">Open Data Explorer [1] &gt; Flow Logs [2] and set the time range to 3 hours.</div></div>
+<ul class="step-list">
+<li>Add the filter <strong>Policy is <span class="var var-podL">pod##</span></strong> and open a record.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s07.png" alt="Add the filter Policy is pod## and open a record." loading="lazy"><div class="screenshot-caption">Add the filter Policy is pod## and open a record.</div></div>
+<p>In the detailed log pane, you can view all the fields with their values in either tabular or JSON format. Now, let’s proceed to the next sub-task to view the Alerts.</p>
+<div class="screenshot-embed"><img src="screenshots/lab7-s08.png" alt="In the detailed log pane, you can view all the fields with their values in either tabular or JSON format. Now, let’s proceed to the next sub-task to…" loading="lazy"><div class="screenshot-caption">In the detailed log pane, you can view all the fields with their values in either tabular or JSON format. Now, let’s proceed to the next sub-task to…</div></div>
         </div>
       </div>
 
-      <!-- 7.3 -->
       <div class="task-collapsible" id="tc-7-3">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 7.3</span>
-          <span class="task-collapsible-title">View Alarms</span>
+          <span class="task-collapsible-title">Alarms and Web Insights</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list">
-            <li>Navigate to <strong>Administration › Alerts › Zero Trust Branch › Alarms</strong>. A list of warning alarms appears (if none, check your filter settings).</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p193-a.png" alt="Alarms list under Administration Alerts"><div class="screenshot-caption">Administration › Alerts › Zero Trust Branch › Alarms.</div></div>
-          <ul class="step-list">
-            <li>Filter by severity — <strong>Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debug</strong>. Here, <strong>Warning</strong> alarms are selected.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p194-a.png" alt="Alarms filtered by Warning severity"><div class="screenshot-caption">Warning-severity alarms — informative signals for administrators.</div></div>
+<ul class="step-list">
+<li>Open <strong>Administration &gt; Alerts &gt; Zero Trust Branch</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s09.png" alt="Open Administration &gt; Alerts &gt; Zero Trust Branch." loading="lazy"><div class="screenshot-caption">Open Administration &gt; Alerts &gt; Zero Trust Branch.</div></div>
+<p>You can filter the types of alarms based on their nature, such as Emergency, Alert, Critical, Error, Warning, Notice, Informational, or Debug. Here, we have selected <strong>Warning</strong> alarms, which describe all the warning alarms that might be informative to administrators.</p>
+<div class="screenshot-embed"><img src="screenshots/lab7-s10.png" alt="You can filter the types of alarms based on their nature, such as Emergency, Alert, Critical, Error, Warning, Notice, Informational, or Debug. Here,…" loading="lazy"><div class="screenshot-caption">You can filter the types of alarms based on their nature, such as Emergency, Alert, Critical, Error, Warning, Notice, Informational, or Debug. Here,…</div></div>
+<ul class="step-list">
+<li>Open <strong>Data Explorer</strong> <span class="ann">[1]</span> &gt; <strong>Web Insights</strong> <span class="ann">[2]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s11.png" alt="Open Data Explorer [1] &gt; Web Insights [2]." loading="lazy"><div class="screenshot-caption">Open Data Explorer [1] &gt; Web Insights [2].</div></div>
+<ul class="step-list">
+<li>On <strong>Logs</strong> <span class="ann">[1]</span>, click <strong>Add Filter</strong> <span class="ann">[2]</span> and choose <strong>Location</strong> <span class="ann">[3]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s12.png" alt="On Logs [1], click Add Filter [2] and choose Location [3]." loading="lazy"><div class="screenshot-caption">On Logs [1], click Add Filter [2] and choose Location [3].</div></div>
+<ul class="step-list">
+<li>Select <strong><span class="var var-podL">pod##</span>-student-location</strong> <span class="ann">[1]</span>, click <strong>Done</strong> <span class="ann">[2]</span> and then <strong>Run Query</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s13.png" alt="Select pod##-student-location [1], click Done [2] and then Run Query." loading="lazy"><div class="screenshot-caption">Select pod##-student-location [1], click Done [2] and then Run Query.</div></div>
+<ul class="step-list">
+<li>Your pod’s web transactions appear. Scroll sideways for more fields.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s14.png" alt="Your pod’s web transactions appear. Scroll sideways for more fields." loading="lazy"><div class="screenshot-caption">Your pod’s web transactions appear. Scroll sideways for more fields.</div></div>
         </div>
       </div>
 
-      <!-- 7.4 -->
       <div class="task-collapsible" id="tc-7-4">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 7.4</span>
-          <span class="task-collapsible-title">View Web Logs (Web Insights)</span>
+          <span class="task-collapsible-title">Health Monitor (8.1.x)</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list"><li>In Experience Center, navigate to <strong>Logs</strong> [1] › <strong>Web Insights</strong> [2].</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p195-a.png" alt="Logs Web Insights"><div class="screenshot-caption">Logs › Web Insights.</div></div>
-          <ul class="step-list">
-            <li>Select the <strong>Logs</strong> tab [1], click <strong>Add Filter</strong> [2], and choose <strong>User</strong> by typing "user" [3].</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p196-a.png" alt="Web Insights Logs tab add filter User"><div class="screenshot-caption">Logs tab › Add Filter › User.</div></div>
-          <ul class="step-list">
-            <li>From the drop-down [1], choose your POD location (e.g. <code class="d-loc">pod##-student-location</code>) [2], then click <strong>Done</strong> [3].</li>
-            <li>Select <strong>Run Query</strong>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p197-a.png" alt="Choose POD location in filter"><div class="screenshot-caption">Select your POD location → Done.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p198-a.png" alt="Run Query button"><div class="screenshot-caption">Run Query.</div></div>
-          <ul class="step-list"><li>After a few seconds the log events for your POD appear — scroll horizontally for more fields, vertically for more events.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p199-a.png" alt="Web Insights log events for the POD"><div class="screenshot-caption">Web log events scoped to your POD.</div></div>
-          <div class="callout callout-note"><p><strong>Note:</strong> You can also analyse the <strong>Insights</strong> tab for your POD using the same filter.</p></div>
-          <div class="screenshot-embed"><img src="screenshots/lab7-p200-a.png" alt="Web Insights tab analysis"><div class="screenshot-caption">The Insights tab offers aggregate analysis with the same POD filter.</div></div>
-          <div class="callout callout-success"><p><strong>Done:</strong> You can now find and read branch telemetry across packet, flow, alarm, and web logs. Next, troubleshoot and debug the environment.</p></div>
+          <div class="task-purpose"><strong>Purpose:</strong> Each gateway sends about 250 metrics every 60 seconds, giving current and historical health per appliance and per interface.</div>
+<ul class="step-list">
+<li>In your site <strong>Overview</strong>, review <strong>Services Status</strong> and <strong>Connectivity health</strong>: green means Up, red Down, white no data.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s15.png" alt="In your site Overview, review Services Status and Connectivity health: green means Up, red Down, white no data." loading="lazy"><div class="screenshot-caption">In your site Overview, review Services Status and Connectivity health: green means Up, red Down, white no data.</div></div>
+<ul class="step-list">
+<li>Open <strong>Monitoring &gt; System Health</strong> and compare CPU, RAM and disk for gw-01 and gw-02 over the last 24 hours.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s16.png" alt="Open Monitoring &gt; System Health and compare CPU, RAM and disk for gw-01 and gw-02 over the last 24 hours." loading="lazy"><div class="screenshot-caption">Open Monitoring &gt; System Health and compare CPU, RAM and disk for gw-01 and gw-02 over the last 24 hours.</div></div>
+<ul class="step-list">
+<li>Open <strong>Monitoring &gt; WAN Health</strong> to see link status, usage and throughput for ge1 and ge2.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s17.png" alt="Open Monitoring &gt; WAN Health to see link status, usage and throughput for ge1 and ge2." loading="lazy"><div class="screenshot-caption">Open Monitoring &gt; WAN Health to see link status, usage and throughput for ge1 and ge2.</div></div>
+<ul class="step-list">
+<li>Click a <strong>WAN Score</strong> to see the WANmon score, loss, latency, jitter and interface Up/Down events. Record the values for ge1 and ge2.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab7-s18.png" alt="Click a WAN Score to see the WANmon score, loss, latency, jitter and interface Up/Down events. Record the values for ge1 and ge2." loading="lazy"><div class="screenshot-caption">Click a WAN Score to see the WANmon score, loss, latency, jitter and interface Up/Down events. Record the values for ge1 and ge2.</div></div>
+<div class="callout callout-caution"><p><strong>Caution:</strong> The <strong>Speed test</strong> in WAN Health can run only four times a day per interface on a shared lab router. Run it only if your instructor asks.</p></div>
         </div>
       </div>
 
@@ -242,7 +347,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Packet logs</strong> = per-packet detail (why one packet was dropped); <strong>flow logs</strong> = per-session summary (traffic patterns). Both under <strong>Logs › Insights › Zero Trust Branch</strong>; filter <strong>Policy is <code>pod##</code></strong> + 3-hour window, then expand a record (tabular/JSON). <strong>Alarms</strong>: Administration › Alerts, triage by severity (Emergency→Debug). <strong>Web Insights</strong>: Logs tab → filter User → your POD location → Run Query. Always scope to your POD.</div>
+          <div class="mental-note-block-text">Data Explorer holds <strong>Packet</strong>, <strong>Flow</strong> and <strong>Web Insights</strong> logs; filter <code>Policy is pod##</code>. The Health Monitor reports about 250 metrics every 60 seconds per gateway — green = Up, red = Down, white = no data.</div>
         </div>
       </div>
 
@@ -251,7 +356,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab7" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab7','Lab 7: Logs & Monitoring')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab7','Lab 7: Monitor the Branch')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -271,43 +376,32 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab7a" onchange="toggleDone(this)"><label for="chk-lab7a">Packet Logs viewed &amp; filtered</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab7b" onchange="toggleDone(this)"><label for="chk-lab7b">Flow Logs viewed &amp; filtered</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab7c" onchange="toggleDone(this)"><label for="chk-lab7c">Alarms reviewed by severity</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab7d" onchange="toggleDone(this)"><label for="chk-lab7d">Web Insights query run for POD</label></li>
-      </ul>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7a" onchange="toggleDone(this)"><label for="chk-lab7a">Packet and Flow logs filtered by <span class="var var-podL">pod##</span>.</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7b" onchange="toggleDone(this)"><label for="chk-lab7b">Alarms and a Web Insights query viewed.</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7c" onchange="toggleDone(this)"><label for="chk-lab7c">WAN score, loss, latency and jitter recorded for ge1 and ge2.</label></li>
+        </ul>
     </div>
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
-      <div class="qr-item"><div class="qr-term">Packet Logs</div><div class="qr-def">Per-packet events showing which policy acted on traffic — use to confirm a specific drop/reject.</div></div>
-      <div class="qr-item"><div class="qr-term">Flow Logs</div><div class="qr-def">Per-session (5-tuple) summaries — use to see overall traffic patterns and matched flows.</div></div>
-      <div class="qr-item"><div class="qr-term">Policy filter (pod##)</div><div class="qr-def">Field: Policy, Operator: is, Value: pod## — scopes logs to your POD in the shared tenant.</div></div>
-      <div class="qr-item"><div class="qr-term">Detail pane</div><div class="qr-def">Expand a record to see all fields in tabular or JSON format.</div></div>
-      <div class="qr-item"><div class="qr-term">Alarms</div><div class="qr-def">Administration › Alerts › Zero Trust Branch — real-time events, filterable by severity.</div></div>
-      <div class="qr-item"><div class="qr-term">Severity levels</div><div class="qr-def">Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debug — triage highest first.</div></div>
-      <div class="qr-item"><div class="qr-term">Web Insights</div><div class="qr-def">Logs › Web Insights — ZIA web log events; filter by User / POD location and Run Query.</div></div>
-      <div class="qr-item"><div class="qr-term">POD location</div><div class="qr-def">pod##-student-location — the location value used to scope Web Insights to your POD.</div></div>
+      <div class="qr-item"><div class="qr-term">Packet logs</div><div class="qr-def">Per-packet records of traffic matching ZTB policy.</div></div>
+      <div class="qr-item"><div class="qr-term">Flow logs</div><div class="qr-def">Per-connection summaries.</div></div>
+      <div class="qr-item"><div class="qr-term">Health Monitor</div><div class="qr-def">System and WAN health metrics sent every 60 seconds.</div></div>
+      <div class="qr-item"><div class="qr-term">WANmon score</div><div class="qr-def">Link health from loss, latency and jitter.</div></div>
       </div>
     </div>
   </aside>
 </main>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab6.html">
-    <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 6: Validation</span>
-  </a>
-  <div class="page-nav-message">If it moved through the branch, the logs remember it.</div>
-  <a class="page-nav-btn page-nav-next" href="lab8.html">
-    <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 8: Troubleshoot &amp; Debug</span>
-  </a>
+  <a class="page-nav-btn page-nav-prev" href="lab6.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 6: DNS Policies</span></a>
+  <div class="page-nav-message">Evidence in hand. Now learn to troubleshoot it.</div>
+  <a class="page-nav-btn page-nav-next" href="lab8.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 8: Admin Console Diagnostics</span></a>
 </div>
 
 <footer>
-  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 7: Logs &amp; Monitoring</span>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Rev 6.0</span>
+  <span>Lab 7: Monitor the Branch</span>
 </footer>
 
 <script>
@@ -318,21 +412,27 @@ function updateSidebarOffset(){var h=document.getElementById('config-panel').off
 function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
 function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
 function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
-function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
-function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
-function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('cs-input').value=cfg.cs||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),cs:document.getElementById('cs-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
 function applyConfig(){
-  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
   document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
   document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
-  var pid=slug||'pod##';document.querySelectorAll('.d-podid').forEach(function(el){el.textContent=pid;});var dpid=document.getElementById('d-podid');if(dpid)dpid.textContent=pid;
-  var loc=slug?slug+'-student-location':'pod##-student-location';document.querySelectorAll('.d-loc').forEach(function(el){el.textContent=loc;});var dloc=document.getElementById('d-loc');if(dloc)dloc.textContent=loc;
+  var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<Student FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+  var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var appc=slug?slug+'StudentAppC':'pod##StudentAppC';document.querySelectorAll('.d-appc').forEach(function(el){el.textContent=appc;});var da=document.getElementById('d-appc');if(da)da.textContent=appc;
+  document.querySelectorAll('.var-podU').forEach(function(el){if(up){el.textContent=up;el.classList.add('filled');}else{el.textContent='POD##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podL').forEach(function(el){if(slug){el.textContent=slug;el.classList.add('filled');}else{el.textContent='pod##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podN').forEach(function(el){if(slug){el.textContent=slug.slice(3);el.classList.add('filled');}else{el.textContent='##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
 }
 function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
-['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
 
 const PAGE_KEY='edu-280-lab-lab7';
-const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+const SECTIONS={'lab0': 'Lab 0: Access Your Lab', 'lab1': 'Lab 1: Deploy the HA Branch Site', 'lab2': 'Lab 2: Segment East-West Traffic', 'lab3': 'Lab 3: Internet & Private Access', 'lab4': 'Lab 4: Microsegment OT Devices', 'lab5': 'Lab 5: SaaS Traffic with PBR', 'lab6': 'Lab 6: DNS Policies', 'lab7': 'Lab 7: Monitor the Branch', 'lab8': 'Lab 8: Admin Console Diagnostics', 'lab9': 'Lab 9: Ransomware Kill Switch', 'lab10': 'Lab 10: WAN Link Failover', 'lab11': 'Lab 11: Troubleshoot WAN Failover', 'wrapup': 'Wrap-Up'};
 
 function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
 document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
@@ -353,7 +453,7 @@ function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementBy
 function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
 function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
 function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.term-body code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
 function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();

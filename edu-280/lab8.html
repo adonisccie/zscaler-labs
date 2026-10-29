@@ -7,7 +7,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 8: Troubleshoot and Debug — EDU-280</title>
+<title>Lab 8: Troubleshoot with Admin Console Diagnostics — EDU-280</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,14 +24,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
 .task-collapsible-body{display:none;padding:18px 20px 12px;}
 .task-collapsible.open>.task-collapsible-body{display:block;}
-.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
 .screenshot-embed img:hover{opacity:0.8;}
 .img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
 .img-lightbox.active{display:flex;}
-.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
 .img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.ann{color:var(--blue);font-weight:700;font-size:0.9em;}
+.callout-why{background:#f5eef8;border-left:3px solid #6c3483;}.callout-why p{color:#3f1d52;}
+.callout-see{background:#e8f0fb;border-left:3px solid #1a56db;}.callout-see p{color:#0f2f66;}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.term-card{border-radius:10px;overflow:hidden;margin:14px 0;border:1px solid #0b1f44;}
+.term-head{background:#001744;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;}
+.term-body{background:#0b1f44;padding:12px 16px;}
+.term-line{display:flex;gap:10px;align-items:center;margin:3px 0;}
+.term-prompt{color:#9db8f5;font-family:Consolas,monospace;font-size:13px;}
+.term-line code{background:transparent!important;color:#e6eefc;font-family:Consolas,monospace;font-size:13px;padding:0;white-space:pre-wrap;word-break:break-word;}
+.term-line .copy-inline{margin-left:4px;}
+.term-expected{background:#e9f7ef;border-top:3px solid #17683a;padding:10px 14px;font-size:13px;color:#0f4a27;line-height:1.6;}
+.term-exp-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;background:#17683a;color:#fff;border-radius:4px;padding:1px 7px;margin-right:8px;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:34%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -42,9 +63,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 8 · EDU-280</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Troubleshoot and Debug the Zero Trust Branch Environment</h1>
+  <h1>Lab 8: Troubleshoot with Admin Console Diagnostics</h1>
   <div class="motivation-banner">
-    <p>Get under the hood: use the device Console to read interfaces, routes, and neighbours, peek inside the VyOS and StrongSwan containers for VRRP and IPSec status, then capture live ICMP on ge6 to trace a real ping.</p>
+    <p>Work from the outside in: Appliance Admin Console status first, then Linux tools for interfaces, containers, HA and policy hits.</p>
   </div>
 </header>
 
@@ -61,14 +82,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="config-body" id="config-body">
     <div class="config-grid">
       <div class="config-field">
-        <label for="pod-input">POD Number</label>
+        <label for="pod-input">Pod Number</label>
         <div class="config-field-row">
           <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-field">
-        <label for="fqdn-input">Student FQDN</label>
+        <label for="fqdn-input">Tenant FQDN</label>
         <div class="config-field-row">
           <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
@@ -82,10 +103,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
       </div>
       <div class="config-field">
-        <label for="skytap-input">Skytap Passcode</label>
+        <label for="cs-input">CloudShare Passphrase</label>
         <div class="config-field-row">
-          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
-          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+          <input type="text" id="cs-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('cs-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-actions">
@@ -94,9 +115,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
     </div>
     <div class="config-derived" id="config-derived">
-      <span><strong>Admin login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Portal login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
       <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
-      <span><strong>DC web FQDN:</strong> <code>dcweb.ztwan.lab</code></span>
+      <span><strong>App Connector:</strong> <code id="d-appc">pod##StudentAppC</code></span>
     </div>
   </div>
 </div>
@@ -110,7 +131,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
     </button>
     <div class="qpanel-body" id="qpanel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
   <div class="notes-panel" id="notes-panel">
     <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
@@ -120,7 +141,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
     <div class="notes-panel-body" id="notes-panel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
 
@@ -128,80 +149,178 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="content-col">
 
     <div class="section-block" id="section-lab8">
-      <h2>Lab 8: Troubleshoot and Debug the Zero Trust Branch Environment</h2>
+      <h2>Lab 8: Troubleshoot with Admin Console Diagnostics</h2>
 
       <div class="lab-header-card">
-        <div class="lab-badge">TROUBLESHOOTING</div>
-        <p>Explore the essential commands used to troubleshoot and debug the Zero Trust Branch environment. These help you diagnose connectivity, validate policy configuration, and analyse traffic flows directly from the device Console.</p>
-        <ul style="margin-top:10px;">
-          <li>Read interfaces, routes, and the neighbour table (<code>ip a</code>, <code>ip route</code>, <code>ip neighbour</code>)</li>
-          <li>Inspect the VyOS (VRRP) and StrongSwan (IPSec) containers</li>
-          <li>Capture live ICMP on an interface with <code>tcpdump</code></li>
+        <div class="lab-badge">OPTIONAL LAB</div>
+        <p>Work from the outside in: Appliance Admin Console status first, then Linux tools for interfaces, containers, HA and policy hits.</p>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> A user reports intermittent problems. You collect the evidence a support engineer would ask for.</p></div>
+        <p style="margin-top:10px;"><strong>In this lab you will:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Read interfaces and routes with the Appliance Admin Console.</li>
+          <li>Inspect neighbours, ZPA mappings, containers and VRRP.</li>
+          <li>Capture live traffic and confirm policy hits at the data plane.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria — tick when done</strong></p><ul class="criteria-list"><li>☐ All commands return the expected data on the Active unit.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ Both units MASTER — VRRP split-brain — check the ge4 HA link.</li><li>⚠ Command rejected in the Admin Console — the Appliance Admin Console accepts show/run/config; use the Console tab for Linux tools.</li></ul></div>
         <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> 30 min</div>
+          <div class="lab-meta-item"><strong>Type:</strong> Optional</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 5</div>
+          <div class="lab-meta-item"><strong>You’ll use:</strong> Appliance Admin Console, Console tab, Server</div>
           <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
-          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 6.0 · Oct 2026</div>
         </div>
-        <figure class="lab-hero">
-          <img src="images/lab8-hero.png" alt="Lab 8 — Troubleshoot and Debug" loading="lazy">
-        </figure>
       </div>
 
+      <div class="socratic-block" id="soc-lab8">
+  <div class="socratic-header">
+    <span class="socratic-icon">💭</span>
+    <span class="socratic-label">THINK FIRST · ADMIN CONSOLE DIAGNOSTICS</span>
+  </div>
+  <p class="socratic-insight">A user reports intermittent problems. Collect the evidence a support engineer would ask for.</p>
+  <ul class="socratic-questions">
+    <li>Why start with show ip before looking at policy?
+      <div class="answer-area" data-section="lab8-q1">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+            <div class="model-answer-text">An interface with a missing or wrong address explains most connectivity problems before you need to look any deeper.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>A host is missing from ip neighbour. What does that suggest?
+      <div class="answer-area" data-section="lab8-q2">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+            <div class="model-answer-text">It has never reached the gateway, which points to a LAN or VLAN problem rather than a policy problem.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>A PBR rule is Active in the portal but shows zero packets. What is the likely cause?
+      <div class="answer-area" data-section="lab8-q3">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+            <div class="model-answer-text">The wrong source subnet. ge6 = Subnet10, ge7 = Subnet20, ge8 = Subnet30.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
 
-      <!-- 8.1 -->
       <div class="task-collapsible open" id="tc-8-1">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 8.1</span>
-          <span class="task-collapsible-title">Analyze &amp; Manage Network Interfaces</span>
+          <span class="task-collapsible-title">Interfaces and routes (Appliance Admin Console)</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list">
-            <li>Go to <strong>Infrastructure › Connectors › Edge › Zero Trust Branch › Sites</strong> and select <code class="d-site">POD##-Student-Lab</code>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p201-a.png" alt="Select your site"><div class="screenshot-caption">Open your POD site.</div></div>
-          <ul class="step-list"><li>Open the <strong>Console</strong> tab and type <code>ip a</code> — shows all interfaces and their assigned IPs.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p202-a.png" alt="ip a output on the console"><div class="screenshot-caption"><code>ip a</code> — interfaces + IP addresses.</div></div>
-          <ul class="step-list"><li>Type <code>ip route</code> — displays the routing table (how traffic is directed to destinations).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p203-a.png" alt="ip route output"><div class="screenshot-caption"><code>ip route</code> — the routing table.</div></div>
-          <ul class="step-list"><li>Type <code>ip neighbour</code> from the active unit — the neighbour/ARP table (IP → MAC mappings).</li></ul>
-          <div class="callout callout-note"><p><strong>Note:</strong> both <code>ip neighbour</code> and <code>ip neighbor</code> spellings are accepted.</p></div>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p204-a.png" alt="ip neighbour output"><div class="screenshot-caption"><code>ip neighbour</code> — ARP entries for the segment.</div></div>
-          <ul class="step-list"><li>Type <code>cat /etc/airgap/zcc/fqdn.txt | grep dcweb</code> — outputs the FQDN <code>dcweb.ztwan.lab</code> (the app you reached in Lab 6).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p205-a.png" alt="cat fqdn.txt grep dcweb output"><div class="screenshot-caption">Filtering the FQDN file surfaces <code>dcweb.ztwan.lab</code>.</div></div>
+<ul class="step-list">
+<li>Open <strong>Troubleshooting</strong> <span class="ann">[1]</span> &gt; <strong>Appliance Admin Console</strong> <span class="ann">[2]</span> on the Active unit and click <strong>Connect</strong> <span class="ann">[3]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s01.png" alt="Open Troubleshooting [1] &gt; Appliance Admin Console [2] on the Active unit and click Connect [3]." loading="lazy"><div class="screenshot-caption">Open Troubleshooting [1] &gt; Appliance Admin Console [2] on the Active unit and click Connect [3].</div></div>
+<ul class="step-list">
+<li>Run <code>show ip</code> to list every interface and its address.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s02.png" alt="Run show ip to list every interface and its address." loading="lazy"><div class="screenshot-caption">Run show ip to list every interface and its address.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> Start with the basics: an interface with a missing or wrong address explains most connectivity problems before you look any deeper.</p></div>
+<ul class="step-list">
+<li>Run <code>show ip route</code> to see the routing table, including the default route via 10.120.1.254.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s03.png" alt="Run show ip route to see the routing table, including the default route via 10.120.1.254." loading="lazy"><div class="screenshot-caption">Run show ip route to see the routing table, including the default route via 10.120.1.254.</div></div>
         </div>
       </div>
 
-      <!-- 8.2 -->
       <div class="task-collapsible" id="tc-8-2">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 8.2</span>
-          <span class="task-collapsible-title">Network &amp; Systems Diagnostics (Docker, VRRP, IPSec, tcpdump)</span>
+          <span class="task-collapsible-title">Neighbours and ZPA mappings (Console tab)</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list"><li>Type <code>docker ps</code> — lists running containers (IDs, names, statuses, images).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p206-a.png" alt="docker ps output"><div class="screenshot-caption"><code>docker ps</code> — the networking function containers.</div></div>
-          <ul class="step-list">
-            <li>Check VRRP inside the VyOS container:
-              <ul class="sub-steps">
-                <li><code>docker exec vyos_container su - vyos sh -c "sudo /opt/vyatta/bin/vyatta-op-cmd-wrapper show vrrp"</code></li>
-              </ul>
-            </li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p206-b.png" alt="show vrrp output in vyos container"><div class="screenshot-caption">VRRP status inside the VyOS container (HA state).</div></div>
-          <ul class="step-list"><li>Check the IPSec tunnels inside StrongSwan: <code>docker exec strongswan ipsec status</code>.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p207-a.png" alt="ipsec status in strongswan container"><div class="screenshot-caption"><code>ipsec status</code> — IPSec connections/tunnels.</div></div>
-          <ul class="step-list">
-            <li>In Skytap, open the <strong>Windows Server</strong> (VLAN10).</li>
-            <li>From Command Prompt, run a continuous ping: <code>ping 8.8.8.8 -t</code>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p208-a.png" alt="Select Windows Server in Skytap"><div class="screenshot-caption">Open the Windows Server (VLAN10).</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p209-a.png" alt="ping 8.8.8.8 -t continuous"><div class="screenshot-caption"><code>ping 8.8.8.8 -t</code> — generate steady ICMP traffic.</div></div>
-          <ul class="step-list"><li>Switch back to the <strong>Console</strong> tab and capture the packets: <code>tcpdump -i ge6 icmp -c 20</code> — captures 20 ICMP packets on ge6 (VLAN10's LAN interface).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab8-p210-a.png" alt="tcpdump ge6 icmp capture"><div class="screenshot-caption"><code>tcpdump -i ge6 icmp -c 20</code> confirms the ping traversing ge6.</div></div>
-          <div class="callout callout-success"><p><strong>Done:</strong> You can now inspect interfaces, routing, HA/IPSec container status, and live traffic from the Console. Next, the Ransomware Kill Switch.</p></div>
+<ul class="step-list">
+<li>Open the <strong>Console</strong> tab and run <code>ip neighbour</code> to see the ARP table of LAN hosts.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s04.png" alt="Open the Console tab and run ip neighbour to see the ARP table of LAN hosts." loading="lazy"><div class="screenshot-caption">Open the Console tab and run ip neighbour to see the ARP table of LAN hosts.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> This is the list of LAN hosts the gateway has learned through ARP. A host that is missing here has never reached the gateway, which points to a LAN or VLAN problem rather than a policy problem.</p></div>
+<ul class="step-list">
+<li>Run <code>cat /etc/airgap/zcc/fqdn.txt</code> and confirm <strong>dcweb.ztwan.lab</strong> is listed — the private app you opened in Lab 3.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s05.png" alt="Run cat /etc/airgap/zcc/fqdn.txt and confirm dcweb.ztwan.lab is listed — the private app you opened in Lab 3." loading="lazy"><div class="screenshot-caption">Run cat /etc/airgap/zcc/fqdn.txt and confirm dcweb.ztwan.lab is listed — the private app you opened in Lab 3.</div></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-8-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 8.3</span>
+          <span class="task-collapsible-title">Containers, VRRP and live traffic</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+<ul class="step-list">
+<li>Run <code>docker ps</code>: every ZTB service runs as a container and all should be Up.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s06.png" alt="Run docker ps: every ZTB service runs as a container and all should be Up." loading="lazy"><div class="screenshot-caption">Run docker ps: every ZTB service runs as a container and all should be Up.</div></div>
+<ul class="step-list">
+<li>Run <code>docker stats --no-stream</code> and check no container is close to its CPU or memory limit.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s07.png" alt="Run docker stats --no-stream and check no container is close to its CPU or memory limit." loading="lazy"><div class="screenshot-caption">Run docker stats --no-stream and check no container is close to its CPU or memory limit.</div></div>
+<ul class="step-list">
+<li>Now type <code>docker exec vyos_container</code> <code>su - vyos</code> <code>sh -c '/opt/vyatta/bin/vyatta-op-cmd-wrapper show vrrp'</code>. This command executes the <code>show vrrp</code> VRRP (Virtual Router Redundancy Protocol) status command inside the VyOS container using Docker, by switching to the <code>vyos</code> user.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s08.png" alt="Now type docker exec vyos_container su - vyos sh -c '/opt/vyatta/bin/vyatta-op-cmd-wrapper show vrrp'. This command executes the show vrrp VRRP…" loading="lazy"><div class="screenshot-caption">Now type docker exec vyos_container su - vyos sh -c '/opt/vyatta/bin/vyatta-op-cmd-wrapper show vrrp'. This command executes the show vrrp VRRP…</div></div>
+<ul class="step-list">
+<li>Now, for the last command to test. You need to run a ping test from your Subnet10 (Windows <strong>Server</strong>). For this, go to the CloudShare portal and log in to the Windows Server.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s09.png" alt="Now, for the last command to test. You need to run a ping test from your Subnet10 (Windows Server). For this, go to the CloudShare portal and log in…" loading="lazy"><div class="screenshot-caption">Now, for the last command to test. You need to run a ping test from your Subnet10 (Windows Server). For this, go to the CloudShare portal and log in…</div></div>
+<ul class="step-list">
+<li>Open the command prompt and run the continuous ping test by using this command – <code>ping 8.8.8.8 -t</code></li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s10.png" alt="Open the command prompt and run the continuous ping test by using this command – ping 8.8.8.8 -t" loading="lazy"><div class="screenshot-caption">Open the command prompt and run the continuous ping test by using this command – ping 8.8.8.8 -t</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> The capture in the next step needs live traffic to show. A continuous ping keeps packets flowing while you switch back to the Console tab.</p></div>
+<p>Now, switch back to the Console tab and type <code>tcpdump -i ge6 icmp -c 20</code>. This command captures and displays 20 ICMP packets (such as ping requests/replies) on the <code>ge6</code> network interface.</p>
+<div class="screenshot-embed"><img src="screenshots/lab8-s11.png" alt="Now, switch back to the Console tab and type tcpdump -i ge6 icmp -c 20. This command captures and displays 20 ICMP packets (such as ping…" loading="lazy"><div class="screenshot-caption">Now, switch back to the Console tab and type tcpdump -i ge6 icmp -c 20. This command captures and displays 20 ICMP packets (such as ping…</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> ge6 is the Subnet10 LAN interface, so you see the Server’s pings as they arrive at the gateway — before any policy or tunnel is applied.</p></div>
+        </div>
+      </div>
+
+      <div class="task-collapsible" id="tc-8-4">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 8.4</span>
+          <span class="task-collapsible-title">Policy hits at the data plane</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <div class="task-purpose"><strong>Purpose:</strong> The portal shows whether a rule is active; counters show whether traffic actually matches it.</div>
+<ul class="step-list">
+<li>Run <code>iptables -nvL PBR-RULES -t mangle</code>. The pkts column for your Lab 5 rule is non-zero.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s12.png" alt="Run iptables -nvL PBR-RULES -t mangle. The pkts column for your Lab 5 rule is non-zero." loading="lazy"><div class="screenshot-caption">Run iptables -nvL PBR-RULES -t mangle. The pkts column for your Lab 5 rule is non-zero.</div></div>
+<ul class="step-list">
+<li>Run <code>ip rule ls</code> to see marked traffic pointed at its routing table.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab8-s13.png" alt="Run ip rule ls to see marked traffic pointed at its routing table." loading="lazy"><div class="screenshot-caption">Run ip rule ls to see marked traffic pointed at its routing table.</div></div>
+<div class="callout callout-info"><p><strong>Tip:</strong> A PBR rule that is Active in the portal but shows zero packets usually has the wrong source subnet. GE6 = Subnet10, GE7 = Subnet20, GE8 = Subnet30.</p></div>
         </div>
       </div>
 
@@ -209,7 +328,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">Console troubleshooting ladder: <code>ip a</code> (interfaces/IPs) → <code>ip route</code> (routing) → <code>ip neighbour</code> (ARP/L2). The ZT800 runs functions in containers: <strong>VyOS</strong> = VRRP (<code>show vrrp</code>), <strong>StrongSwan</strong> = IPSec (<code>ipsec status</code>), listed by <code>docker ps</code>. Trace a live ping with <code>tcpdump -i ge6 icmp -c 20</code> — ge6 = VLAN10's LAN interface. <code>cat /etc/airgap/zcc/fqdn.txt | grep dcweb</code> reveals <code>dcweb.ztwan.lab</code>.</div>
+          <div class="mental-note-block-text"><code>show …</code>/<code>run …</code>/<code>config …</code> belong in the <strong>Appliance Admin Console</strong>; Linux tools (<code>ip</code>, <code>tcpdump</code>, <code>docker</code>, <code>iptables</code>) belong in the <strong>Console tab</strong>. Both gateways showing MASTER means VRRP split-brain — check ge4.</div>
         </div>
       </div>
 
@@ -218,7 +337,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab8" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab8','Lab 8: Troubleshoot & Debug')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab8','Lab 8: Admin Console Diagnostics')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -238,43 +357,30 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab8a" onchange="toggleDone(this)"><label for="chk-lab8a">Interface / route / neighbour commands run</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab8b" onchange="toggleDone(this)"><label for="chk-lab8b">VRRP + IPSec container status checked</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab8c" onchange="toggleDone(this)"><label for="chk-lab8c">Live ICMP captured on ge6</label></li>
-      </ul>
+        <li class="progress-item"><input type="checkbox" id="chk-lab8a" onchange="toggleDone(this)"><label for="chk-lab8a">All commands return the expected data on the Active unit.</label></li>
+        </ul>
     </div>
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
-      <div class="qr-item"><div class="qr-term">Console tab</div><div class="qr-def">The ZT800's shell inside the site view — where you run ip/docker/tcpdump commands.</div></div>
-      <div class="qr-item"><div class="qr-term">ip a</div><div class="qr-def">Show all interfaces and their IP addresses / status.</div></div>
-      <div class="qr-item"><div class="qr-term">ip route</div><div class="qr-def">Show the routing table — how traffic is directed to destinations.</div></div>
-      <div class="qr-item"><div class="qr-term">ip neighbour</div><div class="qr-def">Show the ARP/neighbour table (IP → MAC). "neighbor" spelling also works.</div></div>
-      <div class="qr-item"><div class="qr-term">docker ps</div><div class="qr-def">List running containers — the ZT800's networking functions run containerised.</div></div>
-      <div class="qr-item"><div class="qr-term">VyOS container</div><div class="qr-def">Routing/VRRP function; <code>show vrrp</code> reports HA (active/standby) state.</div></div>
-      <div class="qr-item"><div class="qr-term">StrongSwan container</div><div class="qr-def">IPSec function; <code>ipsec status</code> shows tunnel status to ZIA.</div></div>
-      <div class="qr-item"><div class="qr-term">tcpdump -i ge6 icmp</div><div class="qr-def">Live capture of ICMP on ge6 (VLAN10 LAN interface) — trace a real ping.</div></div>
-      <div class="qr-item"><div class="qr-term">dcweb.ztwan.lab</div><div class="qr-def">The datacenter web app FQDN, stored in /etc/airgap/zcc/fqdn.txt.</div></div>
+      <div class="qr-item"><div class="qr-term">Console tab</div><div class="qr-def">Linux shell on the gateway (Site › Troubleshooting › Console).</div></div>
+      <div class="qr-item"><div class="qr-term">ip neighbour</div><div class="qr-def">ARP table of LAN hosts the gateway has learned.</div></div>
+      <div class="qr-item"><div class="qr-term">docker ps</div><div class="qr-def">Lists ZTB service containers; all should be Up.</div></div>
+      <div class="qr-item"><div class="qr-term">PBR-RULES</div><div class="qr-def">iptables mangle chain holding PBR marks and counters.</div></div>
       </div>
     </div>
   </aside>
 </main>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab7.html">
-    <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 7: Logs &amp; Monitoring</span>
-  </a>
-  <div class="page-nav-message">When something breaks, you now know where to look.</div>
-  <a class="page-nav-btn page-nav-next" href="lab9.html">
-    <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 9: Ransomware Kill Switch</span>
-  </a>
+  <a class="page-nav-btn page-nav-prev" href="lab7.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 7: Monitor the Branch</span></a>
+  <div class="page-nav-message">Outside-in diagnostics are a habit now.</div>
+  <a class="page-nav-btn page-nav-next" href="lab9.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 9: Ransomware Kill Switch</span></a>
 </div>
 
 <footer>
-  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 8: Troubleshoot &amp; Debug</span>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Rev 6.0</span>
+  <span>Lab 8: Admin Console Diagnostics</span>
 </footer>
 
 <script>
@@ -286,21 +392,26 @@ function toggleConfig(){var panel=document.getElementById('config-panel');var bt
 function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
 function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
 function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
-function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
-function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
-function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('cs-input').value=cfg.cs||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),cs:document.getElementById('cs-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
 function applyConfig(){
   var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
   document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
   document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
   var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<Student FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
   var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var appc=slug?slug+'StudentAppC':'pod##StudentAppC';document.querySelectorAll('.d-appc').forEach(function(el){el.textContent=appc;});var da=document.getElementById('d-appc');if(da)da.textContent=appc;
+  document.querySelectorAll('.var-podU').forEach(function(el){if(up){el.textContent=up;el.classList.add('filled');}else{el.textContent='POD##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podL').forEach(function(el){if(slug){el.textContent=slug;el.classList.add('filled');}else{el.textContent='pod##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podN').forEach(function(el){if(slug){el.textContent=slug.slice(3);el.classList.add('filled');}else{el.textContent='##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
 }
 function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
-['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
 
 const PAGE_KEY='edu-280-lab-lab8';
-const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+const SECTIONS={'lab0': 'Lab 0: Access Your Lab', 'lab1': 'Lab 1: Deploy the HA Branch Site', 'lab2': 'Lab 2: Segment East-West Traffic', 'lab3': 'Lab 3: Internet & Private Access', 'lab4': 'Lab 4: Microsegment OT Devices', 'lab5': 'Lab 5: SaaS Traffic with PBR', 'lab6': 'Lab 6: DNS Policies', 'lab7': 'Lab 7: Monitor the Branch', 'lab8': 'Lab 8: Admin Console Diagnostics', 'lab9': 'Lab 9: Ransomware Kill Switch', 'lab10': 'Lab 10: WAN Link Failover', 'lab11': 'Lab 11: Troubleshoot WAN Failover', 'wrapup': 'Wrap-Up'};
 
 function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
 document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
@@ -321,7 +432,7 @@ function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementBy
 function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
 function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
 function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.term-body code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
 function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();

@@ -7,7 +7,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 6: Validate Securing Communication — EDU-280</title>
+<title>Lab 6: Redirect and Block Domains with DNS Policies — EDU-280</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,14 +24,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
 .task-collapsible-body{display:none;padding:18px 20px 12px;}
 .task-collapsible.open>.task-collapsible-body{display:block;}
-.screenshot-embed img{max-height:200px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
 .screenshot-embed img:hover{opacity:0.8;}
 .img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
 .img-lightbox.active{display:flex;}
-.img-lightbox img{max-width:90vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
 .img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.ann{color:var(--blue);font-weight:700;font-size:0.9em;}
+.callout-why{background:#f5eef8;border-left:3px solid #6c3483;}.callout-why p{color:#3f1d52;}
+.callout-see{background:#e8f0fb;border-left:3px solid #1a56db;}.callout-see p{color:#0f2f66;}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.term-card{border-radius:10px;overflow:hidden;margin:14px 0;border:1px solid #0b1f44;}
+.term-head{background:#001744;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;}
+.term-body{background:#0b1f44;padding:12px 16px;}
+.term-line{display:flex;gap:10px;align-items:center;margin:3px 0;}
+.term-prompt{color:#9db8f5;font-family:Consolas,monospace;font-size:13px;}
+.term-line code{background:transparent!important;color:#e6eefc;font-family:Consolas,monospace;font-size:13px;padding:0;white-space:pre-wrap;word-break:break-word;}
+.term-line .copy-inline{margin-left:4px;}
+.term-expected{background:#e9f7ef;border-top:3px solid #17683a;padding:10px 14px;font-size:13px;color:#0f4a27;line-height:1.6;}
+.term-exp-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;background:#17683a;color:#fff;border-radius:4px;padding:1px 7px;margin-right:8px;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:34%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -42,9 +63,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 6 · EDU-280</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Validate Securing Internal and External Communication Policies</h1>
+  <h1>Lab 6: Redirect and Block Domains with DNS Policies</h1>
   <div class="motivation-banner">
-    <p>Prove the whole design works: from OT, IoT, and the Windows Server, confirm traffic egresses via Zscaler, the Internet is up, gambling sites are blocked, the datacenter web app loads over ZPA — then RDP into the Windows server through ZPA from an off-trusted-network ZCC host.</p>
+    <p>Enforce DNS policy at the branch before queries leave the site — ideal for IoT and OT devices without agents.</p>
   </div>
 </header>
 
@@ -61,14 +82,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="config-body" id="config-body">
     <div class="config-grid">
       <div class="config-field">
-        <label for="pod-input">POD Number</label>
+        <label for="pod-input">Pod Number</label>
         <div class="config-field-row">
           <input type="text" id="pod-input" placeholder="POD06" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('pod-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-field">
-        <label for="fqdn-input">Student FQDN</label>
+        <label for="fqdn-input">Tenant FQDN</label>
         <div class="config-field-row">
           <input type="text" id="fqdn-input" placeholder="zs2115.safemarch.com" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
@@ -82,10 +103,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
       </div>
       <div class="config-field">
-        <label for="skytap-input">Skytap Passcode</label>
+        <label for="cs-input">CloudShare Passphrase</label>
         <div class="config-field-row">
-          <input type="text" id="skytap-input" placeholder="(from email)" autocomplete="off">
-          <button class="config-copy-btn" onclick="copyConfigField('skytap-input',this)" title="Copy">⎘</button>
+          <input type="text" id="cs-input" placeholder="(from email)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('cs-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-actions">
@@ -94,9 +115,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
     </div>
     <div class="config-derived" id="config-derived">
-      <span><strong>ZCC login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Win Server (RDP):</strong> <code>10.1.10.10</code> · administrator / Zscaler123!</span>
-      <span><strong>DC web app:</strong> <code>http://dcweb.ztwan.lab/</code></span>
+      <span><strong>Portal login:</strong> <code id="d-login">pod##-student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Site name:</strong> <code id="d-site">POD##-Student-Lab</code></span>
+      <span><strong>App Connector:</strong> <code id="d-appc">pod##StudentAppC</code></span>
     </div>
   </div>
 </div>
@@ -110,7 +131,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
     </button>
     <div class="qpanel-body" id="qpanel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
   <div class="notes-panel" id="notes-panel">
     <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
@@ -120,7 +141,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
     <div class="notes-panel-body" id="notes-panel-body"></div>
-  <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+    <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
 
@@ -128,140 +149,180 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="content-col">
 
     <div class="section-block" id="section-lab6">
-      <h2>Lab 6: Validate Securing Internal and External Communication Policies</h2>
+      <h2>Lab 6: Redirect and Block Domains with DNS Policies</h2>
 
       <div class="lab-header-card">
-        <div class="lab-badge">VALIDATION</div>
-        <p>Time to confirm everything you built. From each endpoint you'll verify four things, then finish with a Zero Trust remote-access scenario:</p>
-        <ul style="margin-top:10px;">
-          <li>Traffic is routed through the <strong>Zscaler cloud</strong> (<code>ip.zscaler.com</code>)</li>
-          <li>The <strong>Internet is up</strong> (ping gateway, 8.8.8.8, cnn.com)</li>
-          <li><strong>Gambling/gaming sites are blocked</strong> (e.g. <code>888.com</code>)</li>
-          <li>Inter-VLAN forwarding + the datacenter web app over ZPA behave as expected</li>
-          <li><strong>RDP into the Windows server via ZPA</strong> from an off-trusted-network ZCC host</li>
+        <div class="lab-badge">CORE LAB</div>
+        <p>ZTB enforces DNS policy at the branch before queries leave the site, so it protects IoT and OT devices that cannot run an agent.</p>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> You need two DNS controls: lookups of google.com from the OT segment must be answered with a fixed address, and WhatsApp must be unreachable from the IoT segment.</p></div>
+        <p style="margin-top:10px;"><strong>In this lab you will:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Record baseline DNS answers from OT1 and IoT.</li>
+          <li>Create domain objects for Google and WhatsApp.</li>
+          <li>Override google.com for Subnet30 and reject *.whatsapp.com for Subnet20.</li>
+          <li>Verify both from the endpoints.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria — tick when done</strong></p><ul class="criteria-list"><li>☐ <span class="var var-podU">POD##</span>-Google and <span class="var var-podU">POD##</span>-Whatsapp objects exist.</li><li>☐ google.com → 8.8.8.8 from OT1.</li><li>☐ web.whatsapp.com refused from IoT.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ No change — test from the right subnet: Google on OT1 (Subnet30), WhatsApp on IoT (Subnet20).</li><li>⚠ Old answer returned — flush the client cache: resolvectl flush-caches.</li></ul></div>
         <div class="lab-meta">
+          <div class="lab-meta-item"><strong>Time:</strong> 20 min</div>
+          <div class="lab-meta-item"><strong>Type:</strong> Core</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 1</div>
+          <div class="lab-meta-item"><strong>You’ll use:</strong> Experience Center, OT1, IoT</div>
           <div class="lab-meta-item"><strong>Course:</strong> EDU-280</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 2.2 · Feb 2026</div>
-          <div class="lab-meta-item"><strong>Platform:</strong> Skytap + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 6.0 · Oct 2026</div>
         </div>
-        <figure class="lab-hero">
-          <img src="images/lab6-hero.png" alt="Lab 6 — Validate Securing Communication" loading="lazy">
-        </figure>
       </div>
 
+      <div class="socratic-block" id="soc-lab6">
+  <div class="socratic-header">
+    <span class="socratic-icon">💭</span>
+    <span class="socratic-label">THINK FIRST · DNS POLICIES</span>
+  </div>
+  <p class="socratic-insight">DNS is the first step of nearly every connection, so controlling it controls reachability.</p>
+  <ul class="socratic-questions">
+    <li>Why does refusing the DNS query block WhatsApp without inspecting any traffic?
+      <div class="answer-area" data-section="lab6-q1">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+            <div class="model-answer-text">The device never learns an IP address, so it cannot connect. This works for IoT devices that cannot run an agent.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>Why are the two rules attached to different source subnets?
+      <div class="answer-area" data-section="lab6-q2">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+            <div class="model-answer-text">Each rule matches only its source subnet, so the same service can be treated differently per segment — Google overridden for OT, WhatsApp blocked for IoT.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>You still see the old answer after committing. What should you check?
+      <div class="answer-area" data-section="lab6-q3">
+        <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+        <div class="answer-buttons">
+          <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+          <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+        </div>
+        <div class="model-answers" style="display:none;">
+          <div class="model-answer-item">
+            <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+            <div class="model-answer-text">Test from the right subnet and flush the client cache with resolvectl flush-caches.</div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
 
-      <!-- 6.1 -->
       <div class="task-collapsible open" id="tc-6-1">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 6.1</span>
-          <span class="task-collapsible-title">Validate OT — VLAN30 (Ubuntu)</span>
+          <span class="task-collapsible-title">Record the baseline</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list"><li>In Skytap, open <strong>OT1</strong> (VLAN30).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p154-a.png" alt="Select OT1 host in Skytap"><div class="screenshot-caption">Open OT1 (VLAN30).</div></div>
-          <ul class="step-list"><li><strong>6.1.1 · Cloud routing:</strong> open a browser and visit <code>ip.zscaler.com</code> — it shows the nearest Zscaler service location, confirming correct routing.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p155-a.png" alt="ip.zscaler.com service location for OT"><div class="screenshot-caption"><code>ip.zscaler.com</code> confirms traffic egresses via Zscaler.</div></div>
-          <ul class="step-list">
-            <li><strong>6.1.2 · Internet up:</strong> in the terminal test <code>ping 10.1.30.1</code>, <code>ping 8.8.8.8</code>, and <code>ping cnn.com</code> (or <code>wget cnn.com</code>).</li>
-          </ul>
-          <div class="callout callout-note"><p><strong>Note:</strong> To stop a ping press <strong>Ctrl+C</strong>; to suspend it press <strong>Ctrl+Z</strong>.</p></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p156-a.png" alt="ping tests from OT"><div class="screenshot-caption">Gateway, 8.8.8.8, and cnn.com all reachable.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p157-a.png" alt="ping/wget cnn.com from OT"><div class="screenshot-caption">Internet is up from VLAN30.</div></div>
-          <ul class="step-list"><li><strong>6.1.3 · URL filtering:</strong> visit <code>http://888.com/</code> — it should show the block page. If not, check Chrome safe-browsing; other test URLs: <code>http://lottery.com</code>, <code>http://casino.com</code>.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p158-a.png" alt="888.com blocked page from OT"><div class="screenshot-caption">Gambling site 888.com is blocked by ZIA URL filtering.</div></div>
-          <ul class="step-list"><li><strong>6.1.4 · Inter-VLAN:</strong> ping <code>10.1.10.10</code> (Server, VLAN10) from OT — it succeeds (no restriction configured for this path).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p159-a.png" alt="ping VLAN10 server from OT succeeds"><div class="screenshot-caption">OT → Windows Server (10.1.10.10) succeeds.</div></div>
+<ul class="step-list">
+<li>On <strong>OT1</strong>, run <code>nslookup google.com</code>. It returns Google’s public addresses.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s01.png" alt="On OT1, run nslookup google.com. It returns Google’s public addresses." loading="lazy"><div class="screenshot-caption">On OT1, run nslookup google.com. It returns Google’s public addresses.</div></div>
+<ul class="step-list">
+<li>On <strong>IoT</strong>, run <code>nslookup web.whatsapp.com</code>. It resolves.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s02.png" alt="On IoT, run nslookup web.whatsapp.com. It resolves." loading="lazy"><div class="screenshot-caption">On IoT, run nslookup web.whatsapp.com. It resolves.</div></div>
+<ul class="step-list">
+<li>In the IoT browser, <strong>web.whatsapp.com</strong> loads.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s03.png" alt="In the IoT browser, web.whatsapp.com loads." loading="lazy"><div class="screenshot-caption">In the IoT browser, web.whatsapp.com loads.</div></div>
         </div>
       </div>
 
-      <!-- 6.2 -->
       <div class="task-collapsible" id="tc-6-2">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 6.2</span>
-          <span class="task-collapsible-title">Validate IoT — VLAN20 (Ubuntu)</span>
+          <span class="task-collapsible-title">Create the domain objects</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list"><li>In Skytap, open the <strong>IoT</strong> host (VLAN20).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p160-a.png" alt="Select IoT host in Skytap"><div class="screenshot-caption">Open the IoT host (VLAN20).</div></div>
-          <ul class="step-list"><li><strong>6.2.1 · Cloud routing:</strong> run <code>wget http://ip.zscaler.com</code> — the response shows the Zscaler service location.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p161-a.png" alt="wget ip.zscaler.com from IoT"><div class="screenshot-caption">IoT traffic egresses via Zscaler.</div></div>
-          <ul class="step-list"><li><strong>6.2.2 · Internet up:</strong> <code>ping 10.1.20.1</code>, <code>ping 8.8.8.8</code>, <code>wget cnn.com</code>.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p162-a.png" alt="ping tests from IoT"><div class="screenshot-caption">Gateway + 8.8.8.8 reachable.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p163-a.png" alt="wget cnn.com from IoT"><div class="screenshot-caption">Internet is up from VLAN20.</div></div>
-          <ul class="step-list"><li><strong>6.2.3 · URL filtering:</strong> <code>wget http://www.888.com</code> — confirm it's blocked.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p164-a.png" alt="888.com blocked from IoT via wget"><div class="screenshot-caption">888.com blocked from VLAN20.</div></div>
-          <ul class="step-list"><li><strong>6.2.4 · Inter-VLAN:</strong> ping <code>10.1.10.10</code> (Server) from IoT — it succeeds.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p165-a.png" alt="ping VLAN10 server from IoT succeeds"><div class="screenshot-caption">IoT → Windows Server (10.1.10.10) succeeds.</div></div>
+<ul class="step-list">
+<li>Go to <strong>Zero Trust Branch &gt; Resources &gt; Objects</strong> <span class="ann">[1]</span> &gt; <strong>User Defined Groups</strong> <span class="ann">[2]</span>, click <strong>Add</strong> <span class="ann">[3]</span> and choose <strong>Domains</strong> <span class="ann">[4]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s04.png" alt="Go to Zero Trust Branch &gt; Resources &gt; Objects [1] &gt; User Defined Groups [2], click Add [3] and choose Domains [4]." loading="lazy"><div class="screenshot-caption">Go to Zero Trust Branch &gt; Resources &gt; Objects [1] &gt; User Defined Groups [2], click Add [3] and choose Domains [4].</div></div>
+<div class="values-card"><div class="values-head">ENTER THESE VALUES</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td class="values-field"><strong><span class="var var-podU">POD##</span>-Google [1]</strong></td><td><strong>google.com [2]</strong></td></tr></tbody></table></div>
+<div class="screenshot-embed"><img src="screenshots/lab6-s05.png" alt="Enter these values in the form" loading="lazy"><div class="screenshot-caption">Enter these values in the form</div></div>
+<div class="screenshot-embed"><img src="screenshots/lab6-s06.png" alt="Enter these values in the form" loading="lazy"><div class="screenshot-caption">Enter these values in the form</div></div>
+<p>Enter the domain, click <strong>Add</strong> <span class="ann">[3]</span>, then <strong>Add</strong> <span class="ann">[4]</span> to save.</p>
         </div>
       </div>
 
-      <!-- 6.3 -->
       <div class="task-collapsible" id="tc-6-3">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 6.3</span>
-          <span class="task-collapsible-title">Validate Windows Server — VLAN10 (+ DC web app over ZPA)</span>
+          <span class="task-collapsible-title">Create the DNS policies</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list"><li>In Skytap, open the <strong>Server</strong> (VLAN10).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p166-a.png" alt="Select Windows Server in Skytap"><div class="screenshot-caption">Open the Windows Server (VLAN10).</div></div>
-          <ul class="step-list"><li><strong>6.3.1 · Cloud routing:</strong> visit <code>ip.zscaler.com</code>.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p167-a.png" alt="ip.zscaler.com from Windows Server"><div class="screenshot-caption">Server traffic egresses via Zscaler.</div></div>
-          <ul class="step-list"><li><strong>6.3.2 · Internet up:</strong> from Command Prompt: <code>ping 10.1.10.1</code>, <code>ping 8.8.8.8</code>, <code>ping cnn.com</code>.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p168-a.png" alt="ping tests from Windows Server"><div class="screenshot-caption">Gateway + 8.8.8.8 reachable.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p169-a.png" alt="ping cnn.com from Windows Server"><div class="screenshot-caption">Internet is up from VLAN10.</div></div>
-          <ul class="step-list"><li><strong>6.3.3 · URL filtering:</strong> visit <code>http://www.888.com</code> — confirm it's blocked.</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p170-a.png" alt="888.com blocked from Windows Server"><div class="screenshot-caption">888.com blocked from VLAN10.</div></div>
-          <ul class="step-list"><li><strong>6.3.4 · ZPA outbound:</strong> open a browser and load <code>http://dcweb.ztwan.lab/</code> — the datacenter-hosted page loads over ZPA.</li></ul>
-          <div class="callout callout-caution"><p><strong>Caution:</strong> Use the full URL with <code>http://</code> (not <code>https://</code>) or the connection will fail.</p></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p171-a.png" alt="dcweb.ztwan.lab loads over ZPA"><div class="screenshot-caption">The DC web app <code>dcweb.ztwan.lab</code> loads via ZPA (outbound use case).</div></div>
+<ul class="step-list">
+<li>In your site open <strong>DNS Policies</strong> <span class="ann">[1]</span> and click <strong>Configure</strong> <span class="ann">[2]</span>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s07.png" alt="In your site open DNS Policies [1] and click Configure [2]." loading="lazy"><div class="screenshot-caption">In your site open DNS Policies [1] and click Configure [2].</div></div>
+<ul class="step-list">
+<li>Click <strong>Add Policy</strong>. Create both rules in the table, then <strong>Commit</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s08.png" alt="Click Add Policy. Create both rules in the table, then Commit." loading="lazy"><div class="screenshot-caption">Click Add Policy. Create both rules in the table, then Commit.</div></div>
+<div class="values-card"><div class="values-head">ENTER THESE VALUES</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td class="values-field"><strong>Rule Name</strong> <span class="ann">[1]</span></td><td><strong><span class="var var-podU">POD##</span>-Override-Google</strong></td></tr><tr><td class="values-field"><strong>Source</strong> <span class="ann">[2–4]</span></td><td><strong>Subnet/Host 10.1.30.0/24</strong></td></tr><tr><td class="values-field"><strong>Destination Domains</strong> <span class="ann">[5]</span></td><td><strong><span class="var var-podU">POD##</span>-Google</strong></td></tr><tr><td class="values-field"><strong>Action</strong> <span class="ann">[6]</span></td><td><strong>Override</strong></td></tr><tr><td class="values-field"><strong>Override IP / Error code</strong> <span class="ann">[7]</span></td><td><strong>8.8.8.8</strong></td></tr></tbody></table></div>
+<div class="screenshot-embed"><img src="screenshots/lab6-s09.png" alt="Enter these values in the form" loading="lazy"><div class="screenshot-caption">Enter these values in the form</div></div>
+<p>Click <strong>Add</strong> <span class="ann">[8]</span>.</p>
+<ul class="step-list">
+<li>Click <strong>Commit</strong> to activate the rule.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s10.png" alt="Click Commit to activate the rule." loading="lazy"><div class="screenshot-caption">Click Commit to activate the rule.</div></div>
+<ul class="step-list">
+<li>Again, click <strong>Add Policy</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s11.png" alt="Again, click Add Policy." loading="lazy"><div class="screenshot-caption">Again, click Add Policy.</div></div>
+<div class="values-card"><div class="values-head">ENTER THESE VALUES</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td class="values-field"><strong>Rule Name</strong> <span class="ann">[1]</span></td><td><strong><span class="var var-podU">POD##</span>-Block-Whatsapp</strong></td></tr><tr><td class="values-field"><strong>Source</strong> <span class="ann">[2–4]</span></td><td><strong>Subnet/Host 10.1.20.0/24</strong></td></tr><tr><td class="values-field"><strong>Destination Domains</strong> <span class="ann">[5]</span></td><td><strong><span class="var var-podU">POD##</span>-Whatsapp</strong></td></tr><tr><td class="values-field"><strong>Action</strong> <span class="ann">[6]</span></td><td><strong>Reject</strong></td></tr><tr><td class="values-field"><strong>Override IP / Error code</strong> <span class="ann">[7]</span></td><td><strong>5 – Query Refused</strong></td></tr></tbody></table></div>
+<div class="screenshot-embed"><img src="screenshots/lab6-s12.png" alt="Enter these values in the form" loading="lazy"><div class="screenshot-caption">Enter these values in the form</div></div>
+<div class="screenshot-embed"><img src="screenshots/lab6-s13.png" alt="Enter these values in the form" loading="lazy"><div class="screenshot-caption">Enter these values in the form</div></div>
         </div>
       </div>
 
-      <!-- 6.4 -->
       <div class="task-collapsible" id="tc-6-4">
         <button class="task-collapsible-header" onclick="toggleTask(this)">
           <span class="task-num-badge">TASK 6.4</span>
-          <span class="task-collapsible-title">RDP into the Windows Server via ZPA (ZCC host on the Internet)</span>
+          <span class="task-collapsible-title">Verify</span>
           <span class="task-collapsible-chevron">▾</span>
         </button>
         <div class="task-collapsible-body">
-          <ul class="step-list">
-            <li>In Skytap, open the <strong>ZCC Lab Machine</strong> VM.</li>
-            <li>Log into Zscaler Client Connector: username <code class="d-login">pod##-student@&lt;FQDN&gt;</code> [1] › <strong>Login</strong> [2], then the emailed password [1] › <strong>Sign In</strong> [2].</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p172-a.png" alt="Select ZCC Lab Machine"><div class="screenshot-caption">Open the ZCC Lab Machine.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p173-a.png" alt="ZCC username login"><div class="screenshot-caption">Enter your POD student login → Login.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p174-a.png" alt="ZCC password sign in"><div class="screenshot-caption">Enter the emailed password → Sign In.</div></div>
-          <ul class="step-list">
-            <li>ZCC minimises to the Windows tray — reopen it.</li>
-            <li>Confirm <strong>Private Access</strong> &amp; <strong>Internet Security</strong> = ON, <strong>Authentication</strong> = Authenticated, <strong>Network Type</strong> = Off-Trusted Network.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p175-a.png" alt="Reopen ZCC from tray"><div class="screenshot-caption">Reopen ZCC from the tray.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p176-a.png" alt="ZCC status Private Access ON Authenticated Off-Trusted"><div class="screenshot-caption">ZCC: Private Access + Internet Security ON, Authenticated, Off-Trusted Network.</div></div>
-          <ul class="step-list"><li>Confirm web traffic is forwarded to Zscaler: browse to <code>http://ip.zscaler.com</code> — the public IP shows a Zscaler datacenter (true identity hidden).</li></ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p177-a.png" alt="ip.zscaler.com showing Zscaler datacenter IP for ZCC"><div class="screenshot-caption">User egresses via a Zscaler datacenter — no company identity exposed.</div></div>
-          <ul class="step-list">
-            <li><strong>6.4.1 · Ping test:</strong> from a command prompt, <code>ping 8.8.8.8</code> and <code>ping cnn.com</code> to confirm Internet.</li>
-            <li><strong>6.4.2 · Verify Win10 client:</strong> <code>ping 10.1.10.10</code>.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p178-a.png" alt="ping 8.8.8.8 from ZCC host"><div class="screenshot-caption">Internet reachable from the ZCC host.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p178-b.png" alt="ping cnn.com from ZCC host"><div class="screenshot-caption">cnn.com reachable.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p179-a.png" alt="ping 10.1.10.10 from ZCC host"><div class="screenshot-caption">The private server 10.1.10.10 is reachable via ZPA.</div></div>
-          <ul class="step-list">
-            <li><strong>6.4.3 · RDP via ZPA:</strong> open <strong>Remote Desktop</strong>, computer <code>10.1.10.10</code>, user <code>administrator</code>, password <code>Zscaler123!</code>, then <strong>Yes</strong> to connect. You reach the Windows 10 VM.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p180-a.png" alt="Remote Desktop computer 10.1.10.10"><div class="screenshot-caption">Remote Desktop → 10.1.10.10.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p181-a.png" alt="RDP credentials connect"><div class="screenshot-caption">administrator / Zscaler123! → connected over ZPA.</div></div>
-          <ul class="step-list">
-            <li><strong>6.4.4 · Verify the session:</strong> in Experience Center go to <strong>Logs</strong> [1] › <strong>Diagnostics</strong> [2], expand your session with the <strong>&gt;</strong> icon [3] to see username, policy name, application port, etc.</li>
-          </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p182-a.png" alt="Logs Diagnostics expand remote session"><div class="screenshot-caption">Logs › Diagnostics › expand the remote session.</div></div>
-          <div class="screenshot-embed"><img src="screenshots/lab6-p183-a.png" alt="RDP session details username policy port"><div class="screenshot-caption">Session details confirm the RDP-over-ZPA connection.</div></div>
-          <div class="callout callout-success"><p><strong>Done:</strong> Every endpoint validated and private RDP brokered through ZPA. Next, explore Logs and Monitoring.</p></div>
+<ul class="step-list">
+<li>On <strong>OT1</strong>, run <code>nslookup google.com</code> again. The answer is <strong>8.8.8.8</strong>.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s14.png" alt="On OT1, run nslookup google.com again. The answer is 8.8.8.8." loading="lazy"><div class="screenshot-caption">On OT1, run nslookup google.com again. The answer is 8.8.8.8.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> The override answers with a fixed address of your choice. In production this is typically used to send a domain to an internal server or a safe-search address; 8.8.8.8 simply makes the change easy to see.</p></div>
+<ul class="step-list">
+<li>On <strong>IoT</strong>, run <code>ping web.whatsapp.com</code>: “Temporary failure in name resolution”.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s15.png" alt="On IoT, run ping web.whatsapp.com: “Temporary failure in name resolution”." loading="lazy"><div class="screenshot-caption">On IoT, run ping web.whatsapp.com: “Temporary failure in name resolution”.</div></div>
+<div class="callout callout-why"><p><strong>Why:</strong> The gateway refuses the DNS query, so the device never learns an IP address to connect to. The block works without inspecting the traffic itself, which suits IoT devices that cannot run an agent.</p></div>
+<ul class="step-list">
+<li>In the IoT browser, web.whatsapp.com shows “This site can’t be reached”.</li>
+</ul>
+<div class="screenshot-embed"><img src="screenshots/lab6-s16.png" alt="In the IoT browser, web.whatsapp.com shows “This site can’t be reached”." loading="lazy"><div class="screenshot-caption">In the IoT browser, web.whatsapp.com shows “This site can’t be reached”.</div></div>
+<div class="callout callout-see"><p><strong>What you see:</strong> Each rule matches only its source subnet, so the same domain can be treated differently in different segments.</p></div>
         </div>
       </div>
 
@@ -269,7 +330,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">Per-endpoint checklist: <strong>ip.zscaler.com</strong> (cloud routing) → <strong>ping</strong> gateway/8.8.8.8/cnn.com (Internet) → <strong>888.com</strong> blocked (ZIA URL filter = proof of forwarding) → inter-VLAN + <code>http://dcweb.ztwan.lab/</code> over ZPA. <strong>ZPA RDP:</strong> ZCC (Off-Trusted, Authenticated) → RDP <code>10.1.10.10</code> (administrator / Zscaler123!) → verify in <strong>Logs › Diagnostics</strong>. ZPA = per-app access, server never exposed to the Internet — unlike a VPN.</div>
+          <div class="mental-note-block-text"><strong>Override</strong> answers with a fixed IP (<code>8.8.8.8</code>), <strong>Reject</strong> returns an error code (<code>5 – Query Refused</code>). Match by source subnet + domain object. Test Google on OT1 and WhatsApp on IoT.</div>
         </div>
       </div>
 
@@ -278,7 +339,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab6" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab6','Lab 6: Validation')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab6','Lab 6: DNS Policies')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -298,43 +359,32 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item"><input type="checkbox" id="chk-lab6a" onchange="toggleDone(this)"><label for="chk-lab6a">OT (VLAN30) validated</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab6b" onchange="toggleDone(this)"><label for="chk-lab6b">IoT (VLAN20) validated</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab6c" onchange="toggleDone(this)"><label for="chk-lab6c">Windows Server (VLAN10) + DC web app</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab6d" onchange="toggleDone(this)"><label for="chk-lab6d">RDP via ZPA verified in Diagnostics</label></li>
-      </ul>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6a" onchange="toggleDone(this)"><label for="chk-lab6a"><span class="var var-podU">POD##</span>-Google and <span class="var var-podU">POD##</span>-Whatsapp objects exist.</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6b" onchange="toggleDone(this)"><label for="chk-lab6b">google.com → 8.8.8.8 from OT1.</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6c" onchange="toggleDone(this)"><label for="chk-lab6c">web.whatsapp.com refused from IoT.</label></li>
+        </ul>
     </div>
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
-      <div class="qr-item"><div class="qr-term">ip.zscaler.com</div><div class="qr-def">Shows the Zscaler service location a host egresses through — confirms traffic is forwarded to the cloud.</div></div>
-      <div class="qr-item"><div class="qr-term">888.com block</div><div class="qr-def">ZIA URL filtering (Gambling) block page — doubles as proof the branch forwards Internet traffic to ZIA.</div></div>
-      <div class="qr-item"><div class="qr-term">VLAN gateways</div><div class="qr-def">10.1.30.1 (OT), 10.1.20.1 (IoT), 10.1.10.1 (Server) — first ping target for "Internet up" checks.</div></div>
-      <div class="qr-item"><div class="qr-term">dcweb.ztwan.lab</div><div class="qr-def">Datacenter-hosted web app reached over ZPA — use http:// (not https://) or it fails.</div></div>
-      <div class="qr-item"><div class="qr-term">ZCC</div><div class="qr-def">Zscaler Client Connector — endpoint agent; here it puts the host Off-Trusted and forwards to ZPA/ZIA.</div></div>
-      <div class="qr-item"><div class="qr-term">Off-Trusted Network</div><div class="qr-def">ZCC network type indicating the host is off the corporate LAN — traffic goes through the Zscaler cloud.</div></div>
-      <div class="qr-item"><div class="qr-term">RDP over ZPA</div><div class="qr-def">Remote Desktop to 10.1.10.10 brokered by ZPA (administrator / Zscaler123!) — no inbound exposure.</div></div>
-      <div class="qr-item"><div class="qr-term">Logs › Diagnostics</div><div class="qr-def">Experience Center view to verify the ZPA remote session: user, policy, application port.</div></div>
+      <div class="qr-item"><div class="qr-term">DNS policy</div><div class="qr-def">Branch-level rule that redirects, overrides or rejects DNS queries.</div></div>
+      <div class="qr-item"><div class="qr-term">Override</div><div class="qr-def">Answers the query with a fixed IP address.</div></div>
+      <div class="qr-item"><div class="qr-term">Query Refused</div><div class="qr-def">DNS error code 5 returned by the Reject action.</div></div>
+      <div class="qr-item"><div class="qr-term">Domain object</div><div class="qr-def">Reusable user-defined group of domains.</div></div>
       </div>
     </div>
   </aside>
 </main>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab5.html">
-    <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 5: DNS Policies</span>
-  </a>
-  <div class="page-nav-message">Every endpoint, every rule — proven. Now watch it in the logs.</div>
-  <a class="page-nav-btn page-nav-next" href="lab7.html">
-    <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 7: Logs &amp; Monitoring</span>
-  </a>
+  <a class="page-nav-btn page-nav-prev" href="lab5.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 5: SaaS Traffic with PBR</span></a>
+  <div class="page-nav-message">Core labs complete. Optional labs deepen operations.</div>
+  <a class="page-nav-btn page-nav-next" href="lab7.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 7: Monitor the Branch</span></a>
 </div>
 
 <footer>
-  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Experience Center</span>
-  <span>Lab 6: Validation</span>
+  <span>EDU-280 · Zscaler Zero Trust Branch · Hands-On Lab Guide · Rev 6.0</span>
+  <span>Lab 6: DNS Policies</span>
 </footer>
 
 <script>
@@ -345,20 +395,27 @@ function updateSidebarOffset(){var h=document.getElementById('config-panel').off
 function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
 function updateToggleSummary(){var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');var bits=[pod,fqdn].filter(Boolean).join(' · ');s.textContent=bits?' — '+bits:'';}
 function podSlug(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'pod'+m[0].padStart(2,'0');}
-function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('skytap-input').value=cfg.skytap||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
-function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),skytap:document.getElementById('skytap-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
-function clearConfig(){['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
+function podUpper(){var raw=document.getElementById('pod-input').value.trim();var m=raw.match(/\d+/);if(!m)return '';return 'POD'+m[0].padStart(2,'0');}
+function loadConfig(){try{var saved=localStorage.getItem(CONFIG_KEY);if(saved){var cfg=JSON.parse(saved);document.getElementById('pod-input').value=cfg.pod||'';document.getElementById('fqdn-input').value=cfg.fqdn||'';document.getElementById('pass-input').value=cfg.pass||'';document.getElementById('cs-input').value=cfg.cs||'';}if(localStorage.getItem(COLLAPSE_KEY)==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');panel.classList.add('collapsed');btn.innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+function saveConfig(){var cfg={pod:document.getElementById('pod-input').value.trim(),fqdn:document.getElementById('fqdn-input').value.trim(),pass:document.getElementById('pass-input').value.trim(),cs:document.getElementById('cs-input').value.trim()};try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).value='';});try{localStorage.removeItem(CONFIG_KEY);}catch(e){}applyConfig();updateToggleSummary();}
 function applyConfig(){
-  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();
+  var pod=document.getElementById('pod-input').value.trim();var fqdn=document.getElementById('fqdn-input').value.trim();var slug=podSlug();var up=podUpper();
   document.querySelectorAll('.var-pod').forEach(function(el){if(pod){el.textContent=pod;el.classList.add('filled');}else{el.textContent='<POD>';el.classList.remove('filled');}});
   document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
   var login=(slug&&fqdn)?slug+'-student@'+fqdn:'pod##-student@<Student FQDN>';document.querySelectorAll('.d-login').forEach(function(el){el.textContent=login;});var dl=document.getElementById('d-login');if(dl)dl.textContent=login;
+  var site=up?up+'-Student-Lab':'POD##-Student-Lab';document.querySelectorAll('.d-site').forEach(function(el){el.textContent=site;});var ds=document.getElementById('d-site');if(ds)ds.textContent=site;
+  var appc=slug?slug+'StudentAppC':'pod##StudentAppC';document.querySelectorAll('.d-appc').forEach(function(el){el.textContent=appc;});var da=document.getElementById('d-appc');if(da)da.textContent=appc;
+  document.querySelectorAll('.var-podU').forEach(function(el){if(up){el.textContent=up;el.classList.add('filled');}else{el.textContent='POD##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podL').forEach(function(el){if(slug){el.textContent=slug;el.classList.add('filled');}else{el.textContent='pod##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-podN').forEach(function(el){if(slug){el.textContent=slug.slice(3);el.classList.add('filled');}else{el.textContent='##';el.classList.remove('filled');}});
+  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
 }
 function copyConfigField(id,btn){var val=document.getElementById(id).value.trim();if(!val)return;navigator.clipboard.writeText(val).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
-['pod-input','fqdn-input','pass-input','skytap-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
+['pod-input','fqdn-input','pass-input','cs-input'].forEach(function(id){document.getElementById(id).addEventListener('input',applyConfig);});
 
 const PAGE_KEY='edu-280-lab-lab6';
-const SECTIONS={'lab0':'Lab 0: Access','lab1':'Lab 1: Device Interface Config','lab2':'Lab 2: Inter-VLAN Filtering','lab3':'Lab 3: PBR Policies','lab4':'Lab 4: Microsegmentation','lab5':'Lab 5: DNS Policies','lab6':'Lab 6: Validation','lab7':'Lab 7: Logs & Monitoring','lab8':'Lab 8: Troubleshoot & Debug','lab9':'Lab 9: Ransomware Kill Switch'};
+const SECTIONS={'lab0': 'Lab 0: Access Your Lab', 'lab1': 'Lab 1: Deploy the HA Branch Site', 'lab2': 'Lab 2: Segment East-West Traffic', 'lab3': 'Lab 3: Internet & Private Access', 'lab4': 'Lab 4: Microsegment OT Devices', 'lab5': 'Lab 5: SaaS Traffic with PBR', 'lab6': 'Lab 6: DNS Policies', 'lab7': 'Lab 7: Monitor the Branch', 'lab8': 'Lab 8: Admin Console Diagnostics', 'lab9': 'Lab 9: Ransomware Kill Switch', 'lab10': 'Lab 10: WAN Link Failover', 'lab11': 'Lab 11: Troubleshoot WAN Failover', 'wrapup': 'Wrap-Up'};
 
 function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
 document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
@@ -379,7 +436,7 @@ function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementBy
 function toggleDone(cb){localStorage.setItem(PAGE_KEY+'-chk-'+cb.id, cb.checked);cb.closest('.progress-item').classList.toggle('done',cb.checked);}
 function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
 function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.term-body code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
 function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();updateToggleSummary();updateSidebarOffset();
