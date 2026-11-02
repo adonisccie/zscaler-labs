@@ -10,6 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.hub-start{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:0 0 36px;}
+.hub-start-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.hub-start-num{display:inline-block;font-size:9px;letter-spacing:0.16em;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
+.hub-start-title{font-family:'Fraunces',serif;font-weight:700;font-size:0.98rem;color:var(--text);margin-bottom:4px;}
+.hub-start-text{font-size:12.5px;color:var(--text-muted);line-height:1.55;}
+.hub-start-text code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:12px;}
+.lab-card-tasks{margin-left:auto;font-size:11px;color:var(--text-muted);white-space:nowrap;}
+/* the hub has no fixed page-nav, so lay the footer out on its own */
+footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 24px;padding:12px 40px;margin-bottom:0;}
+@media(max-width:900px){footer{padding:10px 20px;}}
+</style>
 </head>
 <body>
 <header>
@@ -17,14 +29,14 @@
   <div class="header-top"><span class="eyebrow-chip">EDU-100 &middot; Hands-On Lab</span></div>
   <h1>Introduction to Zscaler <em>Zero Trust Exchange</em></h1>
   <div class="motivation-banner">
-    <p>9 labs (0&ndash;8) covering identity &amp; entitlements, Zscaler Client Connector traffic forwarding, firewall filtering, SSL inspection, content filtering &amp; cloud app control, ZPA App Connector provisioning, private application access, and ZDX digital experience dashboards.</p>
+    <p>8 labs (0&ndash;7) that take one Windows client from unprotected to Zero Trust: onboard a user, forward its traffic with Zscaler Client Connector, inspect and filter Internet access with ZIA, reach a private app through ZPA, and monitor a SaaS app with ZDX.</p>
   </div>
 </header>
 
 <div class="config-panel" id="config-panel">
   <div class="config-toggle-row" onclick="toggleConfig()">
     <div style="display:flex;align-items:center;gap:0;">
-      <span class="config-toggle-title">⚙ Lab Configuration — enter your credentials once, they apply across all labs</span>
+      <span class="config-toggle-title">⚙ Lab Configuration — enter these once, every lab page uses them</span>
       <span class="config-toggle-summary" id="config-toggle-summary"></span>
     </div>
     <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
@@ -34,31 +46,31 @@
   <div class="config-body" id="config-body">
     <div class="config-grid">
       <div class="config-field">
-        <label for="fqdn-input">Student FQDN (simulated tenant)</label>
+        <label for="first-input">Your First Name</label>
         <div class="config-field-row">
-          <input type="text" id="fqdn-input" placeholder="labtenant.com" autocomplete="off">
+          <input type="text" id="first-input" placeholder="Joe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('first-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="last-input">Your Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="last-input" placeholder="Web" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('last-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs9901.labtenant.com" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-field">
-        <label for="pass-input">Student Password (simulated tenant)</label>
+        <label for="pass-input">Student Password</label>
         <div class="config-field-row">
-          <input type="text" id="pass-input" placeholder="(set at initial login in Lab 1)" autocomplete="off">
+          <input type="text" id="pass-input" placeholder="(from lab access instructions)" autocomplete="off">
           <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
-        </div>
-      </div>
-      <div class="config-field">
-        <label for="ro-user-input">Read-Only Tenant — Admin User ID</label>
-        <div class="config-field-row">
-          <input type="text" id="ro-user-input" placeholder="(from instructor email)" autocomplete="off">
-          <button class="config-copy-btn" onclick="copyConfigField('ro-user-input',this)" title="Copy">⎘</button>
-        </div>
-      </div>
-      <div class="config-field">
-        <label for="ro-pass-input">Read-Only Tenant — Session Password</label>
-        <div class="config-field-row">
-          <input type="text" id="ro-pass-input" placeholder="(from instructor email)" autocomplete="off">
-          <button class="config-copy-btn" onclick="copyConfigField('ro-pass-input',this)" title="Copy">⎘</button>
         </div>
       </div>
       <div class="config-actions">
@@ -67,44 +79,64 @@
       </div>
     </div>
     <div class="config-derived" id="config-derived">
-      <span><strong>Student Admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>JoeSupport (Helpdesk L1):</strong> <code id="d-joesupport">joesupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>BevIT (Global Admin):</strong> <code id="d-bevit">bevit@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user (Lab 1):</strong> <code id="d-user">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user's password:</strong> <code>Admin-123!</code></span>
     </div>
   </div>
 </div>
 
 <div class="hub-main">
-<details class="zscaler-one-min">
-  <summary>&#9432; Zero Trust Exchange in one minute — key terms</summary>
-  <div class="zom-body">
-    <div class="zom-term"><strong>ZIdentity</strong><span>Zscaler's unified identity platform — houses departments, user groups, users, IdP integrations (OIDC/SAML), and administrative/service entitlements shared across ZIA, ZPA, and ZDX.</span></div>
-    <div class="zom-term"><strong>ZIA</strong><span>Zscaler Internet Access — cloud secure web gateway enforcing firewall, SSL inspection, URL filtering, and cloud app control on all internet-bound traffic.</span></div>
-    <div class="zom-term"><strong>ZPA</strong><span>Zscaler Private Access — zero-trust access to internal applications via App Connectors and App Segments. Users connect to apps, never to the network.</span></div>
-    <div class="zom-term"><strong>ZDX</strong><span>Zscaler Digital Experience — end-to-end performance monitoring across networks, applications, and devices, surfaced through Incident, Application, and User dashboards.</span></div>
-    <div class="zom-term"><strong>Zscaler Client Connector (ZCC)</strong><span>Lightweight endpoint agent that forwards user traffic to the Zero Trust Exchange for ZIA, ZPA, and ZDX enforcement.</span></div>
-    <div class="zom-term"><strong>App Connector</strong><span>Lightweight VM deployed near internal applications that creates outbound-only connections to ZPA, exposing apps without opening inbound firewall ports.</span></div>
-    <div class="zom-term"><strong>Read-Only Tenant (SDC)</strong><span>A shared, production-like Zscaler tenant provided via Solutions Demo Center credentials — used to review real-world configurations, dashboards, and logs without admin rights.</span></div>
+  <p class="hub-intro">Your organization, <strong>Labtenant</strong>, is rolling out the Zscaler Zero Trust Exchange to protect users from Internet threats, control Internet access, and provide secure access to private applications without a VPN, with visibility into each user's digital experience. You deploy Zscaler Client Connector on the Corp Client PC so that a single agent forwards Internet traffic to ZIA, private application traffic to ZPA, and experience monitoring data to ZDX.</p>
+
+  <div class="hub-start">
+    <div class="hub-start-item">
+      <span class="hub-start-num">Before you begin</span>
+      <div class="hub-start-title">Have your pod details ready</div>
+      <div class="hub-start-text">The CloudShare lab URL and passphrase are shown on the classroom screen. Your Student FQDN and password are in your lab access instructions.</div>
+    </div>
+    <div class="hub-start-item">
+      <span class="hub-start-num">Then</span>
+      <div class="hub-start-title">Fill in the Lab Configuration panel</div>
+      <div class="hub-start-text">Your Student FQDN is everything after the @ in <code>student@&lt;Student FQDN&gt;</code>. Saved values fill in logins and copy buttons on every lab page.</div>
+    </div>
+    <div class="hub-start-item">
+      <span class="hub-start-num">Work in order</span>
+      <div class="hub-start-title">Each lab builds on the last</div>
+      <div class="hub-start-text">Lab 2's forwarding profile carries the traffic that Labs 3&ndash;7 inspect, filter, broker and monitor. Start with Lab 0.</div>
+    </div>
   </div>
-</details>
+
+  <details class="zscaler-one-min">
+    <summary>&#9432; Zero Trust Exchange in one minute — key terms</summary>
+    <div class="zom-body">
+      <div class="zom-term"><strong>Experience Center</strong><span>The unified Zscaler console at console.zscaler.com, where you manage ZIA, ZPA and ZDX. Its Search menu opens any feature.</span></div>
+      <div class="zom-term"><strong>Service Portal (Authentication Service)</strong><span>Formerly ZIdentity. Holds users and user groups, and the service entitlements that decide which Zscaler services each user may use.</span></div>
+      <div class="zom-term"><strong>Zscaler Client Connector (ZCC)</strong><span>The endpoint agent on the Corp Client PC. A forwarding profile tells it how to send traffic to ZIA and ZPA; an app profile decides who gets that forwarding profile.</span></div>
+      <div class="zom-term"><strong>ZIA</strong><span>Zscaler Internet Access: inspects Internet-bound traffic, including SSL/TLS, and enforces policies such as URL Filtering.</span></div>
+      <div class="zom-term"><strong>ZPA</strong><span>Zscaler Private Access: gives users access to specific private applications, never the network, through outbound-only App Connectors and default-deny access policies.</span></div>
+      <div class="zom-term"><strong>App Connector</strong><span>A VM next to your applications that dials out to ZPA, so the data center opens no inbound ports.</span></div>
+      <div class="zom-term"><strong>ZDX</strong><span>Zscaler Digital Experience: Web and Cloud Path probes measure application performance and hop-by-hop network health from users' devices.</span></div>
+    </div>
+  </details>
 
   <div class="phase-section">
     <div class="phase-header">
-      <span class="phase-label">IDENTITY FOUNDATIONS</span>
-      <div class="phase-title">Orientation &amp; Access Entitlements</div>
-      <div class="phase-range">Labs 0&ndash;1 &middot; Map the environment, then build the departments, users, and entitlements everything else depends on</div>
+      <span class="phase-label">GET CONNECTED</span>
+      <div class="phase-title">Orientation &amp; User Access</div>
+      <div class="phase-range">Labs 0&ndash;1 &middot; Reach your pod and the console, then create the user and entitlement the rest of the course relies on</div>
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab0.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 0</span><span class="lab-card-time">~10 min</span></div>
-        <div class="lab-card-title">About &amp; Lab Setup</div>
-        <div class="lab-card-desc">Read the lab scenario and topology, record every credential you'll use across the 8 labs, and understand how to switch between the simulated tenant and the read-only Zscaler tenant.</div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 0</span><span class="lab-card-tasks">3 tasks</span></div>
+        <div class="lab-card-title">Connect to the Virtual Lab Environment</div>
+        <div class="lab-card-desc">Sign in to your CloudShare pod and confirm the VMs are running, send text into a VM with the lab clipboard, and sign in to the Experience Center console.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab1.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 1</span><span class="lab-card-time">~45 min</span></div>
-        <div class="lab-card-title">Configure User and Administrator Access Entitlements</div>
-        <div class="lab-card-desc">Create departments and user groups, onboard users JoeSupport and BevIT, assign administrative and service entitlements, validate role-based access, and review OIDC IdP integration.</div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 1</span><span class="lab-card-tasks">4 tasks</span></div>
+        <div class="lab-card-title">Configure User Access Entitlements</div>
+        <div class="lab-card-desc">Create the Helpdesk L1 group and a user with your own name, assign the ZIA service entitlement to the group, and confirm the user signs in to Zscaler Client Connector with ZIA on.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
     </div>
@@ -112,33 +144,27 @@
 
   <div class="phase-section">
     <div class="phase-header">
-      <span class="phase-label green">INTERNET ACCESS SECURITY</span>
-      <div class="phase-title">Traffic Forwarding, Firewall, SSL Inspection &amp; Content Control</div>
-      <div class="phase-range">Labs 2&ndash;5 &middot; Forward all user traffic to Zscaler, then layer firewall, SSL inspection, and content/app control policy on top</div>
+      <span class="phase-label green">INTERNET ACCESS</span>
+      <div class="phase-title">Forward, Inspect &amp; Filter</div>
+      <div class="phase-range">Labs 2&ndash;4 &middot; Send the client's traffic to Zscaler, look inside HTTPS, and enforce the acceptable use policy</div>
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab2.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 2</span><span class="lab-card-time">~20 min</span></div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 2</span><span class="lab-card-tasks">2 tasks</span></div>
         <div class="lab-card-title">Forward Traffic with the Zscaler Client Connector</div>
-        <div class="lab-card-desc">Explore the ZCC download portal, build a forwarding profile and Windows app profile, then sign in to ZCC and verify Internet Security, Private Access, and Digital Experience are all protecting the client.</div>
+        <div class="lab-card-desc">Build a forwarding profile (Z-Tunnel 2.0 for ZIA, tunnel for ZPA) and a Windows app profile that installs the Zscaler certificate, then confirm all three services are ON.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab3.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 3</span><span class="lab-card-time">~25 min</span></div>
-        <div class="lab-card-title">Configure Firewall Filtering Policy</div>
-        <div class="lab-card-desc">Confirm the default-deny firewall posture, allow outbound ICMP and SSH, block WhatsApp at the network layer, then review real-world rules and logs in the read-only tenant.</div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 3</span><span class="lab-card-tasks">1 task</span></div>
+        <div class="lab-card-title">Configure SSL Inspection Policies</div>
+        <div class="lab-card-desc">Record a site's certificate issuer, create and activate an Inspect rule for all destinations, and confirm the site is then served a certificate signed by Zscaler.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
       <a class="lab-card" href="lab4.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 4</span><span class="lab-card-time">~15 min</span></div>
-        <div class="lab-card-title">Configure SSL Inspection Policies</div>
-        <div class="lab-card-desc">Enable SSL inspection for all destinations and confirm certificates are re-signed by Zscaler, then review privacy-sensitive bypass rules and inspection logs in the read-only tenant.</div>
-        <div class="lab-card-cta">Start Lab →</div>
-      </a>
-      <a class="lab-card" href="lab5.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 5</span><span class="lab-card-time">~25 min</span></div>
-        <div class="lab-card-title">Configure Content Filtering &amp; Access Control</div>
-        <div class="lab-card-desc">Review threat protection reports, block risky URL categories, allow YouTube while blocking other streaming apps with Cloud App Control, then review granular per-action app control in the read-only tenant.</div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 4</span><span class="lab-card-tasks">2 tasks</span></div>
+        <div class="lab-card-title">Configure Content Filtering</div>
+        <div class="lab-card-desc">Block Adult Materials, Shopping and Auctions, Gambling and Video Streaming with one URL Filtering rule, then test the user's block page and troubleshoot sites that still load.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
     </div>
@@ -148,19 +174,19 @@
     <div class="phase-header">
       <span class="phase-label amber">PRIVATE ACCESS</span>
       <div class="phase-title">ZPA Infrastructure &amp; Corporate Applications</div>
-      <div class="phase-range">Labs 6&ndash;7 &middot; Provision an App Connector, then publish and scope access to internal applications</div>
+      <div class="phase-range">Labs 5&ndash;6 &middot; Connect the data center with an outbound-only App Connector, then give one user access to the intranet</div>
     </div>
     <div class="lab-grid">
-      <a class="lab-card" href="lab6.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 6</span><span class="lab-card-time">~25 min</span></div>
+      <a class="lab-card" href="lab5.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 5</span><span class="lab-card-tasks">2 tasks</span></div>
         <div class="lab-card-title">Provision ZPA Infrastructure</div>
-        <div class="lab-card-desc">Create an App Connector Group and provisioning key in the portal, transfer the key over SSH via WinSCP, then activate the App Connector on the Linux VM and verify it registers with ZPA.</div>
+        <div class="lab-card-desc">Create the OnPrem App Connector group, generate a fresh OAuth enrollment token on the connector VM, and enroll the App Connector until it shows Connected.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
-      <a class="lab-card" href="lab7.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 7</span><span class="lab-card-time">~30 min</span></div>
+      <a class="lab-card" href="lab6.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 6</span><span class="lab-card-tasks">1 task</span></div>
         <div class="lab-card-title">Add a Corporate Application</div>
-        <div class="lab-card-desc">Publish a wildcard App Segment for general internal access, add a dedicated segment scoped to a single user, and enable ICMP for troubleshooting.</div>
+        <div class="lab-card-desc">Define the intranet as an application segment on TCP 80, attach a segment group and server group, allow only the student user, and prove access through Zscaler Client Connector.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
     </div>
@@ -169,14 +195,14 @@
   <div class="phase-section">
     <div class="phase-header">
       <span class="phase-label purple">DIGITAL EXPERIENCE</span>
-      <div class="phase-title">ZDX Dashboards &amp; Root-Cause Analysis</div>
-      <div class="phase-range">Lab 8 &middot; Navigate Performance, Incident, Self-Service, Application, and User dashboards in the read-only tenant</div>
+      <div class="phase-title">Monitor a Business-Critical SaaS App</div>
+      <div class="phase-range">Lab 7 &middot; Measure webmail from every user's device to find whether the Wi-Fi, the path or the app is slow</div>
     </div>
     <div class="lab-grid">
-      <a class="lab-card" href="lab8.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 8</span><span class="lab-card-time">~30 min</span></div>
-        <div class="lab-card-title">Navigate the Incident, Self-Service &amp; Application Overview Dashboards</div>
-        <div class="lab-card-desc">Explore ZDX Performance, Incidents, Self-Service, Application Overview, and User Overview dashboards to identify root causes of user experience issues, using Web Probe and Cloud Path metrics.</div>
+      <a class="lab-card" href="lab7.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 7</span><span class="lab-card-tasks">3 tasks</span></div>
+        <div class="lab-card-title">Configure Cloud Application Monitoring</div>
+        <div class="lab-card-desc">Create an end user collection and a Mail Server custom application, then attach a Web probe and a Cloud Path probe for mail.google.com.</div>
         <div class="lab-card-cta">Start Lab →</div>
       </a>
     </div>
@@ -184,33 +210,28 @@
 
 </div>
 <footer>
-  <span>EDU-100 &middot; Introduction to Zscaler Zero Trust Exchange &middot; Hands-On Lab Guide</span>
-  <span>Lab Hub &middot; Labs 0&ndash;8</span>
+  <span>EDU-100 &middot; Introduction to Zscaler Zero Trust Exchange &middot; Hands-On Lab Guide &middot; Rev 2.0</span>
+  <span>Lab Hub &middot; Labs 0&ndash;7</span>
 </footer>
 <script>
 const CONFIG_KEY='edu100-expc-lab-config';
-const CONFIG_COLLAPSED_KEY='edu100-config-collapsed';
-function loadConfig(){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fi=document.getElementById('fqdn-input'),pi=document.getElementById('pass-input'),ru=document.getElementById('ro-user-input'),rp=document.getElementById('ro-pass-input');if(fi&&d.fqdn)fi.value=d.fqdn;if(pi&&d.pass)pi.value=d.pass;if(ru&&d.rouser)ru.value=d.rouser;if(rp&&d.ropass)rp.value=d.ropass;applyConfig();}catch(e){}}
-function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();var rouser=document.getElementById('ro-user-input').value.trim();var ropass=document.getElementById('ro-pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass,rouser:rouser,ropass:ropass}));applyConfig();}catch(e){}}
-function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);document.getElementById('fqdn-input').value='';document.getElementById('pass-input').value='';document.getElementById('ro-user-input').value='';document.getElementById('ro-pass-input').value='';applyConfig();}catch(e){}}
-function applyConfig(){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
-document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});
-document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
-document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
-document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
-var ds=document.getElementById('d-student');if(ds)ds.textContent=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-var dj=document.getElementById('d-joesupport');if(dj)dj.textContent=fqdn?'joesupport@'+fqdn:'joesupport@<Student FQDN>';
-var db=document.getElementById('d-bevit');if(db)db.textContent=fqdn?'bevit@'+fqdn:'bevit@<Student FQDN>';
-var sum=document.getElementById('config-toggle-summary');if(sum)sum.textContent=fqdn?' — '+fqdn:'';}catch(e){}}
-function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
-function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');if(!panel)return;var collapsed=panel.classList.toggle('collapsed');localStorage.setItem(CONFIG_COLLAPSED_KEY,collapsed?'1':'0');if(btn){btn.innerHTML=(collapsed?'<span class="chevron">▼</span> Expand':'<span class="chevron">▲</span> Collapse');}}
-function loadConfigCollapsed(){try{var c=localStorage.getItem(CONFIG_COLLAPSED_KEY);if(c==='1'){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');if(panel)panel.classList.add('collapsed');if(btn)btn.innerHTML='<span class="chevron">▼</span> Expand';}}catch(e){}}
+const COLLAPSE_KEY='edu100-config-collapsed';
+const CFG_FIELDS={first:'first-input',last:'last-input',fqdn:'fqdn-input',pass:'pass-input'};
+function readCfg(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')||{};}catch(e){return {};}}
+function val(id){return document.getElementById(id).value.trim();}
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var name=[val('first-input'),val('last-input')].filter(Boolean).join(' ');var bits=[name,val('fqdn-input')].filter(Boolean).join(' · ');document.getElementById('config-toggle-summary').textContent=bits?' — '+bits:'';}
+function applyConfig(){var first=val('first-input'),fqdn=val('fqdn-input');var user=first?first.toLowerCase().replace(/\s+/g,''):'<your first name>';var dom=fqdn||'<Student FQDN>';document.getElementById('d-student').textContent='student@'+dom;document.getElementById('d-user').textContent=user+'@'+dom;updateToggleSummary();}
+function loadConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value=cfg[k]||'';});try{if(localStorage.getItem(COLLAPSE_KEY)==='1'){document.getElementById('config-panel').classList.add('collapsed');document.getElementById('config-toggle-btn').innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+/* merge into the shared course config, the same way the lab pages do */
+function saveConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){cfg[k]=val(CFG_FIELDS[k]);});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value='';delete cfg[k];});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();}
+function copyConfigField(id,btn){var v=val(id);if(!v)return;navigator.clipboard.writeText(v).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).addEventListener('input',applyConfig);});
 document.addEventListener('DOMContentLoaded',function(){
   loadConfig();
-  loadConfigCollapsed();
-  document.body.style.transition='opacity 0.3s ease';
-  document.body.style.opacity='1';
-  sessionStorage.setItem('pt','1');
+  document.querySelectorAll('.lab-card').forEach(function(a){a.addEventListener('click',function(){try{sessionStorage.setItem('pt','1');}catch(e){}});});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';try{sessionStorage.setItem('pt','1');}catch(e){}
 });
 </script>
 </body>

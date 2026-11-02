@@ -2,60 +2,158 @@
 <html lang="en">
 <head>
 <script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
-function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
-function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 5: Content Filtering &amp; Access Control — EDU-100</title>
+<title>Lab 5: Provision ZPA Infrastructure — EDU-100</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>html.pt-init body{opacity:0;}
-.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
-.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
-.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
-.task-collapsible-header:hover{background:#eaecf2;}
-.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
-.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
-.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
-.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
-.task-collapsible-body{display:none;padding:20px 20px 12px;}
-.task-collapsible.open>.task-collapsible-body{display:block;}
-</style>
+<style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:12px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:42%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.lab-meta{flex-wrap:wrap;row-gap:6px;}
+/* Reference links (sidebar section under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+.term-card{border-radius:10px;overflow:hidden;margin:12px 0;border:1px solid #0b1f44;}
+.term-head{background:#001744;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;}
+.term-body{background:#0b1f44;padding:12px 16px;}
+.term-line{display:flex;gap:10px;align-items:center;margin:3px 0;}
+.term-prompt{color:#9db8f5;font-family:Consolas,monospace;font-size:13px;}
+.term-comment{color:#7f93b8;font-family:Consolas,monospace;font-size:12px;margin:10px 0 2px;}
+.term-comment:first-child{margin-top:0;}
+.term-line code{background:transparent!important;border:none!important;box-shadow:none!important;color:#e6eefc;font-family:Consolas,monospace;font-size:13px;padding:0;white-space:pre-wrap;word-break:break-word;}
+.term-line .copy-inline{margin-left:4px;color:#9db8f5;border-color:rgba(157,184,245,0.35);}
+.term-expected{background:#e9f7ef;border-top:3px solid #17683a;padding:10px 14px;font-size:13px;color:#0f4a27;line-height:1.6;}
+.term-exp-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;background:#17683a;color:#fff;border-radius:4px;padding:1px 7px;margin-right:8px;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 5</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 5 · CONTENT CONTROL</span>
-    <div class="header-dot"></div>
+    <span class="eyebrow-chip">Lab 5 · EDU-100</span>
+    <span class="header-dot"></span>
   </div>
-  <h1>Configure Content Filtering &amp; <em>Access Control</em></h1>
+  <h1>Provision <em>ZPA Infrastructure</em></h1>
   <div class="motivation-banner">
-    <p>Firewall and SSL policy protect the pipe; now you shape what flows through it. You review baseline threat protection, block whole categories of risky content, then use Cloud App Control to make a surgical exception — YouTube allowed, every other streaming site blocked — before reviewing how granular per-action control works for a modern SaaS app.</p>
+    <p>Private apps shouldn't need open inbound ports or a VPN. Here you connect the data center to ZPA through an App Connector that only ever dials out.</p>
   </div>
 </header>
 
-<div class="top-panels">
-  <div class="qpanel">
-    <button class="qpanel-header" onclick="toggleQPanel(this)">
-      <span class="qpanel-title">MY QUESTIONS</span>
-      <span class="qpanel-count" id="q-count">0</span>
-      <span class="qpanel-hint">— click to expand</span>
-      <span class="qpanel-chevron">▾</span>
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
     </button>
-    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="first-input">Your First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="first-input" placeholder="Joe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('first-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="last-input">Your Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="last-input" placeholder="Web" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('last-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs9901.labtenant.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Student Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access instructions)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user:</strong> <code id="d-user">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user's password:</strong> <code>Admin-123!</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
     <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
-  <div class="notes-panel">
-    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
       <span class="notes-panel-title">MY NOTES</span>
-      <span class="notes-panel-chevron">▾</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
-    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
     <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
@@ -64,291 +162,223 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab5">
-      <h2>Lab 5: Configure Content Filtering &amp; Access Control</h2>
+      <h2>Lab 5: Provision ZPA Infrastructure</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">OVERVIEW</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, your goal is to improve users' browsing experience by allowing access only to safe and appropriate content. In this lab, you explore how Zscaler Internet Access (ZIA) enforces content filtering and access control to protect against threats such as phishing, malware, and data leakage. You verify existing threat protection configurations, analyze risk reports, and test policy behavior to see how ZIA enforces organizational baselines for URL filtering, content categories, and cloud application controls. Finally, you use the Zscaler read-only tenant to review a live Cloud App Control rule that demonstrates granular, per-action enforcement for AI and ML applications.</p>
-        <ul style="margin-top:10px;">
-          <li>Explore ZIA's threat protection configurations and analyze risk reporting.</li>
-          <li>Configure and validate a URL Filtering Policy to block risky websites (e.g., gambling, adult, shopping).</li>
-          <li>Test the effect of URL Filtering control on end-user experience.</li>
-          <li>Create and verify a Cloud App Control policy to allow access to specific apps (e.g., YouTube) while restricting others in the same category.</li>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> Labtenant hosts its intranet applications in an on-premises data center and wants users to reach them without exposing the applications to the Internet or maintaining a VPN. ZPA brokers this access through App Connectors, which make outbound-only connections to the Zero Trust Exchange. A Red Hat Enterprise Linux VM with the App Connector package is already deployed in the data center. You create an App Connector group, generate a new enrollment token on the VM, and enroll the App Connector with ZPA.</p></div>
+        <p style="margin-top:10px;"><strong>By the end of this lab, you will be able to:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Create an App Connector group for the on-premises data center.</li>
+          <li>Generate a new OAuth enrollment token on the App Connector VM.</li>
+          <li>Enroll the App Connector with the token, and confirm that its connection health is Connected.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ App Connector group <strong>OnPrem</strong> exists, Enabled, with Enrollment Certificate <strong>Connector</strong>.</li><li>☐ A fresh OAuth token was generated on the Corp App Connector VM.</li><li>☐ The App Connector is enrolled in OnPrem and its Connection Health is <strong>Connected</strong>.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ <code>sudo</code> asks for the admin password (<code>Zscaler1!</code>).</li><li>⚠ Enrollment tokens expire. If Add fails, generate a new token and try again.</li><li>⚠ Connection Health can show Disconnected for about 30 seconds before it changes to Connected.</li></ul></div>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
-          <div class="lab-meta-item"><strong>Environment:</strong> Tasks 5.1–5.4 simulated tenant · Task 5.5 read-only tenant</div>
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Nov 2026</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 2 (ZPA tunnelled by Zscaler Client Connector)</div>
+          <div class="lab-meta-item"><strong>You'll use:</strong> Experience Center, Corp App Connector VM (console), Corp Client PC</div>
         </div>
       </div>
 
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> This lab uses both the simulated lab environment and the Zscaler tenant. You complete Tasks 5.1–5.4 in the simulated environment (the instructions below are for reference only; you perform them within the simulated lab), then switch to the Zscaler tenant for Task 5.5.</p>
+      <div class="socratic-block" id="soc-lab5">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · INSIDE-OUT CONNECTIVITY</span>
+        </div>
+        <p class="socratic-insight">ZPA turns the usual remote-access model around: the data center reaches out to Zscaler, not the other way round. Think about what that buys you before you build it.</p>
+        <ul class="socratic-questions">
+          <li>The App Connector only makes <strong>outbound</strong> connections to the Zero Trust Exchange. Why is that safer than publishing the app on the Internet or running a VPN concentrator?
+            <div class="answer-area" data-section="lab5-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Nothing in the data center listens for inbound connections, so there's no public IP or open port for an attacker to find and probe. ZPA brokers each session between the user and the App Connector. A VPN puts the user on the network, where they can reach far more than the one app they need; with ZPA, users reach only the applications a policy allows.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Why does ZPA put every App Connector in an <strong>App Connector group</strong> instead of managing each connector on its own?
+            <div class="answer-area" data-section="lab5-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Groups give you high availability and scale. Connectors in the same location share a group, so you can add a second connector to OnPrem for redundancy or capacity without changing any application or policy configuration. Settings such as location, certificate and software update schedule are managed once per group, and server groups and applications point at the group rather than at individual connectors.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>You read a short-lived token on the VM's console and paste it into the portal. What does that exchange prove, and why should the token expire?
+            <div class="answer-area" data-section="lab5-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">It proves that the same administrator controls both the VM (they could read its console) and the tenant (they could add it in the portal), and it binds that specific connector to the OnPrem group. A token that expires limits the damage if it's seen or leaked: once the window closes it can't be used to enroll a rogue connector into your tenant.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <!-- Task 5.1 -->
-      <div class="task-collapsible open" id="task-5-1">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 5.1</span>
-          <span class="task-collapsible-title">View Threat Protection Reports</span>
+      <div class="task-collapsible open" id="tc-5-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 5.1</span>
+          <span class="task-collapsible-title">Provision an App Connector</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review current threat protection reports in the ZIA Admin Portal, examining Malware Protection, Advanced Threat Protection, and the Page Risk Score Index.</p>
-            <ol class="step-list">
-              <li>View Malware Protection settings — go to <strong>Policies &gt; Cybersecurity &gt; Malware Protection</strong>. Compare the current settings with the Recommended Policy settings and note that Malware Protections are enabled.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-01.png" alt="Malware Protection settings page compared against Recommended Policy settings, showing protections enabled" loading="lazy">
-                  <div class="screenshot-caption">Malware Protection — current settings vs. Recommended Policy.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Malware protection defends against spyware, botnets, malicious active content, and more.</p></div>
-              </li>
-              <li>View Advanced Threat Protection settings — use the left navigation panel to go to Advanced Threat Protection, or <strong>Policies &gt; Cybersecurity &gt; Advanced Threat Protection</strong>. Compare current settings with the Recommended Policy settings and note which protections are enabled.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-02.png" alt="Advanced Threat Protection settings compared against Recommended Policy settings" loading="lazy">
-                  <div class="screenshot-caption">Advanced Threat Protection — current settings vs. Recommended Policy.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Advanced protections include settings against Command-and-Control Traffic, Phishing, Crypto mining, Tunneling, Cross-Site Scripting (XSS), and more.</p></div>
-              </li>
-              <li>Review the <strong>Page Risk Score Index</strong> (Suspicious Content Protection — Page Risk™), which calculates a score upon user access, dynamically analyzing the page's threat level.</li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t5-1">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 5.1</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-1',this)">Save</button><div class="section-qa-list" id="sq-list-t5-1"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-1',this)">Save</button><div class="section-qa-list" id="sn-list-t5-1"></div></div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you create an App Connector group for the on-premises data center.</div>
+          <ul class="step-list">
+            <li>Configure the App Connector group:
+              <ul class="sub-steps">
+                <li>On the <strong>Experience Center</strong> home page, type <strong>App Connector Groups</strong> in the search bar and select the appropriate option (<strong>Private Access &gt; Private Infrastructure &gt; App Connector Groups</strong>).</li>
+                <li>Select <strong>+Add</strong> and enter the following values in <strong>Add App Connector Group</strong>:</li>
+              </ul>
+              <div class="values-card"><div class="values-head">ADD APP CONNECTOR GROUP</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>
+                <tr><td class="values-field">Name</td><td><code>OnPrem</code></td></tr>
+                <tr><td class="values-field">Status</td><td><strong>Enabled</strong></td></tr>
+                <tr><td class="values-field">Description</td><td>Optional</td></tr>
+                <tr><td class="values-field">Enrollment Certificate</td><td><strong>Connector</strong></td></tr>
+                <tr><td class="values-field">Other Configurations</td><td>Leave as default</td></tr>
+                <tr><td class="values-field">App Connector Location</td><td>Enter the city closest to you</td></tr>
+              </tbody></table></div>
+              <div class="screenshot-embed"><img src="screenshots/lab5-01.png" alt="App Connector Groups Add page with Name OnPrem, Status Enabled and Enrollment Certificate Connector highlighted" loading="lazy"><div class="screenshot-caption">Top of the form: Name <strong>OnPrem</strong>, Status <strong>Enabled</strong>, Enrollment Certificate <strong>Connector</strong>. Leave the other options at their defaults.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab5-02.png" alt="Lower part of the App Connector group form with App Connector Location search set to a city and the Save button highlighted" loading="lazy"><div class="screenshot-caption">Scroll down to <strong>App Connector Location</strong> and search for your nearest city (the example uses Mumbai), then <strong>Save</strong>.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> If the maintenance window warning appears, select <strong>I understand</strong> to proceed with the configuration.</p></div>
+              <ul class="sub-steps">
+                <li>Select <strong>Save</strong>.</li>
+                <li>Verify that the App Connector group is created.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab5-03.png" alt="App Connector Groups list showing OnPrem with App Connector Count 0 and Status Enabled" loading="lazy"><div class="screenshot-caption"><strong>OnPrem</strong> is listed and Enabled. App Connector Count is <strong>0</strong> until you enroll the connector in Task 5.2.</div></div>
+            </li>
+          </ul>
         </div>
       </div>
 
       <!-- Task 5.2 -->
-      <div class="task-collapsible open" id="task-5-2">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 5.2</span>
-          <span class="task-collapsible-title">Configure Content Filtering Controls</span>
+      <div class="task-collapsible open" id="tc-5-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 5.2</span>
+          <span class="task-collapsible-title">Activate the App Connector</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you create a URL Filtering Policy to block risky URL categories such as gambling, adult content, and video streaming.</p>
-            <ol class="step-list">
-              <li>Test high-risk URL access before configuration — open a browser on the Corp: Client PC and attempt to visit a risky website, such as <code>888.com</code> (a gambling site). Verify the site is currently accessible.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-03.png" alt="Browser showing 888.com accessible before URL Filtering is configured" loading="lazy">
-                  <div class="screenshot-caption">888.com is accessible before the URL Filtering rule is created.</div>
-                </div>
-              </li>
-              <li>Create a URL Filtering Policy — go to <strong>Policies &gt; Access Control &gt; Internet and SaaS &gt; URL Control &gt; URL Filtering</strong>. On the URL Filtering Policy tab, select <strong>Add URL Filtering Rule</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-04.png" alt="Add URL Filtering Rule dialog" loading="lazy">
-                  <div class="screenshot-caption">Add URL Filtering Rule.</div>
-                </div>
-              </li>
-              <li>Configure:
-                <ul class="sub-steps">
-                  <li>Rule Order: <code>1</code></li>
-                  <li>Rule Name: <code>Risky URL Categories</code></li>
-                  <li>URL Categories: Adult Materials, Shopping and Auctions, Gambling, Video Streaming</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-05.png" alt="URL Categories selection with Adult Materials, Shopping and Auctions, Gambling, and Video Streaming checked" loading="lazy">
-                  <div class="screenshot-caption">URL Categories — Adult Materials, Shopping and Auctions, Gambling, Video Streaming.</div>
-                </div>
-              </li>
-              <li>Request Methods and Protocols: ensure all options are selected. Action: select <strong>Block</strong>. Select <strong>Save and Activate</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-06.png" alt="URL Filtering rule with all Request Methods and Protocols selected and Action set to Block" loading="lazy">
-                  <div class="screenshot-caption">Action: Block, then Save + Activate.</div>
-                </div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t5-2">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 5.2</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-2',this)">Save</button><div class="section-qa-list" id="sq-list-t5-2"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-2',this)">Save</button><div class="section-qa-list" id="sn-list-t5-2"></div></div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you enroll the App Connector with ZPA and confirm that it connects.</div>
+          <ul class="step-list">
+            <li>Configure the App Connector:
+              <ul class="sub-steps">
+                <li>Launch the <strong>Corp App Connector VM</strong>.</li>
+                <li>Log in to the Corp App Connector VM by clicking <strong>CON</strong> in the left panel, using the following credentials:
+                  <ul class="sub-steps">
+                    <li>Username: <code>admin</code></li>
+                    <li>Password: <code>Zscaler1!</code></li>
+                  </ul>
+                </li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab5-04.png" alt="CloudShare window with the App Connector VM tab selected, CON highlighted in the left panel, and the connector console showing an OAuth token and the zpa-connector login prompt" loading="lazy"><div class="screenshot-caption">Select the App Connector VM tab (named <strong>Corp ZPA Connector</strong> here), then <strong>CON</strong>, and log in at the <code>zpa-connector login:</code> prompt. The course name in the example header differs from yours.</div></div>
+              <ul class="sub-steps">
+                <li>To view the current token, type:</li>
+              </ul>
+              <div class="term-card"><div class="term-head">Corp App Connector VM · console</div><div class="term-body">
+                <div class="term-line"><span class="term-prompt">$</span><code>cat /etc/issue</code></div>
+              </div><div class="term-expected"><span class="term-exp-label">EXPECTED</span>An <strong>OAuth Token</strong> line, for example <code>3PBHR-5FJCT</code>.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab5-05.png" alt="Connector console showing cat /etc/issue and the current OAuth Token" loading="lazy"><div class="screenshot-caption"><code>cat /etc/issue</code> prints the current OAuth Token. You'll replace it with a fresh one next.</div></div>
+            </li>
+            <li>Use the CLI to generate a new enrollment token by running the following commands:
+              <div class="term-card"><div class="term-head">Corp App Connector VM · generate a new OAuth token</div><div class="term-body">
+                <div class="term-comment"># Stop the ZPA Connector service</div>
+                <div class="term-line"><span class="term-prompt">$</span><code>sudo systemctl stop zpa-connector</code></div>
+                <div class="term-comment"># Delete the existing OAuth token files</div>
+                <div class="term-line"><span class="term-prompt">$</span><code>sudo find /opt/zscaler/var -mindepth 1 -delete</code></div>
+                <div class="term-comment"># Start the ZPA Connector service to generate a new OAuth token</div>
+                <div class="term-line"><span class="term-prompt">$</span><code>sudo systemctl start zpa-connector</code></div>
+                <div class="term-comment"># View the new token</div>
+                <div class="term-line"><span class="term-prompt">$</span><code>cat /etc/issue</code></div>
+              </div><div class="term-expected"><span class="term-exp-label">EXPECTED</span>A new <strong>OAuth Token</strong> value, different from the one you saw before. Note it down for the next step.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab5-06.png" alt="Connector console after stopping the service, clearing the token files and restarting, showing a new OAuth Token" loading="lazy"><div class="screenshot-caption">After the restart, <code>cat /etc/issue</code> shows a new OAuth Token. The example clears the files with an older equivalent (<code>sudo su</code>, then <code>rm -rf /opt/zscaler/var/*</code>); use the commands above.</div></div>
+            </li>
+            <li>Enroll the App Connector with the new token:
+              <ul class="sub-steps">
+                <li>In the Experience Center (<strong>Corp Client PC</strong>), type <strong>App Connectors</strong> in the <strong>Search</strong> menu and select the appropriate option (<strong>Private Access &gt; Private Infrastructure &gt; App Connectors</strong>).</li>
+                <li>Select <strong>Add</strong>, then enter:
+                  <ul class="sub-steps">
+                    <li><strong>Group:</strong> <code>OnPrem</code> (the App Connector group created in Task 5.1)</li>
+                    <li><strong>Enrollment Token:</strong> enter the token that you generated in the previous steps (for example, <code>RPSTV-QZLJM</code>)</li>
+                    <li>Select <strong>Add</strong>.</li>
+                    <li>Select <strong>Save</strong>.</li>
+                  </ul>
+                </li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab5-07.png" alt="App Connectors Add page with Group OnPrem, Signing Certificate Connector, an enrollment token entered and the Add and Save buttons highlighted" loading="lazy"><div class="screenshot-caption">Group <strong>OnPrem</strong>, paste the token, select <strong>Add</strong> next to the token field, then <strong>Save</strong>.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> If the generated token does not work or has expired, repeat the steps to generate a new token.</p></div>
+              <ul class="sub-steps">
+                <li>Confirm that the App Connector appears in the list and that its <strong>Connection Health</strong> is <strong>Connected</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab5-08.png" alt="App Connectors list filtered to OnPrem showing Connection Health Connected and Status Enabled" loading="lazy"><div class="screenshot-caption">Connection Health: <strong>Connected</strong>, Status: Enabled.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> The App Connector Connection Health may take about 30 seconds to update from Disconnected to Connected. Continue with the next step and check the status again after a short time.</p></div>
+              <ul class="sub-steps">
+                <li>Select the App Connector name to view details, including Host OS, PSE, Location, IP addresses, and Uptime.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab5-09.png" alt="App Connector Details panel showing host OS Red Hat Enterprise Linux 9.7, Public Service Edge, Location, Public IP, Private IP 10.0.0.4 and Uptime" loading="lazy"><div class="screenshot-caption">App Connector Details: host OS (Red Hat Enterprise Linux), the Public Service Edge it connects to, location, public and private IP (<code>10.0.0.4</code>) and uptime.</div></div>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Task 5.3 -->
-      <div class="task-collapsible open" id="task-5-3">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 5.3</span>
-          <span class="task-collapsible-title">Test End-User Experience with URL Filtering</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you test user access to various websites after applying the configured URL Filtering Policy.</p>
-            <ol class="step-list">
-              <li>Test blocked URLs — open a browser and attempt to visit previously accessible sites: <code>888.com</code> (Gambling) and <code>ebay.com</code> (Shopping and Auctions). Verify these are now blocked.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-07.png" alt="Browser showing 888.com and ebay.com blocked by the URL Filtering Policy" loading="lazy">
-                  <div class="screenshot-caption">888.com and ebay.com are now blocked.</div>
-                </div>
-              </li>
-              <li>Test Video Streaming site access — attempt YouTube.com or Netflix.com. Verify these are also blocked under the configured rule.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-08.png" alt="Browser showing YouTube.com and Netflix.com blocked by the Video Streaming URL category rule" loading="lazy">
-                  <div class="screenshot-caption">Video Streaming sites blocked — including YouTube, for now.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> If testing does not work, try using Incognito Mode in the browser. If it still fails, navigate to URL Filtering Policy and select Edit to confirm the Rule Status is set to Enabled.</p></div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t5-3">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 5.3</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-3',this)">Save</button><div class="section-qa-list" id="sq-list-t5-3"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-3',this)">Save</button><div class="section-qa-list" id="sn-list-t5-3"></div></div>
-              </div>
-            </div>
-          </div>
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Group first:</strong> <code>OnPrem</code>, Enrollment Certificate Connector, your nearest city. <strong>Token from the VM:</strong> <code>cat /etc/issue</code>; for a fresh one, stop <code>zpa-connector</code>, clear <code>/opt/zscaler/var</code>, start it again. <strong>Enroll:</strong> App Connectors &gt; Add, Group OnPrem + token &gt; Save, then wait for <strong>Connected</strong>. The connector only dials out, so the data center opens no inbound ports.</div>
         </div>
       </div>
 
-      <!-- Task 5.4 -->
-      <div class="task-collapsible open" id="task-5-4">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 5.4</span>
-          <span class="task-collapsible-title">Configure Cloud App Control</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">The Cloud App Control Policy provides granular control over how users access specific cloud applications and websites. In this task, you create a rule to allow access to YouTube while restricting other entertainment and recreation websites.</p>
-            <ol class="step-list">
-              <li>Add a Cloud App Control Policy — go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Policies</strong>, or use the left navigation panel. Select the <strong>Add</strong> dropdown and select <strong>Streaming Media</strong>.</li>
-              <li>Create the Cloud App Control rule:
-                <ul class="sub-steps">
-                  <li>Rule Order: <code>1</code></li>
-                  <li>Rule Name: <code>Allow YouTube</code></li>
-                </ul>
-                Under Criteria, select the drop-down for Cloud Applications and select <strong>YouTube</strong>, then select <strong>Done</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-09.png" alt="Cloud App Control rule Allow YouTube with Cloud Applications criteria set to YouTube" loading="lazy">
-                  <div class="screenshot-caption">Rule Name: Allow YouTube, Cloud Applications: YouTube.</div>
-                </div>
-              </li>
-              <li>Action — Application Access: <strong>Allow</strong>. Add Description: <code>Allow only YouTube</code>. Select <strong>Save and Activate</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-10.png" alt="Cloud App Control rule Action set to Allow with description Allow only YouTube" loading="lazy">
-                  <div class="screenshot-caption">Action: Allow, Description: Allow only YouTube.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-11.png" alt="Cloud App Control rule saved and activated confirmation" loading="lazy">
-                  <div class="screenshot-caption">Rule saved and activated.</div>
-                </div>
-              </li>
-              <li>Verify the Cloud App Control policy — ensure the new rule appears in the Streaming Media Rules List. Confirm on the Corp: Client PC that you can access YouTube.com, but other streaming sites like Netflix.com remain blocked.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-12.png" alt="Streaming Media Rules List showing the new Allow YouTube rule" loading="lazy">
-                  <div class="screenshot-caption">Allow YouTube rule appears in the Streaming Media Rules List.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-13.png" alt="Browser showing YouTube.com accessible while Netflix.com remains blocked" loading="lazy">
-                  <div class="screenshot-caption">YouTube.com now loads; Netflix.com stays blocked.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> SaaS Application policies are enforced with higher priority than URL category-based policies — that's why the specific YouTube allow overrides the broader Video Streaming block.</p></div>
-              </li>
-            </ol>
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab5" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab5','Lab 5: Provision ZPA Infrastructure')">Add Question</button></div>
           </div>
-
-          <div class="section-qa" data-section="t5-4">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 5.4</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-4" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-4',this)">Save</button><div class="section-qa-list" id="sq-list-t5-4"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-4" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-4',this)">Save</button><div class="section-qa-list" id="sn-list-t5-4"></div></div>
-              </div>
-            </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab5" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab5')">+ Add Note</button></div>
           </div>
         </div>
       </div>
-
-      <!-- Task 5.5 -->
-      <div class="task-collapsible open" id="task-5-5">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 5.5</span>
-          <span class="task-collapsible-title">Review Cloud App Control Granularity</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review the ChatGPT_NoUpload rule under the AI &amp; ML Applications category to understand the granular, per-action control that Cloud App Control provides. User credentials are contained in the lab access instructions provided to you via email by the instructor.</p>
-            <ol class="step-list">
-              <li>In a browser window, go to <code>https://console.zscaler.com</code> and authenticate with the read-only Zscaler tenant credentials:
-                <ul class="sub-steps">
-                  <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
-                  <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
-                </ul>
-              </li>
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Policies</strong>. In the AI &amp; ML Applications category, locate the rule named <strong>ChatGPT_NoUpload</strong> and select the eye icon to open and review its configuration.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-14.png" alt="AI and ML Applications category with ChatGPT_NoUpload rule listed" loading="lazy">
-                  <div class="screenshot-caption">AI &amp; ML Applications — ChatGPT_NoUpload rule.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab5-15.png" alt="ChatGPT_NoUpload rule detail showing Uploading blocked while other actions remain allowed" loading="lazy">
-                  <div class="screenshot-caption">Per-action control — Uploading: Blocked; Access, Sharing, Downloading, Deleting, Inviting, Chatting: Allowed.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Zscaler provides granular, per-action control for cloud applications — for example, Uploading is Blocked while Application Access, Sharing, Downloading, Deleting, Inviting, and Chatting remain Allowed.</p></div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t5-5">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 5.5</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t5-5" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t5-5',this)">Save</button><div class="section-qa-list" id="sq-list-t5-5"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t5-5" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t5-5',this)">Save</button><div class="section-qa-list" id="sn-list-t5-5"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
+
+  </div><!-- /content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
-      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+      <a href="index.html" class="hub-link">← EDU-100 Lab Hub</a>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Lab Topology</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/topology.png" alt="EDU-100 lab topology: the Corp Client PC with Zscaler Client Connector connects through the Zero Trust Exchange to the Internet and to the Corporate Data Center (10.0.0.0/24) with Corp Win Svr 2025 and the ZPA App Connector; admins use the Experience Center and Service Portal" title="Click to expand">
       </div>
     </div>
 
@@ -358,93 +388,147 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         <div class="sidebar-cred-item">
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-student-login">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp App Connector VM<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.4</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.4',this)" title="Copy">⎘</button></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Progress</div>
+      <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-5-1" onchange="toggleDone(this)"><label for="chk-5-1">5.1 Threat reports reviewed</label></li>
-        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-5-2" onchange="toggleDone(this)"><label for="chk-5-2">5.2 URL Filtering configured</label></li>
-        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-5-3" onchange="toggleDone(this)"><label for="chk-5-3">5.3 Blocking verified</label></li>
-        <li class="progress-item" id="pi-4"><input type="checkbox" id="chk-5-4" onchange="toggleDone(this)"><label for="chk-5-4">5.4 Cloud App Control configured</label></li>
-        <li class="progress-item" id="pi-5"><input type="checkbox" id="chk-5-5" onchange="toggleDone(this)"><label for="chk-5-5">5.5 Per-action control reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5a" onchange="toggleDone(this)"><label for="chk-lab5a">5.1 OnPrem App Connector group created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5b" onchange="toggleDone(this)"><label for="chk-lab5b">5.2 Logged in to the App Connector VM console</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5c" onchange="toggleDone(this)"><label for="chk-lab5c">5.2 New enrollment token generated</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5d" onchange="toggleDone(this)"><label for="chk-lab5d">5.2 App Connector added with the token</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab5e" onchange="toggleDone(this)"><label for="chk-lab5e">5.2 Connection Health shows Connected</label></li>
       </ul>
     </div>
-
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 5.1 · App Connector group</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-connector-groups" target="_blank" rel="noopener noreferrer" title="Why connectors are grouped for high availability and scale">About App Connector Groups</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-app-connector-groups" target="_blank" rel="noopener noreferrer" title="Every field on the Add App Connector Group page">Configuring App Connector Groups</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 5.2 · Enroll the App Connector</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-connectors" target="_blank" rel="noopener noreferrer" title="What App Connectors do, and OAuth 2.0 enrollment versus provisioning keys">About App Connectors</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-connectors" target="_blank" rel="noopener noreferrer" title="Adding App Connectors in the Admin Console with enrollment tokens">Configuring App Connectors</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Beyond the lab</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/connector-deployment-prerequisites" target="_blank" rel="noopener noreferrer" title="Network and platform requirements before you deploy a connector">App Connector Deployment Prerequisites</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">Lightweight VM next to your apps that makes outbound-only connections to ZPA.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector group</div><div class="qr-def">Connectors in one location, managed together for availability and scale.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token (OAuth 2.0)</div><div class="qr-def">Short-lived code shown on the connector console and entered in the portal to enroll it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment certificate</div><div class="qr-def">Certificate used to sign the connector's identity. The lab uses <strong>Connector</strong>.</div></div>
+        <div class="qr-item"><div class="qr-term">zpa-connector</div><div class="qr-def">The App Connector service on the VM, controlled with <code>systemctl</code>.</div></div>
+        <div class="qr-item"><div class="qr-term">Connection Health</div><div class="qr-def">Whether the connector currently has a working connection to ZPA (Connected / Disconnected).</div></div>
+        <div class="qr-item"><div class="qr-term">Public Service Edge</div><div class="qr-def">The Zscaler cloud node the connector is attached to, shown in App Connector Details.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab4.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 4: Content Filtering</span></a>
+  <div class="page-nav-message">The data center is connected. Next, publish an app through it.</div>
+  <a class="page-nav-btn page-nav-next" href="lab6.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 6: Add a Corporate Application</span></a>
 </div>
 
-<div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab4.html">← Lab 4: SSL Inspection</a>
-  <div class="page-nav-message">Internet access is fully governed — now let's reach into the datacenter.</div>
-  <a class="page-nav-btn page-nav-next" href="lab6.html">Lab 6: Provision ZPA Infrastructure →</a>
-</div>
+<footer>
+  <span>EDU-100 · Introduction to Zscaler Zero Trust Exchange · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 5: Provision ZPA Infrastructure</span>
+</footer>
 
 <script>
 const CONFIG_KEY='edu100-expc-lab-config';
-const PAGE_KEY='edu100-lab-lab5';
-var SECTION_IDS=['t5-1','t5-2','t5-3','t5-4','t5-5'];
-
+const COLLAPSE_KEY='edu100-config-collapsed';
+const CFG_FIELDS={first:'first-input',last:'last-input',fqdn:'fqdn-input',pass:'pass-input'};
+function updateSidebarOffset(){var p=document.getElementById('config-panel');if(!p)return;document.documentElement.style.setProperty('--config-h',(p.offsetHeight+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});window.addEventListener('resize',updateSidebarOffset);})();
+function readCfg(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')||{};}catch(e){return {};}}
+function val(id){return document.getElementById(id).value.trim();}
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var name=[val('first-input'),val('last-input')].filter(Boolean).join(' ');var bits=[name,val('fqdn-input')].filter(Boolean).join(' · ');document.getElementById('config-toggle-summary').textContent=bits?' — '+bits:'';}
+function loadConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value=cfg[k]||'';});try{if(localStorage.getItem(COLLAPSE_KEY)==='1'){document.getElementById('config-panel').classList.add('collapsed');document.getElementById('config-toggle-btn').innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+/* merge into the shared course config so values saved by other EDU-100 pages are kept */
+function saveConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){cfg[k]=val(CFG_FIELDS[k]);});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value='';delete cfg[k];});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();}
+function setAll(sel,text){document.querySelectorAll(sel).forEach(function(el){el.textContent=text;});}
+function setVar(sel,value,placeholder){document.querySelectorAll(sel).forEach(function(el){if(value){el.textContent=value;el.classList.add('filled');}else{el.textContent=placeholder;el.classList.remove('filled');}});}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
-  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
-  }catch(e){}
+  var first=val('first-input'),last=val('last-input'),fqdn=val('fqdn-input'),pass=val('pass-input');
+  var user=first?first.toLowerCase().replace(/\s+/g,''):'<your first name>';
+  var dom=fqdn||'<Student FQDN>';
+  var login=user+'@'+dom;
+  setAll('.d-user-login',login);setAll('.d-student-login','student@'+dom);setAll('.d-first',first||'<your first name>');setAll('.d-last',last||'<your last name>');
+  document.getElementById('d-user').textContent=login;document.getElementById('d-student').textContent='student@'+dom;
+  setVar('.var-fqdn',fqdn,'<Student FQDN>');
+  setVar('.var-pass',pass,'<Student Password>');
+  setVar('.var-fullname',(first||last)?[first||'<your first name>',last||'<your last name>'].join(' '):'','<your first name> <your last name>');
+  document.querySelectorAll('.scr-value').forEach(function(el){el.title=el.textContent;});
 }
-function loadConfig(){try{applyConfig();}catch(e){}}
-function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
-function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
-function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
-function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
-function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
-function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
-function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
-function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
-function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
-function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
-function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
-function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
-function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
-function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
-(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
-function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
-function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
-document.addEventListener('DOMContentLoaded',function(){
-  document.body.style.opacity='1';
-  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
-  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
-  sessionStorage.setItem('pt','1');
-  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
-  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
-});
+/* sidebar: Portal Credentials accordion + copy (values come from the Lab Configuration panel) */
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
-function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function flashBtn(btn,ok){if(!btn)return;btn.textContent=ok?'✓':'—';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';setTimeout(function(){btn.textContent='⎘';btn.title='Copy';},1400);}
+function copySidebarCred(v,btn){if(!v){flashBtn(btn,false);return;}navigator.clipboard.writeText(v).then(function(){flashBtn(btn,true);}).catch(function(){});}
+function copyPortalCred(type,btn){var first=val('first-input').toLowerCase().replace(/\s+/g,''),fqdn=val('fqdn-input'),v='';if(type==='student-user')v=fqdn?'student@'+fqdn:'';else if(type==='user')v=(first&&fqdn)?first+'@'+fqdn:'';else if(type==='pass')v=val('pass-input');copySidebarCred(v,btn);}
+function copyConfigField(id,btn){var v=val(id);if(!v)return;navigator.clipboard.writeText(v).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).addEventListener('input',function(){applyConfig();updateToggleSummary();});});
+
+const PAGE_KEY='edu100-lab-lab5';
+const SECTIONS={'lab0':'Lab 0: Connect to the Virtual Lab','lab1':'Lab 1: User Access Entitlements','lab2':'Lab 2: Forward Traffic with ZCC','lab3':'Lab 3: SSL Inspection Policies','lab4':'Lab 4: Content Filtering','lab5':'Lab 5: Provision ZPA Infrastructure','lab6':'Lab 6: Add a Corporate Application','lab7':'Lab 7: Cloud Application Monitoring'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}catch(e){return [];}}
+function saveQArr(qs){try{localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}catch(e){}}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}catch(e){}}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}catch(e){return [];}}
+function saveNotesArr(ns){try{localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}catch(e){}}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}catch(e){}}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){try{localStorage.setItem(PAGE_KEY+'-chk-'+cb.id,cb.checked);}catch(e){}cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);}catch(e){}if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img, .sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);}catch(e){}if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  try{if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}}catch(e){}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';try{sessionStorage.setItem('pt','1');}catch(e){}
+});
 </script>
 </body>
 </html>

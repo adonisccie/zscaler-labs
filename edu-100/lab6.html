@@ -2,60 +2,147 @@
 <html lang="en">
 <head>
 <script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
-function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
-function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 6: Provision ZPA Infrastructure — EDU-100</title>
+<title>Lab 6: Add a Corporate Application — EDU-100</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>html.pt-init body{opacity:0;}
-.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
-.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
-.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
-.task-collapsible-header:hover{background:#eaecf2;}
-.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
-.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
-.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
-.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
-.task-collapsible-body{display:none;padding:20px 20px 12px;}
-.task-collapsible.open>.task-collapsible-body{display:block;}
-</style>
+<style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:12px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:42%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.lab-meta{flex-wrap:wrap;row-gap:6px;}
+/* Reference links (sidebar section under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 6</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 6 · PRIVATE ACCESS</span>
-    <div class="header-dot"></div>
+    <span class="eyebrow-chip">Lab 6 · EDU-100</span>
+    <span class="header-dot"></span>
   </div>
-  <h1>Provision ZPA <em>Infrastructure</em></h1>
+  <h1>Add a <em>Corporate Application</em></h1>
   <div class="motivation-banner">
-    <p>Everything so far has been about internet-bound traffic. Now you build the piece that lets ZPA reach into the datacenter without opening a single inbound firewall port: a provisioning key generated in the portal, carried over SSH to a Linux VM, and an App Connector that phones home to register itself.</p>
+    <p>Zero trust access means one user, one app, one rule. Define the intranet as an application, allow exactly one user to reach it, then open it from the client.</p>
   </div>
 </header>
 
-<div class="top-panels">
-  <div class="qpanel">
-    <button class="qpanel-header" onclick="toggleQPanel(this)">
-      <span class="qpanel-title">MY QUESTIONS</span>
-      <span class="qpanel-count" id="q-count">0</span>
-      <span class="qpanel-hint">— click to expand</span>
-      <span class="qpanel-chevron">▾</span>
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
     </button>
-    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="first-input">Your First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="first-input" placeholder="Joe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('first-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="last-input">Your Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="last-input" placeholder="Web" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('last-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs9901.labtenant.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Student Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access instructions)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user:</strong> <code id="d-user">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user's password:</strong> <code>Admin-123!</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
     <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
-  <div class="notes-panel">
-    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
       <span class="notes-panel-title">MY NOTES</span>
-      <span class="notes-panel-chevron">▾</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
-    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
     <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
@@ -64,253 +151,186 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab6">
-      <h2>Lab 6: Provision ZPA Infrastructure</h2>
+      <h2>Lab 6: Add a Corporate Application</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">OVERVIEW</div>
-        <p><strong>Scenario:</strong> Safemarch Corporation is preparing to launch internal applications and requires secure, policy-driven connectivity without exposing those applications to the internet. As a Zscaler administrator, you deploy and provision ZPA App Connectors across data centers and cloud platforms. These App Connectors provide encrypted connectivity through the Zero Trust Exchange (ZTE) while keeping internal apps protected.</p>
-        <ul style="margin-top:10px;">
-          <li>Deploy and provision an App Connector using a provisioning key and certificate.</li>
-          <li>Activate the App Connector, enabling secure communication with the ZPA infrastructure.</li>
-          <li>Validate the connection and ensure the App Connector is functioning correctly.</li>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> Labtenant's intranet site, <code>intranet.patraining.safemarch.com</code>, must be available only to authorized users. Now that the App Connector is connected, you define the site as a ZPA application segment, associate it with a segment group and a server group, and create an access policy that allows only the student user to reach it. You then test access from the Corp Client PC through Zscaler Client Connector.</p></div>
+        <p style="margin-top:10px;"><strong>By the end of this lab, you will be able to:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Create an application segment for the intranet application on TCP port 80.</li>
+          <li>Create the CorpApps segment group and associate the CorpServers server group with the application segment.</li>
+          <li>Create an access policy rule that allows only the student user to reach the intranet application.</li>
+          <li>Verify access to the application and confirm that the traffic counters increment in Zscaler Client Connector.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ Application segment <strong>Intranet</strong> covers <code>intranet.patraining.safemarch.com</code> on TCP 80.</li><li>☐ Segment group <strong>CorpApps</strong> and server group <strong>CorpServers</strong> are attached to it.</li><li>☐ Access rule <strong>Allow Intranet</strong> allows the Intranet segment for <code>loginname</code> = the student user.</li><li>☐ The intranet page loads and the Private Access byte counters increase.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ Stay signed in to Zscaler Client Connector as the <strong>student</strong> admin (Lab 2). The rule only allows that user.</li><li>⚠ After you save the segment, the wizard opens the policy step. Use <strong>Edit Policy</strong>, or go to <strong>Policy &gt; Access Policy</strong>.</li><li>⚠ The segment only covers TCP 80, so open the site over <code>http://</code>.</li></ul></div>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
-          <div class="lab-meta-item"><strong>Environment:</strong> Simulated tenant — Corp: Win Svr 2016 + Corp: APP Connector</div>
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Nov 2026</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 5 (App Connector Connected)</div>
+          <div class="lab-meta-item"><strong>You'll use:</strong> Experience Center, Corp Client PC, Zscaler Client Connector</div>
         </div>
       </div>
 
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> All tasks in this lab (6.1–6.2) are completed using the simulated lab exercises. The instructions below are for reference only; you perform the steps within the simulated lab environment.</p>
+      <div class="socratic-block" id="soc-lab6">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · APP-LEVEL ACCESS</span>
+        </div>
+        <p class="socratic-insight">In ZPA, defining an application and allowing someone to use it are two separate acts. Think about why, and how you'd know the traffic really took the ZPA path.</p>
+        <ul class="socratic-questions">
+          <li>ZPA's access policy is <strong>deny by default</strong>. Why does it matter that saving the application segment doesn't, by itself, give anyone access?
+            <div class="answer-area" data-section="lab6-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">It separates describing an application from authorizing people to use it. You can define apps safely, and access exists only where a rule explicitly grants it, so a mistake in a segment doesn't silently expose anything. That's the opposite of a VPN, where being on the network is often enough to reach a server.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The rule matches a single <code>loginname</code>. Why is that fine for a lab but awkward in production, and what would you match on instead?
+            <div class="answer-area" data-section="lab6-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Per-user rules don't scale: every joiner, mover and leaver means editing policy, and rules multiply quickly. In production you'd match on attributes that come from identity, such as groups (like the Helpdesk L1 group from Lab 1) or departments, often combined with conditions on the device. Then access follows a person's role automatically.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>When the intranet loads, you check the byte counters on the <strong>Private Access</strong> page rather than Internet Security. Why do those counters prove the request went through ZPA?
+            <div class="answer-area" data-section="lab6-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Zscaler Client Connector keeps separate statistics per service. The Private Access counters only move when traffic is sent through ZPA, which happens when the destination matches an application segment the user is allowed to use. If the request had gone to the Internet through ZIA, the Internet Security counters would move instead. So the counters show the request was brokered by ZPA to the App Connector in the data center.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <!-- Task 6.1 -->
-      <div class="task-collapsible open" id="task-6-1">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 6.1</span>
-          <span class="task-collapsible-title">Provision an App Connector</span>
+      <div class="task-collapsible open" id="tc-6-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 6.1</span>
+          <span class="task-collapsible-title">Configure User-Specific Access to an Intranet Application</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you configure the App Connector by creating a provisioning key and registering it in the ZTE.</p>
-            <div class="callout callout-note"><p><strong>Note:</strong> The App Connector has been pre-installed with the appropriate network, DNS, and NTP configuration. You activate it by providing the provisioning key created in the Experience Center Portal. For more details, see <a href="https://help.zscaler.com/zpa/configuring-connectors" target="_blank" rel="noopener">Configuring App Connectors</a>.</p></div>
-            <ol class="step-list">
-              <li>Access the ZPA Admin Portal. On the Corp: Win Svr 2016 VM, log in with <code>PATRAINING\Administrator</code> / <code>Admin-123!</code>. Navigate to the Experience Center Landing Page (<code>https://console.zscaler.com/</code>) and authenticate with the Student account.
-                <div class="callout callout-note"><p><strong>Note:</strong> Use the Windows 2016 server to access the Experience Center Portal, since you need to upload the provisioning key through WinSCP.</p></div>
-              </li>
-              <li>Configure the App Connector — from the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; App Connector Groups</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-01.png" alt="Navigation to Infrastructure > Private Access > App Connector Groups" loading="lazy">
-                  <div class="screenshot-caption">Infrastructure &gt; Private Access &gt; App Connector Groups.</div>
-                </div>
-              </li>
-              <li>From Add App Connector Group, select <strong>Add App Connector Group</strong> and configure:
-                <ul class="sub-steps">
-                  <li>Name: <code>OnPrem</code></li>
-                  <li>Status: Enabled</li>
-                  <li>Description: optional</li>
-                  <li>Signing Certificate: <code>Connector</code></li>
-                  <li>DNS Settings (IPv4/IPv6): leave as default</li>
-                  <li>Location: <code>NYC, NY, USA</code></li>
-                </ul>
-                Select <strong>Next</strong>. Version Profile Configuration: leave as default. App Connector Software Update Schedule: <code>Sundays at 00:30</code>. Select <strong>Save</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-02.png" alt="Add App Connector Group with Version Profile default and Software Update Schedule Sundays 00:30" loading="lazy">
-                  <div class="screenshot-caption">Version Profile default, Update Schedule Sundays at 00:30.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-03.png" alt="App Connector Group OnPrem saved confirmation" loading="lazy">
-                  <div class="screenshot-caption">App Connector Group "OnPrem" saved.</div>
-                </div>
-              </li>
-              <li>From App Connector Keys, select <strong>Add App Connector Keys</strong> and configure:
-                <ul class="sub-steps">
-                  <li>Group: <code>OnPrem</code></li>
-                  <li>Name: <code>OnPrem</code></li>
-                  <li>Maximum Reuse Count: <code>4</code></li>
-                  <li>Signing Certificate: <code>Connector</code></li>
-                </ul>
-                Select <strong>Save</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-04.png" alt="Add App Connector Keys dialog with Maximum Reuse Count 4 and Signing Certificate Connector" loading="lazy">
-                  <div class="screenshot-caption">App Connector Keys — Maximum Reuse Count 4, Signing Certificate: Connector.</div>
-                </div>
-              </li>
-              <li>Save the provisioning key. Select <strong>App Connector Provision Keys</strong> and select the Copy icon to copy the key.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-05.png" alt="App Connector Provision Keys list with Copy icon highlighted" loading="lazy">
-                  <div class="screenshot-caption">App Connector Provision Keys — copy the key.</div>
-                </div>
-                Right-click an empty area of the Desktop, select <strong>New &gt; Text Document</strong>, and name it <code>provision_key</code>.
-                <div class="callout callout-note"><p><strong>Note:</strong> Remove the .txt extension if it appears, so the file name is exactly <code>provision_key</code> with no suffix.</p></div>
-                Open the file, paste the OnPrem App Connector provisioning key you copied, then select <strong>File &gt; Save</strong> and close Notepad.
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t6-1">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 6.1</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t6-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t6-1',this)">Save</button><div class="section-qa-list" id="sq-list-t6-1"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t6-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t6-1',this)">Save</button><div class="section-qa-list" id="sn-list-t6-1"></div></div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you will create a <strong>dedicated application segment</strong> to provide more granular access control that limits intranet access to the student user.</div>
+          <ul class="step-list">
+            <li>Configure the Intranet application segment:
+              <ul class="sub-steps">
+                <li>On the Experience Center home page, type <strong>Application Segments</strong> in the search bar and select the appropriate option (<strong>Private Access &gt; Private Applications</strong>).</li>
+                <li>Click <strong>Add Application Segment</strong> and enter:</li>
+              </ul>
+              <div class="values-card"><div class="values-head">DEFINE APPLICATIONS</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>
+                <tr><td class="values-field">Name</td><td><code>Intranet</code></td></tr>
+                <tr><td class="values-field">Status</td><td><strong>Enabled</strong></td></tr>
+                <tr><td class="values-field">Source IP Anchor</td><td><strong>Disabled</strong></td></tr>
+                <tr><td class="values-field">Description</td><td>Add a suitable description</td></tr>
+                <tr><td class="values-field">Applications · Enter a domain or IP address</td><td><code>intranet.patraining.safemarch.com</code></td></tr>
+                <tr><td class="values-field">Client Connector Access · TCP Port Ranges</td><td><code>80</code></td></tr>
+                <tr><td class="values-field">Other settings</td><td>Leave as default</td></tr>
+              </tbody></table></div>
+              <div class="screenshot-embed"><img src="screenshots/lab6-01.png" alt="Add Application Segment wizard, Define Applications step, with Name Intranet, Status Enabled and Source IP Anchor Disabled" loading="lazy"><div class="screenshot-caption">Define Applications: Name <strong>Intranet</strong>, Status Enabled, Source IP Anchor Disabled.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab6-02.png" alt="Applications field with intranet.patraining.safemarch.com and TCP Port Ranges 80 to 80, with the Next button highlighted" loading="lazy"><div class="screenshot-caption">Scroll down: add the intranet domain under <strong>Applications</strong> and set TCP Port Ranges to <strong>80</strong> (the range shows 80 to 80). Then select <strong>Next</strong>.</div></div>
+              <ul class="sub-steps">
+                <li>Click <strong>Next</strong>.</li>
+                <li>Add a segment group: Name <code>CorpApps</code>, Status <strong>Enabled</strong>, then click <strong>Next</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab6-03.png" alt="Segment Group step with Add Segment Group selected, Name CorpApps, Status Enabled and Next highlighted" loading="lazy"><div class="screenshot-caption">Segment Group: choose <strong>Add Segment Group</strong>, name it <strong>CorpApps</strong>, keep it Enabled.</div></div>
+              <ul class="sub-steps">
+                <li>Add a server group: Name <code>CorpServers</code> (select the existing server group), then click <strong>Next</strong>.</li>
+                <li>Click <strong>Save</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab6-04.png" alt="Server Groups step with Select Server Group chosen and CorpServers selected, Next highlighted" loading="lazy"><div class="screenshot-caption">Server Groups: use <strong>Select Server Group</strong> and pick the existing <strong>CorpServers</strong>. Continue, then <strong>Save</strong> on the Review step.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> After saving the application segment, you will be redirected to the Edit Policy page. From there, you can add a policy for the Intranet application segment. Alternatively, you can navigate directly to the <strong>Policies &gt; Access Policy</strong> page from the left-hand menu.</p></div>
+              <div class="screenshot-embed narrow"><img src="screenshots/lab6-05.png" alt="Policies step of the wizard listing an existing Discovered Apps rule and the Edit Policy button highlighted" loading="lazy"><div class="screenshot-caption">Policies step: select <strong>Edit Policy</strong> to add your rule. An existing rule may already be listed.</div></div>
+            </li>
+            <li>Add the access policy:
+              <ul class="sub-steps">
+                <li>Click <strong>Add</strong> to configure a new policy and set the following:</li>
+              </ul>
+              <div class="values-card"><div class="values-head">ADD ACCESS POLICY RULE</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>
+                <tr><td class="values-field">Rule Name</td><td><code>Allow Intranet</code></td></tr>
+                <tr><td class="values-field">Rule Action</td><td><strong>Allow Access</strong></td></tr>
+                <tr><td class="values-field">App Connector Selection Method</td><td>Keep <strong>All App Connector Groups</strong></td></tr>
+                <tr><td class="values-field">Criteria · Applications</td><td>Click <strong>Add Criteria</strong> &gt; <strong>Applications</strong>, choose the <strong>Intranet</strong> application segment</td></tr>
+                <tr><td class="values-field">Criteria · User and Session Attributes</td><td>Click <strong>+</strong> to add <strong>User Attributes</strong>, select <strong>loginname</strong> and choose <code class="d-student-login">student@&lt;Student FQDN&gt;</code></td></tr>
+              </tbody></table></div>
+              <ul class="sub-steps">
+                <li>Click <strong>Add Rule</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab6-06.png" alt="Access Policy Add Rule page: Application Segments Intranet, User Attributes loginname equals the student user, Action Allow Access, Rule Name Allow Intranet, App Connector Selection Method All App Connector groups, and the Add Rule button" loading="lazy"><div class="screenshot-caption">Add Rule: <strong>Intranet</strong> under Applications AND <strong>loginname = student@…</strong> under User and Session Attributes; Action <strong>Allow Access</strong>; then <strong>Add Rule</strong>.</div></div>
+            </li>
+            <li>Test the policy:
+              <ul class="sub-steps">
+                <li>Open a web browser on the <strong>Corp Client PC</strong> and the Zscaler Client Connector side by side.</li>
+                <li>Navigate to <code>http://intranet.patraining.safemarch.com</code> using the provided bookmark.</li>
+                <li>Ensure that the intranet page loads successfully for the <strong>Student</strong> user.</li>
+                <li>Refresh the page and confirm that the <strong>Total Bytes Sent/Received</strong> counters in Zscaler Client Connector increment.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab6-07.png" alt="Intranet home page loaded in the browser beside Zscaler Client Connector's Private Access page, with Total Bytes Sent and Received highlighted" loading="lazy"><div class="screenshot-caption">The intranet loads, and the <strong>Private Access</strong> page's Total Bytes Sent/Received increase when you refresh.</div></div>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Task 6.2 -->
-      <div class="task-collapsible open" id="task-6-2">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 6.2</span>
-          <span class="task-collapsible-title">Activate the App Connector</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you activate the App Connector and ensure secure traffic flow to ZPA.</p>
-            <ol class="step-list">
-              <li>Configure the App Connector VM (Corp: APP Connector) — log in with <code>admin</code> / <code>zscaler</code>. Start the SSH daemon so you can connect with WinSCP:
-                <div style="margin:8px 0;"><code>sudo systemctl start sshd</code></div>
-                password: <code>zscaler</code>. Verify SSH is running:
-                <div style="margin:8px 0;"><code>sudo systemctl status sshd</code></div>
-                Confirm status is <strong>active (running)</strong>.
-              </li>
-              <li>Transfer the provisioning key. On Corp: Win Svr 2016, open WinSCP and configure the session:
-                <ul class="sub-steps">
-                  <li>IP Address: <code>10.0.0.4</code></li>
-                  <li>Port: <code>22</code></li>
-                  <li>Username: <code>admin</code></li>
-                  <li>Password: <code>zscaler</code></li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-06.png" alt="WinSCP session configuration with IP 10.0.0.4 port 22 and admin credentials" loading="lazy">
-                  <div class="screenshot-caption">WinSCP — session to 10.0.0.4:22.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-07.png" alt="WinSCP connected to the App Connector VM" loading="lazy">
-                  <div class="screenshot-caption">WinSCP connected to Corp: APP Connector.</div>
-                </div>
-              </li>
-              <li>In WinSCP, navigate to the key file: go to <code>C:\Users\Administrator\Documents\"*"</code> and select Browse, select Desktop, and select OK — confirm Desktop is selected. Right-click <code>provision_key</code> and select <strong>Upload</strong>, or drag and drop from left to right panel.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-08.png" alt="WinSCP Desktop folder with provision_key file ready to upload" loading="lazy">
-                  <div class="screenshot-caption">Right-click provision_key on the Desktop and Upload.</div>
-                </div>
-                Verify the file is uploaded and close WinSCP.
-              </li>
-              <li>Activate the App Connector. You should see a prompt similar to <code>admin@zpa-connector ~]$</code>.
-                <div class="callout callout-note"><p><strong>Note:</strong> The <code>~</code> indicates you are in your home directory, <code>/home/admin</code>. After uploading provision_key via WinSCP, it lands in the admin home directory by default.</p></div>
-                Verify your current directory:
-                <div style="margin:8px 0;"><code>pwd</code></div>
-                Expected output: <code>/home/admin</code>. List files:
-                <div style="margin:8px 0;"><code>ls</code></div>
-                Expected output: <code>provision_key</code>.
-              </li>
-              <li>Activate the App Connector — stop the connector service:
-                <div style="margin:8px 0;"><code>sudo systemctl stop zpa-connector</code></div>
-                Copy the provisioning key to the directory:
-                <div style="margin:8px 0;"><code>sudo cp provision_key /opt/zscaler/var/</code></div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Ensure the trailing slash (/) after <code>var</code>. Its absence can cause service startup failures.</p></div>
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab6-09.png" alt="Terminal showing sudo cp provision_key /opt/zscaler/var/ command" loading="lazy">
-                  <div class="screenshot-caption">Copy the provisioning key into /opt/zscaler/var/.</div>
-                </div>
-              </li>
-              <li>Confirm the file:
-                <div style="margin:8px 0;"><code>sudo ls /opt/zscaler/var/</code></div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-10.png" alt="Terminal output confirming provision_key file present in /opt/zscaler/var/" loading="lazy">
-                  <div class="screenshot-caption">Confirm provision_key is present in /opt/zscaler/var/.</div>
-                </div>
-                Restart the service:
-                <div style="margin:8px 0;"><code>sudo systemctl start zpa-connector</code></div>
-                Enable the service to start on boot:
-                <div style="margin:8px 0;"><code>sudo systemctl enable zpa-connector</code></div>
-                Verify the service is running:
-                <div style="margin:8px 0;"><code>sudo systemctl status zpa-connector</code></div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Expected result — the App Connector is active and connected to the ZPA infrastructure. You should see the .pem key and certificate files as further confirmation.</p></div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-11.png" alt="systemctl status zpa-connector output showing the service active and running" loading="lazy">
-                  <div class="screenshot-caption">zpa-connector service — active (running).</div>
-                </div>
-              </li>
-              <li>Optional recovery (only if the connector status fails or is red): stop the service (<code>sudo systemctl stop zpa-connector</code>), clear the var directory (<code>sudo find /opt/zscaler/var -mindepth 1 -delete</code>), confirm provision_key still exists in <code>/home/admin</code> (re-upload via WinSCP if necessary), re-copy the key (<code>sudo cp provision_key /opt/zscaler/var/</code>), start the service (<code>sudo systemctl start zpa-connector</code>), and check status (<code>sudo systemctl status zpa-connector</code>).</li>
-              <li>Verify in the ZPA Admin Portal — on the Experience Center Landing Page (Corp: Win Svr 2016), navigate to <strong>Infrastructure &gt; Private Access &gt; App Connectors</strong>. Confirm the App Connector is listed.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-13.png" alt="App Connectors list showing the OnPrem App Connector registered" loading="lazy">
-                  <div class="screenshot-caption">App Connectors — the OnPrem connector is listed.</div>
-                </div>
-              </li>
-              <li>Update Status field — <strong>Success</strong> means the App Connector is running the latest software; <strong>Scheduled</strong> means an update will occur at the next update interval.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-14.png" alt="App Connector Update Status field showing Success or Scheduled" loading="lazy">
-                  <div class="screenshot-caption">Update Status — Success or Scheduled.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> There is no need to wait for the App Connector to update. Continue with the lab and check back in a few minutes.</p></div>
-              </li>
-              <li>Select the App Connector's name to expand details, including Host OS, PSE, Location, IP Addresses, and Uptime.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab6-15.png" alt="Expanded App Connector details showing Host OS, PSE, Location, IP Addresses, and Uptime" loading="lazy">
-                  <div class="screenshot-caption">App Connector detail — Host OS, PSE, Location, IP Addresses, Uptime.</div>
-                </div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t6-2">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 6.2</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t6-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t6-2',this)">Save</button><div class="section-qa-list" id="sq-list-t6-2"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t6-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t6-2',this)">Save</button><div class="section-qa-list" id="sn-list-t6-2"></div></div>
-              </div>
-            </div>
-          </div>
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Define:</strong> segment <code>Intranet</code> = <code>intranet.patraining.safemarch.com</code>, TCP 80 → segment group <code>CorpApps</code> → server group <code>CorpServers</code>. <strong>Allow:</strong> rule <code>Allow Intranet</code> = Application Intranet AND loginname = student, Allow Access. No rule, no access. <strong>Prove:</strong> the page loads and the <strong>Private Access</strong> byte counters climb.</div>
         </div>
       </div>
 
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab6" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab6','Lab 6: Add a Corporate Application')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab6" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab6')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
-      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+      <a href="index.html" class="hub-link">← EDU-100 Lab Hub</a>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Lab Topology</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Lab Environment</div>
-      <div class="sidebar-cred-list">
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">PATRAINING\Administrator</code><button class="scr-copy" onclick="copySidebarCred('PATRAINING\\Administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: APP Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.4</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.4',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
+        <img src="screenshots/topology.png" alt="EDU-100 lab topology: the Corp Client PC with Zscaler Client Connector connects through the Zero Trust Exchange to the Internet and to the Corporate Data Center (10.0.0.0/24) with Corp Win Svr 2025 and the ZPA App Connector; admins use the Experience Center and Service Portal" title="Click to expand">
       </div>
     </div>
 
@@ -318,9 +338,9 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="sidebar-label">Portal Credentials</div>
       <div class="sidebar-cred-list">
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin (portal &amp; ZCC)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-student-login">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -328,75 +348,128 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Progress</div>
+      <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-6-1" onchange="toggleDone(this)"><label for="chk-6-1">6.1 Connector group &amp; key created</label></li>
-        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-6-2" onchange="toggleDone(this)"><label for="chk-6-2">6.2 Connector activated &amp; verified</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6a" onchange="toggleDone(this)"><label for="chk-lab6a">6.1 Intranet application segment saved (TCP 80)</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6b" onchange="toggleDone(this)"><label for="chk-lab6b">6.1 CorpApps and CorpServers attached</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6c" onchange="toggleDone(this)"><label for="chk-lab6c">6.1 Allow Intranet access rule added</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab6d" onchange="toggleDone(this)"><label for="chk-lab6d">6.1 Intranet loads, Private Access counters increase</label></li>
       </ul>
     </div>
-
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 6.1 · Application segment</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-applications" target="_blank" rel="noopener noreferrer" title="How ZPA defines applications and application segments">About Applications</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-defined-application-segments" target="_blank" rel="noopener noreferrer" title="The Add Application Segment wizard, step by step">Configuring Defined Application Segments</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-segment-groups" target="_blank" rel="noopener noreferrer" title="Grouping application segments so policy can target them together">About Segment Groups</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-server-groups" target="_blank" rel="noopener noreferrer" title="How server groups link applications to App Connector groups">About Server Groups</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 6.1 · Access policy</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-access-policy" target="_blank" rel="noopener noreferrer" title="Default deny, rule order and how access rules are evaluated">About Access Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-access-policies" target="_blank" rel="noopener noreferrer" title="Adding access policy rules with application and user criteria">Configuring Access Policies</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Application segment</div><div class="qr-def">The domains or IPs and ports that make up a private application, e.g. the intranet on TCP 80.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment group</div><div class="qr-def">A set of application segments that policy rules can target together. Each segment belongs to one group.</div></div>
+        <div class="qr-item"><div class="qr-term">Server group</div><div class="qr-def">Links the application to the App Connector groups that can reach its servers.</div></div>
+        <div class="qr-item"><div class="qr-term">Access policy</div><div class="qr-def">Rules that decide who may reach which applications. Without an Allow rule, access is denied.</div></div>
+        <div class="qr-item"><div class="qr-term">loginname</div><div class="qr-def">User attribute that matches one user's login ID in an access rule.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Selection Method</div><div class="qr-def">Which App Connector groups may carry the traffic. The lab keeps all groups for the application.</div></div>
+        <div class="qr-item"><div class="qr-term">Private Access counters</div><div class="qr-def">Total Bytes Sent/Received on the ZCC Private Access page, showing traffic sent through ZPA.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab5.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 5: Provision ZPA Infrastructure</span></a>
+  <div class="page-nav-message">One user, one app, no VPN. Next, watch how the experience holds up.</div>
+  <a class="page-nav-btn page-nav-next" href="lab7.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 7: Cloud Application Monitoring</span></a>
 </div>
 
-<div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab5.html">← Lab 5: Content Filtering</a>
-  <div class="page-nav-message">The connector is live — now give it something to protect.</div>
-  <a class="page-nav-btn page-nav-next" href="lab7.html">Lab 7: Add a Corporate Application →</a>
-</div>
+<footer>
+  <span>EDU-100 · Introduction to Zscaler Zero Trust Exchange · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 6: Add a Corporate Application</span>
+</footer>
 
 <script>
 const CONFIG_KEY='edu100-expc-lab-config';
-const PAGE_KEY='edu100-lab-lab6';
-var SECTION_IDS=['t6-1','t6-2'];
-
+const COLLAPSE_KEY='edu100-config-collapsed';
+const CFG_FIELDS={first:'first-input',last:'last-input',fqdn:'fqdn-input',pass:'pass-input'};
+function updateSidebarOffset(){var p=document.getElementById('config-panel');if(!p)return;document.documentElement.style.setProperty('--config-h',(p.offsetHeight+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});window.addEventListener('resize',updateSidebarOffset);})();
+function readCfg(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')||{};}catch(e){return {};}}
+function val(id){return document.getElementById(id).value.trim();}
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var name=[val('first-input'),val('last-input')].filter(Boolean).join(' ');var bits=[name,val('fqdn-input')].filter(Boolean).join(' · ');document.getElementById('config-toggle-summary').textContent=bits?' — '+bits:'';}
+function loadConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value=cfg[k]||'';});try{if(localStorage.getItem(COLLAPSE_KEY)==='1'){document.getElementById('config-panel').classList.add('collapsed');document.getElementById('config-toggle-btn').innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+/* merge into the shared course config so values saved by other EDU-100 pages are kept */
+function saveConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){cfg[k]=val(CFG_FIELDS[k]);});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value='';delete cfg[k];});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();}
+function setAll(sel,text){document.querySelectorAll(sel).forEach(function(el){el.textContent=text;});}
+function setVar(sel,value,placeholder){document.querySelectorAll(sel).forEach(function(el){if(value){el.textContent=value;el.classList.add('filled');}else{el.textContent=placeholder;el.classList.remove('filled');}});}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
-  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
-  }catch(e){}
+  var first=val('first-input'),last=val('last-input'),fqdn=val('fqdn-input'),pass=val('pass-input');
+  var user=first?first.toLowerCase().replace(/\s+/g,''):'<your first name>';
+  var dom=fqdn||'<Student FQDN>';
+  var login=user+'@'+dom;
+  setAll('.d-user-login',login);setAll('.d-student-login','student@'+dom);setAll('.d-first',first||'<your first name>');setAll('.d-last',last||'<your last name>');
+  document.getElementById('d-user').textContent=login;document.getElementById('d-student').textContent='student@'+dom;
+  setVar('.var-fqdn',fqdn,'<Student FQDN>');
+  setVar('.var-pass',pass,'<Student Password>');
+  setVar('.var-fullname',(first||last)?[first||'<your first name>',last||'<your last name>'].join(' '):'','<your first name> <your last name>');
+  document.querySelectorAll('.scr-value').forEach(function(el){el.title=el.textContent;});
 }
-function loadConfig(){try{applyConfig();}catch(e){}}
-function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
-function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
-function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
-function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
-function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
-function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
-function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
-function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
-function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
-function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
-function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
-function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
-function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
-function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
-(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
-function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
-function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
-document.addEventListener('DOMContentLoaded',function(){
-  document.body.style.opacity='1';
-  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
-  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
-  sessionStorage.setItem('pt','1');
-  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
-  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
-});
+/* sidebar: Portal Credentials accordion + copy (values come from the Lab Configuration panel) */
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
-function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function flashBtn(btn,ok){if(!btn)return;btn.textContent=ok?'✓':'—';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';setTimeout(function(){btn.textContent='⎘';btn.title='Copy';},1400);}
+function copySidebarCred(v,btn){if(!v){flashBtn(btn,false);return;}navigator.clipboard.writeText(v).then(function(){flashBtn(btn,true);}).catch(function(){});}
+function copyPortalCred(type,btn){var first=val('first-input').toLowerCase().replace(/\s+/g,''),fqdn=val('fqdn-input'),v='';if(type==='student-user')v=fqdn?'student@'+fqdn:'';else if(type==='user')v=(first&&fqdn)?first+'@'+fqdn:'';else if(type==='pass')v=val('pass-input');copySidebarCred(v,btn);}
+function copyConfigField(id,btn){var v=val(id);if(!v)return;navigator.clipboard.writeText(v).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).addEventListener('input',function(){applyConfig();updateToggleSummary();});});
+
+const PAGE_KEY='edu100-lab-lab6';
+const SECTIONS={'lab0':'Lab 0: Connect to the Virtual Lab','lab1':'Lab 1: User Access Entitlements','lab2':'Lab 2: Forward Traffic with ZCC','lab3':'Lab 3: SSL Inspection Policies','lab4':'Lab 4: Content Filtering','lab5':'Lab 5: Provision ZPA Infrastructure','lab6':'Lab 6: Add a Corporate Application','lab7':'Lab 7: Cloud Application Monitoring'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}catch(e){return [];}}
+function saveQArr(qs){try{localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}catch(e){}}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}catch(e){}}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}catch(e){return [];}}
+function saveNotesArr(ns){try{localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}catch(e){}}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}catch(e){}}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){try{localStorage.setItem(PAGE_KEY+'-chk-'+cb.id,cb.checked);}catch(e){}cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);}catch(e){}if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img, .sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);}catch(e){}if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  try{if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}}catch(e){}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';try{sessionStorage.setItem('pt','1');}catch(e){}
+});
 </script>
 </body>
 </html>

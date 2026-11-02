@@ -2,60 +2,147 @@
 <html lang="en">
 <head>
 <script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
-function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
-function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 4: Configure SSL Inspection Policies — EDU-100</title>
+<title>Lab 4: Configure Content Filtering — EDU-100</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>html.pt-init body{opacity:0;}
-.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
-.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
-.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
-.task-collapsible-header:hover{background:#eaecf2;}
-.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
-.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
-.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
-.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
-.task-collapsible-body{display:none;padding:20px 20px 12px;}
-.task-collapsible.open>.task-collapsible-body{display:block;}
-</style>
+<style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:12px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:42%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.lab-meta{flex-wrap:wrap;row-gap:6px;}
+/* Reference links (sidebar section under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 4</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 4 · SSL INSPECTION</span>
-    <div class="header-dot"></div>
+    <span class="eyebrow-chip">Lab 4 · EDU-100</span>
+    <span class="header-dot"></span>
   </div>
-  <h1>Configure SSL <em>Inspection Policies</em></h1>
+  <h1>Configure <em>Content Filtering</em></h1>
   <div class="motivation-banner">
-    <p>Firewall rules can't see inside an encrypted session — and neither can most threats hide there without SSL inspection turned on. Here you enable inspection for all destinations, watch the certificate chain change under your own eyes, then review how privacy-sensitive categories get a deliberate bypass in the real-world tenant.</p>
+    <p>An acceptable use policy only counts if it's enforced. Turn it into one URL Filtering rule, then see it from the user's side: the same sites, now behind a Zscaler block page.</p>
   </div>
 </header>
 
-<div class="top-panels">
-  <div class="qpanel">
-    <button class="qpanel-header" onclick="toggleQPanel(this)">
-      <span class="qpanel-title">MY QUESTIONS</span>
-      <span class="qpanel-count" id="q-count">0</span>
-      <span class="qpanel-hint">— click to expand</span>
-      <span class="qpanel-chevron">▾</span>
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
     </button>
-    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="first-input">Your First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="first-input" placeholder="Joe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('first-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="last-input">Your Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="last-input" placeholder="Web" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('last-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs9901.labtenant.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Student Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access instructions)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user:</strong> <code id="d-user">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user's password:</strong> <code>Admin-123!</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
     <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
-  <div class="notes-panel">
-    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
       <span class="notes-panel-title">MY NOTES</span>
-      <span class="notes-panel-chevron">▾</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
-    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
     <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
@@ -64,213 +151,199 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab4">
-      <h2>Lab 4: Configure SSL Inspection Policies</h2>
+      <h2>Lab 4: Configure Content Filtering</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">OVERVIEW</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, you are tasked with enabling SSL/TLS inspection to monitor and enforce policies on users' encrypted web traffic. Since most modern threats hide within HTTPS traffic, enabling SSL inspection provides visibility into encrypted sessions and allows policies to be enforced effectively. You configure SSL inspection for all destinations and define exemptions for trusted or privacy-sensitive categories. You also use the Zscaler read-only tenant to review pre-configured bypass rules for privacy-sensitive traffic categories, and examine SSL inspection logs to distinguish between inspected and bypassed HTTPS sessions.</p>
-        <ul style="margin-top:10px;">
-          <li>Enable and configure SSL inspection policies for all encrypted traffic.</li>
-          <li>Analyze SSL inspection logs and identify inspection or bypass events.</li>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> Labtenant's acceptable use policy blocks gambling, adult, shopping, and entertainment content on corporate devices, but users can currently reach these sites. You confirm the current behavior, create a URL Filtering rule that blocks the categories, and test the result from the user's browser.</p></div>
+        <p style="margin-top:10px;"><strong>By the end of this lab, you will be able to:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Confirm that a high-risk website is reachable before the policy is applied.</li>
+          <li>Create and activate a URL Filtering rule that blocks the Adult Materials, Shopping and Auctions, Gambling, and Video Streaming categories.</li>
+          <li>Test the end-user experience, and troubleshoot the rule if a site is still reachable.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ <code>888.com</code> loads before the rule exists.</li><li>☐ Rule <strong>Risky URL Categories</strong> is at Rule Order 1, Block, Enabled, with all four categories, and the change is activated.</li><li>☐ <code>888.com</code> and <code>ebay.com</code> show a Zscaler block page that names the category.</li><li>☐ You checked a streaming site and know how to look up a site's category if it isn't blocked.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ <strong>Save</strong> alone doesn't apply the rule. You must also <strong>Activate</strong> the change.</li><li>⚠ The browser may show a cached page. Test in <strong>Incognito Mode</strong>.</li><li>⚠ Still reachable? Check the site's URL category and that the rule status is <strong>Enabled</strong>.</li></ul></div>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
-          <div class="lab-meta-item"><strong>Environment:</strong> Task 4.1 simulated tenant · Tasks 4.2–4.3 read-only tenant</div>
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Nov 2026</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 3 (SSL inspection active)</div>
+          <div class="lab-meta-item"><strong>You'll use:</strong> Experience Center, Corp Client PC (browser)</div>
         </div>
       </div>
 
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> This lab uses both the simulated lab environment and the Zscaler tenant. You complete Task 4.1 in the simulated environment (the instructions below are for reference only), then switch to the Zscaler tenant for Tasks 4.2–4.3.</p>
+      <div class="socratic-block" id="soc-lab4">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · POLICY BY CATEGORY</span>
+        </div>
+        <p class="socratic-insight">You're about to block four categories with one rule. Think about why categories work, how the rule is evaluated, and what the user actually sees when it fires.</p>
+        <ul class="socratic-questions">
+          <li>The rule blocks <strong>categories</strong>, not a list of sites. Why does that scale better, and what's the trade-off?
+            <div class="answer-area" data-section="lab4-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Zscaler maintains the categorization, so a new gambling site is covered as soon as it's classified, without you editing the rule. A site list would always be out of date. The trade-off is that you depend on how a site is categorized: a site can sit in a category you didn't expect. That's why Task 4.2 tells you to look up a site's category when it's still reachable.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>URL Filtering rules are evaluated in order, and the first match wins. Why does the lab put this rule at <strong>Rule Order 1</strong>, and what could go wrong if it were lower?
+            <div class="answer-area" data-section="lab4-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">If a higher rule matches the request first (for example, an allow rule, or the existing rule already at order 1 in the tenant), evaluation stops there and your block never applies. Rule Order 1 makes sure the block is checked first. In production you'd deliberately place narrow exceptions above broad block rules, and keep the order under review.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>When <code>888.com</code> is blocked, the user sees a page explaining which category was blocked. What role does Lab 3's SSL inspection play in making that page appear for an HTTPS site?
+            <div class="answer-area" data-section="lab4-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The site is HTTPS, so the block page has to be delivered inside an encrypted session. Because ZIA is inspecting the traffic, it terminates the session and can answer with its own notification page, which the browser trusts. Without inspection, ZIA could still recognize the domain and stop the connection, but it couldn't show the friendly page in that session; the user would typically see a browser error instead.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <!-- Task 4.1 -->
-      <div class="task-collapsible open" id="task-4-1">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 4.1</span>
-          <span class="task-collapsible-title">Enable SSL Inspection for All Destinations</span>
+      <div class="task-collapsible open" id="tc-4-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 4.1</span>
+          <span class="task-collapsible-title">Configure Content Filtering Controls</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you enable SSL inspection for all encrypted traffic.</p>
-            <ol class="step-list">
-              <li>Verify the current SSL Inspection status. On the Corp: Client PC, open a Chrome browser window in Incognito Mode and navigate to <code>www.wikipedia.org</code>. Select the site information (filter) icon in the URL field.
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab4-01.png" alt="Browser address bar with the site information filter icon highlighted for www.wikipedia.org" loading="lazy">
-                  <div class="screenshot-caption">Site information icon in the address bar.</div>
-                </div>
-              </li>
-              <li>Select <strong>Connection is secure &gt; Certificate is valid</strong>.
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab4-02.png" alt="Certificate details showing the certificate issued by the destination web server before SSL inspection is enabled" loading="lazy">
-                  <div class="screenshot-caption">Certificate is issued by the destination web server — SSL inspection is not yet active.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> You should see that the certificate was issued by the destination web server. The site information icon resembles "three horizontal lines connected by dots" and is sometimes shown as a padlock, typically to the left of the URL.</p></div>
-              </li>
-              <li>Enable SSL Inspection. In the Zscaler Experience Center, navigate to <strong>Policies &gt; Common Configuration &gt; SSL/TLS Inspection &gt; SSL/TLS Inspection Policy</strong>. On the SSL Inspection Policy tab, select <strong>+Add SSL Inspection Rule</strong>. Configure:
-                <ul class="sub-steps">
-                  <li>Rule Order: <code>1</code></li>
-                  <li>Rule Name: <code>SSL Inspect All</code></li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-03.png" alt="Add SSL Inspection Rule dialog with Rule Order 1 and Rule Name SSL Inspect All" loading="lazy">
-                  <div class="screenshot-caption">Add SSL Inspection Rule — Order 1, Name: SSL Inspect All.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-04.png" alt="SSL Inspection Rule configuration continued with criteria fields" loading="lazy">
-                  <div class="screenshot-caption">Rule criteria — left at defaults so the rule applies broadly.</div>
-                </div>
-              </li>
-              <li>Scroll down to the <strong>ACTION</strong> section and select <strong>Inspect</strong> under Action.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-05.png" alt="ACTION section with Inspect selected for the SSL Inspection rule" loading="lazy">
-                  <div class="screenshot-caption">Action: Inspect.</div>
-                </div>
-              </li>
-              <li>Select <strong>Save and Activate</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-06.png" alt="SSL Inspection rule saved and activated confirmation" loading="lazy">
-                  <div class="screenshot-caption">SSL Inspect All rule saved and activated.</div>
-                </div>
-              </li>
-              <li>Verify inspection status — close or refresh the Incognito browser (to ensure the new policy applies), re-open an Incognito window, and visit <code>www.wikipedia.org</code> again. Select the site information icon &gt; Connection is secure &gt; Certificate is valid.
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab4-07.png" alt="Certificate details after SSL inspection is enabled, showing the certificate signed by Zscaler" loading="lazy">
-                  <div class="screenshot-caption">Certificate is now signed by Zscaler — SSL inspection is active.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> You will see that you have received a server certificate signed by Zscaler.</p></div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t4-1">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 4.1</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t4-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t4-1',this)">Save</button><div class="section-qa-list" id="sq-list-t4-1"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t4-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t4-1',this)">Save</button><div class="section-qa-list" id="sn-list-t4-1"></div></div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you will create a <strong>URL Filtering Policy</strong> to block risky URL categories such as gambling, adult content, shopping, and entertainment. You will also verify how content filtering controls work in ZIA to manage user access.</div>
+          <ul class="step-list">
+            <li>Test high-risk URL access (before configuration):
+              <ul class="sub-steps">
+                <li>Open a browser on the <strong>Corp Client PC</strong> and attempt to visit a risky or unsafe website, such as <code>888.com</code> (a gambling site).</li>
+                <li>Verify that the website is currently accessible.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab4-01.png" alt="888.com casino home page loading in an Incognito browser window" loading="lazy"><div class="screenshot-caption">Before the rule: <code>888.com</code> loads normally.</div></div>
+            </li>
+            <li>Create a URL Filtering policy:
+              <ul class="sub-steps">
+                <li>In the <strong>Experience Center</strong>, use the <strong>Search</strong> menu to find <strong>URL Filtering</strong> and select the appropriate option (<strong>Internet Access &gt; Policy</strong>).</li>
+                <li>Click <strong>Add Rule</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab4-02.png" alt="URL Filtering Policy page with an existing rule at Rule Order 1 and the Add Rule button highlighted" loading="lazy"><div class="screenshot-caption">URL Filtering Policy: select <strong>Add Rule</strong>. The tenant already has a rule at order 1, which is why you set your rule's order explicitly.</div></div>
+              <ul class="sub-steps">
+                <li>Configure the rule as follows:</li>
+              </ul>
+              <div class="values-card"><div class="values-head">ADD URL FILTERING RULE</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>
+                <tr><td class="values-field">Action</td><td>Select <strong>Block</strong></td></tr>
+                <tr><td class="values-field">Rule Name</td><td><code>Risky URL Categories</code></td></tr>
+                <tr><td class="values-field">Rule Order</td><td>Click <strong>Edit</strong> and change it to <code>1</code> if required</td></tr>
+                <tr><td class="values-field">Rule Status</td><td><strong>Enabled</strong></td></tr>
+                <tr><td class="values-field">Criteria · URL Categories</td><td>Search for and add:<br><strong>Adult Materials</strong><br><strong>Shopping and Auctions</strong><br><strong>Gambling</strong><br><strong>Video Streaming</strong></td></tr>
+                <tr><td class="values-field">Request Methods and Protocols</td><td>Ensure <strong>all options</strong> are selected</td></tr>
+              </tbody></table></div>
+              <div class="screenshot-embed"><img src="screenshots/lab4-03.png" alt="URL Filtering Add Rule page with URL Categories and Request Methods criteria, Web Traffic action Block, Rule Name Risky URL Categories, Rule Order 1, Rule Status Enabled, and the Save button" loading="lazy"><div class="screenshot-caption">Add Rule: the Block action is under <strong>Actions &gt; Web Traffic</strong>. The category box lists the selected categories and shows "+11" for the rest that don't fit.</div></div>
+              <ul class="sub-steps">
+                <li>Click <strong>Save</strong> and <strong>Activate</strong>.</li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
 
       <!-- Task 4.2 -->
-      <div class="task-collapsible open" id="task-4-2">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 4.2</span>
-          <span class="task-collapsible-title">Review SSL Inspection Bypass Rules</span>
+      <div class="task-collapsible open" id="tc-4-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 4.2</span>
+          <span class="task-collapsible-title">Test End-User Experience with URL Filtering</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review the SSL/TLS Inspection Policy to understand that not all traffic needs to be inspected — certain categories are configured with a bypass rule. User credentials are contained in the lab access instructions provided to you via email by the instructor.</p>
-            <ol class="step-list">
-              <li>In a browser window, go to <code>https://console.zscaler.com</code> and authenticate with the read-only Zscaler tenant credentials:
-                <ul class="sub-steps">
-                  <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
-                  <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
-                </ul>
-                Go to <strong>Policies &gt; Common Configuration &gt; SSL/TLS Inspection &gt; SSL/TLS Inspection Policy</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-08.png" alt="SSL/TLS Inspection Policy list in the read-only tenant" loading="lazy">
-                  <div class="screenshot-caption">SSL/TLS Inspection Policy — read-only tenant rule list.</div>
-                </div>
-              </li>
-              <li>Observe the pre-configured bypass rule <strong>"No Inspect Finance &amp; Health"</strong> with the action <strong>Do Not Inspect</strong>. Review the Criteria: URL Categories — Finance, Health.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-09.png" alt="No Inspect Finance and Health bypass rule with Do Not Inspect action and URL Categories Finance, Health" loading="lazy">
-                  <div class="screenshot-caption">No Inspect Finance &amp; Health — Do Not Inspect, URL Categories: Finance, Health.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> This rule is configured to bypass SSL inspection for privacy-sensitive traffic categories. This illustrates that Zscaler allows you to define specific traffic that does not require decryption and inspection.</p></div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t4-2">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 4.2</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t4-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t4-2',this)">Save</button><div class="section-qa-list" id="sq-list-t4-2"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t4-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t4-2',this)">Save</button><div class="section-qa-list" id="sn-list-t4-2"></div></div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you'll test user access to various websites after applying the configured <strong>URL Filtering Policy</strong>.</div>
+          <ul class="step-list">
+            <li>Test blocked URLs:
+              <ul class="sub-steps">
+                <li>Open a browser and attempt to visit a previously accessible site, such as:
+                  <ul class="sub-steps">
+                    <li><code>888.com</code> (Gambling category)</li>
+                    <li><code>ebay.com</code> (Shopping and Auctions category)</li>
+                  </ul>
+                </li>
+                <li>Verify that these sites are now blocked based on the configured <strong>URL Filtering Policy</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab4-04.png" alt="Zscaler block page for 888.com: Sorry, you don't have permission to visit this site. Not allowed to browse Gambling category" loading="lazy"><div class="screenshot-caption">The Zscaler block page names the category: <strong>Not allowed to browse Gambling category</strong>.</div></div>
+            </li>
+            <li>Test streaming site access:
+              <ul class="sub-steps">
+                <li>Attempt to access streaming websites such as <code>YouTube.com</code> or <code>Netflix.com</code>.</li>
+                <li>Verify whether these websites are blocked. If a site is still reachable, look up its URL category in ZIA; streaming sites may be classified under a category that is not included in the rule.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab4-05.png" alt="Zscaler block page for youtube.com: Not allowed to browse Video Streaming category" loading="lazy"><div class="screenshot-caption">YouTube is blocked as <strong>Video Streaming</strong>, one of the four categories in the rule.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> If testing does not work, try using Incognito Mode in the browser.</p></div>
+            </li>
+            <li>If the testing fails, verify the URL Filtering policy status:
+              <ul class="sub-steps">
+                <li>Navigate to <strong>URL Filtering Policy</strong> and click <strong>Edit</strong> to confirm that the <strong>Rule Status</strong> is set to <strong>Enabled</strong>.</li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Task 4.3 -->
-      <div class="task-collapsible open" id="task-4-3">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 4.3</span>
-          <span class="task-collapsible-title">Review SSL Inspection Logs</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review SSL/TLS inspection logs and identify which sessions were inspected by Zscaler and which were bypassed based on configured policy rules.</p>
-            <ol class="step-list">
-              <li>Go to <strong>Analytics &gt; Web &gt; Web Insights &gt; Logs</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-10.png" alt="Web Insights Logs navigation" loading="lazy">
-                  <div class="screenshot-caption">Analytics &gt; Web &gt; Web Insights &gt; Logs.</div>
-                </div>
-              </li>
-              <li>In the Logs view, apply the following filters:
-                <ul class="sub-steps">
-                  <li>Timeframe: Last 15 Minutes</li>
-                  <li>SSL/TLS Inspected: On (toggle enabled)</li>
-                  <li>SSL/TLS Policy Reason: Inspected</li>
-                  <li>Display: selected</li>
-                  <li>Number of Records Displayed: 1k</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-11.png" alt="Web Insights Logs filter panel with SSL/TLS Inspected toggle and Policy Reason Inspected" loading="lazy">
-                  <div class="screenshot-caption">Logs filter — SSL/TLS Inspected: On, Policy Reason: Inspected, 1k records.</div>
-                </div>
-              </li>
-              <li>Review the resulting log entries and compare how traffic is handled — identify sessions with Action <strong>Inspect</strong> (SSL decrypted and inspected) versus Action <strong>Do Not Inspect</strong> (bypassed, not decrypted). For each entry, note the URL Category, Destination, and Matched Policy Rule.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4-12.png" alt="Web Insights Logs results showing Inspect and Do Not Inspect actions with URL category, destination, and matched policy rule" loading="lazy">
-                  <div class="screenshot-caption">Log results — Inspect vs. Do Not Inspect, with URL category, destination, and matched rule.</div>
-                </div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t4-3">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 4.3</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t4-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t4-3',this)">Save</button><div class="section-qa-list" id="sq-list-t4-3"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t4-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t4-3',this)">Save</button><div class="section-qa-list" id="sn-list-t4-3"></div></div>
-              </div>
-            </div>
-          </div>
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Rule:</strong> <code>Risky URL Categories</code>, Rule Order 1, <strong>Block</strong>, Enabled: Adult Materials, Shopping and Auctions, Gambling, Video Streaming. <strong>Result:</strong> a Zscaler block page that names the category. <strong>Still reachable?</strong> Look up the site's category, confirm the rule is Enabled and activated, and retest in Incognito.</div>
         </div>
       </div>
 
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab4" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab4','Lab 4: Content Filtering')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab4" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab4')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
-      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+      <a href="index.html" class="hub-link">← EDU-100 Lab Hub</a>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Lab Topology</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/topology.png" alt="EDU-100 lab topology: the Corp Client PC with Zscaler Client Connector connects through the Zero Trust Exchange to the Internet and to the Corporate Data Center (10.0.0.0/24) with Corp Win Svr 2025 and the ZPA App Connector; admins use the Experience Center and Service Portal" title="Click to expand">
       </div>
     </div>
 
@@ -280,91 +353,135 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         <div class="sidebar-cred-item">
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-student-login">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Progress</div>
+      <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-4-1" onchange="toggleDone(this)"><label for="chk-4-1">4.1 SSL inspection enabled</label></li>
-        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-4-2" onchange="toggleDone(this)"><label for="chk-4-2">4.2 Bypass rules reviewed</label></li>
-        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-4-3" onchange="toggleDone(this)"><label for="chk-4-3">4.3 Logs reviewed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4a" onchange="toggleDone(this)"><label for="chk-lab4a">4.1 888.com reachable before the rule</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4b" onchange="toggleDone(this)"><label for="chk-lab4b">4.1 Risky URL Categories rule saved and activated</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4c" onchange="toggleDone(this)"><label for="chk-lab4c">4.2 888.com and ebay.com blocked</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4d" onchange="toggleDone(this)"><label for="chk-lab4d">4.2 Streaming sites checked</label></li>
       </ul>
     </div>
-
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.1 · URL Filtering policy</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-url-filtering" target="_blank" rel="noopener noreferrer" title="How URL Filtering rules, criteria and rule order work">About URL Filtering</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-url-filtering-policy" target="_blank" rel="noopener noreferrer" title="Adding a URL Filtering rule: criteria, actions, rule order and status">Configuring the URL Filtering Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-url-categories" target="_blank" rel="noopener noreferrer" title="Classes, super categories and categories used in URL policies">About URL Categories</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.2 · Test and troubleshoot</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/looking-up-urls-zscaler-admin-console" target="_blank" rel="noopener noreferrer" title="Check how Zscaler categorizes a URL from the Admin Console">Looking Up URLs in the Admin Console</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/looking-up-urls-site-review" target="_blank" rel="noopener noreferrer" title="Public URL categorization lookup tool">Looking Up URLs in Site Review</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">URL Filtering policy</div><div class="qr-def">Rules that allow, caution or block web access based on criteria such as URL category, user and location.</div></div>
+        <div class="qr-item"><div class="qr-term">URL category</div><div class="qr-def">Zscaler's classification of a site (e.g., Gambling). Categories roll up into super categories and classes.</div></div>
+        <div class="qr-item"><div class="qr-term">Block action</div><div class="qr-def">Denies the request and shows the user a Zscaler notification page.</div></div>
+        <div class="qr-item"><div class="qr-term">Rule order</div><div class="qr-def">Rules are evaluated in ascending order and evaluation stops at the first match.</div></div>
+        <div class="qr-item"><div class="qr-term">Rule Status</div><div class="qr-def">Enabled or Disabled. A disabled rule is skipped even if it matches.</div></div>
+        <div class="qr-item"><div class="qr-term">Request methods</div><div class="qr-def">HTTP methods (GET, POST, CONNECT...) the rule applies to. The lab selects all of them.</div></div>
+        <div class="qr-item"><div class="qr-term">URL Lookup / Site Review</div><div class="qr-def">Tools that show which category Zscaler assigns to a URL.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab3.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 3: SSL Inspection Policies</span></a>
+  <div class="page-nav-message">Internet access is under control. Next, private apps without a VPN.</div>
+  <a class="page-nav-btn page-nav-next" href="lab5.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 5: Provision ZPA Infrastructure</span></a>
 </div>
 
-<div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab3.html">← Lab 3: Firewall Filtering</a>
-  <div class="page-nav-message">You can see inside the traffic now — time to decide what's allowed to reach it.</div>
-  <a class="page-nav-btn page-nav-next" href="lab5.html">Lab 5: Content Filtering &amp; Access Control →</a>
-</div>
+<footer>
+  <span>EDU-100 · Introduction to Zscaler Zero Trust Exchange · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 4: Configure Content Filtering</span>
+</footer>
 
 <script>
 const CONFIG_KEY='edu100-expc-lab-config';
-const PAGE_KEY='edu100-lab-lab4';
-var SECTION_IDS=['t4-1','t4-2','t4-3'];
-
+const COLLAPSE_KEY='edu100-config-collapsed';
+const CFG_FIELDS={first:'first-input',last:'last-input',fqdn:'fqdn-input',pass:'pass-input'};
+function updateSidebarOffset(){var p=document.getElementById('config-panel');if(!p)return;document.documentElement.style.setProperty('--config-h',(p.offsetHeight+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});window.addEventListener('resize',updateSidebarOffset);})();
+function readCfg(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')||{};}catch(e){return {};}}
+function val(id){return document.getElementById(id).value.trim();}
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var name=[val('first-input'),val('last-input')].filter(Boolean).join(' ');var bits=[name,val('fqdn-input')].filter(Boolean).join(' · ');document.getElementById('config-toggle-summary').textContent=bits?' — '+bits:'';}
+function loadConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value=cfg[k]||'';});try{if(localStorage.getItem(COLLAPSE_KEY)==='1'){document.getElementById('config-panel').classList.add('collapsed');document.getElementById('config-toggle-btn').innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+/* merge into the shared course config so values saved by other EDU-100 pages are kept */
+function saveConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){cfg[k]=val(CFG_FIELDS[k]);});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value='';delete cfg[k];});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();}
+function setAll(sel,text){document.querySelectorAll(sel).forEach(function(el){el.textContent=text;});}
+function setVar(sel,value,placeholder){document.querySelectorAll(sel).forEach(function(el){if(value){el.textContent=value;el.classList.add('filled');}else{el.textContent=placeholder;el.classList.remove('filled');}});}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
-  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
-  }catch(e){}
+  var first=val('first-input'),last=val('last-input'),fqdn=val('fqdn-input'),pass=val('pass-input');
+  var user=first?first.toLowerCase().replace(/\s+/g,''):'<your first name>';
+  var dom=fqdn||'<Student FQDN>';
+  var login=user+'@'+dom;
+  setAll('.d-user-login',login);setAll('.d-student-login','student@'+dom);setAll('.d-first',first||'<your first name>');setAll('.d-last',last||'<your last name>');
+  document.getElementById('d-user').textContent=login;document.getElementById('d-student').textContent='student@'+dom;
+  setVar('.var-fqdn',fqdn,'<Student FQDN>');
+  setVar('.var-pass',pass,'<Student Password>');
+  setVar('.var-fullname',(first||last)?[first||'<your first name>',last||'<your last name>'].join(' '):'','<your first name> <your last name>');
+  document.querySelectorAll('.scr-value').forEach(function(el){el.title=el.textContent;});
 }
-function loadConfig(){try{applyConfig();}catch(e){}}
-function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
-function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
-function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
-function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
-function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
-function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
-function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
-function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
-function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
-function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
-function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
-function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
-function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
-function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
-(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
-function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
-function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
-document.addEventListener('DOMContentLoaded',function(){
-  document.body.style.opacity='1';
-  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
-  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
-  sessionStorage.setItem('pt','1');
-  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
-  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
-});
+/* sidebar: Portal Credentials accordion + copy (values come from the Lab Configuration panel) */
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
-function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function flashBtn(btn,ok){if(!btn)return;btn.textContent=ok?'✓':'—';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';setTimeout(function(){btn.textContent='⎘';btn.title='Copy';},1400);}
+function copySidebarCred(v,btn){if(!v){flashBtn(btn,false);return;}navigator.clipboard.writeText(v).then(function(){flashBtn(btn,true);}).catch(function(){});}
+function copyPortalCred(type,btn){var first=val('first-input').toLowerCase().replace(/\s+/g,''),fqdn=val('fqdn-input'),v='';if(type==='student-user')v=fqdn?'student@'+fqdn:'';else if(type==='user')v=(first&&fqdn)?first+'@'+fqdn:'';else if(type==='pass')v=val('pass-input');copySidebarCred(v,btn);}
+function copyConfigField(id,btn){var v=val(id);if(!v)return;navigator.clipboard.writeText(v).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).addEventListener('input',function(){applyConfig();updateToggleSummary();});});
+
+const PAGE_KEY='edu100-lab-lab4';
+const SECTIONS={'lab0':'Lab 0: Connect to the Virtual Lab','lab1':'Lab 1: User Access Entitlements','lab2':'Lab 2: Forward Traffic with ZCC','lab3':'Lab 3: SSL Inspection Policies','lab4':'Lab 4: Content Filtering','lab5':'Lab 5: Provision ZPA Infrastructure','lab6':'Lab 6: Add a Corporate Application','lab7':'Lab 7: Cloud Application Monitoring'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}catch(e){return [];}}
+function saveQArr(qs){try{localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}catch(e){}}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}catch(e){}}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}catch(e){return [];}}
+function saveNotesArr(ns){try{localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}catch(e){}}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}catch(e){}}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){try{localStorage.setItem(PAGE_KEY+'-chk-'+cb.id,cb.checked);}catch(e){}cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);}catch(e){}if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img, .sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);}catch(e){}if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  try{if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}}catch(e){}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';try{sessionStorage.setItem('pt','1');}catch(e){}
+});
 </script>
 </body>
 </html>

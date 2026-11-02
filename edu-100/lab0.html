@@ -2,64 +2,152 @@
 <html lang="en">
 <head>
 <script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
-function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
-function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 0: About &amp; Lab Setup — EDU-100</title>
+<title>Lab 0: Connect to the Virtual Lab Environment — EDU-100</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>html.pt-init body{opacity:0;}
-.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
-.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
-.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
-.task-collapsible-header:hover{background:#eaecf2;}
-.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
-.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
-.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
-.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
-.task-collapsible-body{display:none;padding:20px 20px 12px;}
-.task-collapsible.open>.task-collapsible-body{display:block;}
-</style>
+<style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:12px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:42%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.lab-meta{flex-wrap:wrap;row-gap:6px;}
+/* Reference links (sidebar section under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+.course-objectives{margin:6px 0 12px;}
+.course-objectives li{margin:3px 0;}
+.course-objectives ul{margin:4px 0 4px 22px;list-style:circle;}
+.creds-table td code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.topology-figure img{max-height:none!important;width:100%!important;max-width:760px;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 0</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 0 · ORIENTATION</span>
-    <div class="header-dot"></div>
+    <span class="eyebrow-chip">Lab 0 · EDU-100</span>
+    <span class="header-dot"></span>
   </div>
-  <h1>About &amp; <em>Lab Setup</em></h1>
+  <h1>Connect to the <em>Virtual Lab Environment</em></h1>
   <div class="motivation-banner">
-    <p>Before you touch a single policy, take ten minutes to understand the scenario, the topology, and every credential you'll need across the next 8 labs. You'll work in two different places — a simulated lab environment where you build configuration, and a read-only Zscaler tenant where you review real-world examples — so knowing which is which now will save you confusion later.</p>
+    <p>Every lab in this course runs in your own training pod. Get into it, learn to move text into the VMs, and sign in to the console you'll use from Lab 1 onward.</p>
   </div>
 </header>
 
-<div class="top-panels">
-  <div class="qpanel">
-    <button class="qpanel-header" onclick="toggleQPanel(this)">
-      <span class="qpanel-title">MY QUESTIONS</span>
-      <span class="qpanel-count" id="q-count">0</span>
-      <span class="qpanel-hint">— click to expand</span>
-      <span class="qpanel-chevron">▾</span>
-    </button>
-    <div class="qpanel-body" id="q-body">
-      <div id="q-list" style="margin-top:10px;"></div>
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
     </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
+    </button>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="first-input">Your First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="first-input" placeholder="Joe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('first-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="last-input">Your Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="last-input" placeholder="Web" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('last-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs9901.labtenant.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Student Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access instructions)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user:</strong> <code id="d-user">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user's password:</strong> <code>Admin-123!</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
     <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
-  <div class="notes-panel">
-    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
       <span class="notes-panel-title">MY NOTES</span>
-      <span class="notes-panel-chevron">▾</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
-    <div class="notes-panel-body" id="n-body">
-      <div id="n-list" style="margin-top:10px;"></div>
-    </div>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
     <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
@@ -68,249 +156,288 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab0">
-      <h2>Lab 0: About &amp; Lab Setup</h2>
+      <h2>Lab 0: Connect to the Virtual Lab Environment</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">OVERVIEW</div>
-        <p><strong>Scenario:</strong> Your organization, <em>Labtenant</em>, has deployed the Zscaler Zero Trust Exchange to protect against internet threats, control internet access, and provide secure access to private resources. The organization also cares deeply about end-user experience and uses the Zero Trust Exchange to monitor and report on digital performance. You deploy the Zscaler Client Connector (ZCC) to end-user devices to control internet access, provide access to private applications, and probe, benchmark, and measure the digital experience for every user in the organization.</p>
-        <ul style="margin-top:10px;">
-          <li>Configure connectivity to the Zero Trust Exchange.</li>
-          <li>Configure access control policies to allow or deny traffic through the Zero Trust Exchange.</li>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> Your training pod hosts a dedicated copy of the Labtenant environment, and every configuration task in this course happens there. Before you begin, you must be able to reach the pod, move text between the lab guide and the lab virtual machines, and sign in to the Experience Center console that manages the Zscaler services.</p></div>
+        <p style="margin-top:10px;"><strong>By the end of this lab, you will be able to:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Sign in to the CloudShare lab environment and confirm that the lab VMs are running.</li>
+          <li>Send text from the lab guide to a virtual machine with the lab clipboard.</li>
+          <li>Sign in to the Corp Client PC and the Experience Center console, and locate features with the Search menu.</li>
         </ul>
+        <div class="callout callout-info"><p><strong>Do this first:</strong> Enter your <strong>Student FQDN</strong> and <strong>Student Password</strong> in the <strong>Lab Configuration</strong> panel above and select Save. Add your first and last name too; Lab 1 uses them. Every EDU-100 lab page reads these values, so you only enter them once.</p></div>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ You're logged in to CloudShare and the lab VMs show as running.</li><li>☐ You found the <strong>Lab Guide</strong> tab and the Zscaler tenant <strong>Credentials</strong>.</li><li>☐ Text sent with <strong>Send Text</strong> appears in Notepad++ on the Corp Client PC.</li><li>☐ You're signed in to <code>console.zscaler.com</code> as the student admin and can use the Search menu.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ The VMs can take a few minutes to start. Wait for them before you continue.</li><li>⚠ Your Student FQDN is everything after the <strong>@</strong> in your student admin username.</li><li>⚠ Use <strong>Send Text</strong> instead of typing long values by hand; small typos cause confusing failures later.</li></ul></div>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 1.0 · May 2026</div>
-          <div class="lab-meta-item"><strong>Platform:</strong> Simulated Lab Environment + Zscaler Read-Only Tenant</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Nov 2026</div>
+          <div class="lab-meta-item"><strong>Platform:</strong> CloudShare + Zscaler Experience Center</div>
+          <div class="lab-meta-item"><strong>You'll use:</strong> CloudShare portal, Corp Client PC, Experience Center</div>
+        </div>
+      </div>
+
+      <div class="socratic-block" id="soc-lab0">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · YOUR LAB ENVIRONMENT</span>
+        </div>
+        <p class="socratic-insight">This lab is mostly orientation, but the ideas behind it come back in every lab: your own tenant, one console, and values you'll reuse again and again.</p>
+        <ul class="socratic-questions">
+          <li>Each student gets a dedicated pod and a unique <strong>Student FQDN</strong>. Why not have everyone share one tenant?
+            <div class="answer-area" data-section="lab0-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Isolation. In a shared tenant, one student's SSL rule, URL block or access policy would affect everyone else, and nobody could tell whose change broke what. With your own pod, the policies you write apply only to your users. The Student FQDN is the domain those users belong to: the student admin, and the user you create in Lab 1, are both <code>name@&lt;Student FQDN&gt;</code>.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>The Experience Center is one console for ZIA, ZPA and ZDX, and it routes you to your tenant based on your login. What does a single entry point give an administrator?
+            <div class="answer-area" data-section="lab0-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">One sign-in (with one set of authentication controls, such as MFA) instead of a separate portal per service, and one place to work across services. Your login ID identifies which tenant you manage, so the console sends you to the right one. The Search menu reaches features in every service, which is why each later lab starts with "use the Search menu to find…".</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>Why does the course have you send text into the VMs with the lab clipboard instead of typing values yourself?
+            <div class="answer-area" data-section="lab0-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">The VMs run in CloudShare, not on your computer, so your normal clipboard doesn't reach them directly. Many lab values are long and exact (login IDs, URLs, CLI commands). A single wrong character in a login ID or command doesn't fail where you typed it; it shows up later as a sign-in or policy that mysteriously doesn't work. Sending the text avoids that.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- About the course -->
+      <div class="task-collapsible open" id="tc-0-about">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">COURSE</span>
+          <span class="task-collapsible-title">About Introduction to Zscaler Zero Trust Exchange (EDU-100)</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <p>Welcome to the Introduction to Zscaler Zero Trust Exchange (EDU-100) lab. In this lab, you apply the skills you learned during the instructor-led training by working in a guided lab environment. By the end of the lab, you will be able to:</p>
+          <ul class="course-objectives">
+            <li>Connect to the virtual lab environment and sign in to the Zscaler Experience Center console.</li>
+            <li>Create a user group and a user, and assign a service entitlement in the Service Portal (formerly ZIdentity).</li>
+            <li>Forward traffic from a Windows client to the Zero Trust Exchange with Zscaler Client Connector.</li>
+            <li>Enable SSL/TLS inspection and enforce URL Filtering policy with Zscaler Internet Access (ZIA).</li>
+            <li>Provide Zero Trust access to a private application with Zscaler Private Access (ZPA).</li>
+            <li>Monitor a SaaS application with Zscaler Digital Experience (ZDX).</li>
+          </ul>
+          <h3>Lab Description and Scenario</h3>
+          <p>For these lab exercises, you work with a scenario in which your organization, Labtenant, is rolling out the Zscaler Zero Trust Exchange to protect users from Internet threats, control Internet access, and provide secure access to private applications without a VPN. Labtenant also wants visibility into the digital experience of its users. You deploy Zscaler Client Connector (ZCC) on the Corp Client PC so that a single agent forwards Internet traffic to ZIA, private application traffic to ZPA, and experience monitoring data to ZDX.</p>
+          <p>To support the rollout, you are tasked to:</p>
+          <ul class="course-objectives">
+            <li>Onboard users and assign service entitlements in the Service Portal (formerly ZIdentity).</li>
+            <li>Connect the Windows client to the Zero Trust Exchange by configuring forwarding and app profiles for ZCC.</li>
+            <li>Enable SSL/TLS inspection and block risky URL categories for Internet traffic.</li>
+            <li>Provision a ZPA App Connector and publish an intranet application to authorized users only.</li>
+            <li>Configure ZDX Web and Cloud Path probes to monitor a business-critical SaaS application.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Lab setup -->
+      <div class="task-collapsible open" id="tc-0-setup">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">SETUP</span>
+          <span class="task-collapsible-title">Lab Setup, Topology and Credentials</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </button>
+        <div class="task-collapsible-body">
+          <h3 style="margin-top:0;">Lab Setup</h3>
+          <p>You will have access to Zscaler Zero Trust Exchange and a CloudShare pod. For your lab exercises, you will configure the Service Portal (formerly ZIdentity), ZIA, ZPA, and ZDX services and explore the end user experience. You will use a Windows client PC (Corp Client PC) hosted in CloudShare to connect to the Zero Trust Exchange.</p>
+          <h3>Lab Topology</h3>
+          <div class="screenshot-embed topology-figure"><img src="screenshots/topology.png" alt="EDU-100 lab topology: the Corp Client PC with Zscaler Client Connector connects through the Zero Trust Exchange to the Internet and to the Corporate Data Center (10.0.0.0/24) with Corp Win Svr 2025 and the ZPA App Connector; admins use the Experience Center and Service Portal" loading="lazy"><div class="screenshot-caption">The Corp Client PC reaches the Internet and the Corporate Data Center (10.0.0.0/24) through the Zero Trust Exchange. You manage ZIA, ZPA and ZDX from the Experience Center.</div></div>
+          <h3>Lab Credentials</h3>
+          <table class="creds-table">
+            <thead><tr><th>Virtual Machine Name</th><th>Username</th><th>Password</th><th>IP Address</th></tr></thead>
+            <tbody>
+              <tr><td>Corp Client PC</td><td><code>student</code></td><td><code>Admin-123!</code></td><td>192.168.1.1</td></tr>
+              <tr><td>Corp Win Svr 2025</td><td><code>administrator</code></td><td><code>Admin-123!</code></td><td>10.0.0.0/24</td></tr>
+              <tr><td>Corp App Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td>10.0.0.4</td></tr>
+            </tbody>
+          </table>
+          <table class="creds-table" style="margin-top:10px;">
+            <thead><tr><th>User Information</th><th>Username</th><th>Password</th></tr></thead>
+            <tbody>
+              <tr><td>Your user (created in Lab 1)</td><td><code class="d-user-login">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></td><td><code>Admin-123!</code></td></tr>
+            </tbody>
+          </table>
+          <h3>Lab Access Information</h3>
+          <p>For this course, each student is assigned a unique student ID with a dedicated virtual environment (hosted in CloudShare) and corresponding Student FQDN along with a set of admin and test user accounts for Zscaler. User credentials and portal addresses are all contained in the lab access instructions provided to you for your assigned training pod. These include:</p>
+          <ul class="course-objectives">
+            <li>Your <strong>Student ID</strong>, which is a unique identifier for your pod (e.g., <code>zs9901</code>)</li>
+            <li>Your <strong>Student FQDN</strong>, which is a unique domain for your pod (e.g., <code>zs9901.labtenant.com</code>)</li>
+            <li>Your admin login credentials for access to the Zscaler portals:
+              <ul>
+                <li>The login name will be in the format <strong>student@&lt;Student FQDN&gt;</strong>, where &lt;Student FQDN&gt; is the domain assigned to your pod. For example, <code>student@zsxxxx.labtenant.com</code>.</li>
+                <li>The password is unique for your session and is set as the same password on all the configured admin and user accounts for the pod.</li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
 
       <!-- Task 0.1 -->
-      <div class="task-collapsible open" id="task-0-1">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 0.1</span>
-          <span class="task-collapsible-title">Lab Description, Scenario &amp; Objectives</span>
+      <div class="task-collapsible open" id="tc-0-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 0.1</span>
+          <span class="task-collapsible-title">Verify Lab Access</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">Read through the scenario so you understand the context behind every configuration task across Labs 1–8.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Lab Description and Scenario</h4>
-            <p style="margin-bottom:12px;">For these lab exercises, you work with a scenario in which your organization, <strong>Labtenant</strong>, has deployed the Zscaler Zero Trust Exchange to protect against Internet threats, control Internet access, and provide secure access to private resources. The organization is also focused on end-user experience and uses the Zero Trust Exchange to monitor and report on digital performance. You deploy the Zscaler Client Connector (ZCC) to end-user devices to control Internet access, provide access to private applications, and probe, benchmark, and measure the digital experience for each user in the organization.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">To Support the Rollout, You Are Tasked To</h4>
-            <ul class="sub-steps" style="margin-bottom:16px;">
-              <li>Connect users to the Zero Trust Exchange by deploying ZCC to Windows client devices.</li>
-              <li>Configure SSL inspection.</li>
-              <li>Configure user access to both Internet and private applications.</li>
-              <li>Deploy Zscaler Digital Experience (ZDX) reporting and create an initial set of ZDX applications and probes.</li>
-            </ul>
-
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> Throughout the lab guide, <code>&lt;Student FQDN&gt;</code> refers to the domain assigned to your simulated tenant (e.g. <code>zs000834.labtenant.com</code>). Save it in the ⚙ Lab Configuration panel above — all placeholders update automatically.</p>
-            </div>
-          </div>
-
-          <div class="section-qa" data-section="t0-1">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 0.1</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t0-1" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t0-1',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t0-1"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t0-1" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t0-1',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t0-1"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> Reach your CloudShare pod, confirm the VMs are running, and find the lab guide and your Zscaler tenant credentials.</div>
+          <ul class="step-list">
+            <li><strong>Locate the CloudShare lab URL.</strong> Your unique <strong>CloudShare lab URL</strong> and <strong>passphrase</strong> will be displayed on the classroom screen at the start of the session. Note these credentials carefully, as they are required to access your lab environment. (Example: <code>https://use.cloudshare.com/…</code>)</li>
+            <li><strong>Access the lab login page.</strong> Open a web browser and navigate to the CloudShare lab URL provided by the instructor.</li>
+            <li><strong>Enter your credentials.</strong> On the login page, enter the email address and passphrase provided by the instructor.
+              <div class="screenshot-embed narrow"><img src="screenshots/lab0-01.png" alt="CloudShare class login page with email and passphrase fields and the Login button highlighted" loading="lazy"><div class="screenshot-caption">CloudShare class login: enter the email and passphrase from the instructor, then <strong>Login</strong>.</div></div>
+            </li>
+            <li><strong>Review the lab overview.</strong> After a successful login, you are directed to the lab environment dashboard. Note that the virtual machines may take a few minutes to provision and become ready for use.
+              <div class="screenshot-embed"><img src="screenshots/lab0-02.png" alt="CloudShare environment Overview tab with a Preparing VMs progress indicator and the Go to my VM List button" loading="lazy"><div class="screenshot-caption">Overview: the VMs are still preparing. The class name in this example header differs from yours.</div></div>
+            </li>
+            <li><strong>Navigate to the VM list.</strong> In the <strong>Overview</strong> tab, select <strong>Go to My VM List</strong> to navigate to the Virtual Machines (VM) List tab. Alternatively, select the respective VM from the tabs at the top.
+              <div class="screenshot-embed"><img src="screenshots/lab0-03.png" alt="Overview tab with the Go to my VM List button and a VM tab at the top highlighted" loading="lazy"><div class="screenshot-caption">Use <strong>Go to my VM List</strong>, or a VM's tab across the top.</div></div>
+            </li>
+            <li><strong>Verify the VM is running.</strong> Once started, the virtual machine's tab will display its active running state, confirming that the environment is ready for use.
+              <div class="screenshot-embed"><img src="screenshots/lab0-04.png" alt="A Windows VM tab showing the lock screen, meaning the VM is running" loading="lazy"><div class="screenshot-caption">A running VM shows its desktop or lock screen in the tab.</div></div>
+            </li>
+            <li><strong>Open the lab guide.</strong> Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. The guide will open in a new browser tab and will provide detailed instructions for completing the lab exercises.
+              <div class="screenshot-embed"><img src="screenshots/lab0-05.png" alt="CloudShare tab bar with the Lab Guide tab highlighted" loading="lazy"><div class="screenshot-caption">The <strong>Lab Guide</strong> tab opens the guide in a new browser tab.</div></div>
+            </li>
+            <li><strong>Access the Zscaler tenant credentials.</strong> Click the <strong>Credentials</strong> tab in the left panel to view the Zscaler tenant credentials used in the lab.
+              <div class="screenshot-embed"><img src="screenshots/lab0-06.png" alt="CloudShare Credentials panel showing the Zscaler Tenant section with the Admin Console URL, landing page and Student Admin username; the password is hidden" loading="lazy"><div class="screenshot-caption"><strong>Credentials</strong> &gt; Zscaler Tenant: the console URL, your student admin username and its password (hidden in this example). Copy your Student FQDN and password into the Lab Configuration panel.</div></div>
+            </li>
+          </ul>
         </div>
       </div>
 
       <!-- Task 0.2 -->
-      <div class="task-collapsible open" id="task-0-2">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 0.2</span>
-          <span class="task-collapsible-title">Lab Topology &amp; Lab Setup</span>
+      <div class="task-collapsible open" id="tc-0-2">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 0.2</span>
+          <span class="task-collapsible-title">Use the Lab Clipboard</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="margin-bottom:14px;">Throughout the labs, you work with Zscaler Zero Trust Exchange services (<strong>ZIdentity, ZIA, ZPA, and ZDX</strong>) in a simulated environment, and separately have read-only access to a real Zscaler tenant.</p>
-
-            <div class="screenshot-embed">
-              <img src="screenshots/lab0-02.png" alt="Lab topology diagram — Read-Only Zscaler Tenant connects via ZIdentity to the Experience Center, which fronts ZIA, ZPA, and ZDX; the Zero Trust Exchange cloud connects users to the Internet and to the Corporate Datacenter's ZPA Connector" loading="lazy">
-              <div class="screenshot-caption">Lab topology — the Experience Center (ZIdentity) is the single console for ZIA, ZPA, and ZDX. The Zero Trust Exchange cloud brokers connectivity between users, the Internet, and the Corporate Datacenter's App Connector.</div>
-            </div>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Simulated Lab Exercises</h4>
-            <p style="margin-bottom:12px;">The simulated lab exercises mimic real-world Zscaler deployments, providing a safe and controlled environment to practice configuration and administration tasks. These exercises help you become familiar with Zscaler administration and configuration interfaces and reinforce the core concepts taught in the course. Tasks marked for the simulated environment are where you actually build configuration — departments, users, entitlements, policies, App Connectors, and App Segments.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Read-Only Zscaler Tenant Access</h4>
-            <p style="margin-bottom:0;">In addition to the simulated environment, you receive access to a read-only Zscaler tenant through Zscaler Solutions Demo Center (SDC) credentials. This environment presents Zscaler core features and dashboards in a realistic, production-like context:</p>
-            <ul class="sub-steps" style="margin-top:8px;">
-              <li>Provides visibility into real-world dashboards and configurations, even when full administrative access is not available.</li>
-              <li>Complements the simulated lab exercises by exposing you to Zscaler's broader ecosystem and integrated services.</li>
-            </ul>
-          </div>
-
-          <div class="section-qa" data-section="t0-2">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 0.2</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t0-2" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t0-2',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t0-2"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t0-2" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t0-2',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t0-2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> During these labs, you will frequently copy commands, URLs, and configuration values from the lab guide into the virtual machines.</div>
+          <ul class="step-list">
+            <li>Use the lab clipboard to send text to a virtual machine. To use the VM clipboard, copy text from the lab guide on your host computer, then:
+              <ul class="sub-steps">
+                <li>Click the <strong>Action</strong> tab and choose <strong>Send Text</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab0-07.png" alt="CloudShare left panel with Actions open and Send Text highlighted in the Keyboard menu" loading="lazy"><div class="screenshot-caption"><strong>Actions &gt; Send Text</strong>. The same menu has <strong>Send Password</strong>, which you use in Task 0.3.</div></div>
+              <ul class="sub-steps">
+                <li>Open <strong>Notepad++</strong> on the <strong>Corp Client PC</strong> and click inside it. Then paste text into the text box and click <strong>Send</strong>. Confirm that the text appears in Notepad++.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab0-08.png" alt="Send Text dialog with an empty text box and the Send button highlighted" loading="lazy"><div class="screenshot-caption">Paste into the <strong>Send Text</strong> box and select <strong>Send</strong>. The text is typed into whatever window has focus in the VM.</div></div>
+            </li>
+          </ul>
         </div>
       </div>
 
       <!-- Task 0.3 -->
-      <div class="task-collapsible open" id="task-0-3">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 0.3</span>
-          <span class="task-collapsible-title">Lab Credentials — Complete Reference</span>
+      <div class="task-collapsible open" id="tc-0-3">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 0.3</span>
+          <span class="task-collapsible-title">Sign In to the Experience Center Landing Page</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">Keep this page open as a credentials reference throughout the labs. Save your FQDN and passwords in the ⚙ Lab Configuration panel once and every placeholder across every lab page updates automatically.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 10px;">Virtual Machine Credentials</h4>
-            <table class="creds-table">
-              <thead><tr><th>Virtual Machine</th><th>User Name</th><th>Password</th><th>IP Address</th></tr></thead>
-              <tbody>
-                <tr><td>Corp: Client PC</td><td colspan="3">Shared endpoint — sign in to apps with the portal credentials below</td></tr>
-                <tr><td>Corp: Win Svr 2016 <span style="color:var(--text-muted);">(Lab 6)</span></td><td><code>PATRAINING\Administrator</code></td><td><code>Admin-123!</code></td><td>—</td></tr>
-                <tr><td>Corp: APP Connector <span style="color:var(--text-muted);">(Lab 6)</span></td><td><code>admin</code></td><td><code>zscaler</code></td><td><code>10.0.0.4</code> (SSH/22)</td></tr>
-              </tbody>
-            </table>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 10px;">Zscaler Portal Credentials</h4>
-            <table class="creds-table">
-              <thead><tr><th>Account</th><th>Username</th><th>Password</th><th>Used In</th></tr></thead>
-              <tbody>
-                <tr><td>Student Admin</td><td><code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><span class="var var-pass">&lt;Student Password&gt;</span> (set at initial login)</td><td>All labs (simulated tenant)</td></tr>
-                <tr><td>JoeSupport (Helpdesk L1)</td><td><code>joesupport@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><code>Admin-123!</code></td><td>Lab 1 — read-only entitlement validation</td></tr>
-                <tr><td>BevIT (Global Admin)</td><td><code>bevit@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><code>Admin-123!</code></td><td>Lab 1 — full admin entitlement validation</td></tr>
-                <tr><td>Read-Only Tenant Admin</td><td><span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></td><td><span class="var var-ro-pass">&lt;Session_Password&gt;</span></td><td>Labs 1, 3–5, 8 (read-only tenant)</td></tr>
-              </tbody>
-            </table>
-
-            <div class="callout callout-note" style="margin-top:12px;">
-              <p><strong>Note:</strong> The credentials for the Zscaler read-only tenant are valid for a limited time. Contact your instructor to confirm the validity period for your assigned tenant credentials.</p>
-            </div>
-          </div>
-
-          <div class="section-qa" data-section="t0-3">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 0.3</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t0-3" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t0-3',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t0-3"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t0-3" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t0-3',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t0-3"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p>The Zscaler Experience Center (<code>console.zscaler.com</code>) serves as the unified entry point for all Zscaler services, routing administrators to the correct tenant based on their login credentials. It supports multiple authentication methods including MFA via security keys and biometrics, and provides a centralized dashboard to manage ZIA, ZPA, and ZDX configurations. See <a href="https://help.zscaler.com/unified/what-zscaler-experience-center" target="_blank" rel="noopener noreferrer">What Is Zscaler Experience Center? ↗</a></p>
+          <p>The Zscaler Experience Center provides a unified interface for administrators to onboard users, navigate product features, and manage tenants. The console's Search bar enables quick access to any feature across ZIA, ZPA, and ZDX, while the Analytics and Administration panels provide centralized visibility and configuration capabilities. See <a href="https://help.zscaler.com/unified/onboarding-users-experience-center" target="_blank" rel="noopener noreferrer">Onboarding Users to Experience Center ↗</a></p>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you sign in to the Corp Client PC and authenticate to the Experience Center console (<code>https://console.zscaler.com</code>).</div>
+          <div class="callout callout-note"><p><strong>Note:</strong> Throughout this lab guide, <strong>&lt;Student FQDN&gt;</strong> represents the domain assigned to your tenant. For example, if your student admin username is <strong>student@zs9901.labtenant.com</strong>, then your Student FQDN is <strong>zs9901.labtenant.com</strong>.</p></div>
+          <ul class="step-list">
+            <li>Log in to the <strong>Corp Client PC</strong> as the local student user:
+              <ul class="sub-steps">
+                <li>Launch the <strong>Corp Client PC</strong> from the CloudShare portal.</li>
+                <li>Verify that the login page appears, then go to the <strong>Action</strong> tab and click <strong>Send Password</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab0-09.png" alt="Windows 11 VM lock screen with the CloudShare Actions menu open and Send Password highlighted" loading="lazy"><div class="screenshot-caption">On the Corp Client PC (the Windows 11 tab), use <strong>Actions &gt; Send Password</strong> to sign in.</div></div>
+            </li>
+            <li>In a browser window, open <code>https://console.zscaler.com</code></li>
+            <li>Authenticate with your student admin account:
+              <ul class="sub-steps">
+                <li>Username: <code class="d-student-login">student@&lt;Student FQDN&gt;</code></li>
+                <li>Password: <span class="var var-pass">&lt;Student Password&gt;</span> (as provided in the Lab Access Instructions)</li>
+                <li>Select <strong>Sign in</strong>.</li>
+              </ul>
+              <div class="screenshot-embed narrow"><img src="screenshots/lab0-10.png" alt="Zscaler sign-in page for an Authentication Service account with the student Login ID and password entered and Sign In highlighted" loading="lazy"><div class="screenshot-caption">Sign-in page: <em>Log in to your Authentication Service account</em> with your student Login ID and password.</div></div>
+            </li>
+            <li>Once logged in, explore the Experience Center dashboard by navigating to the different options and products listed.
+              <div class="screenshot-embed"><img src="screenshots/lab0-11.png" alt="Experience Center at console.zscaler.com with the left navigation listing Analytics, Administration, Internet Access, Private Access, Digital Experience, Infrastructure and Service Portal" loading="lazy"><div class="screenshot-caption">The left navigation lists each product area, from Analytics and Administration to Internet Access, Private Access and Digital Experience, plus the Service Portal link.</div></div>
+            </li>
+            <li>Use the <strong>Search</strong> option to navigate to the required feature within the Experience Center tenant assigned to you.
+              <div class="screenshot-embed"><img src="screenshots/lab0-12.png" alt="Experience Center top bar with the Search menu field highlighted" loading="lazy"><div class="screenshot-caption">The <strong>Search menu</strong> in the top bar. Later labs use it to open each feature.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> Use the <strong>Search Menu</strong> to quickly navigate to the required feature in the upcoming lab tasks.</p></div>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Task 0.4 -->
-      <div class="task-collapsible open" id="task-0-4">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 0.4</span>
-          <span class="task-collapsible-title">Lab Access Information</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Accessing the Zscaler Read-Only Tenant</h4>
-            <p style="margin-bottom:12px;">User credentials and the portal URL are provided in the lab access instructions sent to you by your instructor. The email includes:</p>
-            <ul class="sub-steps" style="margin-bottom:16px;">
-              <li>Zscaler read-only tenant access URL: <code>https://console.zscaler.com/</code></li>
-              <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
-              <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
-            </ul>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> The credentials for the Zscaler read-only tenant are valid for a limited time. Contact your instructor to confirm the validity period for your assigned tenant credentials.</p>
-            </div>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Simulated Tenant Access</h4>
-            <p style="margin-bottom:0;">In the simulated lab environment, navigate to <code>console.zscaler.com</code>, where you are prompted for your assigned username. After entering your username and password, you land on the Zscaler Admin Console — this is where Labs 1–2, 3.1–3.3, 4.1, 5.1–5.4, 6, and 7 are performed.</p>
-          </div>
-
-          <div class="section-qa" data-section="t0-4">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 0.4</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t0-4" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t0-4',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t0-4"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t0-4" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t0-4',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t0-4"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>CloudShare:</strong> URL and passphrase from the classroom screen; wait for the VMs; <strong>Credentials</strong> holds your tenant details. <strong>Lab clipboard:</strong> Actions &gt; <strong>Send Text</strong> for values, <strong>Send Password</strong> for the Windows login. <strong>Student FQDN</strong> = everything after the @ in <code>student@&lt;Student FQDN&gt;</code>. <strong>Console:</strong> <code>https://console.zscaler.com</code>, and the Search menu is your shortcut in every lab. Save your FQDN and password in the Lab Configuration panel now.</div>
         </div>
       </div>
 
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab0" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab0','Lab 0: Connect to the Virtual Lab')">Add Question</button></div>
+          </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab0" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab0')">+ Add Note</button></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
-      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+      <a href="index.html" class="hub-link">← EDU-100 Lab Hub</a>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Lab Topology</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/topology.png" alt="EDU-100 lab topology: the Corp Client PC with Zscaler Client Connector connects through the Zero Trust Exchange to the Internet and to the Corporate Data Center (10.0.0.0/24) with Corp Win Svr 2025 and the ZPA App Connector; admins use the Experience Center and Service Portal" title="Click to expand">
       </div>
     </div>
 
@@ -318,17 +445,26 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="sidebar-label">Lab Environment</div>
       <div class="sidebar-cred-list">
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2016<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Client PC<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">PATRAINING\Administrator</code><button class="scr-copy" onclick="copySidebarCred('PATRAINING\\Administrator',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: APP Connector<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Net</span><code class="scr-value">10.0.0.0/24</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.0/24',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp App Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.4</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.4',this)" title="Copy">⎘</button></div>
           </div>
         </div>
@@ -341,104 +477,127 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         <div class="sidebar-cred-item">
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-student-login">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">JoeSupport (Helpdesk L1)<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Your User (created in Lab 1)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">joesupport@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('joesupport-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-user-login">&lt;your first name&gt;@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copyPortalCred('user',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">BevIT (Global Admin)<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">bevit@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('bevit-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
       </div>
     </div>
 
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item"><input type="checkbox" id="chk-lab0a" onchange="toggleDone(this)"><label for="chk-lab0a">Lab Configuration panel filled in and saved</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0b" onchange="toggleDone(this)"><label for="chk-lab0b">0.1 Logged in to CloudShare, VMs running</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0c" onchange="toggleDone(this)"><label for="chk-lab0c">0.1 Lab Guide and Credentials tabs found</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0d" onchange="toggleDone(this)"><label for="chk-lab0d">0.2 Text sent to Notepad++ with Send Text</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0e" onchange="toggleDone(this)"><label for="chk-lab0e">0.3 Signed in to the Corp Client PC</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0f" onchange="toggleDone(this)"><label for="chk-lab0f">0.3 Signed in to the Experience Center</label></li>
+      </ul>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">CloudShare pod</div><div class="qr-def">Your dedicated set of lab VMs, reached with the class URL and passphrase.</div></div>
+        <div class="qr-item"><div class="qr-term">Student ID</div><div class="qr-def">Unique identifier for your pod, e.g. <code>zs9901</code>.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's domain, e.g. <code>zs9901.labtenant.com</code>. Every login ID in the course ends with it.</div></div>
+        <div class="qr-item"><div class="qr-term">Send Text / Send Password</div><div class="qr-def">CloudShare Actions that type text, or the VM's password, into the VM for you.</div></div>
+        <div class="qr-item"><div class="qr-term">Corp Client PC</div><div class="qr-def">The Windows client you work from; Zscaler Client Connector runs on it.</div></div>
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">The unified Zscaler console at <code>console.zscaler.com</code> for ZIA, ZPA and ZDX.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The console's search bar. Type a feature name to jump straight to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Where users, groups and entitlements live (formerly ZIdentity; also called Authentication Service).</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+<div class="page-nav">
+  <span class="page-nav-btn page-nav-prev page-nav-disabled"><span class="page-nav-label">← START</span><span class="page-nav-title">You're at the beginning</span></span>
+  <div class="page-nav-message">You're in. Next, decide who gets to use Zscaler.</div>
+  <a class="page-nav-btn page-nav-next" href="lab1.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 1: User Access Entitlements</span></a>
 </div>
 
-<div class="page-nav">
-  <span class="page-nav-btn page-nav-prev page-nav-disabled">← Start</span>
-  <div class="page-nav-message">Orientation complete — time to build your identity foundation in Lab 1.</div>
-  <a class="page-nav-btn page-nav-next" href="lab1.html">Lab 1: User &amp; Admin Access Entitlements →</a>
-</div>
+<footer>
+  <span>EDU-100 · Introduction to Zscaler Zero Trust Exchange · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 0: Connect to the Virtual Lab Environment</span>
+</footer>
 
 <script>
 const CONFIG_KEY='edu100-expc-lab-config';
-const CONFIG_COLLAPSED_KEY='edu100-config-collapsed';
-const PAGE_KEY='edu100-lab-lab0';
-var SECTION_IDS=['t0-1','t0-2','t0-3','t0-4'];
-
-function loadConfig(){try{applyConfig();}catch(e){}}
-function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();var rouser=document.getElementById('ro-user-input').value.trim();var ropass=document.getElementById('ro-pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass,rouser:rouser,ropass:ropass}));applyConfig();}catch(e){}}
-function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);applyConfig();}catch(e){}}
+const COLLAPSE_KEY='edu100-config-collapsed';
+const CFG_FIELDS={first:'first-input',last:'last-input',fqdn:'fqdn-input',pass:'pass-input'};
+function updateSidebarOffset(){var p=document.getElementById('config-panel');if(!p)return;document.documentElement.style.setProperty('--config-h',(p.offsetHeight+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});window.addEventListener('resize',updateSidebarOffset);})();
+function readCfg(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')||{};}catch(e){return {};}}
+function val(id){return document.getElementById(id).value.trim();}
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var name=[val('first-input'),val('last-input')].filter(Boolean).join(' ');var bits=[name,val('fqdn-input')].filter(Boolean).join(' · ');document.getElementById('config-toggle-summary').textContent=bits?' — '+bits:'';}
+function loadConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value=cfg[k]||'';});try{if(localStorage.getItem(COLLAPSE_KEY)==='1'){document.getElementById('config-panel').classList.add('collapsed');document.getElementById('config-toggle-btn').innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+/* merge into the shared course config so values saved by other EDU-100 pages are kept */
+function saveConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){cfg[k]=val(CFG_FIELDS[k]);});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value='';delete cfg[k];});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();}
+function setAll(sel,text){document.querySelectorAll(sel).forEach(function(el){el.textContent=text;});}
+function setVar(sel,value,placeholder){document.querySelectorAll(sel).forEach(function(el){if(value){el.textContent=value;el.classList.add('filled');}else{el.textContent=placeholder;el.classList.remove('filled');}});}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
-  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
-  }catch(e){}
+  var first=val('first-input'),last=val('last-input'),fqdn=val('fqdn-input'),pass=val('pass-input');
+  var user=first?first.toLowerCase().replace(/\s+/g,''):'<your first name>';
+  var dom=fqdn||'<Student FQDN>';
+  var login=user+'@'+dom;
+  setAll('.d-user-login',login);setAll('.d-student-login','student@'+dom);setAll('.d-first',first||'<your first name>');setAll('.d-last',last||'<your last name>');
+  document.getElementById('d-user').textContent=login;document.getElementById('d-student').textContent='student@'+dom;
+  setVar('.var-fqdn',fqdn,'<Student FQDN>');
+  setVar('.var-pass',pass,'<Student Password>');
+  setVar('.var-fullname',(first||last)?[first||'<your first name>',last||'<your last name>'].join(' '):'','<your first name> <your last name>');
+  document.querySelectorAll('.scr-value').forEach(function(el){el.title=el.textContent;});
 }
-function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
-function toggleTask(header){var coll=header.closest('.task-collapsible');if(!coll)return;var open=coll.classList.toggle('open');try{var key=PAGE_KEY+'-task-'+coll.id;localStorage.setItem(key,open?'1':'0');}catch(e){}}
-function loadTaskStates(){document.querySelectorAll('.task-collapsible').forEach(function(el){try{var k=PAGE_KEY+'-task-'+el.id;var v=localStorage.getItem(k);if(v==='0')el.classList.remove('open');else if(v==='1')el.classList.add('open');}catch(e){}});}
-
-function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
-function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
-function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:\'Epilogue\',sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
-function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:\'Epilogue\',sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
-
-function toggleSectionQA(btn){var body=btn.nextElementSibling;if(!body)return;body.classList.toggle('open');btn.querySelector('.section-qa-chevron').style.transform=body.classList.contains('open')?'rotate(180deg)':'';}
-function saveSectionQ(id,btn){try{var ta=document.getElementById('sq-'+id);if(!ta||!ta.value.trim())return;var key=PAGE_KEY+'-sq-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.push(ta.value.trim());localStorage.setItem(key,JSON.stringify(arr));ta.value='';renderSectionQ(id);}catch(e){}}
-function saveSectionN(id,btn){try{var ta=document.getElementById('sn-'+id);if(!ta||!ta.value.trim())return;var key=PAGE_KEY+'-sn-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.push(ta.value.trim());localStorage.setItem(key,JSON.stringify(arr));ta.value='';renderSectionN(id);}catch(e){}}
-function renderSectionQ(id){try{var key=PAGE_KEY+'-sq-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=arr.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+q+'</span><button class="qa-item-del" onclick="deleteSectionQ(\''+id+'\','+i+')">×</button></div>';}).join('');try{loadQList();}catch(e){}}catch(e){}}
-function renderSectionN(id){try{var key=PAGE_KEY+'-sn-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=arr.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+n+'</span><button class="qa-item-del" onclick="deleteSectionN(\''+id+'\','+i+')">×</button></div>';}).join('');try{loadNList();}catch(e){}}catch(e){}}
-function deleteSectionQ(id,idx){try{var key=PAGE_KEY+'-sq-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.splice(idx,1);localStorage.setItem(key,JSON.stringify(arr));renderSectionQ(id);}catch(e){}}
-function deleteSectionN(id,idx){try{var key=PAGE_KEY+'-sn-'+id;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.splice(idx,1);localStorage.setItem(key,JSON.stringify(arr));renderSectionN(id);}catch(e){}}
-
-
-function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
-function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-
-function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
-function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
-
+/* sidebar: Portal Credentials accordion + copy (values come from the Lab Configuration panel) */
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
-function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='joesupport-user')val=d.fqdn?'joesupport@'+d.fqdn:'';else if(type==='bevit-user')val=d.fqdn?'bevit@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function flashBtn(btn,ok){if(!btn)return;btn.textContent=ok?'✓':'—';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';setTimeout(function(){btn.textContent='⎘';btn.title='Copy';},1400);}
+function copySidebarCred(v,btn){if(!v){flashBtn(btn,false);return;}navigator.clipboard.writeText(v).then(function(){flashBtn(btn,true);}).catch(function(){});}
+function copyPortalCred(type,btn){var first=val('first-input').toLowerCase().replace(/\s+/g,''),fqdn=val('fqdn-input'),v='';if(type==='student-user')v=fqdn?'student@'+fqdn:'';else if(type==='user')v=(first&&fqdn)?first+'@'+fqdn:'';else if(type==='pass')v=val('pass-input');copySidebarCred(v,btn);}
+function copyConfigField(id,btn){var v=val(id);if(!v)return;navigator.clipboard.writeText(v).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).addEventListener('input',function(){applyConfig();updateToggleSummary();});});
 
+const PAGE_KEY='edu100-lab-lab0';
+const SECTIONS={'lab0':'Lab 0: Connect to the Virtual Lab','lab1':'Lab 1: User Access Entitlements','lab2':'Lab 2: Forward Traffic with ZCC','lab3':'Lab 3: SSL Inspection Policies','lab4':'Lab 4: Content Filtering','lab5':'Lab 5: Provision ZPA Infrastructure','lab6':'Lab 6: Add a Corporate Application','lab7':'Lab 7: Cloud Application Monitoring'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}catch(e){return [];}}
+function saveQArr(qs){try{localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}catch(e){}}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}catch(e){}}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}catch(e){return [];}}
+function saveNotesArr(ns){try{localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}catch(e){}}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}catch(e){}}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){try{localStorage.setItem(PAGE_KEY+'-chk-'+cb.id,cb.checked);}catch(e){}cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);}catch(e){}if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img, .sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
 document.addEventListener('DOMContentLoaded',function(){
-  loadConfig();
-  loadQList();
-  loadNList();
-  loadTaskStates();
-  injectCopyButtons();
-  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
-  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
-  document.querySelectorAll('.page-nav-btn[href]').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
-  document.body.style.opacity='1';
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);}catch(e){}if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  try{if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}}catch(e){}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';try{sessionStorage.setItem('pt','1');}catch(e){}
 });
 </script>
 </body>

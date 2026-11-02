@@ -2,60 +2,147 @@
 <html lang="en">
 <head>
 <script>if(sessionStorage.getItem('pt')){document.documentElement.classList.add('pt-init')}
-function copyAllQs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
-function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});navigator.clipboard.writeText(all.join('\n'));}catch(e){}}
+function copyAllQs(){try{var qs=getQArr();navigator.clipboard.writeText(qs.map(function(q){return q.text;}).join('\n'));}catch(e){}}
+function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.map(function(n){return n.text;}).join('\n'));}catch(e){}}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 3: Configure Firewall Filtering Policy — EDU-100</title>
+<title>Lab 3: Configure SSL Inspection Policies — EDU-100</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>html.pt-init body{opacity:0;}
-.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
-.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
-.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
-.task-collapsible-header:hover{background:#eaecf2;}
-.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
-.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
-.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
-.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
-.task-collapsible-body{display:none;padding:20px 20px 12px;}
-.task-collapsible.open>.task-collapsible-body{display:block;}
-</style>
+<style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+.task-collapsible{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:var(--surface);border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:var(--border);background:var(--surface-2);}
+.task-collapsible-header:hover{background:var(--surface-2);}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:var(--text);flex:1;margin:0;font-family:'Fraunces',serif;}
+.task-collapsible-chevron{font-size:0.9rem;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:18px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
+.task-purpose{font-size:13.5px;color:var(--text-soft);background:var(--surface-2);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;margin:0 0 14px;line-height:1.6;}
+.screenshot-embed img{max-height:340px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
+.screenshot-embed img:hover{opacity:0.8;}
+.img-lightbox{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;padding:24px;}
+.img-lightbox.active{display:flex;}
+.img-lightbox img{max-width:92vw;max-height:90vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 60px rgba(0,0,0,0.7);cursor:default;animation:lb-in 0.18s ease;}
+.img-lightbox-close{position:fixed;top:16px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
+@keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+.callout code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:0.92em;}
+.values-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:12px 0;background:var(--surface);}
+.values-head{background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:8px 14px;}
+.values-table{margin:0;}
+.values-table .values-field{font-weight:600;color:var(--text);width:42%;}
+.values-table code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+.criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
+.lab-meta{flex-wrap:wrap;row-gap:6px;}
+/* Reference links (sidebar section under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-100</a> › Lab 3</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 3 · FIREWALL</span>
-    <div class="header-dot"></div>
+    <span class="eyebrow-chip">Lab 3 · EDU-100</span>
+    <span class="header-dot"></span>
   </div>
-  <h1>Configure Firewall <em>Filtering Policy</em></h1>
+  <h1>Configure <em>SSL Inspection</em> Policies</h1>
   <div class="motivation-banner">
-    <p>With traffic now tunneling to Zscaler, you enforce a default-deny firewall posture, punch a deliberate hole for ICMP and SSH, then slam the door on one specific application — WhatsApp — at the network layer where no client-side workaround can bypass it.</p>
+    <p>Almost all web traffic is encrypted, and you can't protect what you can't see. One rule lets ZIA look inside HTTPS, and a single detail on the certificate proves it.</p>
   </div>
 </header>
 
-<div class="top-panels">
-  <div class="qpanel">
-    <button class="qpanel-header" onclick="toggleQPanel(this)">
-      <span class="qpanel-title">MY QUESTIONS</span>
-      <span class="qpanel-count" id="q-count">0</span>
-      <span class="qpanel-hint">— click to expand</span>
-      <span class="qpanel-chevron">▾</span>
+<div class="config-panel" id="config-panel">
+  <div class="config-toggle-row" onclick="toggleConfig()">
+    <div style="display:flex;align-items:center;gap:0;">
+      <span class="config-toggle-title">⚙ Lab Configuration</span>
+      <span class="config-toggle-summary" id="config-toggle-summary"></span>
+    </div>
+    <button class="config-toggle-btn" id="config-toggle-btn" onclick="event.stopPropagation();toggleConfig()">
+      <span class="chevron">▲</span> Collapse
     </button>
-    <div class="qpanel-body" id="q-body"><div id="q-list" style="margin-top:10px;"></div></div>
+  </div>
+  <div class="config-body" id="config-body">
+    <div class="config-grid">
+      <div class="config-field">
+        <label for="first-input">Your First Name</label>
+        <div class="config-field-row">
+          <input type="text" id="first-input" placeholder="Joe" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('first-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="last-input">Your Last Name</label>
+        <div class="config-field-row">
+          <input type="text" id="last-input" placeholder="Web" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('last-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="fqdn-input">Student FQDN</label>
+        <div class="config-field-row">
+          <input type="text" id="fqdn-input" placeholder="zs9901.labtenant.com" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('fqdn-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <label for="pass-input">Student Password</label>
+        <div class="config-field-row">
+          <input type="text" id="pass-input" placeholder="(from lab access instructions)" autocomplete="off">
+          <button class="config-copy-btn" onclick="copyConfigField('pass-input',this)" title="Copy">⎘</button>
+        </div>
+      </div>
+      <div class="config-actions">
+        <button class="config-btn" onclick="saveConfig()">Save</button>
+        <button class="config-btn secondary" onclick="clearConfig()">Clear</button>
+      </div>
+    </div>
+    <div class="config-derived" id="config-derived">
+      <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user:</strong> <code id="d-user">&lt;your first name&gt;@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Your user's password:</strong> <code>Admin-123!</code></span>
+    </div>
+  </div>
+</div>
+
+<div class="top-panels">
+  <div class="qpanel" id="qpanel">
+    <button class="qpanel-header" onclick="toggleQPanel()" id="qpanel-header">
+      <span class="qpanel-title">MY QUESTIONS</span>
+      <span class="qpanel-count" id="qpanel-count">0</span>
+      <span class="qpanel-hint">— click to expand</span>
+      <span class="qpanel-chevron" id="qpanel-chevron">▾</span>
+    </button>
+    <div class="qpanel-body" id="qpanel-body"></div>
     <button class="copy-all-btn" onclick="copyAllQs()" title="Copy all questions">⎘ Copy All</button>
   </div>
-  <div class="notes-panel">
-    <button class="notes-panel-header" onclick="toggleNPanel(this)">
+  <div class="notes-panel" id="notes-panel">
+    <button class="notes-panel-header" onclick="toggleNotesPanel()" id="notes-panel-header">
       <span class="notes-panel-title">MY NOTES</span>
-      <span class="notes-panel-chevron">▾</span>
+      <span class="notes-panel-count" id="notes-panel-count">0</span>
+      <span class="notes-panel-hint">— click to expand</span>
+      <span class="notes-panel-chevron" id="notes-panel-chevron">▾</span>
     </button>
-    <div class="notes-panel-body" id="n-body"><div id="n-list" style="margin-top:10px;"></div></div>
+    <div class="notes-panel-body" id="notes-panel-body"></div>
     <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
   </div>
 </div>
@@ -64,314 +151,173 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab3">
-      <h2>Lab 3: Configure Firewall Filtering Policy</h2>
+      <h2>Lab 3: Configure SSL Inspection Policies</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">OVERVIEW</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, you are tasked with blocking access to the external application WhatsApp to prevent organizational users from using it. At the same time, you need to ensure that SSH and ICMP traffic is enabled for all other applications. You also use the Zscaler read-only tenant to review a broader set of real-world firewall filtering rules and examine firewall logs to see how policies are evaluated and enforced in a production environment.</p>
-        <ul style="margin-top:10px;">
-          <li>Verify the default firewall filtering policy confirms it blocks all non-web traffic.</li>
-          <li>Test default firewall rules that block ICMP and SSH traffic.</li>
-          <li>Create and configure firewall filtering rules to allow outbound ICMP and SSH traffic.</li>
-          <li>Create and configure firewall filtering rules to block access to specific external applications like WhatsApp.</li>
-          <li>Verify firewall filtering policies using practical, real-world testing scenarios.</li>
+        <div class="callout callout-note"><p><strong>Scenario:</strong> Nearly all of Labtenant's web traffic is encrypted, and ZIA can only apply URL, threat, and data protection controls to traffic it can inspect. With the Zscaler root certificate already installed on the Corp Client PC, you record which certificate the browser receives for an HTTPS site, create an inspection rule, and confirm that the site is then served a certificate signed by Zscaler.</p></div>
+        <p style="margin-top:10px;"><strong>By the end of this lab, you will be able to:</strong></p>
+        <ul style="margin-top:6px;">
+          <li>Identify the certificate issuer for an HTTPS site before inspection is enabled.</li>
+          <li>Create and activate an SSL/TLS inspection rule with the Inspect action.</li>
+          <li>Confirm that inspected HTTPS sessions present a certificate signed by Zscaler.</li>
         </ul>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ You recorded the original certificate issuer for <code>www.wikipedia.org</code>.</li><li>☐ Rule <strong>SSL Inspect All</strong> exists at Rule Order 1 with Action <strong>Inspect</strong>, and the change is activated.</li><li>☐ In a new Incognito window, the certificate for <code>www.wikipedia.org</code> is signed by <strong>Zscaler</strong>.</li></ul></div>
+        <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ <strong>Save</strong> alone doesn't apply the rule. You must also <strong>Activate</strong> the change.</li><li>⚠ Close or refresh the Incognito window after activating, or the browser may reuse the old session.</li><li>⚠ If the issuer already shows Zscaler before you start, review the existing SSL inspection rules first.</li></ul></div>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
-          <div class="lab-meta-item"><strong>Environment:</strong> Tasks 3.1–3.3 simulated tenant · Tasks 3.4–3.5 read-only tenant</div>
+          <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Nov 2026</div>
+          <div class="lab-meta-item"><strong>Before you start:</strong> Lab 2 (app profile installs the Zscaler SSL certificate)</div>
+          <div class="lab-meta-item"><strong>You'll use:</strong> Experience Center, Corp Client PC (Chrome)</div>
         </div>
       </div>
 
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> This lab uses both the simulated lab environment and the Zscaler tenant. You complete Tasks 3.1–3.3 in the simulated environment (following the guided in-lab activities; the instructions below are for reference only), then switch to the Zscaler tenant for Tasks 3.4–3.5.</p>
+      <div class="socratic-block" id="soc-lab3">
+        <div class="socratic-header">
+          <span class="socratic-icon">💭</span>
+          <span class="socratic-label">THINK FIRST · SEEING INSIDE HTTPS</span>
+        </div>
+        <p class="socratic-insight">SSL/TLS inspection is the switch that makes most other ZIA controls effective. Think about what ZIA can and can't see before you turn it on, and what turning it on changes for the browser.</p>
+        <ul class="socratic-questions">
+          <li>Without inspection, what can ZIA still see about an HTTPS request, and what can't it see?
+            <div class="answer-area" data-section="lab3-q1">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                  <div class="model-answer-text">It can still see where the connection is going (the destination domain and IP), so domain-level decisions are possible. It can't see the full URL path, the headers or the content, so it can't filter on the exact page, scan downloaded files for malware or check uploads for sensitive data. That's why the scenario says ZIA can only apply URL, threat and data protection controls to traffic it can inspect.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>After you activate the rule, the certificate's issuer changes from the site's own CA to Zscaler. Why does that happen, and why doesn't the browser show a warning?
+            <div class="answer-area" data-section="lab3-q2">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                  <div class="model-answer-text">ZIA terminates the encrypted session, inspects the traffic, and then re-encrypts it toward the browser with a certificate it issues through the Zscaler intermediate CA. So the browser now sees Zscaler as the issuer. There's no warning because the Lab 2 app profile installed the Zscaler root certificate on the Corp Client PC, so the browser trusts the chain.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>This lab inspects <em>all</em> destinations. In production, why might you exempt some destinations, and what's the cost of each exemption?
+            <div class="answer-area" data-section="lab3-q3">
+              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+              <div class="answer-buttons">
+                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              </div>
+              <div class="model-answers" style="display:none;">
+                <div class="model-answer-item">
+                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                  <div class="model-answer-text">Some applications use certificate pinning and break when they're handed any certificate other than their own, and some categories (for example health or finance) may be exempted for privacy or regulatory reasons. Zscaler ships predefined exemption rules for destinations that can't be inspected. The cost is visibility: exempted traffic gets only domain-level control and no content scanning, so every exemption should be deliberate and as narrow as possible.</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <!-- Task 3.1 -->
-      <div class="task-collapsible open" id="task-3-1">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 3.1</span>
-          <span class="task-collapsible-title">Test Non-Web Traffic with the Default Firewall Block</span>
+      <div class="task-collapsible open" id="tc-3-1">
+        <button class="task-collapsible-header" onclick="toggleTask(this)">
+          <span class="task-num-badge">TASK 3.1</span>
+          <span class="task-collapsible-title">Enable SSL Inspection for All Destinations</span>
           <span class="task-collapsible-chevron">▾</span>
-        </div>
+        </button>
         <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">With Z-Tunnel 2.0, all traffic for all ports and protocols is sent to Zscaler for inspection. In this task, you generate non-web traffic from the Corp: Client PC to verify it is blocked by the default Block/Drop rule.</p>
-            <ol class="step-list">
-              <li>Verify the Default Firewall Policy. From the Experience Center Portal, go to <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Filtering Policy</strong>. Confirm the Default Rule is set to <strong>Block/Drop</strong> and there are no other rules that would allow non-web traffic.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-01.png" alt="Firewall Filtering Policy list showing the Default Rule set to Block/Drop with no other rules allowing non-web traffic" loading="lazy">
-                  <div class="screenshot-caption">Firewall Filtering Policy — Default Rule: Block/Drop.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Rules such as the Office 365 One Click Rule, Zscaler Proxy Traffic, and Recommended Firewall Rule explicitly allow specific traffic required for relevant features. ICMP and SSH traffic in this exercise won't match any of these rules and will fall to the Default Rule until explicitly allowed.</p></div>
-              </li>
-              <li>Test the default firewall policies on the Corp: Client PC. Generate non-web traffic via ZCC — open a command prompt and run:
-                <div style="margin:8px 0;"><code>ping www.google.com</code></div>
-                <div class="callout callout-note"><p><strong>Note:</strong> This should fail with the request timing out since outbound ICMP packets are dropped by the Default Firewall rule.</p></div>
-              </li>
-              <li>SSH Traffic Test — open PuTTY from the desktop, enter <code>github.com</code> in the Host Name field, and select <strong>Open</strong>.
-                <div class="callout callout-note"><p><strong>Note:</strong> This should fail. Normally the session would prompt for a username and password, but since the outbound TCP connection is dropped by the Default Firewall Rule, PuTTY displays a Fatal Error after timing out (~20 seconds).</p></div>
-              </li>
-              <li>End the unsuccessful sessions — close the command prompt and exit PuTTY.</li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t3-1">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 3.1</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t3-1" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t3-1',this)">Save</button><div class="section-qa-list" id="sq-list-t3-1"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t3-1" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t3-1',this)">Save</button><div class="section-qa-list" id="sn-list-t3-1"></div></div>
-              </div>
-            </div>
-          </div>
+          <div class="task-purpose"><strong>Purpose:</strong> In this task, you will enable SSL inspection for all encrypted traffic.</div>
+          <ul class="step-list">
+            <li>Verify the current SSL inspection status:
+              <ul class="sub-steps">
+                <li>On the <strong>Corp Client PC</strong>, open a Chrome browser window in <strong>Incognito Mode</strong>.</li>
+                <li>Navigate to <code>www.wikipedia.org</code></li>
+                <li>Click the <strong>site information</strong> icon to the left of the URL.</li>
+              </ul>
+              <div class="screenshot-embed narrow"><img src="screenshots/lab3-01.png" alt="Chrome address bar for wikipedia.org with the View site information icon highlighted and its menu showing Connection is secure" loading="lazy"><div class="screenshot-caption">The <strong>View site information</strong> icon sits to the left of the address. Its menu shows <strong>Connection is secure</strong>.</div></div>
+              <ul class="sub-steps">
+                <li>Click <strong>Connection is secure &gt; Certificate is valid</strong>.</li>
+              </ul>
+              <div class="callout callout-note"><p><strong>Note:</strong> The certificate should be issued by the website's own certificate authority, not by Zscaler. Record the certificate issuer before changing the SSL inspection policy. If the issuer indicates Zscaler inspection, review the existing SSL inspection rules before continuing; the tenant may already inspect this traffic.</p></div>
+              <div class="screenshot-embed narrow"><img src="screenshots/lab3-02.png" alt="Chrome Certificate Viewer for *.wikipedia.org showing Issued By Common Name E7, Organization Let's Encrypt" loading="lazy"><div class="screenshot-caption">Before inspection: <strong>Issued By</strong> is the site's own CA (Let's Encrypt in this example). Record what you see.</div></div>
+            </li>
+            <li>Enable SSL inspection:
+              <ul class="sub-steps">
+                <li>In the <strong>Portal</strong>, use the <strong>Search</strong> menu to find <strong>SSL/TLS Inspection</strong> and select the appropriate option (<strong>Internet Access &gt; Policy</strong>).</li>
+                <li>On the <strong>SSL Inspection Policy</strong> tab, click <strong>+Add Rule</strong>.</li>
+              </ul>
+              <div class="screenshot-embed"><img src="screenshots/lab3-03.png" alt="Search menu result SSL/TLS Inspection under Internet Access > Policy, the SSL/TLS Inspection Policy page with an existing rule, and the Add Rule button highlighted" loading="lazy"><div class="screenshot-caption">Search <strong>SSL/TLS Inspection</strong>, then select <strong>Add Rule</strong>. The tenant may already list other rules, such as the Smart Isolation rule shown here.</div></div>
+              <ul class="sub-steps">
+                <li>Configure the rule as follows:</li>
+              </ul>
+              <div class="values-card"><div class="values-head">ADD SSL/TLS INSPECTION RULE</div><table class="creds-table values-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>
+                <tr><td class="values-field">Rule Order</td><td><code>1</code></td></tr>
+                <tr><td class="values-field">Rule Name</td><td><code>SSL Inspect All</code></td></tr>
+                <tr><td class="values-field">Criteria</td><td>Leave the defaults, so that the rule applies to all destinations</td></tr>
+                <tr><td class="values-field">Action</td><td><strong>Inspect</strong></td></tr>
+              </tbody></table></div>
+              <div class="screenshot-embed narrow"><img src="screenshots/lab3-04.png" alt="Actions section of the SSL/TLS inspection rule with Action set to Inspect and the default Zscaler Intermediate CA Certificate" loading="lazy"><div class="screenshot-caption">Actions: <strong>Inspect</strong>. Leave <strong>Override Default Intermediate CA Certificate</strong> at No, so the Zscaler intermediate CA signs inspected sessions.</div></div>
+              <ul class="sub-steps">
+                <li>Click <strong>Save</strong> and <strong>Activate</strong>.</li>
+              </ul>
+              <div class="screenshot-embed menu"><img src="screenshots/lab3-05.png" alt="Activation menu opened from the cloud icon in the top bar, showing Pending Activation and the Activate button highlighted" loading="lazy"><div class="screenshot-caption">To activate, open the <strong>cloud</strong> icon in the top bar and select <strong>Activate</strong>.</div></div>
+            </li>
+            <li>Verify the inspection status:
+              <ul class="sub-steps">
+                <li>Close the <strong>Incognito</strong> browser or refresh it (to ensure the new policy is applied).</li>
+                <li>Re-open a browser window in <strong>Incognito Mode</strong>, and visit <code>www.wikipedia.org</code></li>
+                <li>Click the <strong>site information</strong> icon to the left of the URL <strong>&gt; Connection is secure &gt; Certificate is valid</strong>.</li>
+              </ul>
+              <div class="callout callout-success"><p><strong>Result:</strong> You will see that you have received a server certificate signed by Zscaler. Compare it with the issuer you recorded in step 1.</p></div>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Task 3.2 -->
-      <div class="task-collapsible open" id="task-3-2">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 3.2</span>
-          <span class="task-collapsible-title">Configure Firewall Policy to Allow Outbound SSH and ICMP Traffic</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">ICMP and SSH traffic blocked in the previous task now needs to be permitted. In this task, you configure a firewall rule to allow it.</p>
-            <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Filtering Policy</strong> and select <strong>Add Firewall Filtering Rule</strong>. Configure:
-                <ul class="sub-steps">
-                  <li>Rule Order: <code>1</code></li>
-                  <li>Rule Status: Enabled (default)</li>
-                  <li>Rule Name: <code>allow-outbound-icmp_ssh-student-any</code> — following the <code>[action]-[direction]-[services]-[source-scope]-[destination-scope]</code> naming convention</li>
-                </ul>
-                On the <strong>Who, Where, Criteria</strong> tab, select your Student user account.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-02.png" alt="Add Firewall Filtering Rule with name allow-outbound-icmp_ssh-student-any and Student user selected" loading="lazy">
-                  <div class="screenshot-caption">Rule Name: allow-outbound-icmp_ssh-student-any, scoped to the Student user.</div>
-                </div>
-              </li>
-              <li>Select the <strong>Services</strong> tab. Under Criteria, select the Network Services drop-down, search for and select <strong>ICMP, SSH</strong>, then select <strong>Done</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-03.png" alt="Network Services drop-down with ICMP and SSH selected" loading="lazy">
-                  <div class="screenshot-caption">Network Services — ICMP and SSH selected.</div>
-                </div>
-              </li>
-              <li>Under the <strong>ACTION</strong> section, ensure Network Traffic is set to <strong>Allow</strong>. Select <strong>Save</strong> and activate the changes from the Activation icon (cloud with arrow) in the top-right corner.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-04.png" alt="ACTION section with Network Traffic set to Allow and Save button visible" loading="lazy">
-                  <div class="screenshot-caption">Action — Network Traffic: Allow, then Save + Activate.</div>
-                </div>
-              </li>
-              <li>Test ICMP traffic with the new rule — on the Corp: Client PC, open a command prompt and run:
-                <div style="margin:8px 0;"><code>ping www.google.com</code></div>
-                <div class="callout callout-note"><p><strong>Note:</strong> This should now show a response since the outbound ICMP packets match the allow ICMP/SSH rule and pass through the firewall.</p></div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-05.png" alt="Successful ping response after the allow ICMP and SSH firewall rule is activated" loading="lazy">
-                  <div class="screenshot-caption">Ping succeeds — ICMP now matches the new Allow rule.</div>
-                </div>
-              </li>
-              <li>Test SSH traffic — open PuTTY, type <code>github.com</code> in Host Name, select <strong>Open</strong>.
-                <div class="callout callout-note"><p><strong>Note:</strong> PuTTY should now attempt a TCP connection and prompt for login, likely asking you to accept the fingerprint of the external server — indicating the SSH packets match the Allow rule and pass through the firewall.</p></div>
-              </li>
-              <li>Close the sessions — close Command Prompt and exit PuTTY.</li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t3-2">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 3.2</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t3-2" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t3-2',this)">Save</button><div class="section-qa-list" id="sq-list-t3-2"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t3-2" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t3-2',this)">Save</button><div class="section-qa-list" id="sn-list-t3-2"></div></div>
-              </div>
-            </div>
-          </div>
+      <div class="mental-note-block">
+        <div class="mental-note-block-icon">🧠</div>
+        <div class="mental-note-block-inner">
+          <div class="mental-note-block-label">MENTAL NOTE</div>
+          <div class="mental-note-block-text"><strong>Before:</strong> the issuer is the site's own CA. <strong>Rule:</strong> <code>SSL Inspect All</code>, Rule Order 1, default criteria (all destinations), Action <strong>Inspect</strong>. <strong>After:</strong> the issuer is <strong>Zscaler</strong>. ZIA changes take effect only after <strong>Activate</strong>, and the browser trusts the new chain only because the Zscaler root certificate was installed in Lab 2.</div>
         </div>
       </div>
 
-      <!-- Task 3.3 -->
-      <div class="task-collapsible open" id="task-3-3">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 3.3</span>
-          <span class="task-collapsible-title">Configure a Firewall Filtering Policy to Restrict Applications</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you review the existing Firewall Filtering Policy rules. In a real-world deployment, multiple rules are configured and evaluated top to bottom.</p>
-            <ol class="step-list">
-              <li>Create a Firewall Filtering Rule from the Firewall Control menu, or <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Filtering Policy</strong>. Select <strong>Add Firewall Filtering Rule</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-06.png" alt="Firewall Filtering Policy page with Add Firewall Filtering Rule button" loading="lazy">
-                  <div class="screenshot-caption">Add Firewall Filtering Rule.</div>
-                </div>
-              </li>
-              <li>In the Add Firewall Filtering Rule window, enter:
-                <ul class="sub-steps">
-                  <li>Rule Name: <code>block_drop_all_whatspp_student_any</code></li>
-                  <li>Rule Order: <code>2</code></li>
-                  <li>Rule Status: Enabled (default)</li>
-                </ul>
-                Under <strong>Who, Where &amp; When</strong>, User: select the Student Admin.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-07.png" alt="Add Firewall Filtering Rule with name block_drop_all_whatspp_student_any and Student Admin user selected" loading="lazy">
-                  <div class="screenshot-caption">Rule Name: block_drop_all_whatspp_student_any, User: Student Admin.</div>
-                </div>
-              </li>
-              <li>Under <strong>Action</strong>, set Network Traffic: <strong>Block/Drop</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-08.png" alt="Action section with Network Traffic set to Block/Drop" loading="lazy">
-                  <div class="screenshot-caption">Action — Network Traffic: Block/Drop.</div>
-                </div>
-              </li>
-              <li>Under the <strong>Applications</strong> tab, Network Applications: search for and select <strong>WhatsApp</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-09.png" alt="Applications tab with WhatsApp selected as a Network Application" loading="lazy">
-                  <div class="screenshot-caption">Network Applications — WhatsApp selected.</div>
-                </div>
-              </li>
-              <li>Select <strong>Done</strong> and <strong>Save</strong> to save the rule, then activate changes from the Activation icon (cloud with arrow) at the top-right.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-10.png" alt="Firewall Filtering Rule saved with Activation icon highlighted" loading="lazy">
-                  <div class="screenshot-caption">Save, then Activate.</div>
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-11.png" alt="Firewall Filtering Policy list showing the new WhatsApp block rule" loading="lazy">
-                  <div class="screenshot-caption">The new block rule appears in the policy list.</div>
-                </div>
-              </li>
-              <li>Test the firewall rule — launch a browser and navigate to <code>https://web.whatsapp.com</code>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-12.png" alt="Browser showing web.whatsapp.com access blocked" loading="lazy">
-                  <div class="screenshot-caption">Access to web.whatsapp.com is restricted.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> While URL Filtering Policies can also block access to web.whatsapp.com, this method may not restrict users who have the WhatsApp application installed on their system. A Firewall Filtering Policy blocks access at the network layer, ensuring complete enforcement of the access control.</p></div>
-              </li>
-            </ol>
+      <div class="lesson-tools">
+        <div class="lesson-tools-grid">
+          <div>
+            <div class="tool-label">ASK A QUESTION</div>
+            <textarea class="tool-textarea" id="q-lab3" placeholder="What are you unsure about?" rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab3','Lab 3: SSL Inspection Policies')">Add Question</button></div>
           </div>
-
-          <div class="section-qa" data-section="t3-3">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 3.3</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t3-3" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t3-3',this)">Save</button><div class="section-qa-list" id="sq-list-t3-3"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t3-3" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t3-3',this)">Save</button><div class="section-qa-list" id="sn-list-t3-3"></div></div>
-              </div>
-            </div>
+          <div>
+            <div class="tool-label">ADD A NOTE</div>
+            <textarea class="tool-textarea" id="note-lab3" placeholder="Write a note for this section..." rows="3"></textarea>
+            <div class="tool-row"><button class="btn-add-q" onclick="addNote('lab3')">+ Add Note</button></div>
           </div>
         </div>
       </div>
-
-      <!-- Task 3.4 -->
-      <div class="task-collapsible open" id="task-3-4">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 3.4</span>
-          <span class="task-collapsible-title">Review Firewall Filtering Policy</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you view several Firewall Filtering Policies using the Zscaler read-only tenant login. User credentials are contained in the lab access instructions provided to you via email by the instructor.</p>
-            <ol class="step-list">
-              <li>In a browser, go to <code>https://console.zscaler.com</code> and authenticate with the read-only Zscaler tenant credentials:
-                <ul class="sub-steps">
-                  <li>Username: <span class="var var-ro-user">&lt;Admin_User_ID&gt;</span></li>
-                  <li>Password: <span class="var var-ro-pass">&lt;Session_Password&gt;</span></li>
-                </ul>
-              </li>
-              <li>Navigate to <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Control &gt; Firewall Filtering Policy</strong> and review the rules listed.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-13.png" alt="Read-only tenant Firewall Filtering Policy list with multiple production rules" loading="lazy">
-                  <div class="screenshot-caption">Read-only tenant — a fuller, production-style Firewall Filtering Policy rule set.</div>
-                </div>
-                <div class="callout callout-note"><p><strong>Note:</strong> Rules are evaluated top to bottom — the first matching rule determines the action taken. This is important to understand when planning rule ordering in a real-world environment.</p></div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t3-4">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 3.4</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t3-4" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t3-4',this)">Save</button><div class="section-qa-list" id="sq-list-t3-4"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t3-4" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t3-4',this)">Save</button><div class="section-qa-list" id="sn-list-t3-4"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Task 3.5 -->
-      <div class="task-collapsible open" id="task-3-5">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 3.5</span>
-          <span class="task-collapsible-title">Review Firewall Logs</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">In this task, you use the Zscaler read-only tenant to examine firewall logs and understand how Firewall Filtering Policy is applied to real-world traffic.</p>
-            <ol class="step-list">
-              <li>Navigate to <strong>Analytics &gt; Firewall &gt; Firewall Insights &gt; Logs</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-14.png" alt="Firewall Insights Logs page navigation" loading="lazy">
-                  <div class="screenshot-caption">Analytics &gt; Firewall &gt; Firewall Insights &gt; Logs.</div>
-                </div>
-              </li>
-              <li>In the Logs view, apply filters — for example, filter by Action, Rule Name, or Time Range to narrow down results. Select <strong>Run Query</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-15.png" alt="Firewall Insights Logs filter panel with Action, Rule Name, and Time Range options" loading="lazy">
-                  <div class="screenshot-caption">Logs filter panel — Action, Rule Name, Time Range.</div>
-                </div>
-              </li>
-              <li>Review the resulting log entries — observe how each entry shows the matching firewall rule, the action taken (Allow or Block/Drop), source and destination details, application, and timestamp.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab3-16.png" alt="Firewall Insights Logs results table showing matching rule, action, source, destination, application, and timestamp" loading="lazy">
-                  <div class="screenshot-caption">Log entries — matched rule, action, source/destination, application, timestamp.</div>
-                </div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="section-qa" data-section="t3-5">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 3.5</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div><div class="section-qa-label">My Questions</div><textarea class="section-qa-textarea" id="sq-t3-5" placeholder="Questions about this section…"></textarea><button class="section-qa-save" onclick="saveSectionQ('t3-5',this)">Save</button><div class="section-qa-list" id="sq-list-t3-5"></div></div>
-                <div><div class="section-qa-label">My Notes</div><textarea class="section-qa-textarea" id="sn-t3-5" placeholder="Key takeaways from this section…"></textarea><button class="section-qa-save" onclick="saveSectionN('t3-5',this)">Save</button><div class="section-qa-list" id="sn-list-t3-5"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
+
+  </div><!-- /content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
-      <a class="hub-link" href="index.html">← EDU-100 Lab Hub</a>
+      <a href="index.html" class="hub-link">← EDU-100 Lab Hub</a>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Lab Topology</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0-02.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/topology.png" alt="EDU-100 lab topology: the Corp Client PC with Zscaler Client Connector connects through the Zero Trust Exchange to the Internet and to the Corporate Data Center (10.0.0.0/24) with Corp Win Svr 2025 and the ZPA App Connector; admins use the Experience Center and Service Portal" title="Click to expand">
       </div>
     </div>
 
@@ -381,93 +327,136 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         <div class="sidebar-cred-item">
           <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-student-login">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Student Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Read-Only Tenant Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value var-ro-user">&lt;Admin_User_ID&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-ro-pass">&lt;Session_Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('ro-pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Progress</div>
+      <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
-        <li class="progress-item" id="pi-1"><input type="checkbox" id="chk-3-1" onchange="toggleDone(this)"><label for="chk-3-1">3.1 Default block confirmed</label></li>
-        <li class="progress-item" id="pi-2"><input type="checkbox" id="chk-3-2" onchange="toggleDone(this)"><label for="chk-3-2">3.2 ICMP/SSH allowed</label></li>
-        <li class="progress-item" id="pi-3"><input type="checkbox" id="chk-3-3" onchange="toggleDone(this)"><label for="chk-3-3">3.3 WhatsApp blocked</label></li>
-        <li class="progress-item" id="pi-4"><input type="checkbox" id="chk-3-4" onchange="toggleDone(this)"><label for="chk-3-4">3.4 Rules reviewed (RO tenant)</label></li>
-        <li class="progress-item" id="pi-5"><input type="checkbox" id="chk-3-5" onchange="toggleDone(this)"><label for="chk-3-5">3.5 Logs reviewed (RO tenant)</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3a" onchange="toggleDone(this)"><label for="chk-lab3a">3.1 Original certificate issuer recorded</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3b" onchange="toggleDone(this)"><label for="chk-lab3b">3.1 SSL Inspect All rule saved and activated</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab3c" onchange="toggleDone(this)"><label for="chk-lab3c">3.1 Zscaler-signed certificate confirmed</label></li>
       </ul>
     </div>
-
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 3.1 · How inspection works</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/understanding-ssltls-inspection" target="_blank" rel="noopener noreferrer" title="How Zscaler decrypts, inspects and re-encrypts HTTPS traffic">Understanding SSL/TLS Inspection</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-ssltls-inspection-policy" target="_blank" rel="noopener noreferrer" title="Predefined rules, exemptions and the SSL/TLS Inspection Policy page">About SSL/TLS Inspection Policy</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 3.1 · Create the rule</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-ssltls-inspection-policy" target="_blank" rel="noopener noreferrer" title="Rule order, criteria, and the Inspect, Do Not Inspect and Block actions">Configuring SSL/TLS Inspection Policy</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Beyond the lab</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/best-practices-testing-and-rolling-out-ssltls-inspection" target="_blank" rel="noopener noreferrer" title="Piloting inspection on a small group before rolling it out everywhere">Best Practices for Rolling Out SSL/TLS Inspection</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">SSL/TLS inspection</div><div class="qr-def">ZIA decrypts HTTPS, applies policy to the content, then re-encrypts it toward the user.</div></div>
+        <div class="qr-item"><div class="qr-term">Certificate issuer</div><div class="qr-def">The CA that signed the certificate the browser receives. It changes to Zscaler once traffic is inspected.</div></div>
+        <div class="qr-item"><div class="qr-term">Inspect action</div><div class="qr-def">Rule action that decrypts matching traffic. The other actions are Do Not Inspect and Block.</div></div>
+        <div class="qr-item"><div class="qr-term">Intermediate CA certificate</div><div class="qr-def">Signs the certificates ZIA presents to browsers; by default the Zscaler Intermediate CA Certificate.</div></div>
+        <div class="qr-item"><div class="qr-term">Rule order</div><div class="qr-def">Rules are evaluated in ascending order; the first matching rule wins.</div></div>
+        <div class="qr-item"><div class="qr-term">Activate</div><div class="qr-def">Pushes saved ZIA changes live. Saved but unactivated changes have no effect.</div></div>
+        <div class="qr-item"><div class="qr-term">Certificate pinning</div><div class="qr-def">An app that accepts only its own certificate. Inspecting it breaks the app, so it's usually exempted.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+<div class="page-nav">
+  <a class="page-nav-btn page-nav-prev" href="lab2.html"><span class="page-nav-label">← PREVIOUS</span><span class="page-nav-title">Lab 2: Forward Traffic with ZCC</span></a>
+  <div class="page-nav-message">Now ZIA can see inside HTTPS. Next, decide what users may reach.</div>
+  <a class="page-nav-btn page-nav-next" href="lab4.html"><span class="page-nav-label">NEXT →</span><span class="page-nav-title">Lab 4: Content Filtering</span></a>
 </div>
 
-<div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab2.html">← Lab 2: ZCC Traffic Forwarding</a>
-  <div class="page-nav-message">Traffic is filtered — now let's see inside the encrypted sessions.</div>
-  <a class="page-nav-btn page-nav-next" href="lab4.html">Lab 4: SSL Inspection Policies →</a>
-</div>
+<footer>
+  <span>EDU-100 · Introduction to Zscaler Zero Trust Exchange · Hands-On Lab Guide · Rev 2.0</span>
+  <span>Lab 3: Configure SSL Inspection Policies</span>
+</footer>
 
 <script>
 const CONFIG_KEY='edu100-expc-lab-config';
-const PAGE_KEY='edu100-lab-lab3';
-var SECTION_IDS=['t3-1','t3-2','t3-3','t3-4','t3-5'];
-
+const COLLAPSE_KEY='edu100-config-collapsed';
+const CFG_FIELDS={first:'first-input',last:'last-input',fqdn:'fqdn-input',pass:'pass-input'};
+function updateSidebarOffset(){var p=document.getElementById('config-panel');if(!p)return;document.documentElement.style.setProperty('--config-h',(p.offsetHeight+16)+'px');}
+(function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});window.addEventListener('resize',updateSidebarOffset);})();
+function readCfg(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}')||{};}catch(e){return {};}}
+function val(id){return document.getElementById(id).value.trim();}
+function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(COLLAPSE_KEY,collapsed?'1':'0');}catch(e){}}
+function updateToggleSummary(){var name=[val('first-input'),val('last-input')].filter(Boolean).join(' ');var bits=[name,val('fqdn-input')].filter(Boolean).join(' · ');document.getElementById('config-toggle-summary').textContent=bits?' — '+bits:'';}
+function loadConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value=cfg[k]||'';});try{if(localStorage.getItem(COLLAPSE_KEY)==='1'){document.getElementById('config-panel').classList.add('collapsed');document.getElementById('config-toggle-btn').innerHTML='<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand';}}catch(e){}applyConfig();}
+/* merge into the shared course config so values saved by other EDU-100 pages are kept */
+function saveConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){cfg[k]=val(CFG_FIELDS[k]);});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();var btn=document.querySelector('.config-btn');var orig=btn.textContent;btn.textContent='✓ Saved';btn.style.background='var(--green)';setTimeout(function(){btn.textContent=orig;btn.style.background='';},1200);}
+function clearConfig(){var cfg=readCfg();Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).value='';delete cfg[k];});try{localStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}applyConfig();updateToggleSummary();}
+function setAll(sel,text){document.querySelectorAll(sel).forEach(function(el){el.textContent=text;});}
+function setVar(sel,value,placeholder){document.querySelectorAll(sel).forEach(function(el){if(value){el.textContent=value;el.classList.add('filled');}else{el.textContent=placeholder;el.classList.remove('filled');}});}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var rouser=d.rouser||'';var ropass=d.ropass||'';
-  document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<FQDN>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Student Password>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-user').forEach(function(el){if(rouser){el.textContent=rouser;el.classList.add('filled');}else{el.textContent='<Admin_User_ID>';el.classList.remove('filled');}});
-  document.querySelectorAll('.var-ro-pass').forEach(function(el){if(ropass){el.textContent=ropass;el.classList.add('filled');}else{el.textContent='<Session_Password>';el.classList.remove('filled');}});
-  }catch(e){}
+  var first=val('first-input'),last=val('last-input'),fqdn=val('fqdn-input'),pass=val('pass-input');
+  var user=first?first.toLowerCase().replace(/\s+/g,''):'<your first name>';
+  var dom=fqdn||'<Student FQDN>';
+  var login=user+'@'+dom;
+  setAll('.d-user-login',login);setAll('.d-student-login','student@'+dom);setAll('.d-first',first||'<your first name>');setAll('.d-last',last||'<your last name>');
+  document.getElementById('d-user').textContent=login;document.getElementById('d-student').textContent='student@'+dom;
+  setVar('.var-fqdn',fqdn,'<Student FQDN>');
+  setVar('.var-pass',pass,'<Student Password>');
+  setVar('.var-fullname',(first||last)?[first||'<your first name>',last||'<your last name>'].join(' '):'','<your first name> <your last name>');
+  document.querySelectorAll('.scr-value').forEach(function(el){el.title=el.textContent;});
 }
-function loadConfig(){try{applyConfig();}catch(e){}}
-function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
-function injectCopyButtons(){document.querySelectorAll('.step-list > li code, .sub-steps li code, .task-block code, .config-derived code').forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
-function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
-function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
-function loadQList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');all=all.concat(qs);}catch(e){}});var el=document.getElementById('q-list');if(el)el.innerHTML=all.length?all.map(function(q){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+q+'</p>';}).join(''):'<p class="panel-empty">No questions yet — use the task Q&amp;A sections below.</p>';var c=document.getElementById('q-count');if(c){c.textContent=all.length;c.style.display=all.length?'inline-block':'none';}}catch(e){}}
-function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');all=all.concat(ns);}catch(e){}});var el=document.getElementById('n-list');if(el)el.innerHTML=all.length?all.map(function(n){return'<p style="font-size:12.5px;font-family:Epilogue,sans-serif;color:var(--text-soft);padding:4px 0;border-bottom:1px solid var(--border-dim);">'+n+'</p>';}).join(''):'<p class="panel-empty">No notes yet — use the task Q&amp;A sections below.</p>';}catch(e){}}
-function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
-function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
-function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
-function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
-function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
-function renderSectionQ(id){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');var el=document.getElementById('sq-list-'+id);if(el)el.innerHTML=qs.length?qs.map(function(q,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(q)+'</span><button class="qa-item-del" onclick="delSectionQ(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadQList();}
-function renderSectionN(id){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');var el=document.getElementById('sn-list-'+id);if(el)el.innerHTML=ns.length?ns.map(function(n,i){return'<div class="qa-item"><span class="qa-item-text">'+escHtml(n)+'</span><button class="qa-item-del" onclick="delSectionN(\''+id+'\','+i+')" title="Remove">−</button></div>';}).join(''):'';}catch(e){}updateSectionQABadge(id);loadNList();}
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function delSectionQ(id,idx){try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}renderSectionQ(id);}
-function delSectionN(id,idx){try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.splice(idx,1);localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}renderSectionN(id);}
-function toggleSectionQA(btn){var block=btn.closest('.section-qa');block.classList.toggle('open');var id=block.dataset.section;renderSectionQ(id);renderSectionN(id);}
-function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
-(function(){document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);if(saved==='0')tc.classList.remove('open');});document.querySelectorAll('.task-collapsible-header').forEach(function(h){h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleTask(h);}});});})();
-function openLightbox(src,alt){var lb=document.getElementById('lightbox');var img=document.getElementById('lightbox-img');img.src=src;img.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}
-function closeLightbox(e){if(e&&e.target===document.getElementById('lightbox-img'))return;document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
-document.addEventListener('DOMContentLoaded',function(){
-  document.body.style.opacity='1';
-  loadConfig();loadQList();loadNList();loadChecklist();injectCopyButtons();
-  SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});
-  sessionStorage.setItem('pt','1');
-  document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});
-  document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});
-});
+/* sidebar: Portal Credentials accordion + copy (values come from the Lab Configuration panel) */
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
-function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';else if(type==='ro-user')val=d.rouser||'';else if(type==='ro-pass')val=d.ropass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function flashBtn(btn,ok){if(!btn)return;btn.textContent=ok?'✓':'—';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';setTimeout(function(){btn.textContent='⎘';btn.title='Copy';},1400);}
+function copySidebarCred(v,btn){if(!v){flashBtn(btn,false);return;}navigator.clipboard.writeText(v).then(function(){flashBtn(btn,true);}).catch(function(){});}
+function copyPortalCred(type,btn){var first=val('first-input').toLowerCase().replace(/\s+/g,''),fqdn=val('fqdn-input'),v='';if(type==='student-user')v=fqdn?'student@'+fqdn:'';else if(type==='user')v=(first&&fqdn)?first+'@'+fqdn:'';else if(type==='pass')v=val('pass-input');copySidebarCred(v,btn);}
+function copyConfigField(id,btn){var v=val(id);if(!v)return;navigator.clipboard.writeText(v).then(function(){var orig=btn.textContent;btn.textContent='✓';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},1200);}).catch(function(){});}
+Object.keys(CFG_FIELDS).forEach(function(k){document.getElementById(CFG_FIELDS[k]).addEventListener('input',function(){applyConfig();updateToggleSummary();});});
+
+const PAGE_KEY='edu100-lab-lab3';
+const SECTIONS={'lab0':'Lab 0: Connect to the Virtual Lab','lab1':'Lab 1: User Access Entitlements','lab2':'Lab 2: Forward Traffic with ZCC','lab3':'Lab 3: SSL Inspection Policies','lab4':'Lab 4: Content Filtering','lab5':'Lab 5: Provision ZPA Infrastructure','lab6':'Lab 6: Add a Corporate Application','lab7':'Lab 7: Cloud Application Monitoring'};
+
+function toggleTask(header){var tc=header.closest('.task-collapsible');tc.classList.toggle('open');try{localStorage.setItem(PAGE_KEY+'-tc-'+tc.id,tc.classList.contains('open')?'1':'0');}catch(e){}}
+document.querySelectorAll('.socratic-header').forEach(function(h){h.addEventListener('click',function(){h.closest('.socratic-block').classList.toggle('soc-open');});});
+function saveSocAnswer(btn){var area=btn.closest('.answer-area');var ta=area.querySelector('.answer-textarea');if(!ta.value.trim()){ta.focus();return;}var key=PAGE_KEY+'-socans-'+area.dataset.section;try{localStorage.setItem(key,ta.value);}catch(e){}ta.disabled=true;btn.textContent='✓ Answer saved';btn.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}
+function revealSocAnswer(btn){if(btn.disabled)return;var ans=btn.closest('.answer-area').querySelector('.model-answers');var hidden=ans.style.display==='none'||!ans.style.display;ans.style.display=hidden?'block':'none';btn.textContent=hidden?'▲ Hide Model Answer':'💡 See Model Answer';}
+function getQArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-questions')||'[]');}catch(e){return [];}}
+function saveQArr(qs){try{localStorage.setItem(PAGE_KEY+'-questions',JSON.stringify(qs));}catch(e){}}
+function addQuestion(key,sectionName){var ta=document.getElementById('q-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var qs=getQArr();qs.push({id:Date.now(),section:key,sectionName:sectionName,text:text});saveQArr(qs);ta.value='';renderQPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('qpanel-body').classList.contains('open'))toggleQPanel();}
+function deleteQuestion(id){saveQArr(getQArr().filter(function(q){return q.id!==id;}));renderQPanel();}
+function toggleQPanel(){var body=document.getElementById('qpanel-body');var header=document.getElementById('qpanel-header');var chevron=document.getElementById('qpanel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-qpanel-open',open);}catch(e){}}
+function renderQPanel(){var qs=getQArr();var count=document.getElementById('qpanel-count');if(count){count.textContent=qs.length;count.style.display=qs.length?'inline':'none';}var hint=document.querySelector('.qpanel-hint');if(hint)hint.textContent=qs.length?'— '+qs.length+' question'+(qs.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('qpanel-body');if(!body)return;if(!qs.length){body.innerHTML='<p class="panel-empty">No questions yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});qs.forEach(function(q){if(groups[q.section])groups[q.section].push(q);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(q){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+q.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteQuestion('+q.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function getNotesArr(){try{return JSON.parse(localStorage.getItem(PAGE_KEY+'-notes')||'[]');}catch(e){return [];}}
+function saveNotesArr(ns){try{localStorage.setItem(PAGE_KEY+'-notes',JSON.stringify(ns));}catch(e){}}
+function addNote(key){var ta=document.getElementById('note-'+key);var text=ta.value.trim();if(!text){ta.focus();return;}var ns=getNotesArr();var name=SECTIONS[key]||key;ns.push({id:Date.now(),section:key,sectionName:name,text:text});saveNotesArr(ns);ta.value='';renderNotesPanel();window.scrollTo({top:0,behavior:'smooth'});if(!document.getElementById('notes-panel-body').classList.contains('open'))toggleNotesPanel();}
+function deleteNote(id){saveNotesArr(getNotesArr().filter(function(n){return n.id!==id;}));renderNotesPanel();}
+function toggleNotesPanel(){var body=document.getElementById('notes-panel-body');var header=document.getElementById('notes-panel-header');var chevron=document.getElementById('notes-panel-chevron');var open=body.classList.toggle('open');header.classList.toggle('open',open);chevron.textContent=open?'▴':'▾';try{localStorage.setItem(PAGE_KEY+'-notes-panel-open',open);}catch(e){}}
+function renderNotesPanel(){var ns=getNotesArr();var count=document.getElementById('notes-panel-count');if(count){count.textContent=ns.length;count.style.display=ns.length?'inline':'none';}var hint=document.querySelector('.notes-panel-hint');if(hint)hint.textContent=ns.length?'— '+ns.length+' note'+(ns.length>1?'s':'')+', click to expand':'— click to expand';var body=document.getElementById('notes-panel-body');if(!body)return;if(!ns.length){body.innerHTML='<p class="panel-empty">No notes yet. Add one below each section.</p>';return;}var groups={};Object.keys(SECTIONS).forEach(function(k){groups[k]=[];});ns.forEach(function(n){if(groups[n.section])groups[n.section].push(n);});var html='';var num=0;Object.entries(groups).forEach(function(e){var key=e[0];var items=e[1];if(!items.length)return;html+='<div class="q-group"><div class="q-group-label">'+SECTIONS[key]+'</div>';items.forEach(function(n){num++;html+='<div class="q-item"><div class="q-num">'+num+'</div><div class="q-text">'+n.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><button class="q-del" onclick="deleteNote('+n.id+')" title="Remove">−</button></div>';});html+='</div>';});body.innerHTML=html;}
+function toggleDone(cb){try{localStorage.setItem(PAGE_KEY+'-chk-'+cb.id,cb.checked);}catch(e){}cb.closest('.progress-item').classList.toggle('done',cb.checked);}
+function initChecks(){document.querySelectorAll('.progress-item input[type=checkbox]').forEach(function(cb){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-chk-'+cb.id);}catch(e){}if(saved==='true'){cb.checked=true;cb.closest('.progress-item').classList.add('done');}});}
+function copyToClipboard(text,btn){navigator.clipboard.writeText(text).then(function(){btn.classList.add('copied');btn.textContent='✓';setTimeout(function(){btn.classList.remove('copied');btn.textContent='⎘';},1500);}).catch(function(){});}
+function injectCopyButtons(){var selectors=['.step-list > li code','.sub-steps li code','.task-block code','.config-derived code','.values-table code'];document.querySelectorAll(selectors.join(',')).forEach(function(code){if(code.closest('.callout'))return;if(code.nextElementSibling&&code.nextElementSibling.classList.contains('copy-inline'))return;var text=code.textContent.trim();if(text.length<2)return;if(/^(Ctrl|Cmd|Alt)\+/.test(text))return;var btn=document.createElement('button');btn.className='copy-inline';btn.title='Copy';btn.textContent='⎘';btn.addEventListener('click',function(e){e.stopPropagation();copyToClipboard(code.textContent.trim(),btn);});code.after(btn);});}
+function initLightbox(){var lb=document.createElement('div');lb.className='img-lightbox';lb.innerHTML='<button class="img-lightbox-close" title="Close (Esc)">✕</button><img src="" alt="">';document.body.appendChild(lb);var lbImg=lb.querySelector('img');function open(src,alt){lbImg.src=src;lbImg.alt=alt||'';lb.classList.add('active');document.body.style.overflow='hidden';}function close(){lb.classList.remove('active');document.body.style.overflow='';}lb.addEventListener('click',function(e){if(e.target===lb||e.target===lb.querySelector('.img-lightbox-close'))close();});document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});document.querySelectorAll('.screenshot-embed img, .sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){open(img.src,img.alt);});});}
+document.addEventListener('DOMContentLoaded',function(){
+  loadConfig();updateToggleSummary();updateSidebarOffset();
+  renderQPanel();renderNotesPanel();initChecks();
+  injectCopyButtons();initLightbox();
+  document.querySelectorAll('.task-collapsible').forEach(function(tc){var saved=null;try{saved=localStorage.getItem(PAGE_KEY+'-tc-'+tc.id);}catch(e){}if(saved==='1')tc.classList.add('open');else if(saved==='0')tc.classList.remove('open');});
+  try{if(localStorage.getItem(PAGE_KEY+'-qpanel-open')==='true'){document.getElementById('qpanel-body').classList.add('open');document.getElementById('qpanel-header').classList.add('open');document.getElementById('qpanel-chevron').textContent='▴';}
+  if(localStorage.getItem(PAGE_KEY+'-notes-panel-open')==='true'){document.getElementById('notes-panel-body').classList.add('open');document.getElementById('notes-panel-header').classList.add('open');document.getElementById('notes-panel-chevron').textContent='▴';}}catch(e){}
+  document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
+  document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';try{sessionStorage.setItem('pt','1');}catch(e){}
+});
 </script>
 </body>
 </html>
