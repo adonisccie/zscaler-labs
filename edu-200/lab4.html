@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -45,7 +57,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Configure Firewall Filtering Policy</h1>
   <div class="motivation-banner">
-    <p>Prove the default rule drops non-web traffic, open up ICMP and SSH with an explicit allow rule, then block WhatsApp at the network layer.</p>
+    <p>With Z-Tunnel 2.0 every packet reaches the Cloud Firewall. See the default block in action, open up ICMP and SSH, then shut WhatsApp out at the network layer.</p>
   </div>
 </header>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -141,59 +153,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab4">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · CLOUD FIREWALL</span>
-        </div>
-        <p class="socratic-insight">Thanks to Z-Tunnel 2.0 from Lab 3, every packet from the Client PC, not just web traffic, now reaches the Zscaler Cloud Firewall. Rules are evaluated top-down, and the first match wins.</p>
-        <ul class="socratic-questions">
-          <li>The Default Rule is <strong>Block/Drop</strong>, so ping and PuTTY simply time out instead of getting an error back. Why is "drop silently" a sensible default for a firewall, and why does it make troubleshooting slower?
-            <div class="answer-area" data-section="lab4-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · CLOUD FIREWALL</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">A default deny is the zero-trust baseline: anything not explicitly allowed doesn't leave. <strong>Drop</strong> (instead of Reset or ICMP-unreachable) gives nothing away to whoever probes the network and costs nothing to send. The downside is that the client can't tell "blocked" apart from "network down". It just waits for a timeout (~20 s in PuTTY). That's why the guide has you check the <strong>rule table and logs</strong> instead of guessing from the client. Block/ICMP or Block/Reset exist for when you want faster, clearer failures.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">Thanks to Z-Tunnel 2.0 from Lab 3, every packet from the Client PC, not just web traffic, now reaches the Zscaler Cloud Firewall. Rules are evaluated top-down, and the first match wins.</p>
+              <ul class="socratic-questions">
+                <li>The Default Rule is <strong>Block/Drop</strong>, so ping and PuTTY simply time out instead of getting an error back. Why is "drop silently" a sensible default for a firewall, and why does it make troubleshooting slower?
+                  <div class="answer-area" data-section="lab4-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">A default deny is the zero-trust baseline: anything not explicitly allowed doesn't leave. <strong>Drop</strong> (instead of Reset or ICMP-unreachable) gives nothing away to whoever probes the network and costs nothing to send. The downside is that the client can't tell "blocked" apart from "network down". It just waits for a timeout (~20 s in PuTTY). That's why the guide has you check the <strong>rule table and logs</strong> instead of guessing from the client. Block/ICMP or Block/Reset exist for when you want faster, clearer failures.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The allow rule for ICMP/SSH is <strong>Rule Order 1</strong> and the WhatsApp block is <strong>Rule Order 2</strong>. Would swapping them change anything here? When <em>would</em> order matter?
+                  <div class="answer-area" data-section="lab4-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Here, no: the two rules match <strong>different traffic</strong> (ICMP/SSH network services vs. the WhatsApp network application), so no packet can match both. Order matters when rules <strong>overlap</strong>. For example, a broad "allow all to Internet" placed above "block WhatsApp" would let WhatsApp through, because evaluation stops at the first match. The habit to build: specific blocks and exceptions go above broad allows, and the default rule catches whatever is left.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>URL Filtering could also block <code>web.whatsapp.com</code>. Why does the guide use a <strong>Firewall</strong> rule with a <em>network application</em> instead?
+                  <div class="answer-area" data-section="lab4-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">URL filtering only sees <strong>web</strong> requests to a URL. The installed WhatsApp desktop/mobile app talks to its own servers over non-HTTP protocols and ports, which URL filtering never sees. The firewall identifies the <strong>application</strong> by traffic signatures (DPI) on any port, so it blocks the browser version <em>and</em> the native app at the network layer. Same goal, but much more complete enforcement.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>The allow rule for ICMP/SSH is <strong>Rule Order 1</strong> and the WhatsApp block is <strong>Rule Order 2</strong>. Would swapping them change anything here? When <em>would</em> order matter?
-            <div class="answer-area" data-section="lab4-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Here, no: the two rules match <strong>different traffic</strong> (ICMP/SSH network services vs. the WhatsApp network application), so no packet can match both. Order matters when rules <strong>overlap</strong>. For example, a broad "allow all to Internet" placed above "block WhatsApp" would let WhatsApp through, because evaluation stops at the first match. The habit to build: specific blocks and exceptions go above broad allows, and the default rule catches whatever is left.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>URL Filtering could also block <code>web.whatsapp.com</code>. Why does the guide use a <strong>Firewall</strong> rule with a <em>network application</em> instead?
-            <div class="answer-area" data-section="lab4-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">URL filtering only sees <strong>web</strong> requests to a URL. The installed WhatsApp desktop/mobile app talks to its own servers over non-HTTP protocols and ports, which URL filtering never sees. The firewall identifies the <strong>application</strong> by traffic signatures (DPI) on any port, so it blocks the browser version <em>and</em> the native app at the network layer. Same goal, but much more complete enforcement.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 4.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-4-1">
@@ -208,7 +220,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Verify the Default Firewall Policy</h4>
             <ol class="step-list">
-              <li>From the <strong>Experience Center Portal</strong>, go to <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Filtering Policy</strong>.</li>
+              <li>In the Experience Center, type <code>Firewall Control</code> in the <strong>Search menu</strong> and select the result (<em>Internet Access &gt; Policy</em>).</li>
               <li>Confirm the following:
                 <ul class="sub-steps">
                   <li>The <strong>Default Rule</strong> is set to <strong>Block/Drop</strong>.</li>
@@ -218,8 +230,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab4-p060-a.png" alt="Firewall Control > Firewall Filtering Policy table with the Default Firewall Filtering Rule set to Block/Drop highlighted">
-            <div class="screenshot-caption">Firewall Filtering Policy. The <strong>Default</strong> rule at the bottom is <strong>Block/Drop</strong>, and the rules above it only allow specific Zscaler/Office 365 traffic.</div>
+            <img src="screenshots/lab4-p059-a.png" alt="Search menu result Firewall Control (previously called Firewall Filtering Policy) under Internet Access > Policy, and the Firewall Filtering Policy table with the Default Firewall Filtering Rule set to Block/Drop highlighted">
+            <div class="screenshot-caption"><strong>Firewall Control</strong> (previously called <em>Firewall Filtering Policy</em>). The <strong>Default</strong> rule at the bottom is <strong>Block/Drop</strong>, and the rules above it only allow specific Zscaler/Office 365 traffic.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Rules such as the Office 365 One Click Rule, Zscaler Proxy Traffic and the Recommended Firewall Rule explicitly allow specific traffic that relevant features need to work. <strong>ICMP and SSH traffic in this lab exercise will not match any of these rules</strong>, so it falls through to the <strong>Default Rule</strong> until you explicitly allow it in later steps.</p>
@@ -246,7 +258,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <h4><span class="task-num">3</span> End the unsuccessful sessions</h4>
             <ol class="step-list">
               <li>Close the command prompt.</li>
-              <li>Close the PuTTY application.</li>
+              <li>Exit PuTTY by closing the application.</li>
             </ol>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -265,35 +277,34 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Create a Firewall Filtering Rule to allow ICMP and SSH</h4>
             <ol class="step-list">
-              <li>From the <strong>Experience Center Portal</strong>, go to <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Filtering Policy</strong>.</li>
-              <li>Click <strong>Add Firewall Filtering Rule</strong>.</li>
+              <li>In the Experience Center, type <code>Firewall Control</code> in the <strong>Search menu</strong> and select the result (<em>Internet Access &gt; Policy</em>).</li>
+              <li>Click <strong>Add Rule</strong>.</li>
               <li>Configure the rule:
                 <ul class="sub-steps">
+                  <li><strong>Actions</strong>: make sure <strong>Network Traffic</strong> is set to <strong>Allow</strong>.</li>
+                  <li>Rule Name: <code>ICMP_SSH</code></li>
                   <li>Rule Order: <strong>1</strong></li>
-                  <li>Rule Status: <strong>Enabled</strong> (default)</li>
-                  <li>Rule Name: <code>allow-outbound-icmp_ssh-student-any</code> (naming pattern: <em>[action]-[direction]-[services]-[source-scope]-[destination-scope]</em>)</li>
+                  <li>Rule Status: <strong>Enabled</strong>. New rules may start out Disabled, so confirm the rule is Enabled before saving.</li>
                 </ul>
               </li>
-              <li>On the <strong>Who, Where, Criteria</strong> tab, select your <strong>Student</strong> user account.</li>
-              <li>Click the <strong>Services</strong> tab.</li>
-              <li>In the <strong>Criteria</strong> section, open the <strong>Network Services</strong> drop-down.</li>
+              <li>Use <strong>Add Criteria</strong> to add the <strong>student user</strong> as a rule condition.</li>
+              <li>Use <strong>Add Criteria</strong> to add <strong>Network Services</strong> as a rule condition.</li>
               <li>Search for and select <strong>ICMP</strong> and <strong>SSH</strong>.</li>
-              <li>Click <strong>Done</strong>.</li>
-              <li>In the <strong>ACTION</strong> section, make sure <strong>Network Traffic</strong> is set to <strong>Allow</strong>.</li>
-              <li>Click <strong>Save</strong>, then <strong>Activate</strong> the changes with the Activation icon (cloud with arrow) in the top-right corner.</li>
+              <li>Confirm that the selected student user and both services appear in the rule criteria.</li>
+              <li>Under the <strong>Actions</strong> section, make sure <strong>Network Traffic</strong> is set to <strong>Allow</strong>.</li>
+              <li><strong>Save</strong> the rule, then activate the pending changes from the activation menu.</li>
             </ol>
           </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab4-p062-a.png" alt="User selector with Student Admin selected under General Users and the Done button">
-            <div class="screenshot-caption">Who, Where, Criteria: select your <strong>Student Admin</strong> user, then click Done.</div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab4-p062-a.png" alt="Firewall Filtering Policy Add Rule page with Criteria Who, Where and When set to Student Admin, Services set to ICMP and SSH, Network Traffic Allow, Rule Name ICMP_SSH, Rule Order 1, Rule Status Enabled and Save highlighted">
+            <div class="screenshot-caption">The new rule layout: <strong>Criteria</strong> on the left (Users = Student Admin, Network Services = ICMP, SSH), <strong>Actions</strong> on the right (Allow), name <strong>ICMP_SSH</strong>, order <strong>1</strong>, status <strong>Enabled</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab4-p063-a.png" alt="Add Firewall Filtering Rule with the Services tab and Network Services selector showing ICMP and SSH selected">
-            <div class="screenshot-caption">Services tab → Network Services: <strong>ICMP</strong> and <strong>SSH</strong> selected. Action stays <strong>Allow</strong>.</div>
+            <img src="screenshots/lab4-p063-a.png" alt="Firewall Control table showing the ICMP_SSH rule at order 1 with action Allow, user Student Admin and network services ICMP and SSH">
+            <div class="screenshot-caption">After saving: <strong>ICMP_SSH</strong> sits at order 1, above the Default rule.</div>
           </div>
-          <div class="screenshot-embed menu">
-            <img src="screenshots/lab4-p063-b.png" alt="Activation panel showing Pending Activation with the Activate button highlighted">
-            <div class="screenshot-caption">Saved changes stay <strong>Pending</strong> until you click <strong>Activate</strong> in the cloud-with-arrow menu.</div>
+          <div class="callout callout-caution">
+            <p><strong>Caution:</strong> A saved rule is only <strong>pending</strong>. Click the activation icon (cloud with arrow) in the top-right corner and <strong>Activate</strong>, or your test will still hit the Default rule.</p>
           </div>
 
           <div class="task-block">
@@ -302,12 +313,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
               <li>On the <strong>Corp Client PC</strong>, open a command prompt and run: <code>ping www.google.com</code></li>
             </ol>
           </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab4-p064-a.png" alt="Firewall Filtering Policy showing the new allow-outbound-icmp_ssh rule at order 1 with ICMP and SSH services and action Allow">
-            <div class="screenshot-caption">The new rule sits at order 1, above the Default rule: ICMP + SSH, Student Admin, <strong>Allow</strong>.</div>
-          </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> This should now get a response, because the outbound ICMP packets match the Allow ICMP_SSH rule and pass through the firewall.</p>
+            <p><strong>Note:</strong> This should now get a response, because the outbound ICMP packets match the Allow <strong>ICMP_SSH</strong> rule and pass through the firewall.</p>
           </div>
 
           <div class="task-block">
@@ -344,45 +351,29 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Create a Firewall Filtering Rule</h4>
             <ol class="step-list">
-              <li>Open the <strong>Firewall Control</strong> menu, or go to <strong>Policies &gt; Access Control &gt; Firewall &gt; Firewall Filtering Policy</strong>.</li>
-              <li>Click <strong>Add Firewall Filtering Rule</strong> to create a rule.</li>
-              <li>In the <strong>Add Firewall Filtering Rule</strong> window, enter the following details:
+              <li>In the portal, type <code>Firewall Control</code> in the <strong>Search menu</strong> and select the result (<em>Internet Access &gt; Policy</em>).</li>
+              <li>Click <strong>Add Rule</strong> to create a rule.</li>
+              <li>In the <strong>Add Firewall Filtering Rule</strong> window, enter:
                 <ul class="sub-steps">
-                  <li>Rule Name: <code>block_drop_all_whatspp_student_any</code></li>
+                  <li><strong>Actions</strong>: set <strong>Network Traffic</strong> to <strong>Block/Drop</strong>.</li>
+                  <li>Rule Name: <code>Restrict_Whatsapp</code></li>
                   <li>Rule Order: <strong>2</strong></li>
-                  <li>Rule Status: <strong>Enabled</strong> (default)</li>
+                  <li>Rule Status: <strong>Enabled</strong>. Confirm the rule is Enabled before saving.</li>
                 </ul>
               </li>
-              <li>On the <strong>Who, Where &amp; When</strong> tab: User = select the <strong>Student Admin</strong>.</li>
-              <li>Action: Network Traffic = <strong>Block/Drop</strong>.</li>
-              <li>On the <strong>Applications</strong> tab: Network Applications = search for and select <strong>WhatsApp</strong>.</li>
-              <li>Click <strong>Done</strong> and <strong>Save</strong> to save the rule.</li>
-              <li>Activate the changes with the <strong>Activation</strong> icon (cloud with arrow) at the top-right of the screen.</li>
+              <li>Use <strong>Add Criteria</strong> to add the <strong>Student Admin</strong> user as a rule condition.</li>
+              <li>Use <strong>Add Criteria</strong> to add <strong>Network Applications</strong> as a rule condition. Search for and select <strong>WhatsApp</strong>.</li>
+              <li>Review the selected criteria and <strong>Save</strong> the rule.</li>
+              <li>Activate the pending changes from the activation menu.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab4-p065-a.png" alt="Firewall Control page with Firewall Filtering Policy selected and Add Firewall Filtering Rule highlighted">
-            <div class="screenshot-caption">Firewall Control → Firewall Filtering Policy → <strong>Add Firewall Filtering Rule</strong>.</div>
-          </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab4-p066-a.png" alt="User selector with Student Admin checked and shown under Selected Items">
-            <div class="screenshot-caption">Scope the rule to <strong>Student Admin</strong>.</div>
+            <img src="screenshots/lab4-p065-a.png" alt="Add Rule page with Users Student Admin, Applications criterion Network Applications WhatsApp, Network Traffic Block/Drop, Rule Name Restrict_Whatsapp, Rule Order 2 and Save highlighted">
+            <div class="screenshot-caption"><strong>Restrict_Whatsapp</strong>: Users = Student Admin, <strong>Applications → Network Applications = WhatsApp</strong>, Network Traffic <strong>Block/Drop</strong>, order <strong>2</strong>.</div>
           </div>
           <div class="screenshot-embed menu">
-            <img src="screenshots/lab4-p066-b.png" alt="Action section with the Network Traffic drop-down open and Block/Drop highlighted">
-            <div class="screenshot-caption">Network Traffic: <strong>Block/Drop</strong>. The other choices are Allow, Block/ICMP and Block/Reset.</div>
-          </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab4-p067-a.png" alt="Network Applications selector under Instant Messaging with WhatsApp selected">
-            <div class="screenshot-caption">Applications tab → Network Applications → Instant Messaging → <strong>WhatsApp</strong>.</div>
-          </div>
-          <div class="screenshot-embed menu">
-            <img src="screenshots/lab4-p067-b.png" alt="Pending Activation panel with the Activate button highlighted">
+            <img src="screenshots/lab4-p065-b.png" alt="Pending Activation panel with the Activate button highlighted">
             <div class="screenshot-caption">Click <strong>Activate</strong> to push the rule.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab4-p068-a.png" alt="Firewall Filtering Policy showing rule 2 block_drop_all_whatsapp with Network Application WhatsApp and action Block/Drop highlighted">
-            <div class="screenshot-caption">Rule order 2: <strong>WhatsApp</strong> → <strong>Block/Drop</strong>, below the ICMP/SSH allow rule.</div>
           </div>
 
           <div class="task-block">
@@ -394,9 +385,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="callout callout-note">
             <p><strong>Note:</strong> Access to web.whatsapp.com should be restricted.</p>
           </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab4-p068-b.png" alt="Browser error page reading This site can't be reached">
-            <div class="screenshot-caption">"This site can't be reached". The firewall silently dropped the WhatsApp connection.</div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab4-p066-a.png" alt="Browser on web.whatsapp.com showing the Zscaler page Sorry, company policy prohibits this action. Website blocked. Network app WHATSAPP is Blocked by Firewall rule">
+            <div class="screenshot-caption">Zscaler block page: <strong>"Network app WHATSAPP is Blocked by Firewall rule"</strong>. The firewall recognized the application, not just a URL.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> URL Filtering Policies can block access to web.whatsapp.com, but that may not stop users who have the WhatsApp application installed on their system. A Firewall Filtering Policy blocks access at the network layer, which gives you complete enforcement of access controls.</p>
@@ -408,7 +399,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Default = Block/Drop</strong>, so non-web traffic times out until you allow it. Rules run <strong>top-down, first match wins</strong>: 1 = allow ICMP+SSH (<em>Network Services</em>), 2 = block WhatsApp (<em>Network Applications</em>). <strong>Save ≠ live</strong>: always <strong>Activate</strong>. Firewall app rules catch native apps that URL filtering misses.</div>
+          <div class="mental-note-block-text"><strong>Firewall Control</strong> lives under <em>Internet Access &gt; Policy</em>. <strong>Default = Block/Drop</strong>, so non-web traffic times out until you allow it. Rules run <strong>top-down, first match wins</strong>: 1 = <code>ICMP_SSH</code> allow (<em>Network Services</em>), 2 = <code>Restrict_Whatsapp</code> block (<em>Network Applications</em>). Build rules with <strong>Add Criteria</strong>, and remember: <strong>Save ≠ live</strong>, always <strong>Activate</strong>.</div>
         </div>
       </div>
 
@@ -436,12 +427,58 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab4a" onchange="toggleDone(this)"><label for="chk-lab4a">Task 4.1: Default Block/Drop verified</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab4b" onchange="toggleDone(this)"><label for="chk-lab4b">Task 4.2: Allow ICMP and SSH created</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab4b" onchange="toggleDone(this)"><label for="chk-lab4b">Task 4.2: ICMP_SSH allow rule created</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab4c" onchange="toggleDone(this)"><label for="chk-lab4c">Task 4.3: WhatsApp blocked</label></li>
       </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.1 · Default firewall rule</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-firewall-filtering" target="_blank" rel="noopener noreferrer" title="How the Firewall Filtering policy controls non-web traffic by port, protocol and application">About Firewall Filtering</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/understanding-predefined-firewall-filtering-rules" target="_blank" rel="noopener noreferrer" title="The built-in rules, including the Default Firewall Filtering Rule that blocks your ping and SSH">Understanding Predefined Firewall Rules</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/editing-default-firewall-filtering-rule" target="_blank" rel="noopener noreferrer" title="What the default rule does and which settings you can change">Editing the Default Firewall Rule</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.2 · Allow ICMP &amp; SSH</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-firewall-filtering-policy" target="_blank" rel="noopener noreferrer" title="Adding a rule: rule order, criteria (Add Criteria), network services and the Allow action">Configuring the Firewall Filtering Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-network-services" target="_blank" rel="noopener noreferrer" title="Predefined network services such as ICMP and SSH, and how to use them in rules">About Network Services</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.3 · Restrict applications</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-network-applications" target="_blank" rel="noopener noreferrer" title="How ZIA identifies applications such as WhatsApp regardless of port">About Network Applications</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-network-application-groups" target="_blank" rel="noopener noreferrer" title="Grouping network applications so one rule can block them together">Configuring Network Application Groups</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Beyond the lab</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/recommended-firewall-control-policy" target="_blank" rel="noopener noreferrer" title="Zscaler&#x27;s recommended baseline for firewall rules">Recommended Firewall Control Policy</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
     </div>
 
     <div class="quick-ref" id="quick-ref">
@@ -449,11 +486,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -485,7 +522,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -524,8 +561,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -549,7 +586,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 4: Firewall</span>
 </footer>
 
@@ -640,8 +677,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -967,6 +1004,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

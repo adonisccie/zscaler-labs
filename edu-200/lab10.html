@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,12 +134,12 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 10</div>
-        <p><strong>Scenario:</strong> Safemarch Corporation needs secure, scalable access to several internal applications that share a common domain pattern. To simplify access management and enforce reliable Zero Trust policies, you will configure a <strong>wildcard application segment</strong> for general access and a <strong>dedicated application segment</strong> for more granular user and application access. You will also enable ICMP access for troubleshooting.</p>
+        <p><strong>Scenario:</strong> Safemarch Corporation needs secure, scalable access to multiple internal applications that share a <strong>common domain pattern</strong>. To simplify access management and enforce reliable Zero Trust policies, you will configure a <strong>wildcard application segment</strong> for general access and a <strong>dedicated application segment</strong> for more granular user and application access. You will also implement <strong>ICMP access</strong> for troubleshooting.</p>
         <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
-          <li><strong>Configure</strong> a <strong>wildcard application segment</strong> for internal applications (e.g., <code>*.patraining.safemarch.com</code>).</li>
+          <li><strong>Configure a wildcard application segment</strong> for internal applications (e.g., <code>*.patraining.safemarch.com</code>).</li>
           <li><strong>Configure user-specific access</strong> to defined internal applications.</li>
-          <li><strong>Enable ICMP access for troubleshooting</strong> in the ZPA Admin Portal.</li>
+          <li><strong>Enable ICMP access</strong> for troubleshooting in the ZPA Admin Portal.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~35 minutes</div>
@@ -139,59 +151,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab10">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · APPLICATION SEGMENTS</span>
-        </div>
-        <p class="socratic-insight">In ZPA nothing is reachable until it's defined. An <em>application segment</em> says <strong>what</strong> (domains and ports), a <em>server group</em> says <strong>through which connectors</strong>, and an <em>access policy</em> says <strong>who</strong>.</p>
-        <ul class="socratic-questions">
-          <li>The Discovery segment covers <code>*.patraining.safemarch.com</code> on almost every port. That's convenient. Why is it a <strong>starting point</strong> and not where a mature zero-trust deployment should stay?
-            <div class="answer-area" data-section="lab10-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · APPLICATION SEGMENTS</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">A broad wildcard recreates a "flat network" feel: any allowed user can reach any host and port under that domain. That's great for <strong>discovery</strong> (finding out which apps people actually use, shown in Analytics → Private Applications), but it isn't least privilege. The mature path, which Task 10.2 starts, is to turn discovered apps into <strong>specific segments</strong> (one app, its real ports) with <strong>user- or group-scoped policies</strong>, then shrink or retire the wildcard.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">In ZPA nothing is reachable until it's defined. An <em>application segment</em> says <strong>what</strong> (domains and ports), a <em>server group</em> says <strong>through which connectors</strong>, and an <em>access policy</em> says <strong>who</strong>.</p>
+              <ul class="socratic-questions">
+                <li>The Discovery segment covers <code>*.patraining.safemarch.com</code> on almost every port. That's convenient. Why is it a <strong>starting point</strong> and not where a mature zero-trust deployment should stay?
+                  <div class="answer-area" data-section="lab10-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">A broad wildcard recreates a "flat network" feel: any allowed user can reach any host and port under that domain. That's great for <strong>discovery</strong> (finding out which apps people actually use, shown in Analytics → Private Applications), but it isn't least privilege. The mature path, which Task 10.2 starts, is to turn discovered apps into <strong>specific segments</strong> (one app, its real ports) with <strong>user- or group-scoped policies</strong>, then shrink or retire the wildcard.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The intranet host matches <em>both</em> the wildcard segment and the new <strong>Intranet</strong> segment. Which one does ZPA use, and why does that let you restrict the intranet to the Student user?
+                  <div class="answer-area" data-section="lab10-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">ZPA uses the <strong>most specific match</strong>. A fully qualified <code>intranet.patraining.safemarch.com</code> beats <code>*.patraining.safemarch.com</code>. Requests to the intranet are therefore judged against the policies attached to the <strong>Intranet</strong> segment (the <em>Allow Intranet</em> rule with loginname = Student), not the broad Discovered Apps rule. Other users who only match the wildcard rule won't get the intranet. That's how a specific segment "carves out" tighter control.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>Even after access works, <code>ping intranet…</code> fails until you enable <strong>ICMP Access</strong> on the segment. Why is ICMP off by default for private apps?
+                  <div class="answer-area" data-section="lab10-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Users need the <em>application</em>, not the ability to probe hosts. ICMP is a classic reconnaissance tool for discovering live machines, so leaving it off keeps the private network dark even to authenticated users. Enable it only on the segments where operations staff need ping for troubleshooting. That's another small application of least privilege.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>The intranet host matches <em>both</em> the wildcard segment and the new <strong>Intranet</strong> segment. Which one does ZPA use, and why does that let you restrict the intranet to the Student user?
-            <div class="answer-area" data-section="lab10-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">ZPA uses the <strong>most specific match</strong>. A fully qualified <code>intranet.patraining.safemarch.com</code> beats <code>*.patraining.safemarch.com</code>. Requests to the intranet are therefore judged against the policies attached to the <strong>Intranet</strong> segment (the <em>Allow Intranet</em> rule with loginname = Student), not the broad Discovered Apps rule. Other users who only match the wildcard rule won't get the intranet. That's how a specific segment "carves out" tighter control.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>Even after access works, <code>ping intranet…</code> fails until you enable <strong>ICMP Access</strong> on the segment. Why is ICMP off by default for private apps?
-            <div class="answer-area" data-section="lab10-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Users need the <em>application</em>, not the ability to probe hosts. ICMP is a classic reconnaissance tool for discovering live machines, so leaving it off keeps the private network dark even to authenticated users. Enable it only on the segments where operations staff need ping for troubleshooting. That's another small application of least privilege.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 10.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-10-1">
@@ -206,7 +218,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Add a Wildcard Application Segment: Define Applications</h4>
             <ol class="step-list">
-              <li>From the Experience Center, go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+              <li>On the Experience Center home page, type <code>Application Segments</code> in the <strong>Search menu</strong> and select the result (<em>Private Access &gt; Private Applications</em>).</li>
               <li>Click <strong>+Add Application Segment</strong> to create a new segment.</li>
               <li>At the <strong>Define Applications</strong> step of the wizard, under <strong>General Information</strong>:
                 <ul class="sub-steps">
@@ -216,6 +228,20 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
                   <li>Add a suitable description.</li>
                 </ul>
               </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab10-p124-a.png" alt="Defined Application Segments page with no segments yet and the Add Application Segment button highlighted">
+            <div class="screenshot-caption">Private Access → Private Applications → Defined Application Segments → <strong>Add Application Segment</strong>.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab10-p125-a.png" alt="Add Application Segment Define Applications step with Name Discovery and Status Enabled highlighted, Source IP Anchor Disabled">
+            <div class="screenshot-caption">General Information: name <strong>Discovery</strong>, status <strong>Enabled</strong>, Source IP Anchor left <strong>Disabled</strong>.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Applications, Client Connector Access and Common Configuration</h4>
+            <ol class="step-list">
               <li><strong>Applications</strong>: in the <em>Enter a domain or IP address</em> field, enter <code>*.patraining.safemarch.com</code></li>
               <li><strong>Client Connector Access</strong>: define the port ranges for TCP and UDP:
                 <ul class="sub-steps">
@@ -228,24 +254,16 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p128-a.png" alt="App Segments page under Private Applications with the Add Application Segment button highlighted">
-            <div class="screenshot-caption">Private Applications → App Segments → <strong>Add Application Segment</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p129-a.png" alt="Add Application Segment Define Applications step with Name Discovery and Status Enabled highlighted">
-            <div class="screenshot-caption">General Information: name <strong>Discovery</strong>, status <strong>Enabled</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p130-a.png" alt="Applications field containing *.patraining.safemarch.com">
+            <img src="screenshots/lab10-p126-a.png" alt="Applications section with *.patraining.safemarch.com entered in the domain field">
             <div class="screenshot-caption">Applications: <code>*.patraining.safemarch.com</code>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p130-b.png" alt="Client Connector Access with TCP port ranges 2-52 and 54-65535 and UDP port ranges 1-52 and 54-65535 highlighted">
+            <img src="screenshots/lab10-p126-b.png" alt="Client Connector Access with TCP port ranges 2-52 and 54-65535, UDP port ranges 1-52 and 54-65535 highlighted, and TCP Keepalive Disabled">
             <div class="screenshot-caption">TCP <code>2-52, 54-65535</code> and UDP <code>1-52, 54-65535</code>. Port <strong>53 (DNS)</strong> is deliberately left out.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">2</span> Additional Configuration, Segment Group and Server Group</h4>
+            <h4><span class="task-num">3</span> Additional Configuration, Segment Group and Server Group</h4>
             <ol class="step-list">
               <li>At the <strong>Additional Configuration</strong> step, leave these options unchanged, then click <strong>Next</strong>:
                 <ul class="sub-steps">
@@ -273,68 +291,60 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
               </li>
             </ol>
           </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab10-p127-a.png" alt="Common Configuration defaults and Additional Configuration with Double Encryption Disabled, Bypass Use Client Forwarding Policy and ICMP Access Disabled highlighted, and Next highlighted">
+            <div class="screenshot-caption">Common Configuration stays at the defaults. Additional Configuration: Double Encryption <strong>Disabled</strong>, Bypass <strong>Use Client Forwarding Policy</strong>, ICMP Access <strong>Disabled</strong> → Next.</div>
+          </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> The ICMP Access option is usually left disabled unless ICMP connectivity is needed for application troubleshooting or testing.</p>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p131-a.png" alt="Additional Configuration with Double Encryption Disabled, ICMP Access Disabled and Bypass Use Client Forwarding Policy highlighted">
-            <div class="screenshot-caption">Additional Configuration: Double Encryption <strong>Disabled</strong>, ICMP Access <strong>Disabled</strong>, Bypass <strong>Use Client Forwarding Policy</strong>.</div>
+            <img src="screenshots/lab10-p128-a.png" alt="Segment Group step with Add Segment Group selected, Name Discovered Apps, Status Enabled and Next highlighted">
+            <div class="screenshot-caption">New segment group <strong>Discovered Apps</strong>, Enabled.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p132-a.png" alt="Segment Group step with Add Segment Group selected, Name Discovered Apps and Status Enabled">
-            <div class="screenshot-caption">New segment group <strong>Discovered Apps</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p133-a.png" alt="Server Group step with Add Server Group, Name CorpServers, Status Enabled, Dynamic Server Discovery on and App Connector Group OnPrem">
-            <div class="screenshot-caption">New server group <strong>CorpServers</strong>: Dynamic Server Discovery on, through App Connector Group <strong>OnPrem</strong> (Lab 9).</div>
+            <img src="screenshots/lab10-p129-a.png" alt="Server Group step with Add Server Group, Name CorpServers, Status Enabled, Dynamic Server Discovery On and App Connector Groups OnPrem highlighted">
+            <div class="screenshot-caption">New server group <strong>CorpServers</strong>: Dynamic Server Discovery <strong>On</strong>, through App Connector Group <strong>OnPrem</strong> (Lab 9).</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">3</span> Review</h4>
+            <h4><span class="task-num">4</span> Review</h4>
             <ol class="step-list">
-              <li>At the <strong>Review</strong> step, check the configuration and click <strong>Save</strong>.</li>
+              <li>At the <strong>Review</strong> step, confirm the configuration and click <strong>Save</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p133-b.png" alt="Review step summarizing segment Discovery, segment group Discovered Apps, server group CorpServers and connector group OnPrem, with Save highlighted">
-            <div class="screenshot-caption">Review: Discovery → Discovered Apps → CorpServers → OnPrem. Click Save.</div>
+            <img src="screenshots/lab10-p130-a.png" alt="Review step summarizing segment Discovery, segment group Discovered Apps, server group CorpServers and App Connector Group OnPrem, with Save highlighted">
+            <div class="screenshot-caption">Review: Discovery → Discovered Apps → CorpServers → OnPrem. Click <strong>Save</strong>.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">4</span> Configure Access Policies</h4>
+            <h4><span class="task-num">5</span> Configure Access Policies</h4>
             <ol class="step-list">
-              <li>Go to the <strong>Policies &gt; Access Policy</strong> page in the ZPA Admin Portal.</li>
-              <li>On the Access Policy page, click <strong>Add</strong> and configure the new rule:
+              <li>After saving, the wizard's <strong>Policies</strong> step offers <strong>Edit Policy</strong>, which opens the Access Policy page. (You can also type <code>Access Policy</code> in the Search menu.)</li>
+              <li>On the <strong>Access Policy</strong> page, click <strong>Add Rule</strong> and configure the new rule:
                 <ul class="sub-steps">
-                  <li>Name: <code>Discovered Apps</code></li>
                   <li>Rule Action: <strong>Allow Access</strong></li>
+                  <li>Rule Name: <code>Discovered Apps</code></li>
                   <li>Leave App Connector Selection Method at <strong>All App Connector Groups for the Application</strong>.</li>
-                  <li>Click <strong>Add Criteria</strong>, select <strong>Applications</strong>, and choose the <strong>Discovered Apps</strong> Segment Group.</li>
+                  <li>Click <strong>Add Criteria</strong>, select <strong>Applications</strong>, and choose <strong>Segment Groups</strong> = <strong>Discovered Apps</strong>.</li>
                   <li>Don't add any other criteria.</li>
-                  <li>Click <strong>Save</strong>.</li>
+                  <li>Click <strong>Add Rule</strong>.</li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p134-a.png" alt="Add Application Segment Policies step with the Edit Policy button highlighted">
+            <img src="screenshots/lab10-p130-b.png" alt="Add Application Segment Policies step with the Edit Policy button highlighted">
             <div class="screenshot-caption">After saving, the wizard's <strong>Policies</strong> step offers <strong>Edit Policy</strong>, a shortcut to the Access Policy page.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p135-a.png" alt="Add Access Policy with Name Discovered Apps and Rule Action Allow Access highlighted">
-            <div class="screenshot-caption">Rule <strong>Discovered Apps</strong>, Rule Action <strong>Allow Access</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p135-b.png" alt="Access Policy Add Criteria menu with Applications highlighted and App Connector Selection Method All App Connector groups for the application">
-            <div class="screenshot-caption">Add Criteria → <strong>Applications</strong>. Connector selection stays <em>All App Connector groups for the application</em>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p136-a.png" alt="Access Policy criteria with Segment Groups set to Discovered Apps and Save highlighted">
-            <div class="screenshot-caption">Criteria: Segment Groups = <strong>Discovered Apps</strong>, then Save.</div>
+            <img src="screenshots/lab10-p131-a.png" alt="Access Policy Add Rule page with Action Allow Access, Rule Name Discovered Apps, criteria Segment Groups Discovered Apps, App Connector Selection Method All App Connector groups for the application, and Add Rule highlighted">
+            <div class="screenshot-caption">Access Policy → Add Rule: <strong>Allow Access</strong>, name <strong>Discovered Apps</strong>, criteria Segment Groups = <strong>Discovered Apps</strong>, all App Connector groups → <strong>Add Rule</strong>.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">5</span> Test the Access Policy</h4>
+            <h4><span class="task-num">6</span> Test the Access Policy</h4>
             <ol class="step-list">
               <li>On the <strong>Corp Client PC</strong>, open a <strong>web browser in a window</strong>.</li>
               <li>Open the <strong>Zscaler Client Connector</strong> and place its window next to the browser.</li>
@@ -344,7 +354,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p137-a.png" alt="Intranet Welcome page loaded beside ZCC Private Access with Total Bytes Sent and Received highlighted">
+            <img src="screenshots/lab10-p132-a.png" alt="Intranet Welcome page loaded beside ZCC Private Access with Total Bytes Sent and Received highlighted">
             <div class="screenshot-caption">The intranet loads, and ZCC's <strong>Private Access</strong> byte counters rise, so the traffic is going through ZPA.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -361,37 +371,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <p>In this task, you will create a <strong>dedicated application segment</strong> for more granular access control that limits intranet access to the "Student" user.</p>
 
           <div class="task-block">
-            <h4><span class="task-num">1</span> Review recently accessed private applications</h4>
+            <h4><span class="task-num">1</span> Configure the Intranet Application Segment</h4>
             <ol class="step-list">
-              <li>From the <strong>Experience Center</strong>, go to the <strong>search bar</strong> and type <code>applications</code> to navigate to <strong>Analytics &gt; Private Applications</strong>.</li>
-              <li>Scroll to the <strong>Applications Discovered in the past 14 days</strong> section to identify recently accessed applications.</li>
-            </ol>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p138-a.png" alt="Experience Center search for applications with Analytics > Private Applications highlighted">
-            <div class="screenshot-caption">Search <strong>applications</strong> → Analytics → <strong>Private Applications</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p138-b.png" alt="Private Applications analytics dashboard with summary tiles and Recent Applications Accessed panel">
-            <div class="screenshot-caption">The Private Applications dashboard shows what users reached through ZPA.</div>
-          </div>
-
-          <div class="task-block">
-            <h4><span class="task-num">2</span> Configure the Intranet Application Segment</h4>
-            <ol class="step-list">
-              <li>Click <strong>Add Application Segment</strong>, select the application <code>intranet.patraining.safemarch.com</code>, and click <strong>Define Selected Applications</strong>.
-                <ul class="sub-steps"><li>Alternatively, go to <strong>Policies &gt; App Segment</strong>.</li></ul>
-              </li>
-              <li>At the <strong>Define Applications</strong> step:
+              <li>On the Experience Center home page, type <code>Application Segments</code> in the <strong>Search menu</strong> and select the result (<em>Private Access &gt; Private Applications</em>).</li>
+              <li>Click <strong>Add Application Segment</strong>:
                 <ul class="sub-steps">
                   <li>Name: <code>Intranet</code></li>
                   <li>Status: <strong>Enabled</strong></li>
                   <li>Source IP Anchor: <strong>Disabled</strong></li>
                   <li>Add a suitable description.</li>
+                  <li>Applications: in the <em>Enter a domain or IP address</em> field, enter <code>intranet.patraining.safemarch.com</code></li>
+                  <li>Client Connector Access: define the TCP port range. TCP Port Ranges: <code>80</code></li>
                   <li>Leave the other settings at their defaults.</li>
                   <li>Click <strong>Next</strong>.</li>
                 </ul>
               </li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab10-p134-a.png" alt="Define Applications step with Name Intranet highlighted, Status Enabled and Source IP Anchor Disabled">
+            <div class="screenshot-caption">Name <strong>Intranet</strong>, Enabled, Source IP Anchor Disabled.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab10-p135-a.png" alt="Applications field with intranet.patraining.safemarch.com and TCP Port Ranges 80 to 80 highlighted, with Next highlighted">
+            <div class="screenshot-caption">Applications: <code>intranet.patraining.safemarch.com</code>. TCP port range <strong>80–80</strong> only → Next.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">2</span> Segment Group, Server Group and Save</h4>
+            <ol class="step-list">
               <li>Add a Segment Group as follows:
                 <ul class="sub-steps">
                   <li>Name: <code>CorpApps</code></li>
@@ -409,37 +417,25 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p139-a.png" alt="Applications Discovered in Past 14 Days list with intranet.patraining.safemarch.com selected and Add Application Segment highlighted">
-            <div class="screenshot-caption">Under <strong>Applications Discovered in Past 14 Days</strong>, select the intranet host → <strong>Add Application Segment</strong>.</div>
+            <img src="screenshots/lab10-p136-a.png" alt="Segment Group step with Add Segment Group selected, Name CorpApps, Status Enabled and Next highlighted">
+            <div class="screenshot-caption">New segment group <strong>CorpApps</strong>, Enabled.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p140-a.png" alt="Define Applications step with Name Intranet and Status Enabled highlighted">
-            <div class="screenshot-caption">Name <strong>Intranet</strong>, Enabled.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p140-b.png" alt="Intranet segment Client Connector Access and Common Configuration with defaults and Next highlighted">
-            <div class="screenshot-caption">Keep the defaults for the remaining settings and click Next.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p141-a.png" alt="Segment Group step with Add Segment Group, Name CorpApps and Status Enabled">
-            <div class="screenshot-caption">New segment group <strong>CorpApps</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p141-b.png" alt="Server Group step with Select Server Group and CorpServers chosen">
+            <img src="screenshots/lab10-p136-b.png" alt="Server Groups step with Select Server Group chosen and CorpServers selected, Next highlighted">
             <div class="screenshot-caption"><strong>Select Server Group</strong> → reuse <strong>CorpServers</strong>.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> After you save the Application Segment, you are redirected to the <strong>Edit Policy</strong> page, where you can add a policy for the App Segment. Alternatively, go directly to the <strong>Policies &gt; Access Policy</strong> page from the left-hand menu.</p>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p142-a.png" alt="Policies step showing the existing Discovered Apps Allow Access rule and the Edit Policy button highlighted">
+            <img src="screenshots/lab10-p137-a.png" alt="Policies step showing the existing Discovered Apps Allow Access rule and the Edit Policy button highlighted">
             <div class="screenshot-caption">The Policies step lists the existing <em>Discovered Apps</em> rule. Click <strong>Edit Policy</strong> to add a new one.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Add an Access Policy</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Access Policy</strong>. Click <strong>Add</strong> to configure a new policy with these settings:
+              <li>Click <strong>Add</strong> to configure a new policy with these settings:
                 <ul class="sub-steps">
                   <li>Rule Name: <code>Allow Intranet</code></li>
                   <li>Rule Action: <strong>Allow Access</strong></li>
@@ -451,34 +447,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
                   <li>Click <strong>Add Criteria</strong>.</li>
                   <li>Select <strong>Applications</strong>, and choose the <strong>Intranet</strong> Application Segment you just created.</li>
                   <li>Add another criterion for <strong>User and Session Attributes</strong>: click the <strong>+</strong> icon to add <strong>User Attributes</strong>, then select <strong>loginname</strong> and choose the user <code class="d-username-student">student@&lt;Student FQDN&gt;</code>.</li>
-                  <li>Click <strong>Save</strong>.</li>
+                  <li>Click <strong>Add Rule</strong>.</li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p143-a.png" alt="Add Access Policy with Name Allow Intranet, Rule Action Allow Access and App Connector Selection Method highlighted">
-            <div class="screenshot-caption">Rule <strong>Allow Intranet</strong>, <strong>Allow Access</strong>, all App Connector groups.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p144-a.png" alt="Add Criteria menu with Applications highlighted">
-            <div class="screenshot-caption">Add Criteria → <strong>Applications</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p144-b.png" alt="Criteria with Application Segments set to Intranet and Save highlighted">
-            <div class="screenshot-caption">Application Segments = <strong>Intranet</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p145-a.png" alt="Edit Access Policy Add Criteria menu with User and Session Attributes highlighted">
-            <div class="screenshot-caption">Add Criteria → <strong>User and Session Attributes</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p145-b.png" alt="User and Session Attributes with the plus menu open and User Attributes highlighted">
-            <div class="screenshot-caption">Click <strong>+</strong> → <strong>User Attributes</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab10-p146-a.png" alt="User Attributes criterion with loginname selected and the student user chosen from the list, Save highlighted">
-            <div class="screenshot-caption"><strong>loginname</strong> = your <code>student@…</code> user, then Save. Only Student is allowed into the Intranet segment.</div>
+            <img src="screenshots/lab10-p138-a.png" alt="Access Policy Add Rule page with Action Allow Access, Rule Name Allow Intranet, Application Segments Intranet, User and Session Attributes with loginname equal to the student user, and Add Rule highlighted">
+            <div class="screenshot-caption">Rule <strong>Allow Intranet</strong>: Application Segments = <strong>Intranet</strong> <em>and</em> User Attributes <strong>loginname</strong> = your <code>student@…</code> user → <strong>Add Rule</strong>.</div>
           </div>
 
           <div class="task-block">
@@ -491,7 +467,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p147-a.png" alt="Intranet page loaded beside ZCC with Statistics Total Bytes Sent and Received highlighted">
+            <img src="screenshots/lab10-p139-a.png" alt="Intranet page loaded beside ZCC with Statistics Total Bytes Sent and Received highlighted">
             <div class="screenshot-caption">Student still gets the intranet, now through the dedicated <strong>Intranet</strong> segment and <em>Allow Intranet</em> rule.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -514,7 +490,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p148-a.png" alt="Command prompt showing ping intranet.patraining.safemarch.com with all requests timed out and 100% loss">
+            <img src="screenshots/lab10-p140-a.png" alt="Command prompt showing ping intranet.patraining.safemarch.com with all requests timed out and 100% loss">
             <div class="screenshot-caption">With ICMP Access disabled, ping <strong>times out</strong> (100% loss) even though HTTP works.</div>
           </div>
           <div class="callout callout-note">
@@ -524,7 +500,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">2</span> Enable ICMP Access in the ZPA Admin Portal</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Access Control &gt; Private Applications &gt; Defined Application Segments</strong>.</li>
+              <li>On the Experience Center home page, type <code>Application Segments</code> in the <strong>Search menu</strong> and select the result.</li>
               <li>Find the Application Segment named <strong>Intranet</strong> and click <strong>Edit</strong>.</li>
               <li>In the <strong>Edit Application Segment</strong> window, click <strong>Next</strong> to reach the <strong>ICMP Access</strong> field.</li>
               <li>Set <strong>ICMP Access</strong> to <strong>Enabled</strong>.</li>
@@ -532,11 +508,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p149-a.png" alt="App Segments list with the Intranet segment row and its Edit icon highlighted">
-            <div class="screenshot-caption">App Segments list: <strong>Edit</strong> (pencil) on the <strong>Intranet</strong> segment.</div>
+            <img src="screenshots/lab10-p141-a.png" alt="Defined Application Segments list showing Discovery and Intranet, with the Intranet row and its Edit pencil icon highlighted">
+            <div class="screenshot-caption">Defined Application Segments: <strong>Edit</strong> (pencil) on the <strong>Intranet</strong> segment.</div>
           </div>
           <div class="screenshot-embed dialog">
-            <img src="screenshots/lab10-p149-b.png" alt="ICMP Access toggle set to Enabled">
+            <img src="screenshots/lab10-p141-b.png" alt="ICMP Access toggle set to Enabled">
             <div class="screenshot-caption">ICMP Access: <strong>Enabled</strong>, then Save.</div>
           </div>
 
@@ -548,7 +524,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab10-p150-a.png" alt="Command prompt showing ping intranet.patraining.safemarch.com now receiving replies">
+            <img src="screenshots/lab10-p142-a.png" alt="Command prompt showing ping intranet.patraining.safemarch.com now receiving replies">
             <div class="screenshot-caption">With ICMP Access enabled, the intranet now <strong>replies</strong> to ping.</div>
           </div>
           <div class="callout callout-success">
@@ -564,7 +540,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Segment → Segment Group → Server Group → Connector Group → Access Policy.</strong> Wildcard <code>Discovery</code> (<code>*.patraining.safemarch.com</code>) + <em>Discovered Apps</em> rule = broad access and app discovery. Specific <code>Intranet</code> segment + <em>Allow Intranet</em> (loginname = Student) = least privilege, because the <strong>most specific segment wins</strong>. <strong>ICMP Access</strong> is off by default, so enable it per segment only when ping is needed.</div>
+          <div class="mental-note-block-text"><strong>Segment → Segment Group → Server Group → Connector Group → Access Policy.</strong> Wildcard <code>Discovery</code> (<code>*.patraining.safemarch.com</code>) + <em>Discovered Apps</em> rule = broad access and app discovery. Specific <code>Intranet</code> segment (TCP 80 only) + <em>Allow Intranet</em> (loginname = Student) = least privilege, because the <strong>most specific segment wins</strong>. <strong>ICMP Access</strong> is off by default, so enable it per segment only when ping is needed.</div>
         </div>
       </div>
 
@@ -592,6 +568,26 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab10a" onchange="toggleDone(this)"><label for="chk-lab10a">Task 10.1: Discovery segment + policy</label></li>
@@ -599,17 +595,44 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab10c" onchange="toggleDone(this)"><label for="chk-lab10c">Task 10.3: ICMP enabled, ping works</label></li>
       </ul>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 10.1 · Application segments</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-applications" target="_blank" rel="noopener noreferrer" title="How ZPA defines applications and application segments">About Applications</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-defined-application-segments" target="_blank" rel="noopener noreferrer" title="The Add Application Segment wizard step by step: domains, TCP/UDP port ranges, groups">Configuring Defined Application Segments</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/understanding-application-discovery" target="_blank" rel="noopener noreferrer" title="How a wildcard segment discovers the applications users actually reach">Understanding Application Discovery</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 10.1 · Segment &amp; server groups</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-segment-groups" target="_blank" rel="noopener noreferrer" title="Grouping application segments so policy can target them together">About Segment Groups</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-server-groups" target="_blank" rel="noopener noreferrer" title="How server groups link applications to App Connector groups, with Dynamic Server Discovery">About Server Groups</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Tasks 10.1–10.2 · Access policy</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-access-policy" target="_blank" rel="noopener noreferrer" title="Default deny, rule order and how access rules are evaluated">About Access Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-access-policies" target="_blank" rel="noopener noreferrer" title="Adding access rules with application and user (loginname) criteria">Configuring Access Policies</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 10.3 · ICMP Access</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/editing-defined-application-segments" target="_blank" rel="noopener noreferrer" title="How to reopen the Intranet segment and change its settings">Editing Defined Application Segments</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-defined-application-segments" target="_blank" rel="noopener noreferrer" title="What the ICMP Access setting allows, so ping reaches the private app">ICMP Access (Application Segments)</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
 
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -641,7 +664,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -680,8 +703,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -705,7 +728,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 10: Corporate App</span>
 </footer>
 
@@ -796,8 +819,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -1123,6 +1146,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

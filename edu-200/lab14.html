@@ -6,7 +6,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 14: Navigate ZDX Dashboards — EDU-200</title>
+<title>Lab 14: Navigate the Incident, Self-Service, Application Overview Dashboards — EDU-200</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -34,18 +34,30 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-200</a> › Lab 14</div>
   <div class="header-top">
-    <span class="eyebrow-chip">Lab 14 · EDU-200 · SDC</span>
+    <span class="eyebrow-chip">Lab 14 · EDU-200</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Navigate ZDX Dashboards</h1>
+  <h1>Navigate the Incident, Self-Service, Application Overview Dashboards</h1>
   <div class="motivation-banner">
-    <p>In the Solutions Demo Center, tour the ZDX Performance, Wi-Fi, Incidents, Self-Service, Applications and Users views, and learn where each signal points when users complain.</p>
+    <p>In the Solutions Demo Center, tour the ZDX Map View, Wi-Fi, Incidents, Self Service, Applications Overview and Users Overview dashboards, and learn where each signal points when users complain.</p>
   </div>
 </header>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -120,14 +132,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="section-block" id="section-lab14">
       <h2>Lab 14: Navigate the Incident, Self-Service, Application Overview Dashboards</h2>
 
-      <div class="callout callout-sdc">
-        <p><strong>Solutions Demo Center Labs (14–16):</strong> Our hands-on, read-write labs are designed to build experience, but some labs stay <strong>read-only (SDC)</strong> because of technical dependencies, such as report generation timelines (which can take 24 hours or more) and restricted student access to some integrated services. These SDC labs deliberately expose you to key features and real-world dashboards, which is especially useful where full access isn't possible. They give valuable insight into <strong>policy enforcement</strong>, <strong>analytics</strong> and <strong>governance workflows</strong>.</p>
-      </div>
-
       <div class="lab-header-card">
         <div class="lab-badge">LAB 14 · SDC</div>
         <p><strong>SDC scenario (Labs 14–16):</strong> Your organization has deployed <strong>Zscaler Digital Experience</strong> to proactively monitor network and device performance for all users. You are expected to monitor trends and incidents that affect multiple users and take corrective action before issues escalate. Your team also troubleshoots reports of poor user experience and identifies the root cause.</p>
-        <p style="margin-top:10px;"><strong>Lab 14 scenario:</strong> As the Zscaler administrator, you know your organization relies on <strong>ZDX</strong> to monitor and improve user experience across endpoints, networks and applications. Your role is to analyze the signals from ZDX dashboards (<strong>Incident</strong>, <strong>Self-Service</strong>, <strong>Application Overview</strong> and <strong>User Overview</strong>) and use this data to find the root cause of user experience issues, then make informed decisions to improve the <strong>digital experience</strong> across the organization.</p>
+        <p style="margin-top:10px;"><strong>Lab 14 scenario:</strong> As the Zscaler administrator, you know your organization relies on <strong>ZDX</strong> to monitor and improve user experience across endpoints, networks and applications. Your role is to analyze the signals from ZDX dashboards (<strong>Incident</strong>, <strong>Self-Service</strong>, <strong>Application Overview</strong> and <strong>User Overview</strong>) and use this data to find the root cause of user experience issues. By understanding key performance trends and metrics, you will make informed decisions to improve the <strong>digital experience</strong> across the organization.</p>
         <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
           <li><strong>Navigate and analyze ZDX's dashboards</strong>, including Performance Overview, Incidents, Self-Service, Application Overview and User Overview.</li>
@@ -144,14 +152,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </figure>
       </div>
 
+      <h3>Solutions Demo Center (SDC) labs</h3>
+      <div class="callout callout-info">
+        <p><strong>Why read-only?</strong> The hands-on labs so far were read-write. Labs 14–16 run in the <strong>Solutions Demo Center (SDC)</strong> in read-only mode, because of technical dependencies such as report generation timelines (which can take 24 hours or more) and restricted student access to some integrated services. The SDC exposes you to key features and real-world dashboards, with real data on policy enforcement, analytics and governance workflows.</p>
+      </div>
       <h3>Access the Solutions Demo Center (SDC)</h3>
       <div class="task-block">
         <ol class="step-list">
           <li>Go to <code>https://console.zscaler.com</code></li>
-          <li>Log in with the <strong>SDC credentials</strong> in your lab access information (CloudShare → <strong>Credentials → SDC Credentials</strong>):
+          <li>Log in with the <strong>SDC credentials</strong> from the <strong>Credentials</strong> tab in the left panel of CloudShare:
             <ul class="sub-steps">
-              <li>Username: <strong>&lt;ZIA_Admin_User_ID&gt;</strong></li>
-              <li>Password: <strong>&lt;Session_Password&gt;</strong></li>
+              <li>Username: <strong>&lt;Student Admin User Name&gt;</strong></li>
+              <li>Password: <strong>&lt;One Time Password&gt;</strong></li>
             </ul>
           </li>
         </ol>
@@ -161,59 +173,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab14">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · DIGITAL EXPERIENCE MONITORING</span>
-        </div>
-        <p class="socratic-insight">ZDX turns "the app is slow" into numbers: a 0–100 <strong>ZDX Score</strong> per user and app, built from probes that measure every leg from the device to the application.</p>
-        <ul class="socratic-questions">
-          <li>Users rarely open a ticket the first time an app is slow. Why is <strong>proactive</strong> monitoring (Incidents, Most Impacted Applications) more valuable than waiting for helpdesk calls?
-            <div class="answer-area" data-section="lab14-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · DIGITAL EXPERIENCE MONITORING</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">By the time tickets arrive, many users have already lost productivity, and each ticket is one anecdote ("Teams was choppy"). ZDX sees <strong>everyone</strong> continuously, so it can spot that 200 users in one region on one ISP degraded at 10:05, before most of them call. Incidents group those signals around an <strong>epicenter</strong> (Wi-Fi, ISP, Zscaler data center, application), so you fix one cause instead of triaging 200 tickets, and you can tell users "we know" before they ask.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">ZDX turns "the app is slow" into numbers: a 0–100 <strong>ZDX Score</strong> per user and app, built from probes that measure every leg from the device to the application.</p>
+              <ul class="socratic-questions">
+                <li>Users rarely open a ticket the first time an app is slow. Why is <strong>proactive</strong> monitoring (Incidents, Most Impacted Applications) more valuable than waiting for helpdesk calls?
+                  <div class="answer-area" data-section="lab14-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">By the time tickets arrive, many users have already lost productivity, and each ticket is one anecdote ("Teams was choppy"). ZDX sees <strong>everyone</strong> continuously, so it can spot that 200 users in one region on one ISP degraded at 10:05, before most of them call. Incidents group those signals around an <strong>epicenter</strong> (Wi-Fi, ISP, Zscaler data center, application), so you fix one cause instead of triaging 200 tickets, and you can tell users "we know" before they ask.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>One user has a Poor score for Microsoft Login while everyone else in the same office is Good. Which dashboards would you move through, and in what order, to narrow down the cause?
+                  <div class="answer-area" data-section="lab14-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Go from wide to narrow. <strong>Application</strong> overview confirms the app is healthy for others, so it isn't the SaaS. <strong>Users</strong> → that user → <strong>device details</strong> (CPU, memory, Wi-Fi signal, OS). Then <strong>Web Probe</strong> metrics (is it DNS, TCP connect, server response or page fetch?) and <strong>Cloud Path</strong> hop view (which leg adds latency or loss: Wi-Fi, home router, ISP or egress?). When colleagues are fine, the problem is almost always on that user's device or last mile.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The lab's closing note says troubleshooting in ZDX is <strong>probe-driven</strong>. Why does a custom (non-predefined) application give you no ZDX data until you configure probes for it?
+                  <div class="answer-area" data-section="lab14-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">ZDX doesn't guess from user traffic. ZCC runs <strong>synthetic probes</strong> (web probes for page fetch/server response/DNS, and Cloud Path traceroute-style probes for each hop) against known targets on a schedule. Predefined apps (Microsoft 365, Zoom, Salesforce…) ship with those targets built in. For your own app, ZDX doesn't know which URL to fetch or which host to trace until you define a probe. No probe means no baseline and no score. That's also why the probe data gives a clean baseline that user traffic alone can't.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>One user has a Poor score for Microsoft Login while everyone else in the same office is Good. Which dashboards would you move through, and in what order, to narrow down the cause?
-            <div class="answer-area" data-section="lab14-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Go from wide to narrow. <strong>Application</strong> overview confirms the app is healthy for others, so it isn't the SaaS. <strong>Users</strong> → that user → <strong>device details</strong> (CPU, memory, Wi-Fi signal, OS). Then <strong>Web Probe</strong> metrics (is it DNS, TCP connect, server response or page fetch?) and <strong>Cloud Path</strong> hop view (which leg adds latency or loss: Wi-Fi, home router, ISP or egress?). When colleagues are fine, the problem is almost always on that user's device or last mile.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The lab's closing note says troubleshooting in ZDX is <strong>probe-driven</strong>. Why does a custom (non-predefined) application give you no ZDX data until you configure probes for it?
-            <div class="answer-area" data-section="lab14-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">ZDX doesn't guess from user traffic. ZCC runs <strong>synthetic probes</strong> (web probes for page fetch/server response/DNS, and Cloud Path traceroute-style probes for each hop) against known targets on a schedule. Predefined apps (Microsoft 365, Zoom, Salesforce…) ship with those targets built in. For your own app, ZDX doesn't know which URL to fetch or which host to trace until you define a probe. No probe means no baseline and no score. That's also why the probe data gives a clean baseline that user traffic alone can't.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 14.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-14-1">
@@ -223,12 +235,12 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you take the role of a Zscaler administrator and explore the ZDX Performance Dashboard, including <strong>Most Impacted Applications</strong>, <strong>Regions by ZDX Score</strong> and the <strong>ZDX Score</strong>.</p>
+          <p>In this task, you take the role of a Zscaler administrator and explore the ZDX performance dashboard (Map View), including <strong>Most Impacted Applications</strong>, <strong>Regions by ZDX Score</strong> and the <strong>ZDX Score</strong>.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Log in to the Experience Center</h4>
             <ol class="step-list">
-              <li>Go to <code>https://console.zscaler.com</code> and authenticate with the SDC account:
+              <li>Go to <code>https://console.zscaler.com</code> and sign in with the SDC account:
                 <ul class="sub-steps">
                   <li>Username: <strong>SDC Admin Username</strong> (in your lab access information)</li>
                   <li>Password: <strong>SDC Password</strong></li>
@@ -236,136 +248,124 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
               </li>
             </ol>
           </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab14-p183-a.png" alt="Zscaler Multi-factor Authentication setup screen with the Skip button highlighted">
+            <div class="screenshot-caption">MFA setup prompt: click <strong>Skip</strong>.</div>
+          </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> When you log in to your SDC account you'll be taken to <strong>Multi-factor Authentication</strong>. Click <strong>Skip</strong> and move on to the next step.</p>
-          </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab14-p194-a.png" alt="Zscaler Multi-factor Authentication setup screen with the Skip button highlighted">
-            <div class="screenshot-caption">MFA setup prompt: click <strong>Skip</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Open the Map View</h4>
             <ol class="step-list">
-              <li>Go to <strong>Analytics</strong>, then click <strong>“Switch to Existing Reports”</strong>.</li>
-              <li>Go to <strong>Analytics &gt; Digital Experience &gt; Applications &gt; Map View</strong>, or type <code>Map View</code> in the Search option.</li>
-              <li>At the top of the Performance Dashboard, select <strong>24 Hours</strong> from the drop-down list to set the reporting interval.</li>
+              <li>In the <strong>Search menu</strong>, type <code>Map View</code> and click it.</li>
+              <li>At the top, select <strong>24 Hours</strong> from the drop-down list to set the reporting interval.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p195-a.png" alt="Analytics Networking page with the Switch to Existing Reports toggle highlighted at the bottom of the left panel">
-            <div class="screenshot-caption">Analytics → <strong>Switch to Existing Reports</strong> toggle (bottom-left).</div>
+            <img src="screenshots/lab14-p184-a.png" alt="Search menu with Map View typed and the result Map View, previously called Performance Overview, under Digital Experience > Applications highlighted">
+            <div class="screenshot-caption">Search <strong>Map View</strong> (<em>Digital Experience &gt; Applications</em>). It was previously called <em>Performance Overview</em>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p196-a.png" alt="Digital Experience > Applications > Map View highlighted in the left navigation">
-            <div class="screenshot-caption">Digital Experience → Applications → <strong>Map View</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab14-p196-b.png" alt="Map View time range drop-down with 24 Hours highlighted">
-            <div class="screenshot-caption">Set the interval to <strong>24 Hours</strong>.</div>
+            <img src="screenshots/lab14-p184-b.png" alt="Map View time range drop-down open with 24 Hours selected and highlighted">
+            <div class="screenshot-caption">Time range: <strong>24 Hours</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Explore the key dashboard features</h4>
             <ol class="step-list">
-              <li>Review the <strong>Most Impacted Applications</strong>: scroll through the list and click an application (e.g., “ZPA Application”) to drill into its performance metrics.</li>
+              <li>Review <strong>Most Impacted Applications</strong>: scroll through the list and click an application (e.g., <strong>Zoom</strong>) to drill into its performance metrics.</li>
               <li>Analyze geographic performance in the <strong>Regions by ZDX Score</strong> map:
                 <ul class="sub-steps">
-                  <li>Click a location to see the <strong>ZDX Score</strong> and the total number of users in that region.</li>
-                  <li>Use the <strong>+/-</strong> controls to zoom in or out.</li>
+                  <li>Click a location to see its ZDX Score and the total number of users in that region.</li>
+                  <li>Use the <strong>+ / −</strong> controls to zoom in or out.</li>
                   <li>Click <strong>Draw Fence</strong> and use your mouse to select a geographic area.</li>
                   <li>Click <strong>Filter Selection</strong> and review the fenced region's performance metrics.</li>
-                  <li>Click any location to see the <strong>ZDX Score</strong> and the <strong>total users</strong>.</li>
-                  <li>Click <strong>Reset</strong> (top-right corner of the map) to clear applied settings if needed.</li>
+                  <li>Click <strong>Reset</strong> (top-right corner of the map) to clear the applied settings, if needed.</li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p197-a.png" alt="Performance Dashboard with Most Impacted Applications list and Regions by ZDX Score map">
-            <div class="screenshot-caption">Performance Dashboard: <strong>Most Impacted Applications</strong> (left) and <strong>Regions by ZDX Score</strong> (map).</div>
+            <img src="screenshots/lab14-p185-a.png" alt="Map View with Zoom selected in Most Impacted Applications and a Germany location pop-up showing ZDX Score 94 and Total Users 2">
+            <div class="screenshot-caption">Pick <strong>Zoom</strong> in Most Impacted Applications. Click a map marker for that region's ZDX Score and user count.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p198-a.png" alt="Regions by ZDX Score map with the zoom +/- control highlighted">
-            <div class="screenshot-caption">Zoom with the <strong>+/-</strong> controls.</div>
+            <img src="screenshots/lab14-p186-a.png" alt="Regions by ZDX Score map with a Florida pop-up showing ZDX Score 91 and Total Users 23, and the Draw Fence and zoom controls highlighted">
+            <div class="screenshot-caption">Regions by ZDX Score: location pop-up, <strong>Draw Fence</strong> (top right) and the <strong>+ / −</strong> zoom controls.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p198-b.png" alt="Regions by ZDX Score map header with the Draw Fence button highlighted">
-            <div class="screenshot-caption"><strong>Draw Fence</strong> lets you draw a region on the map.</div>
+            <img src="screenshots/lab14-p187-a.png" alt="A drawn fence around two locations on the map with the Filter Selection option and the Reset button highlighted">
+            <div class="screenshot-caption">Draw a fence → <strong>Filter Selection</strong>. <strong>Reset</strong> clears it.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p198-c.png" alt="Map with a drawn fence around Asia and the Filter Selection option">
-            <div class="screenshot-caption">Draw the fence, then <strong>Filter Selection</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab14-p199-a.png" alt="Filtered location table with India and its ZDX score, and the ZDX Score chart below">
-            <div class="screenshot-caption">The filter narrows the view to the fenced locations and their ZDX Score.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab14-p199-b.png" alt="Map location tooltip showing ZDX Score and Total Users">
-            <div class="screenshot-caption">Click a marker for its <strong>ZDX Score</strong> and <strong>Total Users</strong>.</div>
+            <img src="screenshots/lab14-p188-a.png" alt="Custom fence results table listing Alabama and Florida with ZDX scores and user counts, above the ZDX Score chart">
+            <div class="screenshot-caption">The <strong>Custom fence</strong> table shows each fenced location's ZDX Score and users, with the ZDX Score chart below.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">4</span> Review the ZDX Score details for selected applications</h4>
             <ol class="step-list">
-              <li>Scroll down to see the <strong>ZDX Score</strong> for the selected application.</li>
-              <li>Click <strong>Add Another Application</strong> at the bottom to compare the ZDX scores of other applications.</li>
+              <li>Scroll down to view the <strong>ZDX Score</strong> for the selected application.</li>
+              <li>Click <strong>Add Another Application</strong> at the bottom to compare the ZDX scores of more applications.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p200-a.png" alt="ZDX Score over time chart with the Add Another Application link highlighted">
-            <div class="screenshot-caption">ZDX Score over time → <strong>Add Another Application</strong>.</div>
-          </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab14-p200-b.png" alt="Application picker listing ServiceNow, SharePoint Online, Zurich and CNN.com">
-            <div class="screenshot-caption">Pick a second app (e.g., ServiceNow) to compare.</div>
+            <img src="screenshots/lab14-p189-a.png" alt="ZDX Score chart for the selected application with the Add Another Application link highlighted">
+            <div class="screenshot-caption">ZDX Score over time for the selected app → <strong>Add Another Application</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p201-a.png" alt="ZDX Score chart comparing two applications with their legend entries highlighted">
-            <div class="screenshot-caption">Two apps overlaid on the same timeline. Do they dip together, or just one?</div>
+            <img src="screenshots/lab14-p189-b.png" alt="Application picker listing ZPA Application, Healthcare, SharePoint Online and Okta">
+            <div class="screenshot-caption">Pick a second application from the list (e.g., <strong>Okta</strong>).</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab14-p190-a.png" alt="ZDX Score chart comparing Zoom and Okta, with both application checkboxes highlighted">
+            <div class="screenshot-caption">Two lines, two apps: compare <strong>Zoom</strong> and <strong>Okta</strong> over the same window.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">5</span> Filter by geolocation</h4>
             <ol class="step-list">
-              <li>At the top of the ZDX Dashboard, click <strong>Geolocations</strong>, select a location from the drop-down, and click <strong>Apply</strong>.</li>
-              <li>View the <strong>Performance Overview</strong> reports for that location.</li>
+              <li>At the top of the ZDX dashboard, click <strong>Geolocations</strong>, select a location from the drop-down, and click <strong>Apply filters</strong>.</li>
+              <li>View the Performance Overview reports for the chosen location.</li>
               <li>Click <strong>Reset</strong> to clear the filter.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p202-a.png" alt="Geolocations filter drop-down with Asia countries India, Japan, Singapore and South Korea selected">
-            <div class="screenshot-caption"><strong>Geolocations</strong> filter: Include selected countries, then Apply.</div>
+            <img src="screenshots/lab14-p190-b.png" alt="Geolocations filter drop-down with Asia countries Singapore, Malaysia, Japan, Indonesia and India selected, and Apply 2 filters highlighted">
+            <div class="screenshot-caption"><strong>Geolocations</strong> → choose locations (here, five Asian countries) → <strong>Apply filters</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">6</span> Explore the filtering options</h4>
             <ol class="step-list">
-              <li>In the <strong>Most Impacted Application</strong> section, explore the filtering options: <strong>Departments, Zscaler Locations, User groups, Location groups, Last Mile ISPs, Operating systems</strong>.</li>
-              <li><strong>Select filters, apply them</strong> and <strong>review</strong> the results.</li>
-              <li>View the <strong>ZDX Score</strong> for the filters you applied.</li>
+              <li>At the top of Map View, explore the filtering options: <strong>Departments</strong>, <strong>Zscaler Locations</strong>, <strong>User Groups</strong>, <strong>Geolocations</strong>, <strong>Location Groups</strong>, <strong>Last Mile ISPs</strong> and <strong>Operating Systems</strong>.</li>
+              <li>Select filters, apply them, and review the results.</li>
+              <li>View the ZDX Score based on the filters applied.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p202-b.png" alt="Performance Dashboard filter bar with Departments, Zscaler Locations, User Groups, Geolocations, Location Groups, Last Mile ISPs and Operating System">
-            <div class="screenshot-caption">The filter bar: slice the score by department, location, group, ISP or OS.</div>
-          </div>
-          <div class="screenshot-embed narrow">
-            <img src="screenshots/lab14-p203-a.png" alt="Most Impacted Applications list with ZDX scores for ZPA Application, ServiceNow, Okta and others">
-            <div class="screenshot-caption">Most Impacted Applications, re-scored for the active filters.</div>
+            <img src="screenshots/lab14-p191-a.png" alt="Map View filter bar with Departments, Zscaler Locations, User Groups, Geolocations, Location Groups, Last Mile ISPs, Operating Systems and Zscaler Data Center highlighted">
+            <div class="screenshot-caption">The Map View filter bar: slice the ZDX Score by department, location, group, ISP or OS.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">7</span> Review the Wi-Fi Dashboard</h4>
             <ol class="step-list">
-              <li>Go to the <strong>Wi-Fi Dashboard</strong> using the navigation bar.</li>
-              <li>Review the following Wi-Fi parameters: <strong>Total Access Points</strong>, <strong>Wi-Fi Performance of Access Points</strong>, <strong>Total Devices Connected</strong>.</li>
+              <li>Type <code>WiFi</code> in the <strong>Search menu</strong> and click it.</li>
+              <li>Review these Wi-Fi parameters:
+                <ul class="sub-steps">
+                  <li>Total Access Points</li>
+                  <li>Wi-Fi Performance of Access Points</li>
+                  <li>Total Devices Connected</li>
+                </ul>
+              </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p204-a.png" alt="Wi-Fi Dashboard with Total Access Points, Wi-Fi Performance of Access Points, Total Devices Connected and Wi-Fi band distribution">
-            <div class="screenshot-caption">Wi-Fi Dashboard: access points, their performance, connected devices and band distribution.</div>
+            <img src="screenshots/lab14-p192-a.png" alt="WiFi dashboard with Total Access Points, Wi-Fi Performance of Access Points, Total Devices Connected and ZDX Score Distribution highlighted, above Wi-Fi Band Distribution and a geolocation map">
+            <div class="screenshot-caption">WiFi dashboard: <strong>Total Access Points</strong>, their Wi-Fi performance, <strong>Total Devices Connected</strong> and the ZDX Score distribution.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-14-1 -->
@@ -378,24 +378,24 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will analyze incident trends and use self-service insights to find key issues affecting application performance for users.</p>
+          <p>In this task, you will analyze incident trends and use self-service insights to identify key issues affecting user application performance.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Explore the Incidents Dashboard</h4>
             <ol class="step-list">
-              <li>In the <strong>left navigation panel</strong>, go to the <strong>Incident Dashboard</strong>, or type <code>Incident Dashboard</code> in the <strong>Search</strong> option.</li>
+              <li>In the <strong>Search menu</strong>, type <code>Incidents</code> (<em>Digital Experience &gt; Alerts</em>) and click it.</li>
               <li>Review the information for the different incident areas.</li>
               <li>Scroll down to the <strong>Incidents by Epicenters</strong> map, click a marker and select one of the incidents.</li>
-              <li>Click the <strong>View incidents Details</strong> link and review the collected metrics.</li>
+              <li>Click the <strong>View Incident Details</strong> link and review the collected metrics.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p205-a.png" alt="Incidents Dashboard showing Total Incidents, Incidents Across Key Areas, Incidents Over Time and Impacted Users Over Time">
-            <div class="screenshot-caption">Incidents Dashboard: totals, <strong>key areas</strong> (Wi-Fi, ISP, Zscaler DC, application…) and trends over time.</div>
+            <img src="screenshots/lab14-p193-a.png" alt="Incidents dashboard with Incidents Across Key Areas, Incidents Over Time and Impacted Users Over Time highlighted">
+            <div class="screenshot-caption">Incidents: <strong>key areas</strong> (Device, Wi-Fi, Last Mile ISP, Zscaler, Application…), incidents over time and impacted users over time.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p206-a.png" alt="Incidents by Epicenters map with an incident popup and View Incident Details link">
-            <div class="screenshot-caption"><strong>Incidents by Epicenters</strong>: click a marker → incident → <strong>View Incident Details</strong>.</div>
+            <img src="screenshots/lab14-p194-a.png" alt="Incidents By Epicenters map with an incident pop-up for SSID 3com_wifi showing type Wi-Fi, start and end time, impacted users and the View Incident Details link highlighted">
+            <div class="screenshot-caption">Incidents By Epicenters: a Wi-Fi incident on SSID <em>3com_wifi</em> → <strong>View Incident Details</strong>.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> If the Incidents By Epicenters dashboard shows <strong>“Try again later. If this persists, contact Zscaler Support.”</strong>, refresh the page and try again.</p>
@@ -404,13 +404,13 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">2</span> Explore the Self Service Dashboard</h4>
             <ol class="step-list">
-              <li>Go to <strong>Dashboard &gt; Self Service Dashboard</strong>.</li>
+              <li>Search for <code>Self Service</code> (<em>Digital Experience &gt; Users</em>) in the <strong>Search menu</strong>.</li>
               <li>Explore the summary graphs about notifications in the selected timeframe.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p207-a.png" alt="Self Service Dashboard with total notifications sent, notifications by type, users notified and notifications sent over time">
-            <div class="screenshot-caption">Self Service: how many users ZCC notified directly (e.g., "your Wi-Fi is weak") and how they responded.</div>
+            <img src="screenshots/lab14-p195-a.png" alt="Self Service dashboard showing Total Notifications Sent, Notifications By Types, users notified, users who found notifications helpful, active users with Self Service enabled, and Notifications Sent Over Time">
+            <div class="screenshot-caption">Self Service: how many notifications ZDX sent to users, of which types, and how users responded.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-14-2 -->
@@ -423,46 +423,49 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will look at predefined and custom application metrics to find problem patterns and possible root causes of user or device issues.</p>
+          <p>In this task, you will investigate predefined and custom application metrics to identify problem patterns and potential root causes for user or device issues.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Open Applications Overview and find the lowest score</h4>
             <ol class="step-list">
-              <li>In the left <strong>navigation panel</strong>, go to <strong>Applications</strong>, or type <code>Applications</code> in the <strong>Search</strong> option.</li>
-              <li>Sort the applications table by <strong>ZDX Score Trend</strong>.</li>
-              <li>Click the <strong>application</strong> with the <strong>lowest ZDX Score</strong>.</li>
+              <li>In the <strong>Search menu</strong>, type <code>Applications Overview</code>.</li>
+              <li>Sort the applications table by <strong>ZDX Score</strong>.</li>
+              <li>Click the application with the lowest ZDX Score.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p208-a.png" alt="Applications overview table listing apps with ZDX score bars, active users and impacted regions">
-            <div class="screenshot-caption">Applications overview: sort by ZDX Score and open the worst one.</div>
+            <img src="screenshots/lab14-p196-a.png" alt="Applications Overview table sorted by ZDX Score ascending, with the sort arrow and the Healthcare row at score 24 highlighted">
+            <div class="screenshot-caption">Sort by <strong>ZDX Score</strong> (ascending). <strong>Healthcare</strong> scores lowest (24), so open it.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Different applications have different dashboard views. For example, UCaaS applications don't have a Page Fetch Time tab.</p>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">2</span> Scope a time period</h4>
+            <h4><span class="task-num">2</span> Analyze the metrics displayed</h4>
             <ol class="step-list">
-              <li>In the <strong>ZDX Score Over Time</strong> graph, drag your mouse to zoom in on a time period with a significant change.</li>
-              <li>Click <strong>Zoom out</strong>.</li>
+              <li>Review the <strong>Web &amp; Network Probe Performance</strong> metrics, along with Real-User Performance, Errors, the ZDX Score Trend and Users by Experience Score.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p209-a.png" alt="Application ZDX Score Over Time graph with a drag-selected zoom region">
-            <div class="screenshot-caption">Drag across a drop in the <strong>ZDX Score Over Time</strong> graph to zoom in on it.</div>
+            <img src="screenshots/lab14-p197-a.png" alt="Healthcare application summary with Web and Network Probe Performance, Real-User Performance, Errors, ZDX Score Trend and Users by Experience Score highlighted">
+            <div class="screenshot-caption">Healthcare summary: average Page Fetch Time and latency, real-user page metrics, errors, a ZDX Score that drops sharply, and the user score split.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> View the impact dimensions</h4>
             <ol class="step-list">
-              <li>Scroll down to see the impacted <strong>Meetings</strong>, <strong>Regions</strong> and <strong>Zscaler Locations</strong>.</li>
-              <li>View information about the application's configured <strong>Probe Status</strong>.</li>
+              <li>Click the <strong>Web Probe Performance</strong> tab to view the application's configured probe status.</li>
+              <li>Scroll down to view the impacted <strong>Departments</strong>, <strong>Regions</strong> and <strong>Locations</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p210-a.png" alt="Impacted Meetings, Impacted Regions, Impacted Zscaler Locations and Probe Status panels">
-            <div class="screenshot-caption">Impact dimensions (meetings, regions, Zscaler locations) and the app's <strong>Probe Status</strong>.</div>
+            <img src="screenshots/lab14-p198-a.png" alt="Web Probe Performance tab with the Healthcare Web Probe status metrics and the Synthetic Probe Score and Page Fetch Time Trends chart highlighted">
+            <div class="screenshot-caption"><strong>Web Probe Performance</strong>: probe status (Page Fetch, Server Response, DNS, Availability) and the score vs Page Fetch Time trend.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab14-p199-a.png" alt="Geolocations by Synthetic Probe Score map above the Impacted Departments, Impacted Regions and Impacted Locations tables, highlighted">
+            <div class="screenshot-caption">Who is affected: impacted <strong>Departments</strong>, <strong>Regions</strong> and <strong>Locations</strong>.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-14-3 -->
@@ -480,84 +483,98 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Open Users Overview and scope by application</h4>
             <ol class="step-list">
-              <li>From the navigation bar, click <strong>Users</strong>.</li>
-              <li>Select an application from the drop-down list, then click <strong>Apply</strong>.</li>
+              <li>In the <strong>Search menu</strong>, type <code>Users Overview</code> (<em>Digital Experience &gt; Users</em>).</li>
+              <li>Select an application from the <strong>Applications</strong> drop-down list, then click <strong>Apply filter</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p211-a.png" alt="Users Overview with the Applications filter open, Microsoft Login selected and Apply highlighted">
-            <div class="screenshot-caption">Users → Applications filter (e.g., <strong>Microsoft Login</strong>) → Apply.</div>
+            <img src="screenshots/lab14-p200-a.png" alt="Users Overview with the Applications filter open, Microsoft Login checked, and Apply 1 filter highlighted">
+            <div class="screenshot-caption">Applications → <strong>Microsoft Login</strong> → <strong>Apply filter</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Find impacted users</h4>
             <ol class="step-list">
-              <li>Use the <strong>ZDX Score</strong> drop-down filters (<strong>Poor</strong>, <strong>Okay</strong> and <strong>Good</strong>) to filter the users table.</li>
+              <li>Use the <strong>ZDX Score</strong> drop-down (Poor, Okay, Good) to filter the users table.</li>
               <li>Select a user with <strong>Poor</strong> or <strong>Okay</strong> performance for deeper analysis.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p212-a.png" alt="Users table with the ZDX Score filter showing Poor, Okay and Good options">
-            <div class="screenshot-caption">Filter the users table by ZDX Score band.</div>
+            <img src="screenshots/lab14-p201-a.png" alt="Users table ZDX Score filter with Poor Score and Okay Score checked and Apply highlighted">
+            <div class="screenshot-caption">ZDX Score filter: <strong>Poor</strong> + <strong>Okay</strong> → Apply.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab14-p201-b.png" alt="Filtered users table sorted by ZDX Score with Linda Lucas at score 10 highlighted">
+            <div class="screenshot-caption">The worst score floats to the top: <strong>Linda Lucas</strong> at 10. Open her report.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Review the user and device context</h4>
             <ol class="step-list">
-              <li>Review information such as <strong>OS type</strong>, <strong>IP address information</strong> and other device-specific metrics.</li>
-              <li>Click <strong>View</strong> for any user and click <strong>View More Device Details</strong>.</li>
-              <li>Analyze the details on the <strong>Hardware</strong>, <strong>Network</strong> and <strong>Software</strong> tabs, then click <strong>Done</strong>.</li>
-              <li>View the selected application's <strong>ZDX Score Over Time</strong> graph for that user.</li>
+              <li>Review information such as OS type, IP addresses and other device-specific metrics.</li>
+              <li>Click <strong>View More Device Details</strong>.</li>
+              <li>Review the <strong>Hardware</strong>, <strong>Network</strong> and <strong>Software</strong> tabs, then click <strong>Done</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p213-a.png" alt="User details page with device details, health, OS, CPU, memory, and View More Device Details highlighted">
-            <div class="screenshot-caption">User page: device health, OS, CPU, memory, network. Open <strong>View More Device Details</strong>.</div>
+            <img src="screenshots/lab14-p202-a.png" alt="Linda Lucas user page for LINDA-PC with the Device Details panel and the View More Device Details link highlighted">
+            <div class="screenshot-caption">Device Details for <strong>LINDA-PC</strong>: health, OS, memory, tunnel type, DNS servers and IPs → <strong>View More Device Details</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p214-a.png" alt="User ZDX Score Over Time chart with an explanation of factors that might have impacted the score">
-            <div class="screenshot-caption">The user's ZDX Score Over Time, with the factors ZDX thinks affected it.</div>
+            <img src="screenshots/lab14-p203-a.png" alt="User Device Information dialog with the Hardware, Network and Software tabs and the Done button highlighted">
+            <div class="screenshot-caption">User Device Information: <strong>Hardware</strong>, <strong>Network</strong> and <strong>Software</strong> tabs → Done.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">4</span> Review the Web Probe metrics</h4>
+            <h4><span class="task-num">4</span> Review application performance for this user</h4>
+            <ol class="step-list">
+              <li>View the selected application's <strong>ZDX Score Over Time</strong> graph for this user.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab14-p203-b.png" alt="Microsoft Login ZDX Score 10 card above the ZDX Score Over Time graph, flat in the Poor range, with Analyze Score and Compare to options">
+            <div class="screenshot-caption">Microsoft Login sits at <strong>10/100</strong> for the whole window. Note the <em>Analyze Score</em> and <em>Compare to</em> options; you'll use them in Labs 15 and 16.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">5</span> Review the Web Probe metrics</h4>
             <ol class="step-list">
               <li>Scroll down to the <strong>Web Probe Metrics</strong> graphs.</li>
-              <li>Click the menu icon to select or unselect web probe graphs as needed.</li>
-              <li>Click anywhere on a graph for more details about spikes in <strong>Page Fetch Time</strong>, <strong>Server Response Time</strong> and so on.</li>
+              <li>Click the graph-selector icon to select or unselect web probe graphs as needed.</li>
+              <li>Click anywhere on a graph to get more details about spikes in Page Fetch Time, Server Processing Time, and so on.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p214-b.png" alt="Web Probe Metrics graph showing Page Fetch Time">
-            <div class="screenshot-caption">Web Probe Metrics: <strong>Page Fetch Time</strong> and the other probe timings.</div>
+            <img src="screenshots/lab14-p204-a.png" alt="Web Probe Metrics Page Fetch Time graph for the Microsoft Login Page Probe, fluctuating between about 1500 and 3000 ms">
+            <div class="screenshot-caption">Web Probe Metrics: <strong>Page Fetch Time</strong> for the Microsoft Login page probe.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">5</span> Review the Cloud Path metrics</h4>
+            <h4><span class="task-num">6</span> Review the Cloud Path metrics</h4>
             <ol class="step-list">
               <li>Scroll down to the <strong>Cloud Path Probe Metrics</strong> graphs.</li>
-              <li>View the <strong>Cloud Path</strong> graph for <strong>Latency</strong> and <strong>Packet Loss</strong>.</li>
-              <li>Select or unselect any of the <strong>Cloud Path legs</strong> as needed.</li>
-              <li>Scroll down to the <strong>Hop View</strong> and expand the leg with the <strong>highest differential latency</strong> (shown in <strong>orange</strong>).</li>
-              <li><strong>Mouse over</strong> a hop for more information.</li>
-              <li>Click the <strong>Command Line View</strong> and find hops with high packet loss and/or latency.</li>
+              <li>View the Cloud Path graph for <strong>Latency</strong> and <strong>Packet Loss</strong>.</li>
+              <li>Select or unselect any of the Cloud Path legs as needed.</li>
+              <li>Scroll down to the <strong>Hop View</strong> and expand the leg with the highest differential latency (shown in <strong>orange</strong>).</li>
+              <li>Mouse over a hop to get more information.</li>
+              <li>Click <strong>Command Line View</strong> and identify hops with high packet loss and/or latency.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p215-a.png" alt="Cloud Path latency graph for the Microsoft Login probe">
-            <div class="screenshot-caption">Cloud Path: end-to-end latency for the probe.</div>
+            <img src="screenshots/lab14-p204-b.png" alt="Cloud Path graph for the Microsoft Login CloudPath Probe with the Latency and Packet Loss selector highlighted and per-leg latency checkboxes">
+            <div class="screenshot-caption">Cloud Path: switch between <strong>Latency</strong> and <strong>Packet Loss</strong>, and toggle legs with the checkboxes below.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p215-b.png" alt="Hop View showing client, gateway, egress and application nodes with the orange high-latency leg">
-            <div class="screenshot-caption"><strong>Hop View</strong>: device → gateway → egress → app. The orange leg has the highest differential latency.</div>
+            <img src="screenshots/lab14-p205-a.png" alt="Hop View from LINDA-PC through the gateway, egress and ZIA Public Service Edge to login.microsoftonline.com, with the last leg's 22 ms shown in orange">
+            <div class="screenshot-caption"><strong>Hop View</strong>: device → gateway → egress → ZIA Public Service Edge → app. The orange leg has the highest differential latency.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p215-c.png" alt="Hop View with a hop tooltip showing address, packet loss and latency values">
-            <div class="screenshot-caption">Mouse over a hop for its IP, packet loss and latency values.</div>
+            <img src="screenshots/lab14-p205-b.png" alt="Hop View with the gateway hop expanded showing MAC address, maker, packet loss and latency statistics, highlighted">
+            <div class="screenshot-caption">Mouse over a hop for its details: packet loss and average / min / max latency.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab14-p216-a.png" alt="Command Line View table listing hops with IP address, direction, provider, region, packet loss and latency">
-            <div class="screenshot-caption"><strong>Command Line View</strong>: a traceroute-style table, handy for spotting the hop with loss or latency.</div>
+            <img src="screenshots/lab14-p206-a.png" alt="Command Line View table listing each hop with IP address, direction, provider, region, ASN, packet loss, packets failed and latency">
+            <div class="screenshot-caption"><strong>Command Line View</strong>: a traceroute-style table. Look for hops with high packet loss or latency.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> ZDX probes collect application performance data. Predefined applications include built-in probes by default, while custom applications need probes configured manually. Probes give both baseline and real-time visibility into where a problem is before user impact escalates. Troubleshooting in ZDX is <strong>probe-driven</strong>: probes generate the performance data that lets administrators pinpoint the exact hop or layer causing degradation, rather than relying on user complaints or assumptions. Understanding how probes work is essential for interpreting ZDX metrics, trends and alerts correctly, and for effective root-cause analysis.</p>
@@ -569,7 +586,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>SDC login:</strong> SDC credentials, <strong>Skip</strong> MFA, Analytics → <em>Switch to Existing Reports</em>. <strong>Wide → narrow:</strong> Performance/Map View (who and where) → Incidents (epicenter) → Applications (which app, when) → Users (which device) → Web Probe (which timing) → Cloud Path/Hop View (which leg). ZDX Score: &lt;50 Poor · 50–79 Okay · 80+ Good. No probe, no data.</div>
+          <div class="mental-note-block-text"><strong>SDC login:</strong> SDC credentials from CloudShare's Credentials tab, <strong>Skip</strong> MFA. <strong>Wide → narrow:</strong> Map View (who and where) → Incidents (epicenter) → Applications Overview (which app, when) → Users Overview (which user and device) → Web Probe (which timing) → Cloud Path / Hop View (which leg). ZDX Score: Poor · Okay · Good. No probe, no data.</div>
         </div>
       </div>
 
@@ -597,6 +614,26 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin (CloudShare → Credentials)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">&lt;Student Admin User Name&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;One Time Password&gt;</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab14a" onchange="toggleDone(this)"><label for="chk-lab14a">Task 14.1: Performance + Wi-Fi dashboards</label></li>
@@ -605,17 +642,49 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab14d" onchange="toggleDone(this)"><label for="chk-lab14d">Task 14.4: User overview + Cloud Path</label></li>
       </ul>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 14.1 · Map View &amp; Wi-Fi</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-performance-dashboard" target="_blank" rel="noopener noreferrer" title="Map View (formerly Performance Overview): most impacted apps, regions, Draw Fence and filters">Monitoring the Performance Dashboard</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-wi-fi-dashboard" target="_blank" rel="noopener noreferrer" title="Access points, Wi-Fi performance and devices connected">Monitoring the Wi-Fi Dashboard</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 14.2 · Incidents &amp; Self Service</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-incidents-dashboard" target="_blank" rel="noopener noreferrer" title="Incidents across key areas and the Incidents by Epicenters map">Monitoring the Incidents Dashboard</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-self-service-dashboard" target="_blank" rel="noopener noreferrer" title="Notifications sent to users and how they responded">Monitoring the Self Service Dashboard</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 14.3 · Applications Overview</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-applications-overview" target="_blank" rel="noopener noreferrer" title="Sorting applications by ZDX Score to find the worst performers">Monitoring the Applications Overview</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/evaluating-application-details" target="_blank" rel="noopener noreferrer" title="Web probe performance and the impacted departments, regions and locations">Evaluating Application Details</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 14.4 · Users Overview</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-users-overview" target="_blank" rel="noopener noreferrer" title="Filtering users by application and ZDX Score">Monitoring the Users Overview</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/evaluating-user-details" target="_blank" rel="noopener noreferrer" title="Device details, ZDX Score Over Time and Web Probe metrics for one user">Evaluating User Details</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/evaluating-cloud-path" target="_blank" rel="noopener noreferrer" title="Latency and packet loss per leg, Hop View and Command Line View">Evaluating the Cloud Path</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Probes &amp; scoring</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/about-probes" target="_blank" rel="noopener noreferrer" title="What ZDX Web and Cloud Path probes measure">About Probes</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/understanding-zdx-score" target="_blank" rel="noopener noreferrer" title="How ZDX turns probe results into a 0–100 experience score">Understanding the ZDX Score</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
 
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -647,7 +716,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -686,8 +755,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -711,7 +780,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 14: ZDX Dashboards</span>
 </footer>
 
@@ -802,8 +871,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -1129,6 +1198,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>
