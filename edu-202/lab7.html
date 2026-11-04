@@ -7,7 +7,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 7: ZPA Zero Trust Browser — EDU-202</title>
+<title>Lab 7: ZDX Cloud App Monitoring — EDU-202</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,18 +24,30 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 .task-collapsible.open>.task-collapsible-body{display:block;}
 </style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-202</a> › Lab 7</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 7 · ZPA</span>
+    <span class="eyebrow-chip">LAB 7 · ZDX</span>
     <div class="header-dot"></div>
   </div>
-  <h1>ZPA Zero Trust <em>Browser</em></h1>
+  <h1>ZDX Cloud App <em>Monitoring</em></h1>
   <div class="motivation-banner">
-    <p>Zero Trust Browser (ZTB) delivers browser isolation inside ZPA — clientless users get a rendered-only view of private applications through a secure cloud browser. No files are transferred to the endpoint: copy, paste, upload, and download are all controlled by the isolation profile. In this lab you create a render-only profile and isolate the DVWA app for clientless users.</p>
+    <p>Remote users report a slow internal application and choppy Teams audio. Before you can fix it, you need data. ZDX lets you deploy synthetic Web and Cloud Path probes that continuously measure availability and network performance from users' endpoints to an application. In this lab you build a monitoring collection for a custom mail server application using both probe types.</p>
   </div>
 </header>
 
@@ -68,18 +80,23 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab7">
-      <h2>Lab 7: ZPA Zero Trust Browser</h2>
+      <h2>Lab 7: ZDX Cloud App Monitoring</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 7</div>
-        <p><strong>Scenario:</strong> You are an IT engineer responsible for enabling secure, browser-based access to sensitive internal web applications for users who may not be connected through Zscaler Client Connector. You use browser isolation in Zscaler Private Access™ (ZPA) to reduce data exposure by limiting user actions (for example, downloading, uploading, copying and pasting, and printing).</p>
+        <p><strong>Scenario:</strong> As an IT engineer, you've received multiple tickets from remote users reporting that an internal application is slow and that Microsoft Teams calls have choppy audio in the afternoon. The Service Desk can confirm that the users are connected, but cannot tell whether the degradation comes from the user's local Wi-Fi or ISP, an intermediate network hop, DNS resolution, the internet path, or the cloud provider or application itself. To isolate the issue proactively and create repeatable monitoring, you use Zscaler Digital Experience (ZDX) probes: first you define a custom application for a business-critical SaaS destination, then you deploy a Web probe and a Cloud Path probe.</p>
+        <ul style="margin-top:10px;">
+          <li>Configure a custom application in your Experience Center tenant to monitor a business-critical SaaS destination used by remote users.</li>
+          <li>Provision a Web probe for the custom application to measure availability and web transaction performance.</li>
+          <li>Provision a Cloud Path probe for the same application to measure network-path health (latency, loss and jitter).</li>
+        </ul>
         <figure class="lab-hero">
-          <img src="images/lab7-hero.png" alt="Lab 7 — ZPA Zero Trust Browser" loading="lazy">
+          <img src="images/lab7-hero.png" alt="Lab 7 — ZDX Cloud App Monitoring" loading="lazy">
         </figure>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
-          <div class="lab-meta-item"><strong>Service:</strong> Zscaler Private Access (ZPA) — Browser Isolation</div>
-          <div class="lab-meta-item"><strong>Prerequisite:</strong> DVWA App Segment created in Lab 6</div>
+          <div class="lab-meta-item"><strong>Service:</strong> Zscaler Digital Experience (ZDX)</div>
+          <div class="lab-meta-item"><strong>Note:</strong> Allow 15–30 min after setup for metrics to appear</div>
         </div>
       </div>
 
@@ -87,67 +104,66 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-7-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 7.1</span>
-          <span class="task-collapsible-title">Creating Isolation Profiles</span>
+          <span class="task-collapsible-title">Adding an End User Collection</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="margin-bottom:12px;">In this task, you create an isolation profile for render-only access.</p>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> Before applying the isolation policy, access the DVWA application and note how copy/paste works. For example, try pasting text into features such as XSS (Stored) or SQL Injection, and check the file upload feature by uploading a file. After you apply the policy, repeat the same actions during final testing to compare the behavior and identify any differences.</p>
-            </div>
+            <p style="margin-bottom:12px;">In this task, you add an end user collection in the Experience Center portal.</p>
             <ol class="step-list">
-              <li><strong>Create the isolation profile.</strong>
+              <li><strong>Sign in to the Experience Center portal.</strong>
                 <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Go to <strong>Policies &gt; Access Control &gt; Clientless &gt; Browser Isolation &gt; Profiles</strong>.</li>
-                  <li>Select <strong>+ Add</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p156-img1.png" alt="Browser Isolation Profiles page with Add highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                  <li>Configure the isolation profile: Name <code>render_only_profile</code>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p157-img1.png" alt="Add Isolation Profile General Information step with the name render_only_profile" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  <li>On Corp Client PC 1, go to <code>console.zscaler.com</code>.</li>
+                  <li>Sign in with the tenant credentials from your lab access instructions: <code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code> and your session password.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p139-a.png" alt="Zscaler sign-in page asking for the Login ID to your ZIdentity account" loading="lazy">
+                      <div class="screenshot-caption">Zscaler sign-in page.</div>
+                    </div>
                   </li>
                 </ol>
               </li>
-            </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> Isolation profile names in ZPA cannot include special characters and cannot match names used by ZIA isolation profiles.</p>
-            </div>
-            <ol class="step-list" start="2">
-              <li>Select <strong>Next</strong>.</li>
-              <li>On the <strong>Company Settings</strong> tab, leave the default settings, then select <strong>Next</strong>.
+              <li>In the Experience Center home page, type <code>Probes</code> in the Search menu and select the matching option (Digital Experience &gt; Settings &amp; Configuration).
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add</strong> to create an end user collection.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p140-a.png" alt="ZDX Probes page under Settings and Configuration with the Add link under End User Monitoring highlighted" loading="lazy">
+                      <div class="screenshot-caption">Probes page: <strong>+ Add</strong> starts a new end user collection.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>In the <strong>Add End User Collection</strong> drawer, enter the following values:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Under <strong>End User Collection Settings</strong>: Name <code>Custom Application</code>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p141-a.png" alt="Add End User Collection drawer with Name Custom Application highlighted and Status Enable" loading="lazy">
+                      <div class="screenshot-caption">Collection name <code>Custom Application</code>.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Exclusion Criteria</strong>: User Groups, Users, Location Group, Zscaler Locations, Departments and Devices all set to <strong>None</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p142-a.png" alt="Exclusion Criteria section with every field set to None" loading="lazy">
+                      <div class="screenshot-caption">Exclusion Criteria: None everywhere.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Probing Criteria</strong>: All User Groups, All Users, All Location Groups, All Zscaler Locations, All Departments and All Devices.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p143-a.png" alt="Probing Criteria section with every field set to All and the Add button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Probing Criteria: All everywhere, then Add.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Select <strong>Add</strong>.</li>
+              <li>Confirm that the end user collection named <strong>Custom Application</strong> appears in the list.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p158-img1.png" alt="Company Settings step with default values" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p144-a.png" alt="Probes page with the Custom Application collection highlighted in the End User tree and shown as Enabled" loading="lazy">
+                  <div class="screenshot-caption">The <strong>Custom Application</strong> collection is listed and enabled.</div>
                 </div>
               </li>
-              <li><strong>Configure the render-only settings.</strong> Enable <strong>View Office Files in Isolation</strong> only, then select <strong>Next</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p159-img1.png" alt="Security step with View Office Files in Isolation enabled and all other settings disabled" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>On the <strong>Regions</strong> page, select all regions and select <strong>Next</strong>. (The Regions page controls which regional deployments the profile applies to.)
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p160-img1.png" alt="Regions step with Select All highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>On the <strong>Isolation Banner</strong> page, leave the default settings. (Optional) add watermarks if necessary. Select <strong>Next</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p161-img1.png" alt="Isolation Experience and banner step with default settings" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>Review your profile settings, then select <strong>Save</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p162-img1.png" alt="Review step with the Save button highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>Confirm that the <code>render_only_profile</code> isolation profile appears in the profiles list.</li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t7-1">
+          <div class="section-qa" data-section="t8-1">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 7.1</span>
               <span class="section-qa-chevron">▾</span>
@@ -156,15 +172,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t7-1" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t7-1',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t7-1"></div>
+                  <textarea class="section-qa-textarea" id="sq-t8-1" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t8-1',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t8-1"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t7-1" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t7-1',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t7-1"></div>
+                  <textarea class="section-qa-textarea" id="sn-t8-1" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t8-1',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t8-1"></div>
                 </div>
               </div>
             </div>
@@ -172,43 +188,47 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
+      <!-- Task 7.2 -->
       <div class="task-collapsible open" id="task-7-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 7.2</span>
-          <span class="task-collapsible-title">Creating Isolation Policies</span>
+          <span class="task-collapsible-title">Create a Custom Application</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="margin-bottom:12px;">In this task, you create an isolation policy that allows the DVWA application to be viewed only within the isolated browser. Users cannot upload or download files, copy or paste data, or print.</p>
+            <p style="margin-bottom:12px;">In this task, you create a custom application inside the collection.</p>
             <ol class="step-list">
-              <li>In the console left navigation bar, go to <strong>Isolation Policy</strong> and select the <strong>+ Add</strong> icon to create a new policy.
+              <li>Go to the end user collection created in Task 7.1 and select <strong>Add Application</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p163-img1.png" alt="Isolation Policy page with the Isolation Policy menu item and Add highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p145-a.png" alt="Custom Application collection selected with the Add Application button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Select <strong>Add Application</strong>.</div>
                 </div>
               </li>
-              <li><strong>Configure the isolation policy.</strong>
-                <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Policy name: <code>isolate_policy_render_only</code></li>
-                  <li>Under Isolation Profile, select <code>render_only_profile</code>.</li>
-                  <li>Add criteria for the DVWA application segment: select <strong>+ Add Criteria</strong>, then select <strong>Applications</strong>.
+              <li>In the <strong>Add Application</strong> drawer, enter the following values:
+                <ul class="sub-steps">
+                  <li>Name: <code>Mail Server</code></li>
+                  <li>Status: <strong>Disable</strong></li>
+                  <li>Application Type: <strong>Custom</strong></li>
+                </ul>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p164-img1.png" alt="Add Isolation Policy form with the policy name, the render_only_profile and the Add Criteria menu" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p146-a.png" alt="Add Application drawer with Name Mail Server, Status Disable and Application Type Custom highlighted and the Add button" loading="lazy">
+                  <div class="screenshot-caption">Mail Server, Status Disable, Application Type Custom.</div>
                 </div>
-                  </li>
-                  <li>Under Application Segments, select your <strong>DVWA</strong> segment. Add the <strong>Web Browser</strong> client type so the policy applies to clientless users.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p165-img1.png" alt="Criteria with the DVWA application segment and the Web Browser client type" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                  <li>Select <strong>Save</strong>.</li>
-                </ol>
               </li>
-              <li>Confirm that the <code>isolate_policy_render_only</code> policy is created and includes the DVWA application segment in its criteria.</li>
+              <li>Select <strong>Add</strong>.</li>
+              <li>Confirm that the <strong>Mail Server</strong> application is created under the end user collection.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p147-a.png" alt="Probes navigation tree with Mail Server highlighted under Custom Application" loading="lazy">
+                  <div class="screenshot-caption">Mail Server sits under the Custom Application collection.</div>
+                </div>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> You enable the Mail Server application after you add a probe.</p>
+                </div>
+              </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t7-2">
+          <div class="section-qa" data-section="t8-2">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 7.2</span>
               <span class="section-qa-chevron">▾</span>
@@ -217,15 +237,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t7-2" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t7-2',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t7-2"></div>
+                  <textarea class="section-qa-textarea" id="sq-t8-2" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t8-2',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t8-2"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t7-2" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t7-2',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t7-2"></div>
+                  <textarea class="section-qa-textarea" id="sn-t8-2" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t8-2',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t8-2"></div>
                 </div>
               </div>
             </div>
@@ -233,46 +253,152 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
+      <!-- Task 7.3 -->
       <div class="task-collapsible open" id="task-7-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 7.3</span>
-          <span class="task-collapsible-title">Testing and Verifying</span>
+          <span class="task-collapsible-title">Create Custom Probes</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="margin-bottom:12px;">Now that you have created policies to isolate specific applications, verify that your configuration works as expected. To simulate a third-party user, disconnect from Zscaler Client Connector and then browse to the protected application.</p>
+            <p style="margin-bottom:12px;">In this task, you configure probes for the custom application you created in Task 7.2.</p>
             <ol class="step-list">
-              <li><strong>Disconnect from Zscaler Client Connector.</strong> Open the DVWA application in a new browser tab using one of the following:
-                <ul class="sub-steps">
-                  <li><code>dvwa.patraining.safemarch.com</code></li>
-                  <li>The External Domain for DVWA (copied from the console)</li>
-                </ul>
-                (Optional) To copy the External Domain from the console, go to <strong>Access Methods &gt; Browser Access</strong>, copy the External Domain, and paste it into a browser address bar.
+              <li>Under the <strong>Mail Server</strong> application, select <strong>Add Probe</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p166-img1.png" alt="Browser Access list with the DVWA internal domain and External Domain highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab7/lab7-p148-a.png" alt="Mail Server application page, status Disabled, with the Add Probe button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Select <strong>Add Probe</strong>.</div>
                 </div>
-              </li>
-              <li><strong>Authenticate to the application.</strong> If prompted, sign in to your SAML IdP. (This may be transparent if you already have an active session.)</li>
-              <li><strong>Validate render-only behavior.</strong>
                 <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Sign in to the DVWA application.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p167-img1.png" alt="DVWA opened in an isolated session with the Zscaler isolation banner highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                  <li>Attempt to manipulate files or data — for example, try to copy text, print, or upload a file on the File Upload page.</li>
-                  <li>Confirm that you can open and view content in the isolated browser, but you cannot download, upload, copy, paste, or print.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab7/lab7-p167-img2.png" alt="File Upload dialog showing that protected storage is empty so no files can be selected" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  <li>In <strong>Add Probe in Custom Application</strong>, select <strong>End User Web</strong>, then select <strong>Next</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p149-a.png" alt="Select a Probe Type step with End User Web checked and the Next button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Probe type: <strong>End User Web</strong>.</div>
+                    </div>
                   </li>
                 </ol>
               </li>
+              <li>Under <strong>Configure Web Probe</strong>, enter the following values, then select <strong>Next</strong>:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Under <strong>General</strong>:
+                    <ul class="sub-steps">
+                      <li>Name: <code>Mail Server_Web</code></li>
+                      <li>Application: <strong>Mail Server</strong></li>
+                      <li>Run Frequency (minutes): <code>5</code></li>
+                      <li>Destination URL: <code>https://mail.google.com</code></li>
+                    </ul>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p150-a.png" alt="Configure Web Probe General section with Name Mail Server_Web, Run Frequency 5 and Destination URL https://mail.google.com highlighted" loading="lazy">
+                      <div class="screenshot-caption">Web probe <code>Mail Server_Web</code> fetches <code>https://mail.google.com</code> every 5 minutes.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Probing Criteria</strong>: Users, User Group, Locations, Location Group, Departments and OS all set to <strong>All</strong>.</li>
+                  <li>Under <strong>Exclusion Criteria</strong>: Users, User Group, Locations, Location Group, Departments and OS all set to <strong>None</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p151-a.png" alt="Web probe Probing Criteria set to All and Exclusion Criteria set to None, both highlighted" loading="lazy">
+                      <div class="screenshot-caption">Probing Criteria All; Exclusion Criteria None.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Additional Parameters</strong>:
+                    <ul class="sub-steps">
+                      <li>Number of Attempts: <code>2</code></li>
+                      <li>Timeout (seconds): <code>60</code></li>
+                      <li>Follow Redirect: <strong>Enable</strong></li>
+                      <li>Maximum Redirects: <code>5</code></li>
+                    </ul>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p152-a.png" alt="Additional Parameters with Number of Attempts 2, Timeout 60, Follow Redirect Enable and Maximum Redirects 5 highlighted, and the Next button" loading="lazy">
+                      <div class="screenshot-caption">2 attempts, 60 s timeout, follow up to 5 redirects.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Review the configuration, then select <strong>Submit</strong> to create the Web probe.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p153-a.png" alt="Review Web Probe page summarising the general information, probing and exclusion criteria, with the Submit button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Review the Web probe, then Submit.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p154-a.png" alt="Mail Server probe list showing Mail Server_Web as Disabled, GET, running every 5 minutes" loading="lazy">
+                  <div class="screenshot-caption">The Web probe is listed but disabled, because the application is still disabled.</div>
+                </div>
+              </li>
+              <li>Edit the application: open <strong>Actions</strong> › <strong>Edit</strong>, set Status to <strong>Enabled</strong> in the Edit Application drawer, then select <strong>Update</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p154-b.png" alt="Mail Server Actions menu open with Edit highlighted" loading="lazy">
+                  <div class="screenshot-caption">Actions › Edit.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p155-a.png" alt="Edit Application drawer with Status Enable highlighted and the Update button" loading="lazy">
+                  <div class="screenshot-caption">Status Enable, then Update.</div>
+                </div>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> When you enable the custom application, ZDX automatically enables its Web probe. Depending on your organisation's ZDX plan, metrics can take 15–30 minutes to appear for a newly configured application. Continue to the next lab and return later to verify the metrics.</p>
+                </div>
+              </li>
+              <li><strong>Add a Cloud Path probe.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add Probe</strong> for the Mail Server application, select <strong>End User Cloud Path</strong>, then select <strong>Next</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p156-a.png" alt="Mail Server, now Enabled, with its Web probe Enabled and the Add Probe button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Mail Server and its Web probe are now enabled. Select Add Probe again.</div>
+                    </div>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p156-b.png" alt="Select a Probe Type step with End User Cloud Path checked and the Next button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Probe type: <strong>End User Cloud Path</strong>.</div>
+                    </div>
+                  </li>
+                  <li>In <strong>Configure Cloud Probe</strong>, enter the following values, then select <strong>Next</strong>:
+                    <ul class="sub-steps">
+                      <li>Name: <code>Mail Server_Cloud</code></li>
+                      <li>Status: <strong>Enable</strong></li>
+                      <li>Application: <strong>Mail Server</strong></li>
+                      <li>Probe Type: <strong>Cloud Path</strong></li>
+                      <li>Follow Web Probe: <code>Mail Server_Web</code></li>
+                      <li>Run Frequency (minutes): <code>5</code></li>
+                      <li>Cloud Path Host: <code>mail.google.com</code></li>
+                    </ul>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p157-a.png" alt="Configure Cloud Probe with Name Mail Server_Cloud, Status Enable, Follow Web Probe Mail Server_Web, Run Frequency 5 and Cloud Path Host mail.google.com highlighted" loading="lazy">
+                      <div class="screenshot-caption">Cloud Path probe <code>Mail Server_Cloud</code> follows the Web probe to <code>mail.google.com</code>.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Probing Criteria</strong>: Users, User Group, Locations, Location Group, Departments and Devices all set to <strong>All</strong>.</li>
+                  <li>Under <strong>Exclusion Criteria</strong>: Users, User Group, Locations, Location Group, Departments and Devices all set to <strong>None</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p159-a.png" alt="Cloud Path probe Probing Criteria set to All and Exclusion Criteria set to None, both highlighted" loading="lazy">
+                      <div class="screenshot-caption">Probing Criteria All; Exclusion Criteria None.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Cloud Path Probe Configuration</strong>:
+                    <ul class="sub-steps">
+                      <li>Protocol: <strong>ICMP</strong></li>
+                      <li>Packet Count: <code>5</code></li>
+                      <li>Interval (ms): <code>1000</code></li>
+                      <li>Timeout (ms): <code>1000</code></li>
+                    </ul>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab7/lab7-p160-a.png" alt="Additional Parameters with Protocol ICMP, Packet Count 5, Interval 1000 and Timeout 1000 highlighted, and the Next button" loading="lazy">
+                      <div class="screenshot-caption">ICMP, 5 packets, 1000 ms interval and timeout.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Review the probe configuration, then select <strong>Submit</strong> to create the probe.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p161-a.png" alt="Review Cloud Path Probe page with the Submit button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Review the Cloud Path probe, then Submit.</div>
+                </div>
+              </li>
+              <li>Confirm that the <strong>Mail Server_Web</strong> and <strong>Mail Server_Cloud</strong> probes appear under the Mail Server application.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab7/lab7-p161-b.png" alt="Mail Server probe list showing Mail Server_Web (GET) and Mail Server_Cloud (ICMP), both Enabled and running every 5 minutes" loading="lazy">
+                  <div class="screenshot-caption">Both probes are enabled and running every 5 minutes.</div>
+                </div>
+              </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t7-3">
+          <div class="section-qa" data-section="t8-3">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 7.3</span>
               <span class="section-qa-chevron">▾</span>
@@ -281,15 +407,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t7-3" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t7-3',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t7-3"></div>
+                  <textarea class="section-qa-textarea" id="sq-t8-3" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t8-3',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t8-3"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t7-3" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t7-3',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t7-3"></div>
+                  <textarea class="section-qa-textarea" id="sn-t8-3" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t8-3',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t8-3"></div>
                 </div>
               </div>
             </div>
@@ -298,7 +424,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       </div>
 
     </div>
-  </div>
+  </div><!-- /.content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -306,103 +432,92 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-label">LAB TOPOLOGY</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/lab0/lab0-p8-img1.png" alt="EDU-202 lab topology: Corp Client PC 1 and the Remote Linux Client PC on 192.168.1.0/24 reach the Experience Center through the Zero Trust Exchange, which connects through the Corp ZPA Connector and Corp Log Streaming Connector to the Corporate Data Center 10.0.0.0/24. Click to expand." onclick="openLightbox(this.src,this.alt)" title="Click to expand">
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Virtual Machines</div>
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
       <div class="sidebar-cred-list">
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Client PC 1<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Client PC 1 (Windows VM)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin (Experience Center)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.1</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.1',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value"><span class="var-pass">&lt;Session Password&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.2</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Portal Credentials</div>
-      <div class="sidebar-cred-list">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="prog-chk-lab7-1"><input type="checkbox" id="chk-lab7-1" onchange="toggleDone(this)"><label for="chk-lab7-1">Task 7.1: Custom Application collection added</label></li>
+        <li class="progress-item" id="prog-chk-lab7-2"><input type="checkbox" id="chk-lab7-2" onchange="toggleDone(this)"><label for="chk-lab7-2">Task 7.2: Mail Server application created</label></li>
+        <li class="progress-item" id="prog-chk-lab7-3"><input type="checkbox" id="chk-lab7-3" onchange="toggleDone(this)"><label for="chk-lab7-3">Task 7.3: Web probe added, app enabled</label></li>
+        <li class="progress-item" id="prog-chk-lab7-4"><input type="checkbox" id="chk-lab7-4" onchange="toggleDone(this)"><label for="chk-lab7-4">Task 7.3: Cloud Path probe added</label></li>
+      </ul>
+    </div>
 
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.1 · End user collection</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/managing-collections" target="_blank" rel="noopener noreferrer" title="The Add End User Collection drawer: settings, exclusion and probing criteria">Managing Collections</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.2 · Custom application</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/about-applications" target="_blank" rel="noopener noreferrer" title="Predefined versus custom applications and their probes">About Applications (ZDX)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/adding-custom-application" target="_blank" rel="noopener noreferrer" title="Creating Mail Server with Application Type Custom">Adding a Custom Application</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">from SDC email</code></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.3 · Web &amp; Cloud Path probes</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/about-probes" target="_blank" rel="noopener noreferrer" title="What Web and Cloud Path probes measure, and why an app needs a Web probe to be enabled">About Probes</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/configuring-probe" target="_blank" rel="noopener noreferrer" title="Web probe settings and Cloud Path settings such as Follow Web Probe and ICMP">Configuring a Probe</a>
         </div>
-
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
       </div>
     </div>
 
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide uses the new navigation: open features from the Search menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The search box in the Experience Center top bar. Type a feature name (e.g. App Connector Groups) and pick the result; each result shows its menu path.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Formerly ZIdentity. Zscaler's authentication service, reached from the Experience Center menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's unique domain (e.g. zs000834.labtenant.com). Used in every login ID: student@, hvac@.</div></div>
+        <div class="qr-item"><div class="qr-term">CloudShare</div><div class="qr-def">The virtual lab platform that hosts your VMs. Use Actions › Send Text or Send Password to paste into a VM.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">A lightweight VM in the data center that makes outbound-only connections to ZPA, so private apps are reachable without inbound firewall ports.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Group</div><div class="qr-def">A set of App Connectors that share a location and settings. Server groups point to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token</div><div class="qr-def">The OAuth code shown by cat /etc/issue on a connector. Add it under App Connectors to enroll the connector; it expires after two hours.</div></div>
+        <div class="qr-item"><div class="qr-term">Application Segment</div><div class="qr-def">Defines a private app (domain or IP plus ports) and how it is reached: Client Connector, Browser Access or Privileged Remote Access.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment / Server Group</div><div class="qr-def">A segment group bundles segments for policy; a server group maps segments to App Connector groups.</div></div>
+        <div class="qr-item"><div class="qr-term">Browser Access</div><div class="qr-def">Clientless ZPA access to a web app through its External Domain, with no Client Connector or VPN.</div></div>
+        <div class="qr-item"><div class="qr-term">Access Policy</div><div class="qr-def">ZPA rules, default deny, that allow access to segments when criteria such as Applications and Client Types match.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Streaming Service (LSS)</div><div class="qr-def">Streams ZPA logs (e.g. User Activity) through an App Connector to a syslog receiver such as a SIEM.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Receiver</div><div class="qr-def">The LSS destination: host, TCP port, App Connector group, log type and template (e.g. CSV).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Remote Access (PRA)</div><div class="qr-def">Clientless, browser-based RDP and SSH to servers through a privileged portal, with session recording and credential vaulting.</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Portal / Console</div><div class="qr-def">The portal is the web page users open; each console on it is one server (protocol, host, port).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Credentials</div><div class="qr-def">Vaulted usernames and passwords that a credentials policy injects into a console, so users never see them.</div></div>
+        <div class="qr-item"><div class="qr-term">AppProtection</div><div class="qr-def">Inline web-application firewall in ZPA: OWASP CRS, ThreatLabZ, WebSocket and API controls on private app traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Paranoia level</div><div class="qr-def">How wide a net the OWASP controls cast: higher levels catch more but raise false positives.</div></div>
+        <div class="qr-item"><div class="qr-term">Isolation Profile</div><div class="qr-def">Settings for Browser Isolation of private apps, e.g. render-only with View Office Files in Isolation.</div></div>
+        <div class="qr-item"><div class="qr-term">End User Collection</div><div class="qr-def">A ZDX container that sets which users and devices run the probes of the applications inside it.</div></div>
+        <div class="qr-item"><div class="qr-term">Web / Cloud Path probe</div><div class="qr-def">A Web probe times page fetches to a URL; a Cloud Path probe traces hop-by-hop latency, loss and jitter to the host.</div></div>
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center: a shared, read-only tenant with pre-populated data, used for the reporting and Workflow Automation labs.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
@@ -412,17 +527,18 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </div>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab6.html">← Lab 6: ZPA AppProtection</a>
-  <div class="page-nav-message">You're getting deep into ZPA — isolation layer complete!</div>
-  <a class="page-nav-btn page-nav-next" href="lab8.html">Lab 8: ZDX Cloud App Monitoring →</a>
+  <a class="page-nav-btn page-nav-prev" href="lab6.html">← Lab 6: Zero Trust Browser</a>
+  <div class="page-nav-message">Probes are running — continue to Lab 8 while metrics warm up!</div>
+  <a class="page-nav-btn page-nav-next" href="lab8.html">Lab 8: ZDX Alerts &amp; Diagnostics →</a>
 </div>
 
 <script>
+// PAGE_KEY and SECTION_IDS carried over from the Rev 3.4 lab8.html (same lab content) so saved notes survive the renumbering
 const CONFIG_KEY='edu202-expc-lab-config';
 const CONFIG_COLLAPSED_KEY='edu202-config-collapsed';
 const FOOTER_KEY='edu202-footer-collapsed';
-const PAGE_KEY='edu202-lab-lab7';
-var SECTION_IDS=['t7-1','t7-2','t7-3'];
+const PAGE_KEY='edu202-lab-lab8';
+var SECTION_IDS=['t8-1','t8-2','t8-3'];
 
 function loadConfig(){
   try{applyConfig();}catch(e){}
@@ -430,7 +546,7 @@ function loadConfig(){
 function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass}));applyConfig();}catch(e){}}
 function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);document.getElementById('fqdn-input').value='';document.getElementById('pass-input').value='';applyConfig();}catch(e){}}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var sid=(fqdn.split('.')[0]||'');document.querySelectorAll('.var-sid').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var sidnum=sid.replace(/\D/g,'');document.querySelectorAll('.var-sidnum').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sidnum){el.textContent=sidnum;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var xyz=sid.replace(/\D/g,'').slice(-3);document.querySelectorAll('.var-xyz').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(xyz){el.textContent=xyz;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
 }
 function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
 function toggleConfig(){var panel=document.getElementById('config-panel');var body=document.getElementById('config-body');var btn=document.getElementById('config-toggle-btn');if(!panel)return;var collapsed=panel.classList.toggle('collapsed');localStorage.setItem(CONFIG_COLLAPSED_KEY,collapsed?'1':'0');if(btn){var chev=btn.querySelector('.chevron');if(chev)chev.textContent=collapsed?'▼':'▲';btn.innerHTML=(collapsed?'<span class="chevron">▼</span> Expand':'<span class="chevron">▲</span> Collapse');}
@@ -442,7 +558,7 @@ function toggleFooter(btn){try{var f=document.getElementById('site-footer');if(!
 function loadFooterState(){try{var c=localStorage.getItem(FOOTER_KEY);if(c==='1'){var f=document.getElementById('site-footer');var btn=f?f.querySelector('.footer-toggle'):null;if(f)f.classList.add('collapsed');if(btn)btn.textContent='▼ Show';}}catch(e){}}
 
 function toggleTask(header){var coll=header.closest('.task-collapsible');if(!coll)return;var open=coll.classList.toggle('open');try{var key=PAGE_KEY+'-task-'+coll.id;localStorage.setItem(key,open?'1':'0');}catch(e){}}
-function loadTaskStates(){SECTION_IDS.forEach(function(id){try{var taskNum=id.replace('t','task-').replace('-','-');var els=document.querySelectorAll('.task-collapsible');els.forEach(function(el){var k=PAGE_KEY+'-task-'+el.id;var v=localStorage.getItem(k);if(v==='0')el.classList.remove('open');else if(v==='1')el.classList.add('open');});}catch(e){}});}
+function loadTaskStates(){document.querySelectorAll('.task-collapsible').forEach(function(el){try{var k=PAGE_KEY+'-task-'+el.id;var v=localStorage.getItem(k);if(v==='0')el.classList.remove('open');else if(v==='1')el.classList.add('open');}catch(e){}});}
 
 function toggleQPanel(btn){var body=document.getElementById('q-body');btn.classList.toggle('open');body.classList.toggle('open');loadQList();}
 function toggleNPanel(btn){var body=document.getElementById('n-body');btn.classList.toggle('open');body.classList.toggle('open');loadNList();}
@@ -484,7 +600,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 </script>
 </body>
 </html>

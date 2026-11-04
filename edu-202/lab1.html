@@ -35,7 +35,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   </div>
   <h1>Environment <em>Setup</em></h1>
   <div class="motivation-banner">
-    <p>Before any configuration can begin, you need your virtual lab environment running and your admin portal accessible. This lab gets you oriented in CloudShare and signed into the Zscaler Experience Center — the launchpad for everything that follows.</p>
+    <p>Before any configuration can begin, you need your virtual lab environment running and your admin console within reach. This lab gets you oriented in CloudShare and signed in to the Zscaler Experience Center, whose Search menu is your shortcut to every feature in the labs that follow.</p>
   </div>
 </header>
 
@@ -72,7 +72,11 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 1</div>
-        <p><strong>Scenario:</strong> You are preparing to configure Zscaler services for your organisation. Before diving into policy configuration, you connect to CloudShare, start all of your virtual machines (VMs), and become familiar with the sign-in and clipboard copy/paste features. You then sign into the Zscaler Experience Center console.</p>
+        <p><strong>Scenario:</strong> In this lab, you connect to CloudShare, start all virtual machines (VMs), and familiarise yourself with the sign-in options and the clipboard copy/paste features. You also make sure your keyboard is mapped appropriately for your locale.</p>
+        <ul style="margin-top:10px;">
+          <li>Connect to CloudShare and start all VMs.</li>
+          <li>Use the sign-in and clipboard copy/paste features in the lab portal.</li>
+        </ul>
         <figure class="lab-hero">
           <img src="images/lab1-hero.png" alt="Lab 1 — Environment Setup" loading="lazy">
         </figure>
@@ -91,64 +95,74 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         <div class="task-collapsible-body">
           <div class="task-block">
             <ol class="step-list">
-              <li><strong>Locate the CloudShare lab URL.</strong> Your unique CloudShare lab URL and passphrase are displayed on the classroom screen at the start of the session. Note these carefully — you need them to access your lab environment. (Example: <code>https://use.cloudshare.com/…</code>)</li>
-              <li><strong>Access the Lab Login Page.</strong> Open a web browser and navigate to the CloudShare lab URL displayed on the classroom screen.
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p14-img1.png" alt="CloudShare lab login page with email and passphrase fields" loading="lazy">
-                  <div class="screenshot-caption">CloudShare login page — enter the email address and passphrase from your invitation email.</div>
+              <li><strong>Locate the CloudShare lab URL.</strong> Your unique CloudShare lab URL and passphrase are displayed on the classroom screen at the start of the session. Note them carefully: you need them to access your lab environment. (Example: <code>https://use.cloudshare.com/…</code>)</li>
+              <li><strong>Access the lab login page.</strong> Open a web browser and go to the CloudShare lab URL displayed on the classroom screen.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p014-a.png" alt="CloudShare Class Login page with empty Email and Passphrase fields and a Login button" loading="lazy">
+                  <div class="screenshot-caption">CloudShare Class Login page.</div>
                 </div>
               </li>
-              <li><strong>Enter your credentials.</strong> On the login page, enter the email address and passphrase provided in your invitation email.</li>
-              <li><strong>Review the Lab Overview.</strong> After you sign in, you are taken to the lab environment dashboard. The screen displayed corresponds to the lab you have been assigned.
+              <li><strong>Enter your credentials.</strong> On the login page, enter the email address and passphrase provided in your invitation email, then select <strong>Login</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p16-img1.png" alt="CloudShare lab environment Overview tab" loading="lazy">
+                  <img src="screenshots/lab1/lab1-p015-a.png" alt="CloudShare Class Login page with the email address and passphrase entered and the Login button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Enter your email address and passphrase, then select Login.</div>
+                </div>
+              </li>
+              <li><strong>Review the lab overview.</strong> After you sign in, you are taken to the lab environment dashboard. The virtual machines may take a few minutes to provision and become ready for use.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p016-a.png" alt="CloudShare lab environment Overview tab" loading="lazy">
                   <div class="screenshot-caption">Overview tab of your CloudShare lab environment.</div>
                 </div>
               </li>
-              <li><strong>Navigate to the VM List.</strong> In the <strong>Overview</strong> tab, click <strong>Go to My VM List</strong> to open the Virtual Machines (VM) List tab. This tab displays all virtual machines assigned to your lab session.
+              <li><strong>Navigate to the VM List.</strong> In the <strong>Overview</strong> tab, select <strong>Go to my VM List</strong> to open the Virtual Machines (VM) List tab. Alternatively, select the VM you need from the tabs at the top.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p17-img1.png" alt="Go to my VM List button highlighted on the Overview tab" loading="lazy">
+                  <img src="screenshots/lab1/lab1-p017-a.png" alt="Go to my VM List button highlighted on the Overview tab" loading="lazy">
                   <div class="screenshot-caption">Select <strong>Go to my VM List</strong>.</div>
                 </div>
               </li>
-              <li><strong>Run the virtual machine.</strong> In the VM List tab, click the <strong>Run</strong> button next to the virtual machine name to start the VM.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p18-img1.png" alt="VM List tab showing 6 virtual machines with the Run button highlighted" loading="lazy">
-                  <div class="screenshot-caption">VM List — the environment contains 6 virtual machines. Click Run next to a VM to start it.</div>
-                </div>
-              </li>
               <li><strong>Verify the VM is running.</strong> Once started, the virtual machine's tab displays its active running state, confirming that the environment is ready for use.
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p19-img1.png" alt="Corp Client PC 1 tab showing the Windows sign-in screen" loading="lazy">
-                  <div class="screenshot-caption">Corp Client PC 1 — the VM tab opens on the Windows sign-in screen once the VM is running.</div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p018-a.png" alt="Corp Client PC 1 tab showing the Windows sign-in screen" loading="lazy">
+                  <div class="screenshot-caption">Corp Client PC 1: the VM tab opens on the Windows sign-in screen once the VM is running.</div>
                 </div>
               </li>
               <li><strong>Use the clipboard feature in the lab interface.</strong> To copy text from your host or this lab guide into the VM:
                 <ol class="sub-steps" style="list-style:lower-roman;">
-                  <li>In the left panel, open <strong>Actions</strong> and choose <strong>Send Text</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p20-img1.png" alt="Actions menu open with Send Text highlighted" loading="lazy">
-                  <div class="screenshot-caption">Actions menu — choose Send Text.</div>
-                </div>
+                  <li>Open the <strong>Actions</strong> tab and choose <strong>Send Text</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab1/lab1-p019-a.png" alt="Actions menu open with Send Text highlighted" loading="lazy">
+                      <div class="screenshot-caption">Actions menu: choose Send Text.</div>
+                    </div>
                   </li>
-                  <li>Paste the text into the text box and click <strong>Send</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p21-img1.png" alt="Send Text dialog with the Send button highlighted" loading="lazy">
-                  <div class="screenshot-caption">Send Text dialog — paste your text and click Send.</div>
-                </div>
+                  <li>Paste the text into the text box and select <strong>Send</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab1/lab1-p020-a.png" alt="Send Text dialog with the Send button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Send Text dialog: paste your text and select Send.</div>
+                    </div>
                   </li>
                 </ol>
               </li>
-              <li><strong>Open the Lab Guide.</strong> Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. The guide opens in a new browser tab and provides detailed instructions for completing the lab exercises.
+              <li><strong>Open the Lab Guide.</strong> Select the <strong>Lab Guide</strong> tab to open the hands-on lab guide. The guide opens in a new browser tab and gives detailed instructions for the lab exercises.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p22-img1.png" alt="Lab Guide tab highlighted on the Overview page" loading="lazy">
+                  <img src="screenshots/lab1/lab1-p021-a.png" alt="Lab Guide tab highlighted on the CloudShare Overview page" loading="lazy">
                   <div class="screenshot-caption">Lab Guide tab.</div>
                 </div>
               </li>
-              <li><strong>Find your credentials.</strong> To access the Zscaler tenant and Solutions Demo Center (SDC) credentials, click the <strong>Credentials</strong> tab in the left panel. View the Zscaler tenant and SDC credentials to use in the lab.</li>
+              <li><strong>Find your credentials.</strong> To see the Zscaler tenant and Solutions Demo Center (SDC) credentials for the lab, select the <strong>Credentials</strong> tab in the left panel.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p022-a.png" alt="CloudShare Credentials panel open on the Zscaler Tenant section, listing the Zscaler Admin Console, the ZIdentity landing page, the student admin username and a one-time password" loading="lazy">
+                  <div class="screenshot-caption">Credentials › <strong>Zscaler Tenant</strong>: admin console, ZIdentity landing page, Student Admin username and one-time password.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p023-a.png" alt="CloudShare Credentials panel scrolled to the SDC Credentials section, listing the admin user login URL, admin username, password and the contractor, sales and IT usernames" loading="lazy">
+                  <div class="screenshot-caption">Credentials › <strong>SDC Credentials</strong>: the read-only admin login and the department users for the Solutions Demo Center labs.</div>
+                </div>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> As the Credentials panel says, ZIdentity may prompt you to change the password the first time you sign in.</p>
+                </div>
+              </li>
             </ol>
           </div>
-
           <div class="section-qa" data-section="t1-1">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 1.1</span>
@@ -177,7 +191,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-1-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 1.2</span>
-          <span class="task-collapsible-title">Sign In to the Experience Center and Explore the Dashboard</span>
+          <span class="task-collapsible-title">Sign In to the Experience Center Landing Page</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
@@ -190,61 +204,43 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <li><strong>Log in to Corp Client PC 1</strong> as the local Student user:
                 <ol class="sub-steps" style="list-style:lower-roman;">
                   <li>Launch <strong>Corp Client PC 1</strong> from the CloudShare portal.</li>
-                  <li>Open <strong>Actions</strong> and click <strong>Send Password</strong>.
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p26-img1.png" alt="Actions menu with Send Password highlighted on the Corp Client PC 1 sign-in screen" loading="lazy">
-                  <div class="screenshot-caption">Actions &gt; Send Password signs the student user into Windows.</div>
-                </div>
+                  <li>Open the <strong>Actions</strong> tab and select <strong>Send Password</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab1/lab1-p025-a.png" alt="Actions menu with Send Password highlighted on the Corp Client PC 1 sign-in screen" loading="lazy">
+                      <div class="screenshot-caption">Actions › Send Password signs the Student user in to Windows.</div>
+                    </div>
                   </li>
                 </ol>
               </li>
-              <li>In a browser window, open <code>www.console.zscaler.com</code>.</li>
+              <li>In a browser window, open <code>console.zscaler.com</code>.</li>
               <li>Authenticate with your student admin account:
                 <ul class="sub-steps">
-                  <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
+                  <li>Username: <code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></li>
                   <li>Password: <span class="var var-pass">&lt;Session Password&gt;</span> (as provided in your Lab Access Instructions)</li>
-                  <li>Select <strong>Sign in</strong></li>
+                  <li>Select <strong>Sign in</strong>.</li>
                 </ul>
-                <div class="screenshot-embed narrow">
-                  <img src="screenshots/lab1/lab1-p27-img1.png" alt="Zscaler sign-in page with the student login ID and password fields highlighted" loading="lazy">
-                  <div class="screenshot-caption">Zscaler sign-in — console.zscaler.com redirects here. Enter <code>student@&lt;Student FQDN&gt;</code>, your session password, then click Sign In.</div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab1/lab1-p026-a.png" alt="Zscaler sign-in page with the student login ID and password fields highlighted" loading="lazy">
+                  <div class="screenshot-caption">Zscaler sign-in: console.zscaler.com redirects here. Enter <code>student@&lt;Student FQDN&gt;</code> and your session password, then select Sign In.</div>
                 </div>
               </li>
-              <li>Once signed in, explore the <strong>Experience Center dashboard</strong> by navigating to <strong>Analytics</strong>, <strong>Administration</strong>, <strong>Policies</strong>, <strong>Infrastructure</strong>, or <strong>Logs</strong>.
+              <li>Once signed in, explore the <strong>Experience Center</strong> dashboard by opening the different options and products in the left menu: <strong>Analytics</strong>, <strong>Administration</strong>, <strong>Internet Access</strong>, <strong>Private Access</strong>, <strong>Cyberthreat Protection</strong>, <strong>Digital Experience</strong>, <strong>Data Security</strong>, <strong>Infrastructure</strong>, <strong>Zero Trust Cloud</strong>, <strong>Zero Trust Browser</strong>, <strong>Data Explorer</strong>, <strong>AI Security</strong> and <strong>Service Portal</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p28-img1.png" alt="Experience Center home page with the top navigation items highlighted" loading="lazy">
-                  <div class="screenshot-caption">Experience Center — the five top-navigation menus.</div>
+                  <img src="screenshots/lab1/lab1-p027-a.png" alt="Experience Center home page at console.zscaler.com with the left navigation menu highlighted, from Analytics to Service Portal" loading="lazy">
+                  <div class="screenshot-caption">Experience Center (new navigation): every product area is in the left menu.</div>
                 </div>
               </li>
-              <li>Use the <strong>Search</strong> option (or <kbd>Ctrl+K</kbd>) to navigate to the required feature in the Experience Center tenant assigned to you.
+              <li>Use the <strong>Search</strong> option to navigate to the required feature in the Experience Center tenant assigned to you.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p29-img1.png" alt="Experience Center search menu open with recent searches visible" loading="lazy">
-                  <div class="screenshot-caption">Search menu — type any feature name to jump straight to it.</div>
+                  <img src="screenshots/lab1/lab1-p028-a.png" alt="Experience Center with the Search menu box in the top bar highlighted" loading="lazy">
+                  <div class="screenshot-caption">Search menu: type a feature name to jump straight to it.</div>
                 </div>
               </li>
             </ol>
             <div class="callout callout-note">
-              <p><strong>Note:</strong> Use the Search menu to quickly navigate to the features required in the upcoming lab tasks.</p>
+              <p><strong>Note:</strong> Use the Search menu to quickly navigate to the features you need in the upcoming lab tasks. Each lab step names the term to search for, followed by the menu path in brackets.</p>
             </div>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Navigating to the Experience Center Nav 1.0 User Interface</h4>
-            <p style="margin-bottom:12px;">After you log in to your assigned Zscaler lab tenant or Solutions Demo Center tenant, you should see the Experience Center <strong>Nav 1.0</strong> user interface. If you see the Experience Center <strong>Nav 2.0</strong> instead, switch to Nav 1.0 — this lab is designed around it. Follow these steps to make the switch:</p>
-            <ol class="step-list">
-              <li>In the Experience Center Nav 2.0 tenant, click the <strong>account settings</strong> icon in the top-right corner and select <strong>Account Settings</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p30-img1.png" alt="Experience Center Nav 2.0 home page with the account settings icon highlighted in the top-right corner" loading="lazy">
-                  <div class="screenshot-caption">Nav 2.0 — the account settings icon is in the top-right corner.</div>
-                </div>
-              </li>
-              <li>Under <strong>Settings &gt; New Navigation Experience</strong>, select <strong>Original</strong>, then click <strong>Save</strong> at the bottom to switch to the Nav 1.0 user interface.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab1/lab1-p31-img1.png" alt="Settings page with New Navigation Experience set to Original and the Save button highlighted" loading="lazy">
-                  <div class="screenshot-caption">Select Original under New Navigation Experience, then click Save.</div>
-                </div>
-              </li>
-            </ol>
           </div>
-
           <div class="section-qa" data-section="t1-2">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 1.2</span>
@@ -279,103 +275,78 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-label">LAB TOPOLOGY</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/lab0/lab0-p8-img1.png" alt="EDU-202 lab topology: Corp Client PC 1 and the Remote Linux Client PC on 192.168.1.0/24 reach the Experience Center through the Zero Trust Exchange, which connects through the Corp ZPA Connector and Corp Log Streaming Connector to the Corporate Data Center 10.0.0.0/24. Click to expand." onclick="openLightbox(this.src,this.alt)" title="Click to expand">
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Virtual Machines</div>
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
       <div class="sidebar-cred-list">
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Client PC 1<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">CloudShare login<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">Email</span><code class="scr-value">&lt;Invitation email&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;Passphrase on classroom screen&gt;</code></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Client PC 1 (Windows VM)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin (Experience Center)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.1</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.1',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value"><span class="var-pass">&lt;Session Password&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.2</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Portal Credentials</div>
-      <div class="sidebar-cred-list">
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">from SDC email</code></div>
-          </div>
-        </div>
-
-      </div>
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="prog-chk-lab1-1"><input type="checkbox" id="chk-lab1-1" onchange="toggleDone(this)"><label for="chk-lab1-1">Task 1.1: CloudShare environment running</label></li>
+        <li class="progress-item" id="prog-chk-lab1-2"><input type="checkbox" id="chk-lab1-2" onchange="toggleDone(this)"><label for="chk-lab1-2">Task 1.1: Tenant &amp; SDC credentials located</label></li>
+        <li class="progress-item" id="prog-chk-lab1-3"><input type="checkbox" id="chk-lab1-3" onchange="toggleDone(this)"><label for="chk-lab1-3">Task 1.2: Signed in to the Experience Center</label></li>
+        <li class="progress-item" id="prog-chk-lab1-4"><input type="checkbox" id="chk-lab1-4" onchange="toggleDone(this)"><label for="chk-lab1-4">Task 1.2: Search menu tried</label></li>
+      </ul>
     </div>
 
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide uses the new navigation: open features from the Search menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The search box in the Experience Center top bar. Type a feature name (e.g. App Connector Groups) and pick the result; each result shows its menu path.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Formerly ZIdentity. Zscaler's authentication service, reached from the Experience Center menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's unique domain (e.g. zs000834.labtenant.com). Used in every login ID: student@, hvac@.</div></div>
+        <div class="qr-item"><div class="qr-term">CloudShare</div><div class="qr-def">The virtual lab platform that hosts your VMs. Use Actions › Send Text or Send Password to paste into a VM.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">A lightweight VM in the data center that makes outbound-only connections to ZPA, so private apps are reachable without inbound firewall ports.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Group</div><div class="qr-def">A set of App Connectors that share a location and settings. Server groups point to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token</div><div class="qr-def">The OAuth code shown by cat /etc/issue on a connector. Add it under App Connectors to enroll the connector; it expires after two hours.</div></div>
+        <div class="qr-item"><div class="qr-term">Application Segment</div><div class="qr-def">Defines a private app (domain or IP plus ports) and how it is reached: Client Connector, Browser Access or Privileged Remote Access.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment / Server Group</div><div class="qr-def">A segment group bundles segments for policy; a server group maps segments to App Connector groups.</div></div>
+        <div class="qr-item"><div class="qr-term">Browser Access</div><div class="qr-def">Clientless ZPA access to a web app through its External Domain, with no Client Connector or VPN.</div></div>
+        <div class="qr-item"><div class="qr-term">Access Policy</div><div class="qr-def">ZPA rules, default deny, that allow access to segments when criteria such as Applications and Client Types match.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Streaming Service (LSS)</div><div class="qr-def">Streams ZPA logs (e.g. User Activity) through an App Connector to a syslog receiver such as a SIEM.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Receiver</div><div class="qr-def">The LSS destination: host, TCP port, App Connector group, log type and template (e.g. CSV).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Remote Access (PRA)</div><div class="qr-def">Clientless, browser-based RDP and SSH to servers through a privileged portal, with session recording and credential vaulting.</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Portal / Console</div><div class="qr-def">The portal is the web page users open; each console on it is one server (protocol, host, port).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Credentials</div><div class="qr-def">Vaulted usernames and passwords that a credentials policy injects into a console, so users never see them.</div></div>
+        <div class="qr-item"><div class="qr-term">AppProtection</div><div class="qr-def">Inline web-application firewall in ZPA: OWASP CRS, ThreatLabZ, WebSocket and API controls on private app traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Paranoia level</div><div class="qr-def">How wide a net the OWASP controls cast: higher levels catch more but raise false positives.</div></div>
+        <div class="qr-item"><div class="qr-term">Isolation Profile</div><div class="qr-def">Settings for Browser Isolation of private apps, e.g. render-only with View Office Files in Isolation.</div></div>
+        <div class="qr-item"><div class="qr-term">End User Collection</div><div class="qr-def">A ZDX container that sets which users and devices run the probes of the applications inside it.</div></div>
+        <div class="qr-item"><div class="qr-term">Web / Cloud Path probe</div><div class="qr-def">A Web probe times page fetches to a URL; a Cloud Path probe traces hop-by-hop latency, loss and jitter to the host.</div></div>
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center: a shared, read-only tenant with pre-populated data, used for the reporting and Workflow Automation labs.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
@@ -401,7 +372,7 @@ function updateSidebarOffset(){var panel=document.getElementById('config-panel')
 (function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
 function updateToggleSummary(){var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');s.textContent=fqdn?' — '+fqdn:'';}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var sid=(fqdn.split('.')[0]||'');document.querySelectorAll('.var-sid').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var sidnum=sid.replace(/\D/g,'');document.querySelectorAll('.var-sidnum').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sidnum){el.textContent=sidnum;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var xyz=sid.replace(/\D/g,'').slice(-3);document.querySelectorAll('.var-xyz').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(xyz){el.textContent=xyz;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
 }
 function loadConfig(){
   try{applyConfig();}catch(e){}
@@ -450,7 +421,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 </script>
 </body>
 </html>

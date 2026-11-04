@@ -17,7 +17,7 @@
   <div class="header-top"><span class="eyebrow-chip">EDU-202&middot; Hands-On Lab</span></div>
   <h1>Zscaler for Users: <em>Engineer</em></h1>
   <div class="motivation-banner">
-    <p>13 labs (0&ndash;12) covering environment orientation, ZPA App Connector, Browser Access, Log Streaming, ZIA Browser Isolation, Privileged Remote Access, AppProtection WAF, Zero Trust Browser, ZDX Cloud Application Monitoring, alerts and diagnostics, OneAPI automation, ZDX reporting, and Zscaler Workflow Automation.</p>
+    <p>Hands-on labs covering environment orientation, ZPA App Connector, Browser Access, Log Streaming, Privileged Remote Access, AppProtection WAF, Zero Trust Browser, ZDX Cloud Application Monitoring, alerts and diagnostics, OneAPI automation, ZDX reporting, and Zscaler Workflow Automation.</p>
   </div>
 </header>
 
@@ -85,12 +85,12 @@
       <a class="lab-card" href="lab0.html">
         <div class="lab-card-header"><span class="lab-card-num">LAB 0</span><span class="lab-card-time">~5 min</span></div>
         <div class="lab-card-title">Lab Orientation &amp; Environment Overview</div>
-        <div class="lab-card-desc">Study the lab scenario, learn the 6 virtual machines in your CloudShare environment, record every credential you'll use across all 12 labs, and understand how to access both the dedicated tenant and the Solutions Demo Center.</div>
+        <div class="lab-card-desc">Study the lab scenario, learn the 6 virtual machines in your CloudShare environment, record every credential you'll use across the labs, and understand how to access both the dedicated tenant and the Solutions Demo Center.</div>
         <img class="lab-card-hero" src="images/lab0-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
       <a class="lab-card" href="lab1.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 1</span><span class="lab-card-time">~15 min</span></div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 1</span><span class="lab-card-time">~10 min</span></div>
         <div class="lab-card-title">Environment Setup</div>
         <div class="lab-card-desc">Start your CloudShare lab environment, connect to the Corp: Client PC, and log into the Zscaler Experience Center — the launchpad for every lab that follows.</div>
         <img class="lab-card-hero" src="images/lab1-hero.png" alt="">
@@ -107,16 +107,16 @@
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab2.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 2</span><span class="lab-card-time">~35 min</span></div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 2</span><span class="lab-card-time">~20 min</span></div>
         <div class="lab-card-title">ZPA App Connector &amp; Browser Access</div>
         <div class="lab-card-desc">Deploy an App Connector to bridge internal apps to the Zscaler cloud, then extend zero-trust access to clientless web users via Browser Access — no VPN, no ZCC required.</div>
         <img class="lab-card-hero" src="images/lab2-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
       <a class="lab-card" href="lab3.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 3</span><span class="lab-card-time">~30 min</span></div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 3</span><span class="lab-card-time">~20 min</span></div>
         <div class="lab-card-title">ZPA Log Streaming</div>
-        <div class="lab-card-desc">Deploy a dedicated Log Streaming Connector, configure a Log Receiver pointing at your SIEM VM, and verify that ZPA user activity logs arrive in real time over TCP/TLS.</div>
+        <div class="lab-card-desc">Deploy a dedicated Log Streaming Connector, configure a Log Receiver pointing at your SIEM server, and verify that ZPA User Activity logs arrive in its syslog in real time.</div>
         <img class="lab-card-hero" src="images/lab3-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
@@ -126,36 +126,29 @@
   <div class="phase-section">
     <div class="phase-header">
       <span class="phase-label amber">SECURITY CONTROLS</span>
-      <div class="phase-title">Isolation, Privileged Access &amp; Application Protection</div>
-      <div class="phase-range">Labs 4&ndash;7 &middot; Browser Isolation, Privileged Remote Access, AppProtection WAF, and Zero Trust Browser</div>
+      <div class="phase-title">Privileged Access, Application Protection &amp; Isolation</div>
+      <div class="phase-range">Labs 4&ndash;6 &middot; Privileged Remote Access, AppProtection WAF, and Zero Trust Browser</div>
     </div>
     <div class="lab-grid">
       <a class="lab-card" href="lab4.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 4</span><span class="lab-card-time">~20 min</span></div>
-        <div class="lab-card-title">ZIA Browser Isolation</div>
-        <div class="lab-card-desc">Build an Isolation Profile and enforce it via URL Filtering so risky social networking and uncategorised sites render inside a remote Zscaler container — no active content reaches the endpoint.</div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 4</span><span class="lab-card-time">~50 min</span></div>
+        <div class="lab-card-title">ZPA Privileged Remote Access</div>
+        <div class="lab-card-desc">Build the full PRA stack — App Segments, Privileged Portal, Consoles, Credentials, and two policies — giving contractors browser-based RDP/SSH to internal servers with no VPN and no exposed credentials.</div>
         <img class="lab-card-hero" src="images/lab4-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
       <a class="lab-card" href="lab5.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 5</span><span class="lab-card-time">~50 min</span></div>
-        <div class="lab-card-title">ZPA Privileged Remote Access</div>
-        <div class="lab-card-desc">Build the full PRA stack — App Segments, Privileged Portal, Consoles, Credentials, and two access policies — giving contractors browser-based RDP/SSH to internal servers with no VPN and no exposed credentials.</div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 5</span><span class="lab-card-time">~30 min</span></div>
+        <div class="lab-card-title">ZPA AppProtection</div>
+        <div class="lab-card-desc">Apply an inline WAF to the Damn Vulnerable Web App (DVWA) using OWASP CRS rules and ThreatLabZ intelligence. Watch SQL injection and XSS attacks get through with the controls on Allow, then switch to Block.</div>
         <img class="lab-card-hero" src="images/lab5-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
       <a class="lab-card" href="lab6.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 6</span><span class="lab-card-time">~30 min</span></div>
-        <div class="lab-card-title">ZPA AppProtection</div>
-        <div class="lab-card-desc">Apply an inline WAF to the Damn Vulnerable Web App (DVWA) using OWASP CRS rules and ThreatLabZ intelligence. Watch SQL injection and XSS attacks flow in Report mode, then switch to Block.</div>
-        <img class="lab-card-hero" src="images/lab6-hero.png" alt="">
-        <div class="lab-card-cta">Start Lab &rarr;</div>
-      </a>
-      <a class="lab-card" href="lab7.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 7</span><span class="lab-card-time">~20 min</span></div>
+        <div class="lab-card-header"><span class="lab-card-num">LAB 6</span><span class="lab-card-time">~20 min</span></div>
         <div class="lab-card-title">ZPA Zero Trust Browser</div>
         <div class="lab-card-desc">Create a render-only isolation profile and isolate the DVWA app for clientless users — copy, paste, upload, and download are all controlled by the profile, and no files reach the endpoint.</div>
-        <img class="lab-card-hero" src="images/lab7-hero.png" alt="">
+        <img class="lab-card-hero" src="images/lab6-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
     </div>
@@ -165,21 +158,21 @@
     <div class="phase-header">
       <span class="phase-label purple">MONITORING</span>
       <div class="phase-title">ZDX Cloud App Monitoring &amp; Diagnostics</div>
-      <div class="phase-range">Labs 8&ndash;9 &middot; Synthetic probes, performance alerting, and deep device diagnostics</div>
+      <div class="phase-range">Labs 7&ndash;8 &middot; Synthetic probes, performance alerting, and deep device diagnostics</div>
     </div>
     <div class="lab-grid">
-      <a class="lab-card" href="lab8.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 8</span><span class="lab-card-time">~30 min</span></div>
+      <a class="lab-card" href="lab7.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 7</span><span class="lab-card-time">~20 min</span></div>
         <div class="lab-card-title">ZDX Cloud App Monitoring</div>
         <div class="lab-card-desc">Build a ZDX monitoring collection for a custom mail server application using both Web and Cloud Path probes to continuously measure availability and network performance from user endpoints.</div>
-        <img class="lab-card-hero" src="images/lab8-hero.png" alt="">
+        <img class="lab-card-hero" src="images/lab7-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
-      <a class="lab-card" href="lab9.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 9</span><span class="lab-card-time">~25 min</span></div>
+      <a class="lab-card" href="lab8.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 8</span><span class="lab-card-time">~15 min</span></div>
         <div class="lab-card-title">ZDX Alerts &amp; Diagnostics</div>
-        <div class="lab-card-desc">Configure a ZDX alert rule that fires when application performance degrades, then launch a Diagnostic Session to capture real-time Wi-Fi, DNS, cloud path, and application metrics for a specific user.</div>
-        <img class="lab-card-hero" src="images/lab9-hero.png" alt="">
+        <div class="lab-card-desc">Configure a ZDX alert rule that fires when application performance degrades, then launch a Diagnostics Session to capture real-time Wi-Fi, DNS, cloud path, and application metrics for a specific user.</div>
+        <img class="lab-card-hero" src="images/lab8-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
     </div>
@@ -189,14 +182,14 @@
     <div class="phase-header">
       <span class="phase-label">AUTOMATION</span>
       <div class="phase-title">Zscaler OneAPI &amp; Infrastructure Automation</div>
-      <div class="phase-range">Lab 10 &middot; OAuth 2.0 authentication, live API queries, and programmatic resource creation</div>
+      <div class="phase-range">Lab 9 &middot; OAuth 2.0 authentication, live API queries, and programmatic resource creation</div>
     </div>
     <div class="lab-grid">
-      <a class="lab-card" href="lab10.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 10</span><span class="lab-card-time">~35 min</span></div>
+      <a class="lab-card" href="lab9.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 9</span><span class="lab-card-time">~20 min</span></div>
         <div class="lab-card-title">Automation using Zscaler APIs</div>
         <div class="lab-card-desc">Authenticate via OAuth 2.0 against the Zscaler OneAPI platform, query live ZCC device data, and programmatically create an App Connector Group — the same workflow used by enterprise automation pipelines.</div>
-        <img class="lab-card-hero" src="images/lab10-hero.png" alt="">
+        <img class="lab-card-hero" src="images/lab9-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
     </div>
@@ -206,21 +199,21 @@
     <div class="phase-header">
       <span class="phase-label purple">SDC ADVANCED LABS</span>
       <div class="phase-title">Reporting, Analytics &amp; Incident Automation</div>
-      <div class="phase-range">Labs 11&ndash;12 &middot; Solutions Demo Center &mdash; ZDX data analysis and ZWA incident management workflows</div>
+      <div class="phase-range">Labs 10&ndash;11 &middot; Solutions Demo Center &mdash; ZDX data analysis and ZWA incident management workflows</div>
     </div>
     <div class="lab-grid">
-      <a class="lab-card" href="lab11.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 11</span><span class="lab-card-time">~15 min</span></div>
+      <a class="lab-card" href="lab10.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 10</span><span class="lab-card-badge sdc">SDC</span><span class="lab-card-time">~15 min</span></div>
         <div class="lab-card-title">Analyze Data and View Integrated Reports</div>
-        <div class="lab-card-desc">Use ZDX Data Explorer to build custom queries, download a QBR PowerPoint report, interact with system-generated Cloud Path reports, and create a shareable ZDX Snapshot for view-only stakeholder access.</div>
-        <img class="lab-card-hero" src="images/lab11-hero.png" alt="">
+        <div class="lab-card-desc">Use ZDX Data Explorer to build custom queries, download a QBR PowerPoint report, interact with system-generated Cloud Path reports, and open a shareable ZDX Snapshot for view-only stakeholder access.</div>
+        <img class="lab-card-hero" src="images/lab10-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
-      <a class="lab-card" href="lab12.html">
-        <div class="lab-card-header"><span class="lab-card-num">LAB 12</span><span class="lab-card-time">~20 min</span></div>
+      <a class="lab-card" href="lab11.html">
+        <div class="lab-card-header"><span class="lab-card-num">LAB 11</span><span class="lab-card-badge sdc">SDC</span><span class="lab-card-time">~20 min</span></div>
         <div class="lab-card-title">Manage Incidents with Zscaler Workflow Automation</div>
         <div class="lab-card-desc">Triage a DLP incident end-to-end — examine trigger data, update status and priority, notify the originator, escalate to an approver, and explore automated workflow templates and mappings that replace manual triage steps.</div>
-        <img class="lab-card-hero" src="images/lab12-hero.png" alt="">
+        <img class="lab-card-hero" src="images/lab11-hero.png" alt="">
         <div class="lab-card-cta">Start Lab &rarr;</div>
       </a>
     </div>
@@ -229,7 +222,7 @@
 </div>
 <footer>
   <span>EDU-202&middot; Zscaler for Users &mdash; Engineer &middot; Hands-On Lab Guide</span>
-  <span>Lab Hub &middot; Labs 0&ndash;12</span>
+  <span>Lab Hub &middot; Labs 0&ndash;11</span>
 </footer>
 <script>
 const CONFIG_KEY='edu202-expc-lab-config';
@@ -237,7 +230,7 @@ const CONFIG_COLLAPSED_KEY='edu202-config-collapsed';
 function loadConfig(){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fi=document.getElementById('fqdn-input'),pi=document.getElementById('pass-input');if(fi&&d.fqdn)fi.value=d.fqdn;if(pi&&d.pass)pi.value=d.pass;applyConfig();}catch(e){}}
 function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass}));applyConfig();}catch(e){}}
 function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);document.getElementById('fqdn-input').value='';document.getElementById('pass-input').value='';applyConfig();}catch(e){}}
-function applyConfig(){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var studentId='';if(fqdn){var m=fqdn.match(/^zs(\d+)\./);if(m)studentId=m[1];}
+function applyConfig(){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var studentId='';if(fqdn){var m=fqdn.match(/^zs(\d+)\./);if(m)studentId='zs'+m[1];}
 var ds=document.getElementById('d-student');if(ds)ds.textContent=fqdn?'student@'+fqdn:'student@<Student FQDN>';
 var dh=document.getElementById('d-hvac');if(dh)dh.textContent=fqdn?'hvac@'+fqdn:'hvac@<Student FQDN>';
 var did=document.getElementById('d-id');if(did)did.textContent=studentId||'<Student ID>';

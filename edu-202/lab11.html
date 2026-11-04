@@ -7,7 +7,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 11: Analyze Data and View Integrated Reports — EDU-202</title>
+<title>Lab 11: Manage Incidents with Zscaler Workflow Automation — EDU-202</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,18 +24,30 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 .task-collapsible.open>.task-collapsible-body{display:block;}
 </style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-202</a> › Lab 11</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 11 · REPORTING &amp; ANALYTICS</span>
+    <span class="eyebrow-chip">LAB 11 · SDC</span>
     <div class="header-dot"></div>
   </div>
-  <h1>Analyze Data and View <em>Integrated Reports</em></h1>
+  <h1>Manage Incidents with <em>Zscaler Workflow Automation</em></h1>
   <div class="motivation-banner">
-    <p>Raw telemetry only tells half the story. In this lab you use ZDX Data Explorer to build custom queries and visualise application performance, download Quarterly Business Review reports for trend insights, review system-generated Cloud Path reports, and create a shareable ZDX Snapshot — the exact toolkit used when communicating user experience data to stakeholders and leadership.</p>
+    <p>A data protection violation without a response workflow is just noise. In this lab you explore Zscaler Workflow Automation (ZWA): view incidents, examine their trigger data, update status and priority, notify the end user, escalate to an approver, and examine the workflow templates and mappings that automate consistent incident response.</p>
   </div>
 </header>
 
@@ -68,80 +80,80 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab11">
-      <h2>Lab 11: Analyze Data and View Integrated Reports</h2>
+      <h2>Lab 11: Manage Incidents with Zscaler Workflow Automation</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 11</div>
-        <p><strong>Scenario:</strong> You need to review Zscaler Digital Experience (ZDX) data to understand application and network performance and communicate trends to stakeholders. In this lab you use Data Explorer to build custom queries, download and review Quarterly Business Review (QBR) reports, interact with system-generated Cloud Path reports, and create a ZDX Snapshot URL that gives view-only access to findings without requiring admin credentials.</p>
+        <p><strong>Scenario:</strong> You explore the tools in the Zscaler Workflow Automation (ZWA) portal to manage data protection incidents and automate related workflows. You become familiar with changing incident statuses, escalating incidents, and notifying end users to improve security posture and response times.</p>
+        <ul style="margin-top:10px;">
+          <li>Change the status and priority of data protection incidents.</li>
+          <li>Escalate incidents to the appropriate stakeholders for review.</li>
+          <li>Notify end users by email to provide coaching or request justification.</li>
+          <li>Identify incident metadata, trigger data and violation content.</li>
+          <li>View and understand automated workflow templates and mappings.</li>
+        </ul>
         <figure class="lab-hero">
-          <img src="images/lab11-hero.png" alt="Lab 11 — Analyze Data and View Integrated Reports" loading="lazy">
+          <img src="images/lab11-hero.png" alt="Lab 11 — Manage Incidents with Zscaler Workflow Automation" loading="lazy">
         </figure>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
-          <div class="lab-meta-item"><strong>Service:</strong> ZDX (Zscaler Digital Experience)</div>
+          <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
+          <div class="lab-meta-item"><strong>Service:</strong> Zscaler Workflow Automation (ZWA)</div>
           <div class="lab-meta-item"><strong>Environment:</strong> Solutions Demo Center (SDC)</div>
         </div>
+      </div>
+
+      <div class="callout callout-sdc">
+        <p><strong>SDC:</strong> This lab runs on the read-only Solutions Demo Center tenant. Sign in at <code>console.zscaler.com</code> with the SDC credentials from the CloudShare <strong>Credentials</strong> tab (see Lab 10).</p>
       </div>
 
       <!-- Task 11.1 -->
       <div class="task-collapsible open" id="task-11-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 11.1</span>
-          <span class="task-collapsible-title">Analyze the Data Explorer to View Application and Network Performance</span>
+          <span class="task-collapsible-title">Enroll with Zscaler Client Connector</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Data Explorer lets you build and run custom views against ZDX telemetry — combining probes, metrics, filters, and chart types into a single interactive query. In this task you open Data Explorer, build a query, and explore the chart zoom feature.</p>
+            <p style="margin-bottom:12px;">In this task, you enroll Corp Client PC 1 as a user in the Solutions Demo Center (SDC) organisation.</p>
             <ol class="step-list">
-              <li>On <strong>Corp: Client PC 1</strong>, open a browser and navigate to the <strong>Zscaler Experience Center</strong>.</li>
-              <li>Open Data Explorer:
-                <ul class="sub-steps">
-                  <li>Go to <strong>Analytics &gt; Digital Experience Management &gt; Reporting &gt; Data Explorer</strong>.</li>
-                  <li>If prompted, enable <strong>Switch to Existing Reports</strong>.</li>
-                  <li>Alternatively, use the search bar to find the feature directly.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p223-img1.png" alt="Data Explorer navigation path in Experience Center showing Analytics > Digital Experience Management > Reporting > Data Explorer" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> You can see a list of configured views and their details.</p>
-                </div>
+              <li><strong>Log out of Zscaler Client Connector.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On Corp Client PC 1, open Zscaler Client Connector.</li>
+                  <li>Select <strong>Log Out</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p222-a.png" alt="Zscaler Client Connector with the Logout button highlighted in the top-right corner" loading="lazy">
+                      <div class="screenshot-caption">Client Connector › <strong>Logout</strong>.</div>
+                    </div>
+                  </li>
+                </ol>
               </li>
-              <li>Create and run a query:
-                <ul class="sub-steps">
-                  <li>Select <strong>View</strong> to organize customized views of applications and metrics.</li>
-                  <li>In the left panel, configure options such as <strong>Data Source</strong>, <strong>Probes</strong>, <strong>Metrics</strong>, <strong>Filters</strong>, <strong>Operations</strong>, <strong>View Type</strong>, or <strong>Overlays</strong>.</li>
-                  <li>Select <strong>Run Query</strong>.</li>
-                </ul>
+              <li><strong>Log in with the IT department credentials.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Use the SDC credentials provided for the IT department (CloudShare <strong>Credentials</strong> › SDC Credentials › IT Username).</li>
+                  <li>Enter the <code>IT_department_username</code>.</li>
+                  <li>Select <strong>Login</strong>.</li>
+                  <li>At the IdP authentication prompt:
+                    <ul class="sub-steps">
+                      <li>Enter the <code>IT_department_username</code> (if it isn't pre-filled), then select <strong>Next</strong>.</li>
+                      <li>Enter the <code>Session_Password</code>, then select <strong>Sign in</strong>.</li>
+                    </ul>
+                  </li>
+                </ol>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p224-img1.png" alt="Data Explorer showing the list of configured views with columns for View Name, Data Source, Probe Type, Metrics, and Last Modified" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab11/lab11-p223-a.png" alt="Zscaler Client Connector showing Internet Security Service Status ON and Network Type Off-Trusted Network after SDC enrollment" loading="lazy">
+                  <div class="screenshot-caption">Enrolled: Service Status ON, Network Type Off-Trusted Network.</div>
                 </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p225-img1.png" alt="Data Explorer query results showing individual charts for selected applications and metrics with performance trend lines" onclick="openLightbox(this.src,this.alt)">
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> Check the connection status. After a few minutes, confirm that the Internet Security Service Status shows <strong>ON</strong> and the Network Type shows <strong>Off-Trusted Network</strong>.</p>
                 </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> You can view graphs that display individual charts for the selected applications and metrics.</p>
-                </div>
-              </li>
-              <li>Explore chart details:
-                <ul class="sub-steps">
-                  <li>Select and drag to <strong>zoom in</strong> on a specific area of a chart.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p226-img1.png" alt="Data Explorer chart with a zoomed time range selected, showing detailed performance metrics for the highlighted period" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p227-img1.png" alt="Zoomed Data Explorer chart view showing granular application performance data points within the selected time range" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> You can view details for the zoomed time range.</p>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> Zscaler Client Connector may minimise to the taskbar and take a few minutes to initialise and finish enrolling all services.</p>
                 </div>
               </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t11-1">
+          <div class="section-qa" data-section="t12-1">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 11.1</span>
               <span class="section-qa-chevron">▾</span>
@@ -150,15 +162,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t11-1" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t11-1',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t11-1"></div>
+                  <textarea class="section-qa-textarea" id="sq-t12-1" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t12-1',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t12-1"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t11-1" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t11-1',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t11-1"></div>
+                  <textarea class="section-qa-textarea" id="sn-t12-1" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t12-1',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t12-1"></div>
                 </div>
               </div>
             </div>
@@ -170,46 +182,52 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-11-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 11.2</span>
-          <span class="task-collapsible-title">View QBR Reports for Trend Insights</span>
+          <span class="task-collapsible-title">View Current DLP Incidents</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Quarterly Business Review (QBR) reports are pre-built PowerPoint files generated automatically by Zscaler on the first weekend of every month. They provide a structured view of ZDX user experience trends — ready for executive and stakeholder presentations without manual effort.</p>
+            <p style="margin-bottom:12px;">In this task, you use the Experience Center to view the incident list and examine specific incident details.</p>
             <ol class="step-list">
-              <li>Open the QBR reports list:
-                <ul class="sub-steps">
-                  <li>In the left navigation bar, select <strong>Quarterly Business Reviews</strong>.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p228-img1.png" alt="Quarterly Business Reviews page showing a list of reports organised by time period with Status and Download icons" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> You see a list of reports for the covered time period.</p>
-                </div>
+              <li><strong>Access the Experience Center.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Log in with your SDC credentials.</li>
+                  <li>In the Experience Center home page, type <code>Incidents</code> in the Search menu and select the matching option (Data Security &gt; Workflow Automation).
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p224-a.png" alt="Workflow Automation Incidents page with counters for all, open, unassigned, resolved, waiting and escalated incidents, and the first incident row highlighted" loading="lazy">
+                      <div class="screenshot-caption">Data Security › Workflow Automation › <strong>Incidents</strong>.</div>
+                    </div>
+                  </li>
+                </ol>
               </li>
-              <li>Download and review a report:
-                <ul class="sub-steps">
-                  <li>Select the <strong>Download</strong> icon for the report you want to view.</li>
-                  <li>Open the downloaded QBR PowerPoint file and review the details.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p229-img1.png" alt="QBR reports list with the Download icon highlighted on the most recent report row" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p230-img1.png" alt="Downloaded QBR PowerPoint file open showing executive summary slide with ZDX performance metrics and trend charts" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> You can open the file and view the report content.</p>
-                </div>
-                <div class="callout callout-note" style="margin-top:8px;">
-                  <p>A new QBR report is generated on the first weekend of every month. Each report is securely stored as a PowerPoint file in the Zscaler cloud.</p>
+              <li><strong>Review the incident details.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>From the Incidents list, open the first incident by selecting its <strong>Transaction ID</strong>.</li>
+                  <li>Review the metadata in the <strong>Overview</strong> and <strong>Violation Details</strong> sections.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p225-a.png" alt="Incident Details page with the Overview and Violation Details tabs highlighted, showing incident ID, priority, action, source DLP type and current status" loading="lazy">
+                      <div class="screenshot-caption">Incident Details: Overview and Violation Details.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Examine the trigger data.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Scroll to the <strong>Violation Content</strong> card.</li>
+                  <li>Expand <strong>View Trigger Data</strong> to see the content that triggered the DLP violation.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p226-a.png" alt="Violation Content tab with View Trigger Data expanded, showing the matched content with the matching values highlighted" loading="lazy">
+                      <div class="screenshot-caption">Violation Content › <strong>View Trigger Data</strong>: the matches are highlighted in context.</div>
+                    </div>
+                  </li>
+                </ol>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> Confirm that you can view the incident metadata and the trigger data for the selected incident.</p>
                 </div>
               </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t11-2">
+          <div class="section-qa" data-section="t12-2">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 11.2</span>
               <span class="section-qa-chevron">▾</span>
@@ -218,15 +236,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t11-2" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t11-2',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t11-2"></div>
+                  <textarea class="section-qa-textarea" id="sq-t12-2" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t12-2',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t12-2"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t11-2" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t11-2',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t11-2"></div>
+                  <textarea class="section-qa-textarea" id="sn-t12-2" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t12-2',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t12-2"></div>
                 </div>
               </div>
             </div>
@@ -238,76 +256,46 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-11-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 11.3</span>
-          <span class="task-collapsible-title">View System Integrated Reports and Generate ZDX Snapshots</span>
+          <span class="task-collapsible-title">Modify Incident Metadata</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">System-generated reports provide pre-built views of ZDX telemetry — including Cloud Path End-to-End latency — that you can filter interactively without building a custom query. ZDX Snapshots let you capture any portal page and share a view-only URL with users or stakeholders who do not have admin access.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Step A — Review System-Generated Reports</h4>
+            <p style="margin-bottom:12px;">In this task, you update an incident to show that it is under investigation and assign it a priority level.</p>
             <ol class="step-list">
-              <li>Open system-generated reports:
-                <ul class="sub-steps">
-                  <li>In the left navigation bar, go to <strong>System Generated Reports</strong>.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p231-img1.png" alt="System Generated Reports page showing a list of pre-built report types including Cloud Path End-to-End with View icons" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> You see a list of reports.</p>
-                </div>
+              <li><strong>Update the incident status.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Incident Details page, open the <strong>Actions</strong> menu.</li>
+                  <li>Set the status to <strong>Investigating</strong>.</li>
+                  <li>In the <strong>Note</strong> field, enter <code>Test</code>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p227-a.png" alt="Incident Details Actions menu open with Assign Priority and Investigating highlighted" loading="lazy">
+                      <div class="screenshot-caption">Actions menu: <strong>Investigating</strong> (and Assign Priority, next).</div>
+                    </div>
+                  </li>
+                </ol>
               </li>
-              <li>Open and interact with a report:
-                <ul class="sub-steps">
-                  <li>Select the <strong>View</strong> icon for the report you want to analyse.</li>
-                  <li>For <strong>Cloud Path End-to-End</strong>, filter by Departments, Zscaler Locations, Geolocations, or Applications.</li>
-                  <li>Select a point in the graph to display a tooltip with latency metrics for the selected locations.</li>
-                  <li>Drag from left to right to select a time range.</li>
-                  <li>Select <strong>Zoom Out</strong> to reset the graph to the original view.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p232-img1.png" alt="System Generated Cloud Path End-to-End report showing filter controls for Departments, Locations, and Applications at the top" onclick="openLightbox(this.src,this.alt)">
+              <li><strong>Update the priority.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Assign Priority</strong>.</li>
+                  <li>Change the priority to <strong>High</strong> (if it isn't already set).
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p228-a.png" alt="Assign Priority dialog with priority High selected and the Assign button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Assign Priority: <strong>High</strong>.</div>
+                    </div>
+                  </li>
+                </ol>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> Refresh your browser. Confirm that the Status and Priority fields reflect your changes, then scroll to <strong>State Changes</strong> to see the history entries.</p>
                 </div>
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p233-img1.png" alt="Cloud Path End-to-End latency graph with multiple coloured lines per location, showing a tooltip with latency metrics for a selected point" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> The graph updates based on your selections.</p>
-                </div>
-                <div class="callout callout-note" style="margin-top:8px;">
-                  <p>Up to 20 device locations are displayed at a time in the legend on the right side of the graph, based on user device information.</p>
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step B — Create and Share a ZDX Snapshot</h4>
-            <ol class="step-list" start="3">
-              <li>Create a ZDX Snapshot:
-                <ul class="sub-steps">
-                  <li>In the left navigation bar, select <strong>ZDX Snapshots</strong>.</li>
-                  <li>Select the <strong>Copy</strong> icon for an active snapshot.</li>
-                  <li>Paste the copied link into a new browser window.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p234-img1.png" alt="ZDX Snapshots page listing active snapshots with Copy URL icon highlighted on the first row" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-success" style="margin-top:8px;">
-                  <p><strong>Verify:</strong> The page displays a green icon in the upper-left corner, indicating you are viewing a ZDX Snapshot.</p>
-                </div>
-              </li>
-              <li>Identify the snapshot indicator:
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab11/lab11-p235-img1.png" alt="ZDX portal page viewed via snapshot URL, showing the green snapshot indicator icon in the upper-left corner of the page" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="callout callout-note" style="margin-top:8px;">
-                  <p>A ZDX Snapshot captures the current state of a UI page and provides a URL that admins can share with ZDX users or other admins for view-only access. Interaction is limited — time range filters, dropdown menus, device selection, and most navigation controls are disabled by default to protect data privacy.</p>
+                  <img src="screenshots/lab11/lab11-p229-a.png" alt="State Changes tab listing Change Priority from Critical to High, Change Status from New to Investigating, and Incident Created" loading="lazy">
+                  <div class="screenshot-caption">State Changes record each update with who made it and when.</div>
                 </div>
               </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t11-3">
+          <div class="section-qa" data-section="t12-3">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 11.3</span>
               <span class="section-qa-chevron">▾</span>
@@ -316,15 +304,218 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t11-3" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t11-3',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t11-3"></div>
+                  <textarea class="section-qa-textarea" id="sq-t12-3" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t12-3',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t12-3"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t11-3" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t11-3',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t11-3"></div>
+                  <textarea class="section-qa-textarea" id="sn-t12-3" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t12-3',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t12-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 11.4 -->
+      <div class="task-collapsible open" id="task-11-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 11.4</span>
+          <span class="task-collapsible-title">Test User Notification and Escalation Workflows</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you notify a user to request justification, then escalate an incident to an approver.</p>
+            <ol class="step-list">
+              <li><strong>Notify the end user.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Incident Details page, open the <strong>Actions</strong> menu, then select <strong>Notify User</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p230-a.png" alt="Incident Details Actions menu with Notify User highlighted" loading="lazy">
+                      <div class="screenshot-caption">Actions › <strong>Notify User</strong>.</div>
+                    </div>
+                  </li>
+                  <li>In the Notify User settings:
+                    <ul class="sub-steps">
+                      <li>Select a <strong>Language</strong> and <strong>Time Zone</strong>.</li>
+                      <li>In the <strong>Note to user</strong> field, enter: <code>Please justify uploading this document for testing purposes of HandsOnLab</code></li>
+                      <li>Select <strong>Submit</strong>.</li>
+                    </ul>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p231-a.png" alt="Notify User dialog with Language, Time Zone and Note to user filled in and the Submit button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Language, time zone and the note to the user, then Submit.</div>
+                    </div>
+                    <div class="callout callout-note">
+                      <p><strong>Note:</strong> In a live environment, the originator receives an email notification similar to the sample below.</p>
+                    </div>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p232-a.png" alt="Sample Data Loss Prevention Violation incident notification email with the Click Here incident link and the note to the user highlighted" loading="lazy">
+                      <div class="screenshot-caption">Sample incident notification email: the user responds through <strong>Click Here</strong>.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Verify the incident state.</strong> On the Incident Details page, review <strong>State Changes</strong> to confirm that the notification was sent.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab11/lab11-p233-a.png" alt="State Changes showing Notify User, a status change from Investigating to Validating with User, and the Note to the User" loading="lazy">
+                  <div class="screenshot-caption">The notification moved the incident to <strong>Validating with User</strong>.</div>
+                </div>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> You can proceed to the next step if the originator doesn't provide a justification during your lab session.</p>
+                </div>
+              </li>
+              <li><strong>Configure an approver for escalation.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center home page, type <code>Approvers</code> in the Search menu and select the matching option (Administration &gt; Workflow Automation User Management).</li>
+                  <li>Select <strong>Add more (+)</strong>.</li>
+                  <li>Enter your name and email address.</li>
+                  <li>Select <strong>Save</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p234-a.png" alt="Approvers page under Workflow Automation User Management with a new approver name and email row and the Save button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Add yourself as an approver, then Save.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Escalate the incident.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Return to the Incidents list (Data Security &gt; Workflow Automation), then open the <strong>Actions</strong> menu for the Transaction ID you modified earlier.</li>
+                  <li>Select <strong>Escalate</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p235-a.png" alt="Incident Details Actions menu with Escalate highlighted" loading="lazy">
+                      <div class="screenshot-caption">Actions › <strong>Escalate</strong>.</div>
+                    </div>
+                    <div class="callout callout-note">
+                      <p><strong>Note:</strong> Integration with SAML or SCIM lets the portal populate the approver list from your organisational directory.</p>
+                    </div>
+                  </li>
+                  <li>From the <strong>Select Approver</strong> drop-down list, choose your ID, then select <strong>Submit</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p236-a.png" alt="Escalate dialog with Approver, Language, Time Zone and Note to user filled in and the Submit button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Pick yourself as the approver and add a note.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Approve the escalation from email.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open your personal email account and find the <strong>DLP Incident Notification</strong> email (check your spam folder if necessary).</li>
+                  <li>Select the <strong>Click here</strong> link in the email.</li>
+                  <li>Select <strong>Approved</strong> in the <strong>Justification Type</strong> field, enter a reason, then select <strong>Submit</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p237-a.png" alt="Justification form with Justification Type Approved, a justification reason, and the Submit button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Justification Type <strong>Approved</strong>, a reason, then Submit.</div>
+                    </div>
+                  </li>
+                </ol>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> Confirm that the notification and escalation actions appear in the incident's State Changes history.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+          <div class="section-qa" data-section="t12-4">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 11.4</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t12-4" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t12-4',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t12-4"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t12-4" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t12-4',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t12-4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 11.5 -->
+      <div class="task-collapsible open" id="task-11-5">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 11.5</span>
+          <span class="task-collapsible-title">Configure Automated Workflows</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you explore how workflow templates and mappings automate incident management actions.</p>
+            <ol class="step-list">
+              <li><strong>View workflow templates.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the Experience Center, type <code>Workflow Templates</code> in the Search menu and select the matching option (Administration &gt; Workflow Automation &gt; Workflows).</li>
+                  <li>In the <strong>Auto Escalate</strong> row, select the <strong>View Workflow Template</strong> icon in the Action column.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p239-a.png" alt="Workflow Templates list with the view icon in the Auto Escalate row highlighted" loading="lazy">
+                      <div class="screenshot-caption">Workflow Templates › <strong>Auto Escalate</strong> › View.</div>
+                    </div>
+                    <div class="callout callout-note">
+                      <p><strong>Note:</strong> The flow diagram shows the logic, such as automatically notifying a manager when an incident is created.</p>
+                    </div>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p240-a.png" alt="Workflow Settings flow diagram: Get User Manager, Validate Manager, then Escalate To Manager or, if the manager is not found, Escalate To Approver" loading="lazy">
+                      <div class="screenshot-caption">Auto Escalate: find the user's manager, else fall back to an approver.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Explore workflow mappings.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the left navigation bar, select <strong>Workflow Mappings</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p241-a.png" alt="Workflow Mappings page listing workflow mappings, with the first Workflow Name highlighted" loading="lazy">
+                      <div class="screenshot-caption">Workflow Mappings.</div>
+                    </div>
+                  </li>
+                  <li>Expand the first mapping to see its triggering attributes and conditions.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab11/lab11-p242-a.png" alt="An expanded workflow mapping with Source DLP Type and AND-joined predicates on user attributes highlighted" loading="lazy">
+                      <div class="screenshot-caption">Each mapping is a set of predicates (NOT / OR / AND) on incident attributes.</div>
+                    </div>
+                    <div class="callout callout-note">
+                      <p><strong>Note:</strong> A workflow triggers only if an incident matches the criteria defined in its mapping.</p>
+                    </div>
+                  </li>
+                  <li>Explore the available attributes and logic constructs. Because you have read-only credentials, you cannot save changes.</li>
+                  <li>Select <strong>Reset</strong> when you have finished exploring.</li>
+                </ol>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> Confirm that you can view the workflow template logic and the workflow mapping conditions.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+          <div class="section-qa" data-section="t12-5">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 11.5</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t12-5" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t12-5',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t12-5"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t12-5" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t12-5',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t12-5"></div>
                 </div>
               </div>
             </div>
@@ -333,7 +524,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       </div>
 
     </div>
-  </div>
+  </div><!-- /.content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -341,103 +532,99 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-label">LAB TOPOLOGY</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/lab0/lab0-p8-img1.png" alt="EDU-202 lab topology: Corp Client PC 1 and the Remote Linux Client PC on 192.168.1.0/24 reach the Experience Center through the Zero Trust Exchange, which connects through the Corp ZPA Connector and Corp Log Streaming Connector to the Corporate Data Center 10.0.0.0/24. Click to expand." onclick="openLightbox(this.src,this.alt)" title="Click to expand">
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Virtual Machines</div>
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
       <div class="sidebar-cred-list">
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Client PC 1<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin (CloudShare › Credentials)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">&lt;SDC Admin Username&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;SDC Password&gt;</code></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC IT department user (CloudShare › Credentials)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.1</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.1',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">&lt;IT Username&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;SDC Password&gt;</code></div>
           </div>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.2</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Portal Credentials</div>
-      <div class="sidebar-cred-list">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="prog-chk-lab11-1"><input type="checkbox" id="chk-lab11-1" onchange="toggleDone(this)"><label for="chk-lab11-1">Task 11.1: Enrolled as the SDC IT user</label></li>
+        <li class="progress-item" id="prog-chk-lab11-2"><input type="checkbox" id="chk-lab11-2" onchange="toggleDone(this)"><label for="chk-lab11-2">Task 11.2: Incident and trigger data reviewed</label></li>
+        <li class="progress-item" id="prog-chk-lab11-3"><input type="checkbox" id="chk-lab11-3" onchange="toggleDone(this)"><label for="chk-lab11-3">Task 11.3: Investigating + High priority</label></li>
+        <li class="progress-item" id="prog-chk-lab11-4"><input type="checkbox" id="chk-lab11-4" onchange="toggleDone(this)"><label for="chk-lab11-4">Task 11.4: User notified, incident escalated</label></li>
+        <li class="progress-item" id="prog-chk-lab11-5"><input type="checkbox" id="chk-lab11-5" onchange="toggleDone(this)"><label for="chk-lab11-5">Task 11.5: Templates and mappings explored</label></li>
+      </ul>
+    </div>
 
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 11.1 · Enroll as the IT user</div>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-internet-security-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="Checking Service Status ON and the network type after enrolling">Internet Security Status in Client Connector</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Tasks 11.2–11.3 · Incidents</div>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/workflow-automation-data-protection" target="_blank" rel="noopener noreferrer" title="What ZWA does with DLP incidents">Workflow Automation for Data Protection</a>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/managing-incidents" target="_blank" rel="noopener noreferrer" title="The Incidents list, its filters and the Actions menu">Managing Incidents</a>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/viewing-managing-incident-details" target="_blank" rel="noopener noreferrer" title="Overview, Violation Details, Violation Content and State Changes; status and priority">Viewing &amp; Managing Incident Details</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">from SDC email</code></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 11.4 · Notify &amp; escalate</div>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/managing-approvers" target="_blank" rel="noopener noreferrer" title="Adding yourself as an approver for escalations">Managing Approvers</a>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/responding-end-user-notification" target="_blank" rel="noopener noreferrer" title="What the originator sees when you select Notify User">Responding to an End User Notification</a>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/responding-escalation-notification" target="_blank" rel="noopener noreferrer" title="The approver&#x27;s Click here link and the Approved justification">Responding to an Escalation Notification</a>
         </div>
-
+        <div class="ref-group">
+          <div class="ref-group-label">Task 11.5 · Templates &amp; mappings</div>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/managing-workflow-templates" target="_blank" rel="noopener noreferrer" title="Reading the Auto Escalate flow diagram">Managing Workflow Templates</a>
+          <a class="ref-link" href="https://help.zscaler.com/workflow-automation/managing-workflow-mappings" target="_blank" rel="noopener noreferrer" title="How mapping predicates decide which incidents trigger a workflow">Managing Workflow Mappings</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
       </div>
     </div>
 
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide uses the new navigation: open features from the Search menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The search box in the Experience Center top bar. Type a feature name (e.g. App Connector Groups) and pick the result; each result shows its menu path.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Formerly ZIdentity. Zscaler's authentication service, reached from the Experience Center menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's unique domain (e.g. zs000834.labtenant.com). Used in every login ID: student@, hvac@.</div></div>
+        <div class="qr-item"><div class="qr-term">CloudShare</div><div class="qr-def">The virtual lab platform that hosts your VMs. Use Actions › Send Text or Send Password to paste into a VM.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">A lightweight VM in the data center that makes outbound-only connections to ZPA, so private apps are reachable without inbound firewall ports.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Group</div><div class="qr-def">A set of App Connectors that share a location and settings. Server groups point to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token</div><div class="qr-def">The OAuth code shown by cat /etc/issue on a connector. Add it under App Connectors to enroll the connector; it expires after two hours.</div></div>
+        <div class="qr-item"><div class="qr-term">Application Segment</div><div class="qr-def">Defines a private app (domain or IP plus ports) and how it is reached: Client Connector, Browser Access or Privileged Remote Access.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment / Server Group</div><div class="qr-def">A segment group bundles segments for policy; a server group maps segments to App Connector groups.</div></div>
+        <div class="qr-item"><div class="qr-term">Browser Access</div><div class="qr-def">Clientless ZPA access to a web app through its External Domain, with no Client Connector or VPN.</div></div>
+        <div class="qr-item"><div class="qr-term">Access Policy</div><div class="qr-def">ZPA rules, default deny, that allow access to segments when criteria such as Applications and Client Types match.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Streaming Service (LSS)</div><div class="qr-def">Streams ZPA logs (e.g. User Activity) through an App Connector to a syslog receiver such as a SIEM.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Receiver</div><div class="qr-def">The LSS destination: host, TCP port, App Connector group, log type and template (e.g. CSV).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Remote Access (PRA)</div><div class="qr-def">Clientless, browser-based RDP and SSH to servers through a privileged portal, with session recording and credential vaulting.</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Portal / Console</div><div class="qr-def">The portal is the web page users open; each console on it is one server (protocol, host, port).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Credentials</div><div class="qr-def">Vaulted usernames and passwords that a credentials policy injects into a console, so users never see them.</div></div>
+        <div class="qr-item"><div class="qr-term">AppProtection</div><div class="qr-def">Inline web-application firewall in ZPA: OWASP CRS, ThreatLabZ, WebSocket and API controls on private app traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Paranoia level</div><div class="qr-def">How wide a net the OWASP controls cast: higher levels catch more but raise false positives.</div></div>
+        <div class="qr-item"><div class="qr-term">Isolation Profile</div><div class="qr-def">Settings for Browser Isolation of private apps, e.g. render-only with View Office Files in Isolation.</div></div>
+        <div class="qr-item"><div class="qr-term">End User Collection</div><div class="qr-def">A ZDX container that sets which users and devices run the probes of the applications inside it.</div></div>
+        <div class="qr-item"><div class="qr-term">Web / Cloud Path probe</div><div class="qr-def">A Web probe times page fetches to a URL; a Cloud Path probe traces hop-by-hop latency, loss and jitter to the host.</div></div>
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center: a shared, read-only tenant with pre-populated data, used for the reporting and Workflow Automation labs.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
@@ -447,17 +634,18 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </div>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab10.html">← Lab 10: Automation using Zscaler APIs</a>
-  <div class="page-nav-message">One more lab to go — you're nearly through the full EDU-202 curriculum!</div>
-  <a class="page-nav-btn page-nav-next" href="lab12.html">Lab 12: ZWA Incident Management →</a>
+  <a class="page-nav-btn page-nav-prev" href="lab10.html">← Lab 10: Analyze Data &amp; Reports</a>
+  <div class="page-nav-message">You've completed all EDU-202 labs — outstanding work!</div>
+  <a class="page-nav-btn page-nav-next" href="index.html">Back to Lab Hub →</a>
 </div>
 
 <script>
+// PAGE_KEY and SECTION_IDS carried over from the Rev 3.4 lab12.html (same lab content) so saved notes survive the renumbering
 const CONFIG_KEY='edu202-expc-lab-config';
 const CONFIG_COLLAPSED_KEY='edu202-config-collapsed';
 const FOOTER_KEY='edu202-footer-collapsed';
-const PAGE_KEY='edu202-lab-lab11';
-var SECTION_IDS=['t11-1','t11-2','t11-3'];
+const PAGE_KEY='edu202-lab-lab12';
+var SECTION_IDS=['t12-1','t12-2','t12-3','t12-4','t12-5'];
 
 function loadConfig(){
   try{applyConfig();}catch(e){}
@@ -465,7 +653,7 @@ function loadConfig(){
 function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass}));applyConfig();}catch(e){}}
 function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);document.getElementById('fqdn-input').value='';document.getElementById('pass-input').value='';applyConfig();}catch(e){}}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var sid=(fqdn.split('.')[0]||'');document.querySelectorAll('.var-sid').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var sidnum=sid.replace(/\D/g,'');document.querySelectorAll('.var-sidnum').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sidnum){el.textContent=sidnum;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var xyz=sid.replace(/\D/g,'').slice(-3);document.querySelectorAll('.var-xyz').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(xyz){el.textContent=xyz;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
 }
 function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
 function toggleConfig(){var panel=document.getElementById('config-panel');var body=document.getElementById('config-body');var btn=document.getElementById('config-toggle-btn');if(!panel)return;var collapsed=panel.classList.toggle('collapsed');localStorage.setItem(CONFIG_COLLAPSED_KEY,collapsed?'1':'0');if(btn){var chev=btn.querySelector('.chevron');if(chev)chev.textContent=collapsed?'▼':'▲';btn.innerHTML=(collapsed?'<span class="chevron">▼</span> Expand':'<span class="chevron">▲</span> Collapse');}
@@ -519,7 +707,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 </script>
 </body>
 </html>
