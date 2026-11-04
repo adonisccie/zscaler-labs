@@ -7,7 +7,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 4: ZIA Browser Isolation — EDU-202</title>
+<title>Lab 4: ZPA Privileged Remote Access — EDU-202</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,18 +24,30 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 .task-collapsible.open>.task-collapsible-body{display:block;}
 </style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-202</a> › Lab 4</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 4 · ZIA</span>
+    <span class="eyebrow-chip">LAB 4 · ZPA</span>
     <div class="header-dot"></div>
   </div>
-  <h1>ZIA Browser <em>Isolation</em></h1>
+  <h1>ZPA Privileged <em>Remote Access</em></h1>
   <div class="motivation-banner">
-    <p>Browser Isolation renders risky web content — social networking sites, unknown categories, uncategorised URLs — inside a remote Zscaler container, so no active content ever touches the endpoint. In this lab you build an Isolation Profile, enforce it via URL Filtering, and verify that browsing social sites shows the isolation watermark.</p>
+    <p>Privileged Remote Access (PRA) gives contractors and third-party vendors a browser-based RDP or SSH session to internal servers: no VPN, no Zscaler Client Connector, and no credentials revealed to the user. In this lab you build the full PRA stack (application segments, a privileged portal, consoles, credentials and two policies), then verify live sessions in the admin portal.</p>
   </div>
 </header>
 
@@ -68,17 +80,24 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab4">
-      <h2>Lab 4: ZIA Browser Isolation</h2>
+      <h2>Lab 4: ZPA Privileged Remote Access</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 4</div>
-        <p><strong>Scenario:</strong> Your organization needs to let users access social networking sites while reducing risk from downloads, uploads, and data exfiltration. You configure Zero Trust Browser (Browser Isolation) so sites are rendered in an isolated session and users can view content without being able to copy, paste, or transfer files. You also validate how isolation behaves when applied through URL Filtering and Cloud App Control policies.</p>
+        <p><strong>Scenario:</strong> You are an IT engineer tasked with enabling secure, time-limited access for third-party vendor support to troubleshoot critical Microsoft Windows and Linux servers in your organisation. These servers are inside the corporate environment and are reachable only through the Zero Trust Exchange. The organisation requires a solution that avoids VPNs and does not require external users to install Zscaler Client Connector, so access is secure and limited strictly to authorised personnel.</p>
+        <ul style="margin-top:10px;">
+          <li>Configure a Privileged Portal and Privileged Consoles to enable clientless, browser-based access to a Linux server over SSH and a Windows server over RDP, without Client Connector or browser plugins.</li>
+          <li>Configure privileged application segments that restrict access to only the target Windows and Linux systems.</li>
+          <li>Provision privileged policies that assign access rights to specific users.</li>
+          <li>Configure Privileged Credentials so users connect with predefined credentials instead of their own.</li>
+          <li>Validate privileged remote access by opening SSH and RDP sessions through the browser-based PRA portal.</li>
+        </ul>
         <figure class="lab-hero">
-          <img src="images/lab4-hero.png" alt="Lab 4 — ZIA Browser Isolation" loading="lazy">
+          <img src="images/lab4-hero.png" alt="Lab 4 — ZPA Privileged Remote Access" loading="lazy">
         </figure>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
-          <div class="lab-meta-item"><strong>Service:</strong> Zscaler Internet Access (ZIA)</div>
+          <div class="lab-meta-item"><strong>Time:</strong> ~50 minutes</div>
+          <div class="lab-meta-item"><strong>Service:</strong> Zscaler Private Access (ZPA) — PRA</div>
         </div>
       </div>
 
@@ -86,64 +105,119 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-4-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 4.1</span>
-          <span class="task-collapsible-title">Build Isolation Profile</span>
+          <span class="task-collapsible-title">Creating Application Segments</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="margin-bottom:12px;">In this task, you build an Isolation Profile that defines how users interact with an isolation session. The profile lets users view and interact with content, but prevents them from downloading, uploading, copying, or pasting content.</p>
+            <p style="margin-bottom:12px;">The lab uses two application segments: one for the Windows VM and one for the Linux VM. First you create the segment for the Windows VM, <strong>Corp Win Svr 2025</strong>.</p>
             <ol class="step-list">
-              <li><strong>Go to the Browser Isolation Threat profiles page.</strong> In the Experience Center portal, go to <strong>Policies &gt; Common Configuration &gt; Resources &gt; Browser Isolation Threat</strong>.</li>
-              <li><strong>Add an isolation profile.</strong> Select <strong>Add Isolation Profile</strong>.
+              <li><strong>Go to the Application Segments page.</strong> In the Experience Center home page, type <code>Application Segments</code> in the Search menu and select the matching option (Private Access &gt; Private Applications).</li>
+              <li><strong>Add an application segment.</strong> Select <strong>Add Application Segment</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p74-img1.png" alt="Browser Isolation Threat page with Isolation Profiles and Add Isolation Profile highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab4/lab4-p067-a.png" alt="Defined Application Segments page with Add Application Segment highlighted" loading="lazy">
+                  <div class="screenshot-caption">Select <strong>Add Application Segment</strong>.</div>
                 </div>
               </li>
-              <li><strong>Configure the profile under General.</strong>
-                <ul class="sub-steps">
-                  <li>Name: <code>isolate_profile-social_networking-internet</code></li>
-                  <li>Description: <code>Isolate Social Networking Sites to view only</code></li>
-                  <li>Leave all other settings at their default values.</li>
-                </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p75-img1.png" alt="General Information step with the profile name and description highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                Select <strong>Next</strong>.
-              </li>
-              <li><strong>Review Company Settings.</strong> Leave all settings at their default values, then select <strong>Next</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p76-img1.png" alt="Company Settings step with default values and Next highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li><strong>Configure Security.</strong> Enable <strong>Original URL</strong>. (This configuration restricts users to the original URL by disabling features such as copy, paste, and file transfer.) Leave all other settings at their default values, then select <strong>Next</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p77-img1.png" alt="Security step with Enable Original URL set to Enabled" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li><strong>Configure Regions.</strong> Under <strong>Regions</strong>, select Isolation Regions — any two regions closer to the user — then select <strong>Next</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p78-img1.png" alt="Regions step with two isolation regions selected" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li><strong>Configure Isolation Experience and save.</strong>
+              <li><strong>Configure the application segment</strong> with the following values:
                 <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Under <strong>Isolation Experience</strong>, enable <strong>Watermarking</strong>, and then select your preferred <strong>Date &amp; Timestamp</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p79-img1.png" alt="Isolation Experience step with Watermarking and Date and Timestamp enabled" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  <li>Name: <code>PRA_RDP1_win Svr</code></li>
+                  <li>Applications: <code>10.0.0.1</code> (IP address of the Win Svr)</li>
+                  <li>Access Type: <strong>Privileged Remote Access</strong></li>
+                  <li>Protocol: <strong>RDP</strong></li>
+                  <li>Port: <code>3389</code></li>
+                  <li>Connection Security: <strong>Any</strong>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p068-a.png" alt="Add Application Segment form with the name PRA_RDP1_win Svr highlighted" loading="lazy">
+                      <div class="screenshot-caption">Name the segment <code>PRA_RDP1_win Svr</code>.</div>
+                    </div>
                   </li>
-                  <li>Leave all other settings at their default values, then select <strong>Next</strong>.</li>
-                  <li>Review the isolation profile and select <strong>Save</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p80-img1.png" alt="Review step summarizing the isolation profile with Save highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <li>Under <strong>Client Connector Access</strong>: Default Port Ranges <strong>RDP (3389)</strong>; UDP Port Ranges <code>3389</code>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p069-a.png" alt="Application 10.0.0.1 with Privileged Remote Access, RDP protocol, port 3389 and Client Connector Access settings highlighted" loading="lazy">
+                      <div class="screenshot-caption">10.0.0.1 as a Privileged Remote Access app over RDP 3389.</div>
+                    </div>
+                  </li>
+                  <li>Under <strong>Common Configuration</strong>, keep everything as it is.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p070-a.png" alt="Common Configuration section left at defaults with Next highlighted" loading="lazy">
+                      <div class="screenshot-caption">Leave Common Configuration at the defaults.</div>
+                    </div>
+                  </li>
+                  <li>Select <strong>Next</strong>.</li>
+                  <li>Select the segment group: Name <code>CorpApps</code>.</li>
+                  <li>Select the server group: Name <code>CorpServers</code>, then select <strong>Next</strong>.</li>
+                  <li>Review and save the configuration.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p071-a.png" alt="Review step showing the PRA_RDP1_win Svr segment, CorpApps segment group, CorpServers server group and OnPrem connector group" loading="lazy">
+                      <div class="screenshot-caption">Review: PRA_RDP1_win Svr → CorpApps → CorpServers → OnPrem.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Verify the settings and select <strong>Save</strong>.</li>
+              <li><strong>Create the access policy rule for the PRA application segments.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open the Access Policy editor in one of these ways:
+                    <ul class="sub-steps">
+                      <li>In the Add Application Segment window, select <strong>Edit Policy</strong>.</li>
+                      <li>Type <code>Access Policy</code> in the Search menu and select the matching option.</li>
+                    </ul>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p072-a.png" alt="Policies step of the wizard with Edit Policy highlighted" loading="lazy">
+                      <div class="screenshot-caption">Edit Policy jumps to the Access Policy page.</div>
+                    </div>
+                  </li>
+                  <li>Select <strong>Add Rule</strong>.</li>
+                  <li>Configure the following settings:
+                    <ul class="sub-steps">
+                      <li>Rule Action: <strong>Allow Access</strong></li>
+                      <li>Rule Name: <code>PRA_Allow_Access</code></li>
+                      <li>App Connector Selection Method: <strong>All App Connector Groups</strong></li>
+                    </ul>
+                  </li>
+                  <li>Define the criteria: select <strong>Applications</strong> and choose the <strong>PRA_RDP1_win Svr</strong> application segment.</li>
+                  <li>Select <strong>Add Rule</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p073-a.png" alt="Access Policy Add Rule page with the PRA_RDP1_win Svr segment, Action Allow Access, Rule Name PRA_Allow_Access, All App Connector groups and Add Rule highlighted" loading="lazy">
+                      <div class="screenshot-caption">Rule <code>PRA_Allow_Access</code>: Allow Access to PRA_RDP1_win Svr through all App Connector groups.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Create an application segment for the Corp Log Streaming Connector VM.</strong>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> Repeat the same process to create another application segment, this time for the VM Corp Log Streaming Connector (<code>10.0.0.20</code>).</p>
                 </div>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add Application Segment</strong> and configure it with these values:
+                    <ul class="sub-steps">
+                      <li>Name: <code>PRA_SSH2_Log_Streaming_Connector_PC</code></li>
+                      <li>Applications: <code>10.0.0.20</code> (IP address of the Corp Log Streaming Connector)</li>
+                      <li>Access Type: <strong>Privileged Remote Access</strong></li>
+                      <li>Protocol: <strong>SSH</strong></li>
+                      <li>Port: <code>22</code></li>
+                    </ul>
+                  </li>
+                  <li>Under <strong>Client Connector Access</strong>: Default Port Ranges <strong>SSH (22)</strong>.</li>
+                  <li>Under <strong>Common Configuration</strong>, keep everything as it is.</li>
+                  <li>Select <strong>Next</strong>.</li>
+                  <li>Select the segment group <code>CorpApps</code>, then select <strong>Next</strong>.</li>
+                  <li>Select the server group <code>CorpServers</code>, then select <strong>Next</strong>.</li>
+                  <li>Review the configuration.</li>
+                  <li>Verify the settings and select <strong>Save</strong>.</li>
+                  <li>Edit the access policy <code>PRA_Allow_Access</code>: in its criteria, add the application segment <strong>PRA_SSH2_Log_Streaming_Connector_PC</strong>.</li>
+                  <li>Select <strong>Save</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p075-a.png" alt="Access Policy Edit Rule page for PRA_Allow_Access with both PRA application segments selected and the Save button highlighted" loading="lazy">
+                      <div class="screenshot-caption"><code>PRA_Allow_Access</code> now covers both PRA segments.</div>
+                    </div>
                   </li>
                 </ol>
               </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t4-1">
+          <div class="section-qa" data-section="t5-1">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 4.1</span>
               <span class="section-qa-chevron">▾</span>
@@ -152,15 +226,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t4-1" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t4-1',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t4-1"></div>
+                  <textarea class="section-qa-textarea" id="sq-t5-1" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-1',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-1"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t4-1" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t4-1',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t4-1"></div>
+                  <textarea class="section-qa-textarea" id="sn-t5-1" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-1',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-1"></div>
                 </div>
               </div>
             </div>
@@ -168,77 +242,40 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
+      <!-- Task 4.2 -->
       <div class="task-collapsible open" id="task-4-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 4.2</span>
-          <span class="task-collapsible-title">Implement Isolation Policy</span>
+          <span class="task-collapsible-title">Creating the Portal</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="margin-bottom:12px;">In this task, you add a URL Filtering rule that directs users to Browser Isolation when they browse to a set of URL categories, so you can test the end-user experience.</p>
+            <p style="margin-bottom:12px;">In this task, you create a Privileged Remote Access portal that third-party users and internal users can use to reach the systems you configured.</p>
             <ol class="step-list">
-              <li>In the portal, go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; URL Control &gt; URL Filtering</strong>. On the URL Filtering Policy tab, select <strong>Add URL Filtering Rule</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p81-img1.png" alt="URL Filtering Policy page with Add URL Filtering Rule highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li>Configure the URL Filtering rule by setting the following values:
+              <li>In the Experience Center home page, type <code>Privileged Portals</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Clientless Portal).
                 <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Rule Order: <code>1</code></li>
-                  <li>Rule Name: <code>isolate-outbound-socialsite</code></li>
-                  <li>URL Categories: <strong>Social Networking</strong>, <strong>Social Networking Adult</strong>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p82-img1.png" alt="Add URL Filtering Rule form with Rule Order 1, the rule name and the Social Networking URL categories highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                  <li>Under <strong>Criteria</strong>, set:
+                  <li>Select <strong>Add</strong>.</li>
+                  <li>Configure the following values:
                     <ul class="sub-steps">
-                      <li>Protocols: <strong>HTTP</strong>, <strong>HTTPS</strong></li>
-                      <li>User Agent: <strong>Chrome</strong>, <strong>Firefox</strong>, <strong>Microsoft Edge</strong>, <strong>Microsoft Internet Explorer</strong>, <strong>Safari</strong></li>
+                      <li>Name: <code>Privileged_Portal</code></li>
+                      <li>Certificate Type: <strong>Managed</strong></li>
+                      <li>Portal URL: <code>praportal</code></li>
+                      <li>Domain Suffix: select any one from the drop-down menu</li>
+                      <li>User Portal for Portal Links: <strong>None</strong></li>
                     </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p83-img1.png" alt="Criteria with the HTTP and HTTPS protocols and the five user agents selected" onclick="openLightbox(this.src,this.alt)">
-                </div>
                   </li>
-                  <li>Under <strong>Action</strong>, set:
-                    <ul class="sub-steps">
-                      <li>Web Traffic: <strong>Isolate</strong></li>
-                      <li>Isolation Profile: <code>isolate_profile-social_networking-internet</code></li>
-                    </ul>
-                    Select <strong>Save</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p84-img1.png" alt="Action section with Web Traffic set to Isolate, the isolation profile selected and Save highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                </ol>
-              </li>
-              <li><strong>Activate the changes.</strong>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p84-img2.png" alt="Activation panel with the Activate button highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li><strong>Test isolation for social networking sites.</strong>
-                <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Open your Zscaler Client Connector and verify that you are logged in to it.</li>
-                  <li>Open each of the following sites and confirm they open in isolation: <code>x.com</code>, <code>instagram.com</code>, <code>linkedin.com</code>, <code>facebook.com</code></li>
-                  <li>Verify that each site opens in an isolated session. (Open Incognito Mode for it.) If you cannot see the watermarks, you can check the changed isolation URL instead.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p85-img1.png" alt="LinkedIn open in an isolated session with the watermark and an isolation.zscaler.com address" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p85-img2.png" alt="Instagram open in an isolated session" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p85-img3.png" alt="X open in an isolated session" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  <li>Select <strong>Save</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p077-a.png" alt="Add Portal dialog with Name Privileged_Portal, Status Enabled, Certificate Type Managed, Portal URL praportal with a domain suffix, and the Save button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Portal <code>Privileged_Portal</code> with a Managed certificate and the <code>praportal</code> URL.</div>
+                    </div>
                   </li>
                 </ol>
               </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t4-2">
+          <div class="section-qa" data-section="t5-2">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 4.2</span>
               <span class="section-qa-chevron">▾</span>
@@ -247,15 +284,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t4-2" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t4-2',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t4-2"></div>
+                  <textarea class="section-qa-textarea" id="sq-t5-2" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-2',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-2"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t4-2" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t4-2',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t4-2"></div>
+                  <textarea class="section-qa-textarea" id="sn-t5-2" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-2',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-2"></div>
                 </div>
               </div>
             </div>
@@ -263,72 +300,60 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
       </div>
 
+      <!-- Task 4.3 -->
       <div class="task-collapsible open" id="task-4-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 4.3</span>
-          <span class="task-collapsible-title">Add Cloud App Isolate Control Policies</span>
+          <span class="task-collapsible-title">Creating the Consoles</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="margin-bottom:12px;">In this task, you create a Cloud App Control policy rule to allow LinkedIn while URL Filtering continues to isolate other social networking sites. Then you activate the changes and verify that <code>linkedin.com</code> is allowed (not isolated) and that other social networking sites still open in isolation.</p>
+            <p style="margin-bottom:12px;">In this task, you create the consoles that appear on the portal. Consoles represent the devices that users can access.</p>
             <ol class="step-list">
-              <li><strong>Go to the SaaS Application Control policies page.</strong> In the portal, go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Cloud App Control</strong>.</li>
-              <li><strong>Add a Social Networking policy rule.</strong> Select the <strong>Add</strong> drop-down and select <strong>Social Networking</strong>.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p86-img1.png" alt="Cloud App Control Policy page with the Add drop-down open and Social Networking highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-              <li><strong>Configure the Cloud App Control rule.</strong>
+              <li>In the Experience Center home page, type <code>Privileged Consoles</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Privileged Remote Access). Select <strong>Add</strong>.</li>
+              <li>Configure the consoles with the following values:
                 <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Enter the following settings:
-                    <ul class="sub-steps">
-                      <li>Rule Order: <code>1</code></li>
-                      <li>Rule Name: <code>allow-outbound-linkedin-any</code></li>
-                      <li>Cloud Application: <strong>LinkedIn</strong></li>
-                    </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p87-img1.png" alt="Add Social Networking Rule form with Rule Order 1, the rule name and the LinkedIn cloud application" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  <li>Privileged Remote Access Portal: <code>Privileged_Portal</code></li>
+                  <li>Privileged Remote Access Applications: select both application segments created in Task 4.1.</li>
+                  <li>Select <strong>Next</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p078-a.png" alt="Add Console dialog on the Console Type step with portal Privileged_Portal and applications 10.0.0.1:3389 and 10.0.0.20:22 selected" loading="lazy">
+                      <div class="screenshot-caption">Pick the portal and both PRA applications (10.0.0.1:3389 and 10.0.0.20:22).</div>
+                    </div>
                   </li>
-                  <li>Under <strong>Action</strong>, set:
-                    <ul class="sub-steps">
-                      <li>Viewing: <strong>Allow</strong></li>
-                      <li>Description: <code>Not isolating the LinkedIn Social Networking Site</code></li>
-                    </ul>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p88-img1.png" alt="Action section with Viewing set to Allow, the description entered and Save highlighted" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                  <li>Select <strong>Save</strong>.</li>
                 </ol>
               </li>
-              <li><strong>Activate the changes.</strong></li>
-              <li><strong>Verify the behavior.</strong>
+              <li>On the <strong>Consoles</strong> tab, verify that the details for each application are correct:
                 <ol class="sub-steps" style="list-style:lower-alpha;">
-                  <li>Open <code>linkedin.com</code> and confirm it is allowed (not isolated).
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p89-img3.png" alt="linkedin.com opened directly with a normal address bar and no isolation watermark" onclick="openLightbox(this.src,this.alt)">
-                </div>
+                  <li>Protocol: <strong>SSH</strong> or <strong>RDP</strong></li>
+                  <li>Port: <code>22</code> or <code>3389</code></li>
+                  <li>Connection Security for RDP: as set on the segment (the screenshots show <strong>Any</strong>)</li>
+                  <li>Select <strong>Next</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p079-a.png" alt="Consoles step showing the Windows console with RDP, domain 10.0.0.1, port 3389 and connection security Any" loading="lazy">
+                      <div class="screenshot-caption">Windows console: RDP to 10.0.0.1:3389.</div>
+                    </div>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p080-a.png" alt="Consoles step showing the Linux console with SSH, domain 10.0.0.20 and port 22, and the Next button highlighted" loading="lazy">
+                      <div class="screenshot-caption">Linux console: SSH to 10.0.0.20:22.</div>
+                    </div>
                   </li>
-                  <li>Open other social networking sites and confirm they still open in isolation.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p89-img1.png" alt="X still opening in an isolated session" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab4/lab4-p89-img2.png" alt="Instagram still opening in an isolated session" onclick="openLightbox(this.src,this.alt)">
-                </div>
-                  </li>
-                  <li>Confirm that <code>linkedin.com</code> is not isolated, and that the other social networking sites are isolated.</li>
                 </ol>
+              </li>
+              <li>Review the details and select <strong>Save</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p081-a.png" alt="Add Console Review step listing the Windows RDP and Linux SSH consoles on Privileged_Portal with the Save button highlighted" loading="lazy">
+                  <div class="screenshot-caption">Review both consoles, then select Save.</div>
+                </div>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p082-a.png" alt="Privileged Consoles list showing Linux SSH 10.0.0.20 port 22 and Windows RDP 10.0.0.1 port 3389, both enabled" loading="lazy">
+                  <div class="screenshot-caption">The Linux and Windows consoles are listed and enabled.</div>
+                </div>
               </li>
             </ol>
-            <div class="callout callout-note">
-              <p><strong>Note:</strong> Cloud App Control policies take priority over URL Filtering policies, so the LinkedIn rule is matched first and LinkedIn bypasses the Isolate rule. The other Social Networking sites have no specific Cloud App Control rule and fall through to the Isolate URL Filtering rule.</p>
-            </div>
           </div>
-
-          <div class="section-qa" data-section="t4-3">
+          <div class="section-qa" data-section="t5-3">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 4.3</span>
               <span class="section-qa-chevron">▾</span>
@@ -337,15 +362,308 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t4-3" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t4-3',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t4-3"></div>
+                  <textarea class="section-qa-textarea" id="sq-t5-3" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-3',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-3"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t4-3" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t4-3',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t4-3"></div>
+                  <textarea class="section-qa-textarea" id="sn-t5-3" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-3',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 4.4 -->
+      <div class="task-collapsible open" id="task-4-4">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 4.4</span>
+          <span class="task-collapsible-title">Creating Privileged Credentials</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:12px;">Privileged Credentials let third-party users or contractors sign in to a console without entering credentials. Access to the stored credentials is controlled by a Privileged Credentials policy. In this task, you create a privileged credential for each server; in the next task, you map them to the consoles users reach through <strong>Privileged_Portal</strong>.</p>
+            <ol class="step-list">
+              <li>In the Experience Center home page, type <code>Privileged Credentials</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Credentials Management).
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>Add</strong>.</li>
+                  <li>Create a privileged credential for the Windows server:
+                    <ul class="sub-steps">
+                      <li>Name: <code>PRA_windows</code></li>
+                      <li>Type: <strong>UserName-Password</strong></li>
+                      <li>User Name: <code>administrator</code></li>
+                      <li>Password: <code>Admin-123!</code></li>
+                    </ul>
+                  </li>
+                  <li>Select <strong>Save</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p084-a.png" alt="Add Privileged Credential form for PRA_windows with the Username-Password type and administrator user" loading="lazy">
+                      <div class="screenshot-caption">Credential <code>PRA_windows</code> for the Windows server.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Create a privileged credential for the Linux system the same way:
+                <ul class="sub-steps">
+                  <li>Name: <code>PRA_Log_Streaming_Connector</code></li>
+                  <li>Type: <strong>UserName-Password</strong></li>
+                  <li>User Name: <code>admin</code></li>
+                  <li>Password: <code>Zscaler1!</code></li>
+                </ul>
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p085-a.png" alt="Privileged Credentials list showing the Log Streaming connector credential with user admin and PRA_windows with user administrator" loading="lazy">
+                  <div class="screenshot-caption">Both credentials are listed. The screenshots spell the Linux one <em>PRA_Log_Streamming_Connector</em>; any name works if you use the same one in Task 4.5.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+          <div class="section-qa" data-section="t5-4">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 4.4</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t5-4" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-4',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-4"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t5-4" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-4',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 4.5 -->
+      <div class="task-collapsible open" id="task-4-5">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 4.5</span>
+          <span class="task-collapsible-title">Creating Privileged Credential Policy</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you create credential policies that map the privileged credentials to specific consoles.</p>
+            <ol class="step-list">
+              <li><strong>Create the credential policy for RDP.</strong>
+                <ol class="sub-steps" style="list-style:lower-roman;">
+                  <li>In the Experience Center home page, type <code>Credentials Policy</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Privileged Remote Access).</li>
+                  <li>Select <strong>Add Rule</strong> and configure these values:
+                    <ul class="sub-steps">
+                      <li>Name: <code>PRA_Credential_policy_RDP</code></li>
+                      <li>Privileged Credentials: <code>PRA_windows</code></li>
+                      <li>Criteria: Privileged Consoles › <strong>Windows</strong></li>
+                    </ul>
+                  </li>
+                </ol>
+              </li>
+              <li>Select <strong>Add Rule</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p086-a.png" alt="Credentials Policy Add Rule page with Rule Name PRA_Credential_policy_RDP, Privileged Consoles Windows and Credentials PRA_windows, and the Add Rule button highlighted" loading="lazy">
+                  <div class="screenshot-caption"><code>PRA_Credential_policy_RDP</code>: Windows console → <code>PRA_windows</code>.</div>
+                </div>
+              </li>
+              <li><strong>Create the credential policy for SSH.</strong>
+                <ol class="sub-steps" style="list-style:lower-roman;">
+                  <li>Repeat the same steps for the Log Streaming Connector (Linux) console:
+                    <ul class="sub-steps">
+                      <li>Name: <code>PRA_Credential_policy_SSH</code></li>
+                      <li>Privileged Credentials: <code>PRA_Log_Streaming_Connector</code></li>
+                      <li>Criteria: Privileged Consoles › <strong>Linux</strong></li>
+                    </ul>
+                  </li>
+                  <li>Select <strong>Add Rule</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p087-a.png" alt="Credentials Policy Add Rule page with Rule Name PRA_Credential_policy_SSH, Privileged Consoles Linux and the Log Streaming connector credential, and the Add Rule button highlighted" loading="lazy">
+                      <div class="screenshot-caption"><code>PRA_Credential_policy_SSH</code>: Linux console → the Log Streaming Connector credential.</div>
+                    </div>
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p088-a.png" alt="Credentials Policy list with the RDP and SSH credential policy rules" loading="lazy">
+                      <div class="screenshot-caption">Both credential policies are in place.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </div>
+          <div class="section-qa" data-section="t5-5">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 4.5</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t5-5" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-5',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-5"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t5-5" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-5',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-5"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 4.6 -->
+      <div class="task-collapsible open" id="task-4-6">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 4.6</span>
+          <span class="task-collapsible-title">Create Consoles Policy</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:12px;">In this task, you create a consoles policy for your Privileged Remote Access consoles.</p>
+            <ol class="step-list">
+              <li>In the Experience Center home page, type <code>Consoles Policy</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Privileged Remote Access). Select <strong>Add Rule</strong>.</li>
+              <li>Configure the console policy:
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Name: <code>PRA_Console_Policy</code></li>
+                  <li>Under <strong>Console Configuration</strong>:
+                    <ul class="sub-steps">
+                      <li>Clipboard Copy: <strong>Enabled</strong></li>
+                      <li>Record Session: <strong>Enabled</strong></li>
+                      <li>Join Session: <strong>Enabled</strong></li>
+                      <li>Share Session: <strong>Monitor Session</strong></li>
+                    </ul>
+                  </li>
+                  <li>On the Criteria tab, select <strong>Add Criteria</strong> › <strong>Applications</strong>.</li>
+                  <li>In Application Segments, select both application segments created in Task 4.1.</li>
+                </ol>
+              </li>
+              <li>Select <strong>Add Rule</strong>.
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab4/lab4-p090-a.png" alt="Consoles Policy Add Rule page with Rule Name PRA_Console_Policy, both PRA segments as criteria, and the Console Configuration settings highlighted" loading="lazy">
+                  <div class="screenshot-caption"><code>PRA_Console_Policy</code>: clipboard copy, session recording, monitor-style sharing and join enabled for both segments.</div>
+                </div>
+              </li>
+            </ol>
+          </div>
+          <div class="section-qa" data-section="t5-6">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 4.6</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t5-6" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-6',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-6"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t5-6" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-6',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-6"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 4.7 -->
+      <div class="task-collapsible open" id="task-4-7">
+        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
+          <span class="task-num-badge">Task 4.7</span>
+          <span class="task-collapsible-title">Testing and Verifying</span>
+          <span class="task-collapsible-chevron">▾</span>
+        </div>
+        <div class="task-collapsible-body">
+          <div class="task-block">
+            <p style="margin-bottom:12px;">Now that you have created the PRA components (portal and consoles), test connectivity and verify the sessions in the admin portal.</p>
+            <ol class="step-list">
+              <li><strong>Log out of Zscaler Client Connector</strong> on Corp Client PC 1.</li>
+              <li><strong>Launch the privileged portal.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>On the Corp Client PC 1 VM, sign in to the Experience Center console at <code>console.zscaler.com</code>.</li>
+                  <li>Type <code>Privileged Portal</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Clientless Portal).</li>
+                  <li>Select <strong>Launch</strong> to open the portal.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p091-a.png" alt="Privileged Portals list with the launch icon next to the Privileged_Portal URL highlighted" loading="lazy">
+                      <div class="screenshot-caption">Launch <strong>Privileged_Portal</strong> from its URL.</div>
+                    </div>
+                  </li>
+                  <li>If prompted, log in with your student tenant credentials (<code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code>).
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab4/lab4-p092-a.png" alt="PRA portal My Consoles page showing the Linux and Windows consoles" loading="lazy">
+                      <div class="screenshot-caption">My Consoles: Linux and Windows.</div>
+                    </div>
+                    <ol class="sub-steps" style="list-style:lower-roman;">
+                      <li>Select the Windows VM (<code>10.0.0.1</code>) on the privileged portal and log in to the Windows system.
+                        <div class="screenshot-embed">
+                          <img src="screenshots/lab4/lab4-p092-b.png" alt="Windows desktop of Corp Win Svr 2025 running inside a browser tab through the PRA portal" loading="lazy">
+                          <div class="screenshot-caption">An RDP session in the browser: the vaulted credential signs you in.</div>
+                        </div>
+                      </li>
+                      <li>Verify the session details in the portal: type <code>Live Sessions</code> in the Search menu and select the matching option (Zero Trust Browser &gt; Privileged Remote Access), then view the active RDP session.
+                        <div class="screenshot-embed">
+                          <img src="screenshots/lab4/lab4-p093-a.png" alt="Search menu with Live Sessions typed and the result under Zero Trust Browser, Privileged Remote Access highlighted" loading="lazy">
+                          <div class="screenshot-caption">Search for <strong>Live Sessions</strong>.</div>
+                        </div>
+                        <div class="screenshot-embed">
+                          <img src="screenshots/lab4/lab4-p093-b.png" alt="Live Sessions page with the RDP counter at 1 and an active Windows RDP session under PRA_Console_Policy" loading="lazy">
+                          <div class="screenshot-caption">The active RDP session, governed by PRA_Console_Policy.</div>
+                        </div>
+                      </li>
+                      <li>In the privileged portal, select the Linux VM (<code>10.0.0.20</code>).
+                        <div class="screenshot-embed">
+                          <img src="screenshots/lab4/lab4-p094-a.png" alt="SSH terminal session to the Log Streaming Connector inside a browser tab through the PRA portal" loading="lazy">
+                          <div class="screenshot-caption">An SSH session in the browser to the Log Streaming Connector.</div>
+                        </div>
+                      </li>
+                      <li>After you log in to the Log Streaming Connector VM, verify the SSH session: open <strong>Live Sessions</strong> again and confirm that the active SSH session appears.
+                        <div class="screenshot-embed">
+                          <img src="screenshots/lab4/lab4-p095-a.png" alt="Live Sessions page with the SSH counter at 1 and an active Linux SSH session under PRA_Console_Policy" loading="lazy">
+                          <div class="screenshot-caption">The active SSH session appears in Live Sessions.</div>
+                        </div>
+                      </li>
+                    </ol>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </div>
+          <div class="section-qa" data-section="t5-7">
+            <button class="section-qa-header" onclick="toggleSectionQA(this)">
+              <span class="section-qa-title">Questions &amp; Notes — Task 4.7</span>
+              <span class="section-qa-chevron">▾</span>
+            </button>
+            <div class="section-qa-body">
+              <div class="section-qa-grid">
+                <div>
+                  <div class="section-qa-label">My Questions</div>
+                  <textarea class="section-qa-textarea" id="sq-t5-7" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t5-7',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t5-7"></div>
+                </div>
+                <div>
+                  <div class="section-qa-label">My Notes</div>
+                  <textarea class="section-qa-textarea" id="sn-t5-7" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t5-7',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t5-7"></div>
                 </div>
               </div>
             </div>
@@ -354,7 +672,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       </div>
 
     </div>
-  </div>
+  </div><!-- /.content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -362,103 +680,130 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-label">LAB TOPOLOGY</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/lab0/lab0-p8-img1.png" alt="EDU-202 lab topology: Corp Client PC 1 and the Remote Linux Client PC on 192.168.1.0/24 reach the Experience Center through the Zero Trust Exchange, which connects through the Corp ZPA Connector and Corp Log Streaming Connector to the Corporate Data Center 10.0.0.0/24. Click to expand." onclick="openLightbox(this.src,this.alt)" title="Click to expand">
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Virtual Machines</div>
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
       <div class="sidebar-cred-list">
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Client PC 1<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Client PC 1 (Windows VM)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin (Experience Center)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value"><span class="var-pass">&lt;Session Password&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.1</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.2</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Portal Credentials</div>
-      <div class="sidebar-cred-list">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="prog-chk-lab4-1"><input type="checkbox" id="chk-lab4-1" onchange="toggleDone(this)"><label for="chk-lab4-1">Task 4.1: RDP + SSH PRA segments and access rule</label></li>
+        <li class="progress-item" id="prog-chk-lab4-2"><input type="checkbox" id="chk-lab4-2" onchange="toggleDone(this)"><label for="chk-lab4-2">Task 4.2: Privileged_Portal created</label></li>
+        <li class="progress-item" id="prog-chk-lab4-3"><input type="checkbox" id="chk-lab4-3" onchange="toggleDone(this)"><label for="chk-lab4-3">Task 4.3: Windows + Linux consoles</label></li>
+        <li class="progress-item" id="prog-chk-lab4-4"><input type="checkbox" id="chk-lab4-4" onchange="toggleDone(this)"><label for="chk-lab4-4">Task 4.4: Two privileged credentials</label></li>
+        <li class="progress-item" id="prog-chk-lab4-5"><input type="checkbox" id="chk-lab4-5" onchange="toggleDone(this)"><label for="chk-lab4-5">Task 4.5: RDP + SSH credential policies</label></li>
+        <li class="progress-item" id="prog-chk-lab4-6"><input type="checkbox" id="chk-lab4-6" onchange="toggleDone(this)"><label for="chk-lab4-6">Task 4.6: PRA_Console_Policy</label></li>
+        <li class="progress-item" id="prog-chk-lab4-7"><input type="checkbox" id="chk-lab4-7" onchange="toggleDone(this)"><label for="chk-lab4-7">Task 4.7: RDP + SSH live sessions verified</label></li>
+      </ul>
+    </div>
 
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.1 · PRA application segments</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/understanding-privileged-remote-access" target="_blank" rel="noopener noreferrer" title="The PRA building blocks: segments, portals, consoles, credentials and policies">Understanding Privileged Remote Access</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-defined-application-segments" target="_blank" rel="noopener noreferrer" title="The Privileged Remote Access access type with RDP or SSH protocol and port">Configuring Defined Application Segments</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.2 · Privileged portal</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-privileged-portals" target="_blank" rel="noopener noreferrer" title="What the PRA portal is and how users reach it">About Privileged Portals</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-privileged-portals" target="_blank" rel="noopener noreferrer" title="Adding Privileged_Portal with a managed certificate and portal URL">Configuring Privileged Portals</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">from SDC email</code></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.3 · Consoles</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-privileged-consoles" target="_blank" rel="noopener noreferrer" title="How each console represents one server on the portal">About Privileged Consoles</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-privileged-consoles" target="_blank" rel="noopener noreferrer" title="Creating the Windows (RDP) and Linux (SSH) consoles">Configuring Privileged Consoles</a>
         </div>
-
+        <div class="ref-group">
+          <div class="ref-group-label">Tasks 4.4–4.5 · Credentials &amp; policy</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/about-privileged-managed-credentials" target="_blank" rel="noopener noreferrer" title="Why vaulted credentials let vendors sign in without knowing the password">About Managed Privileged Credentials</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-privileged-credentials" target="_blank" rel="noopener noreferrer" title="Adding the UserName-Password credentials for both servers">Configuring Privileged Credentials</a>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-privileged-credentials-policies" target="_blank" rel="noopener noreferrer" title="Mapping each credential to its console with a credentials policy rule">Configuring Privileged Credentials Policies</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.6 · Consoles policy</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/configuring-consoles-policies" target="_blank" rel="noopener noreferrer" title="Clipboard, Record Sessions, Share and Join Sessions settings in PRA_Console_Policy">Configuring Consoles Policies</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 4.7 · Test the portal</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/accessing-privileged-remote-access-portal" target="_blank" rel="noopener noreferrer" title="What the end user sees on My Consoles, including the session-recording notice">Accessing a Privileged Remote Access Portal</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Beyond the lab</div>
+          <a class="ref-link" href="https://help.zscaler.com/zpa/step-step-configuration-guide-privileged-remote-access" target="_blank" rel="noopener noreferrer" title="The full PRA rollout order, including approvals not covered in this lab">Step-by-Step PRA Configuration Guide</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
       </div>
     </div>
 
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide uses the new navigation: open features from the Search menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The search box in the Experience Center top bar. Type a feature name (e.g. App Connector Groups) and pick the result; each result shows its menu path.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Formerly ZIdentity. Zscaler's authentication service, reached from the Experience Center menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's unique domain (e.g. zs000834.labtenant.com). Used in every login ID: student@, hvac@.</div></div>
+        <div class="qr-item"><div class="qr-term">CloudShare</div><div class="qr-def">The virtual lab platform that hosts your VMs. Use Actions › Send Text or Send Password to paste into a VM.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">A lightweight VM in the data center that makes outbound-only connections to ZPA, so private apps are reachable without inbound firewall ports.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Group</div><div class="qr-def">A set of App Connectors that share a location and settings. Server groups point to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token</div><div class="qr-def">The OAuth code shown by cat /etc/issue on a connector. Add it under App Connectors to enroll the connector; it expires after two hours.</div></div>
+        <div class="qr-item"><div class="qr-term">Application Segment</div><div class="qr-def">Defines a private app (domain or IP plus ports) and how it is reached: Client Connector, Browser Access or Privileged Remote Access.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment / Server Group</div><div class="qr-def">A segment group bundles segments for policy; a server group maps segments to App Connector groups.</div></div>
+        <div class="qr-item"><div class="qr-term">Browser Access</div><div class="qr-def">Clientless ZPA access to a web app through its External Domain, with no Client Connector or VPN.</div></div>
+        <div class="qr-item"><div class="qr-term">Access Policy</div><div class="qr-def">ZPA rules, default deny, that allow access to segments when criteria such as Applications and Client Types match.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Streaming Service (LSS)</div><div class="qr-def">Streams ZPA logs (e.g. User Activity) through an App Connector to a syslog receiver such as a SIEM.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Receiver</div><div class="qr-def">The LSS destination: host, TCP port, App Connector group, log type and template (e.g. CSV).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Remote Access (PRA)</div><div class="qr-def">Clientless, browser-based RDP and SSH to servers through a privileged portal, with session recording and credential vaulting.</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Portal / Console</div><div class="qr-def">The portal is the web page users open; each console on it is one server (protocol, host, port).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Credentials</div><div class="qr-def">Vaulted usernames and passwords that a credentials policy injects into a console, so users never see them.</div></div>
+        <div class="qr-item"><div class="qr-term">AppProtection</div><div class="qr-def">Inline web-application firewall in ZPA: OWASP CRS, ThreatLabZ, WebSocket and API controls on private app traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Paranoia level</div><div class="qr-def">How wide a net the OWASP controls cast: higher levels catch more but raise false positives.</div></div>
+        <div class="qr-item"><div class="qr-term">Isolation Profile</div><div class="qr-def">Settings for Browser Isolation of private apps, e.g. render-only with View Office Files in Isolation.</div></div>
+        <div class="qr-item"><div class="qr-term">End User Collection</div><div class="qr-def">A ZDX container that sets which users and devices run the probes of the applications inside it.</div></div>
+        <div class="qr-item"><div class="qr-term">Web / Cloud Path probe</div><div class="qr-def">A Web probe times page fetches to a URL; a Cloud Path probe traces hop-by-hop latency, loss and jitter to the host.</div></div>
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center: a shared, read-only tenant with pre-populated data, used for the reporting and Workflow Automation labs.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
@@ -468,22 +813,23 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </div>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab3.html">← Lab 3: ZPA Log Streaming</a>
-  <div class="page-nav-message">Pixels only — no code, no files, no exploits reach the endpoint.</div>
-  <a class="page-nav-btn page-nav-next" href="lab5.html">Lab 5: ZPA Privileged Remote Access →</a>
+  <a class="page-nav-btn page-nav-prev" href="lab3.html">← Lab 3: Log Streaming</a>
+  <div class="page-nav-message">No VPN. No client. No password. Just a browser and Zero Trust.</div>
+  <a class="page-nav-btn page-nav-next" href="lab5.html">Lab 5: ZPA AppProtection →</a>
 </div>
 
 <script>
+// PAGE_KEY and SECTION_IDS carried over from the Rev 3.4 lab5.html (same lab content) so saved notes survive the renumbering
 const CONFIG_KEY='edu202-expc-lab-config';
 const CONFIG_COLLAPSED_KEY='edu202-config-collapsed';
 const FOOTER_KEY='edu202-footer-collapsed';
-const PAGE_KEY='edu202-lab-lab4';
+const PAGE_KEY='edu202-lab-lab5';
 function toggleConfig(){var panel=document.getElementById('config-panel');var btn=document.getElementById('config-toggle-btn');var collapsed=panel.classList.toggle('collapsed');btn.innerHTML=collapsed?'<span class="chevron" style="transform:rotate(180deg);display:inline-block;">▲</span> Expand':'<span class="chevron">▲</span> Collapse';try{localStorage.setItem(CONFIG_COLLAPSED_KEY,collapsed?'1':'0');}catch(e){}updateSidebarOffset();}
 function updateSidebarOffset(){var panel=document.getElementById('config-panel');var h=panel?panel.offsetHeight:52;document.documentElement.style.setProperty('--config-h',(h+16)+'px');}
 (function(){var cb=document.getElementById('config-body');if(cb)cb.addEventListener('transitionend',function(e){if(e.propertyName==='max-height')updateSidebarOffset();});})();
 function updateToggleSummary(){var fqdn=document.getElementById('fqdn-input').value.trim();var s=document.getElementById('config-toggle-summary');s.textContent=fqdn?' — '+fqdn:'';}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var sid=(fqdn.split('.')[0]||'');document.querySelectorAll('.var-sid').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var sidnum=sid.replace(/\D/g,'');document.querySelectorAll('.var-sidnum').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sidnum){el.textContent=sidnum;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var xyz=sid.replace(/\D/g,'').slice(-3);document.querySelectorAll('.var-xyz').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(xyz){el.textContent=xyz;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
 }
 function loadConfig(){
   try{applyConfig();}catch(e){}
@@ -505,7 +851,7 @@ function loadNList(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 function toggleDone(cb){var item=cb.closest('.progress-item');item.classList.toggle('done',cb.checked);saveChecklist();}
 function saveChecklist(){try{var state={};document.querySelectorAll('.progress-item').forEach(function(item){var cb=item.querySelector('input[type=checkbox]');if(cb)state[item.id]=cb.checked;});localStorage.setItem(PAGE_KEY+'-chk',JSON.stringify(state));}catch(e){}}
 function loadChecklist(){try{var state=JSON.parse(localStorage.getItem(PAGE_KEY+'-chk')||'{}');Object.keys(state).forEach(function(id){var item=document.getElementById(id);if(item){var cb=item.querySelector('input[type=checkbox]');if(cb){cb.checked=state[id];item.classList.toggle('done',state[id]);}}});}catch(e){}}
-var SECTION_IDS=['t4-1','t4-2','t4-3'];
+var SECTION_IDS=['t5-1','t5-2','t5-3','t5-4','t5-5','t5-6','t5-7'];
 function updateSectionQABadge(id){var h=document.querySelector('.section-qa[data-section="'+id+'"] .section-qa-header');if(!h)return;var b=h.querySelector('.section-qa-badge');if(!b){b=document.createElement('span');b.className='section-qa-badge';h.insertBefore(b,h.querySelector('.section-qa-chevron'));}try{var qc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]').length;var nc=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]').length;var t=qc+nc;b.textContent=t;b.style.display=t?'inline-flex':'none';}catch(e){}}
 function saveSectionQ(id,btn){var ta=document.getElementById('sq-'+id);if(!ta.value.trim())return;try{var qs=JSON.parse(localStorage.getItem(PAGE_KEY+'-sq-'+id)||'[]');qs.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sq-'+id,JSON.stringify(qs));}catch(e){}ta.value='';renderSectionQ(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
 function saveSectionN(id,btn){var ta=document.getElementById('sn-'+id);if(!ta.value.trim())return;try{var ns=JSON.parse(localStorage.getItem(PAGE_KEY+'-sn-'+id)||'[]');ns.push(ta.value.trim());localStorage.setItem(PAGE_KEY+'-sn-'+id,JSON.stringify(ns));}catch(e){}ta.value='';renderSectionN(id);btn.textContent='✓';setTimeout(function(){btn.textContent='Save';},1200);}
@@ -525,7 +871,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
 document.addEventListener('DOMContentLoaded',function(){document.body.style.opacity='1';loadConfig();loadFooterState();loadQList();loadNList();loadChecklist();injectCopyButtons();SECTION_IDS.forEach(function(id){renderSectionQ(id);renderSectionN(id);});document.querySelectorAll('.screenshot-embed img').forEach(function(img){img.addEventListener('click',function(){openLightbox(img.src,img.alt);});});sessionStorage.setItem('pt','1');document.querySelectorAll('.page-nav-btn:not(.page-nav-disabled)').forEach(function(a){a.addEventListener('click',function(){sessionStorage.setItem('pt','1');});});});
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 </script>
 </body>
 </html>

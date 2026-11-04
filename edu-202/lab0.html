@@ -41,7 +41,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   </div>
   <h1>Lab Orientation &amp; <em>Environment Overview</em></h1>
   <div class="motivation-banner">
-    <p>Before you configure anything, take five minutes to understand what you're working with. This lab walks you through the scenario, the virtual machines in your CloudShare environment, every credential you'll use across the 12 labs, and how to access both your dedicated tenant and the Solutions Demo Center. Think of it as your map before the expedition.</p>
+    <p>Before you configure anything, take five minutes to understand what you're working with. This lab walks you through the scenario, the virtual machines in your CloudShare environment, every credential you'll use across the labs, and how to reach both your dedicated tenant and the Solutions Demo Center. Think of it as your map before the expedition.</p>
   </div>
 </header>
 
@@ -78,7 +78,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 0</div>
-        <p><strong>Scenario:</strong> Your organisation, <em>Labtenant</em>, has deployed the Zscaler Zero Trust Exchange to protect against internet threats, control internet access, and provide secure access to private resources. You are an IT Engineer tasked with advanced configuration of ZIA, ZPA, and ZDX across 12 hands-on labs. Before you begin, this orientation lab maps your virtual environment, records every credential you'll need, and explains how to switch between your dedicated lab tenant and the Solutions Demo Center.</p>
+        <p><strong>Scenario:</strong> Your organisation, <em>Labtenant</em>, has deployed the Zscaler Zero Trust Exchange to protect against internet threats, control internet access, and provide secure access to private resources. It is also focused on end-user experience, using the Zero Trust Exchange to monitor and report on performance, and it wants to give select third parties secure access to private resources without client software or VPNs. As an IT Engineer, you perform advanced configuration of platform services, security services, data protection, and management/logging services, building on an environment that is already passing traffic securely.</p>
         <figure class="lab-hero">
           <img src="images/lab0-hero.png" alt="Lab 0 — Lab Orientation and Environment Overview" loading="lazy">
         </figure>
@@ -86,6 +86,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <div class="lab-meta-item"><strong>Time:</strong> ~5 minutes (read-through)</div>
           <div class="lab-meta-item"><strong>Environment:</strong> CloudShare Virtual Lab Environment</div>
           <div class="lab-meta-item"><strong>Services:</strong> ZIA · ZPA · ZDX · Service Portal (formerly ZIdentity)</div>
+          <div class="lab-meta-item"><strong>Guide:</strong> Rev 3.5 · Oct 2026 (Nav 2.0)</div>
         </div>
       </div>
 
@@ -98,35 +99,34 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">Read through the lab overview so you understand the context behind every configuration task you'll perform across Labs 1–12.</p>
+            <p style="color:var(--text-soft);margin-bottom:14px;">Read through the lab overview so you understand the context behind every configuration task you'll perform.</p>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">About this Lab</h4>
-            <p style="margin-bottom:12px;">In this lab you apply skills from eLearning by working inside the Zscaler remote lab environment. You complete a series of exercises that build proficiency in:</p>
+            <p style="margin-bottom:12px;">Welcome to the Zscaler for Users – Engineer (EDU-202) hands-on lab. You apply the skills you learned in eLearning by working in the Zscaler remote lab environment, completing exercises that build proficiency in:</p>
             <ul class="sub-steps" style="margin-bottom:16px;">
               <li>Configuring connectivity to the Zero Trust Exchange</li>
               <li>Defining allow and deny policies for access through the Zero Trust Exchange</li>
-              <li>Using the administration interfaces to analyse traffic patterns and user experience</li>
+              <li>Using the administration interfaces to analyse traffic patterns</li>
             </ul>
 
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">What You Will Configure</h4>
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">To Continue the Rollout, You Will</h4>
             <ul class="sub-steps" style="margin-bottom:16px;">
-              <li>Provision an App Connector and configure Browser Access</li>
-              <li>Configure Log Streaming to a SIEM</li>
-              <li>Build ZIA Browser Isolation (Zero Trust Browser)</li>
-              <li>Configure Privileged Remote Access (PRA)</li>
-              <li>Configure AppProtection (inline WAF) in ZPA</li>
-              <li>Build Zero Trust Browser Isolation in ZPA</li>
-              <li>Configure Cloud Application Monitoring in ZDX</li>
-              <li>Configure alerts and initiate a Diagnostics session in ZDX</li>
-              <li>Automate provisioning using Zscaler OneAPI</li>
-              <li>Analyse data and view integrated reports and snapshots (SDC)</li>
-              <li>Manage incidents with Zscaler Workflow Automation (SDC)</li>
+              <li>Sign in to the Experience Center console landing page and get familiar with its functions</li>
+              <li>Configure Browser Access for third parties</li>
+              <li>Configure Log Streaming</li>
+              <li>Configure Privileged Remote Access</li>
+              <li>Configure AppProtection in Zscaler Private Access</li>
+              <li>Build Zero Trust Browser Isolation in Zscaler Private Access</li>
+              <li>Configure Cloud Application Monitoring</li>
+              <li>Configure alerts and initiate a Diagnostics session in Zscaler Digital Experience</li>
+              <li>Automate tasks with Zscaler OneAPI</li>
+              <li>Analyse data and view integrated reports and snapshots (Solutions Demo Center)</li>
+              <li>Understand incidents with Zscaler Workflow Automation (Solutions Demo Center)</li>
             </ul>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Lab Setup</h4>
-            <p style="margin-bottom:0;">You have access to the Zero Trust Exchange services — ZIA, ZPA, and ZDX — plus an account for the Zscaler Authentication service (formerly ZIdentity) and a CloudShare environment. You configure the ZIA, ZPA, and ZDX services and a Zscaler Service Portal (formerly ZIdentity) environment, and use Windows and Linux client VMs in CloudShare to connect to the Zero Trust Exchange and test access and user experience.</p>
+            <p style="margin-bottom:0;">You have access to the Zero Trust Exchange services — Zscaler Internet Access (ZIA), Zscaler Private Access (ZPA), and Zscaler Digital Experience (ZDX) — plus an account for the Zscaler Authentication service (formerly ZIdentity) and a CloudShare environment. You configure the ZIA, ZPA, and ZDX services and a Zscaler Service Portal (formerly ZIdentity) environment, and you use Windows and Linux client VMs in CloudShare to connect to the Zero Trust Exchange and to test access and user experience.</p>
           </div>
-
           <div class="section-qa" data-section="t0-1">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 0.1</span>
@@ -164,24 +164,23 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
             <p style="color:var(--text-soft);margin-bottom:14px;">Your CloudShare environment contains six virtual machines. Each VM plays a specific role across the labs. Study the topology so you always know which machine to use for each task.</p>
 
             <div class="screenshot-embed">
-              <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram showing the CloudShare environment with the Remote Public Network (192.168.1.0/24) and Corporate Data Center (10.0.0.0/24) segments, VM names, and their connections to the Zscaler Zero Trust Exchange cloud" onclick="openLightbox(this.src,this.alt)">
+              <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology: Corp Client PC 1 and the Remote Linux Client PC on the Remote Public Network 192.168.1.0/24 reach the Experience Center and Service Portal through the Zero Trust Exchange, which connects to the Internet and, through the Corp ZPA Connector and Corp Log Streaming Connector, to the Corporate Data Center 10.0.0.0/24 with Corp Win Svr and Corp Docker Svr" loading="lazy">
+              <div class="screenshot-caption">Lab topology. The admin portals (ZIA, ZPA, ZDX) are all reached through the Experience Center and the Service Portal.</div>
             </div>
 
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Corp Network VMs</h4>
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Corporate Data Center VMs (10.0.0.0/24)</h4>
             <ul class="sub-steps" style="margin-bottom:16px;">
-              <li><strong>Corp: Client PC 1</strong> — The primary Windows workstation you use for most lab tasks. Username: <code>student</code> · Password: <code>Admin-123!</code> · IP: <code>192.168.1.1</code></li>
-              <li><strong>Corp: Win Svr 2025</strong> — Provides local directory services through Active Directory and hosts the <code>patraining.safemarch.com</code> domain. Runs HTTP/HTTPS intranet applications and file-sharing services, acts as the DNS server for data center hosts, and runs Microsoft Certificate Server to issue certificates for Browser Access. Username: <code>administrator</code> · Password: <code>Admin-123!</code> · IP: <code>10.0.0.1</code></li>
-              <li><strong>Corp: Docker Server</strong> — Hosts the HVAC application, a vulnerable web app (DVWA), and a syslog server that simulates a SIEM for log streaming. Username: <code>zscaler</code> · Password: <code>Zscaler123!</code> · IP: <code>10.0.0.2</code></li>
-              <li><strong>Corp: ZPA Connector</strong> — Red Hat Enterprise Linux (RHEL) VM that simulates deploying an OVA/OVF and installing the App Connector RPM. The initial lab setup provisions and activates the connectors for the ZPA service. Username: <code>admin</code> · Password: <code>Zscaler1!</code> · IP: <code>10.0.0.3</code></li>
-              <li><strong>Corp: Log Streaming Connector</strong> — A second RHEL App Connector VM dedicated to ZPA Log Streaming. Username: <code>admin</code> · Password: <code>Zscaler1!</code> · IP: <code>10.0.0.20</code></li>
+              <li><strong>Corp Win Svr 2025</strong> (Windows Server) — Provides local directory services through Active Directory and hosts the <code>patraining.safemarch.com</code> domain. It runs HTTP/HTTPS intranet applications and file-sharing services, acts as the DNS server for data center hosts, and runs Microsoft Certificate Server to issue certificates for Browser Access. Username: <code>Administrator</code> · Password: <code>Admin-123!</code> · IP: <code>10.0.0.1</code></li>
+              <li><strong>Corp Docker Server</strong> (Linux Server) — Hosts the HVAC application, a vulnerable web app (DVWA), and a syslog server that simulates a SIEM for log streaming. Username: <code>zscaler</code> · Password: <code>Zscaler123!</code> · IP: <code>10.0.0.2</code></li>
+              <li><strong>Corp ZPA Connector</strong> and <strong>Corp Log Streaming Connector</strong> (App Connectors) — Red Hat Enterprise Linux (RHEL) VMs that simulate deploying an OVA/OVF and installing the App Connector RPM. The initial lab setup provisions these connectors for the ZPA service. Username: <code>admin</code> · Password: <code>Zscaler1!</code> · IPs: <code>10.0.0.3</code> and <code>10.0.0.20</code></li>
             </ul>
 
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Remote Network VMs</h4>
+            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Remote Public Network VMs (192.168.1.0/24)</h4>
             <ul class="sub-steps">
-              <li><strong>Remote: Linux Client PC</strong> — Secondary Linux client for tasks that require testing from a non-corporate endpoint. Username: <code>admin</code> · Password: <code>Admin-123!</code> · IP: <code>192.168.1.2</code></li>
+              <li><strong>Corp Client PC 1</strong> (Windows Client PC) — The primary Windows workstation you use for most lab tasks. Username: <code>Student</code> · Password: <code>Admin-123!</code> · IP: <code>192.168.1.1</code></li>
+              <li><strong>Remote Linux Client PC</strong> — A Linux client used to test access from a non-corporate endpoint, such as a third-party contractor. Username: <code>admin</code> · Password: <code>Admin-123!</code> · IP: <code>192.168.1.2</code></li>
             </ul>
           </div>
-
           <div class="section-qa" data-section="t0-2">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 0.2</span>
@@ -216,7 +215,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="color:var(--text-soft);margin-bottom:14px;">Keep this page open as a credentials reference throughout the labs. The <strong>Session Password</strong> for your Zscaler admin and user accounts is unique to your pod — save it in the Config Panel above so it appears inline wherever needed.</p>
+            <p style="color:var(--text-soft);margin-bottom:14px;">Keep this page open as a credentials reference throughout the labs. The <strong>Session Password</strong> for your Zscaler admin and user accounts is unique to your pod. Save it with your Student FQDN in the <strong>⚙ Lab Configuration</strong> panel on the <a href="index.html">EDU-202 hub</a> so it appears inline wherever needed.</p>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 10px;">Virtual Machine Credentials</h4>
             <table class="cred-table">
@@ -229,12 +228,12 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
                 </tr>
               </thead>
               <tbody>
-                <tr><td>Corp: Win Svr 2025</td><td><code>administrator</code></td><td><code>Admin-123!</code></td><td><code>10.0.0.1</code></td></tr>
-                <tr><td>Corp: Client PC 1</td><td><code>student</code></td><td><code>Admin-123!</code></td><td><code>192.168.1.1</code></td></tr>
-                <tr><td>Corp: Docker Server</td><td><code>zscaler</code></td><td><code>Zscaler123!</code></td><td><code>10.0.0.2</code></td></tr>
-                <tr><td>Corp: ZPA Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td><code>10.0.0.3</code></td></tr>
-                <tr><td>Corp: Log Streaming Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td><code>10.0.0.20</code></td></tr>
-                <tr><td>Remote: Linux Client PC</td><td><code>admin</code></td><td><code>Admin-123!</code></td><td><code>192.168.1.2</code></td></tr>
+                <tr><td>Corp Win Svr 2025</td><td><code>administrator</code></td><td><code>Admin-123!</code></td><td><code>10.0.0.1</code></td></tr>
+                <tr><td>Corp Client PC 1</td><td><code>student</code></td><td><code>Admin-123!</code></td><td><code>192.168.1.1</code></td></tr>
+                <tr><td>Corp Docker Server</td><td><code>zscaler</code></td><td><code>Zscaler123!</code></td><td><code>10.0.0.2</code></td></tr>
+                <tr><td>Corp ZPA Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td><code>10.0.0.3</code></td></tr>
+                <tr><td>Corp Log Streaming Connector</td><td><code>admin</code></td><td><code>Zscaler1!</code></td><td><code>10.0.0.20</code></td></tr>
+                <tr><td>Remote Linux Client PC</td><td><code>admin</code></td><td><code>Admin-123!</code></td><td><code>192.168.1.2</code></td></tr>
               </tbody>
             </table>
 
@@ -249,18 +248,17 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
                 </tr>
               </thead>
               <tbody>
-                <tr><td>Student Admin</td><td><code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td>Session Password</td><td>All labs (dedicated tenant)</td></tr>
-                <tr><td>HVAC User</td><td><code>hvac@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><code>Admin-123!</code></td><td>Lab 2 — Browser Access test</td></tr>
-                <tr><td>SDC Admin (read-only)</td><td>Provided via SDC email</td><td>SDC Password</td><td>Labs 11–12 (SDC tenant)</td></tr>
-                <tr><td>SDC IT Department</td><td>IT_department_username</td><td>Session_Password</td><td>Lab 12 — ZCC enrollment</td></tr>
+                <tr><td>Student Admin</td><td><code>student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><span class="var-pass">&lt;Session Password&gt;</span></td><td>Your dedicated tenant (Experience Center)</td></tr>
+                <tr><td>HVAC User</td><td><code>hvac@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code></td><td><code>Admin-123!</code></td><td>Lab 2, Task 2.4 — Browser Access test</td></tr>
+                <tr><td>SDC Admin (read-only)</td><td>CloudShare <strong>Credentials</strong> tab › SDC Credentials</td><td>SDC password (same tab)</td><td>Solutions Demo Center labs</td></tr>
+                <tr><td>SDC IT Department user</td><td>IT Username (same tab)</td><td>SDC password (same tab)</td><td>Workflow Automation lab — Client Connector enrollment</td></tr>
               </tbody>
             </table>
 
             <div class="callout callout-note" style="margin-top:12px;">
-              <p>Throughout the lab guide, <code>&lt;Student FQDN&gt;</code> refers to the domain assigned to your pod (e.g. <code>zs000834.labtenant.com</code>). Save your FQDN in the Config Panel at the top of each lab page — all placeholders update automatically.</p>
+              <p><strong>Note:</strong> Throughout the lab guide, <code>&lt;Student FQDN&gt;</code> refers to the domain assigned to your pod (for example, <code>zs000834.labtenant.com</code>). Save your FQDN on the hub's Lab Configuration panel and every placeholder updates automatically.</p>
             </div>
           </div>
-
           <div class="section-qa" data-section="t0-3">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 0.3</span>
@@ -297,29 +295,32 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
           <div class="task-block">
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Dedicated Lab Tenant Access</h4>
-            <p style="margin-bottom:12px;">Each student is assigned a unique Student ID with a dedicated virtual environment hosted in CloudShare, and a corresponding <strong>Student FQDN</strong> with a set of admin and test user accounts for Zscaler. Your lab access instructions contain:</p>
+            <p style="margin-bottom:12px;">Each student is assigned a unique Student ID with a dedicated virtual environment hosted in CloudShare, and a corresponding <strong>Student FQDN</strong> with a set of admin and test user accounts for Zscaler. User credentials and portal addresses are in the lab access instructions for your training pod:</p>
             <ul class="sub-steps" style="margin-bottom:16px;">
-              <li><strong>Student ID</strong> — a unique identifier for your pod (e.g. <code>zs000834</code>)</li>
-              <li><strong>Student FQDN</strong> — a unique domain for your pod (e.g. <code>zs000834.labtenant.com</code>)</li>
-              <li>Login name format: <code>student@&lt;Student FQDN&gt;</code></li>
-              <li>Session Password — unique to your session, shared across all admin and user accounts in your pod</li>
+              <li><strong>Student ID</strong> — a unique identifier for your pod (for example, <code>zs000834</code>)</li>
+              <li><strong>Student FQDN</strong> — a unique domain for your pod (for example, <code>zs000834.labtenant.com</code>)</li>
+              <li>Login name format: <code>student@&lt;Student FQDN&gt;</code> (for example, <code>student@zs000834.labtenant.com</code>)</li>
+              <li><strong>Session Password</strong> — unique to your session, and the same across all configured admin and user accounts in your pod</li>
             </ul>
             <p style="margin-bottom:12px;">You can also find your tenant and SDC credentials on the <strong>Credentials</strong> tab of your CloudShare environment (see Lab 1).</p>
             <div class="callout callout-note">
-              <p>Save your Student FQDN and Session Password in the <strong>⚙ Lab Configuration</strong> panel at the top of every lab page. All credential placeholders will update automatically across all steps.</p>
+              <p><strong>Note:</strong> Save your Student FQDN and Session Password in the <strong>⚙ Lab Configuration</strong> panel on the <a href="index.html">EDU-202 hub</a>. All credential placeholders on the lab pages update automatically.</p>
             </div>
 
             <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Solutions Demo Center (SDC) Access</h4>
-            <p style="margin-bottom:12px;">For Labs 11 and 12, you switch to the <strong>Solutions Demo Center</strong> — a shared read-only Zscaler tenant with pre-populated data including ZDX performance history, DLP incidents, and workflow automation templates. You have a read-only administrator account on the SDC tenant.</p>
+            <p style="margin-bottom:12px;">For some tasks, you switch to the <strong>Solutions Demo Center</strong> tenant, where activity data is available for analysis. You have a read-only administrator account on the SDC tenant, and its credentials are on the CloudShare <strong>Credentials</strong> tab. Tasks that need the SDC account tell you to sign in to it.</p>
             <ol class="step-list">
-              <li>Open a new browser window and go to <strong>https://console.zscaler.com</strong></li>
-              <li>Sign in using the SDC credentials provided to you through email (or your lab resources panel).</li>
+              <li>Sign in to the SDC Admin Portal (read-only admin):
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Open a new browser window and go to <code>console.zscaler.com</code>.</li>
+                  <li>Sign in with the SDC credentials provided to you.</li>
+                </ol>
+              </li>
             </ol>
             <div class="callout callout-note" style="margin-top:8px;">
-              <p>The SDC tenant is hosted in the <code>zscalerthree.net</code> cloud. Use the Admin Portal URL <strong>https://console.zscaler.com</strong>. You can also use your local workstation browser to access it if preferred.</p>
+              <p><strong>Note:</strong> The SDC tenant is hosted in the <code>zscalerthree.net</code> cloud. Use the Admin Portal URL <strong>console.zscaler.com</strong>. If you prefer, use your local workstation browser to reach it.</p>
             </div>
           </div>
-
           <div class="section-qa" data-section="t0-4">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 0.4</span>
@@ -346,7 +347,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       </div>
 
     </div>
-  </div>
+  </div><!-- /.content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -354,103 +355,125 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-label">LAB TOPOLOGY</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/lab0/lab0-p8-img1.png" alt="EDU-202 lab topology: Corp Client PC 1 and the Remote Linux Client PC on 192.168.1.0/24 reach the Experience Center through the Zero Trust Exchange, which connects through the Corp ZPA Connector and Corp Log Streaming Connector to the Corporate Data Center 10.0.0.0/24. Click to expand." onclick="openLightbox(this.src,this.alt)" title="Click to expand">
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Virtual Machines</div>
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
       <div class="sidebar-cred-list">
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Client PC 1<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Client PC 1 (Windows VM)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.1</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.1',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Docker Server<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp ZPA Connector (CON)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
             <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
             <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.2</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.2',this)" title="Copy">⎘</button></div>
           </div>
         </div>
-
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin (Experience Center)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value"><span class="var-pass">&lt;Session Password&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User (Browser Access)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;Student FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin (CloudShare › Credentials)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">&lt;SDC Admin Username&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;SDC Password&gt;</code></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Portal Credentials</div>
-      <div class="sidebar-cred-list">
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">from SDC email</code></div>
-          </div>
-        </div>
-
-      </div>
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="prog-chk-lab0-1"><input type="checkbox" id="chk-lab0-1" onchange="toggleDone(this)"><label for="chk-lab0-1">Task 0.1: Scenario &amp; setup read</label></li>
+        <li class="progress-item" id="prog-chk-lab0-2"><input type="checkbox" id="chk-lab0-2" onchange="toggleDone(this)"><label for="chk-lab0-2">Task 0.2: Topology reviewed</label></li>
+        <li class="progress-item" id="prog-chk-lab0-3"><input type="checkbox" id="chk-lab0-3" onchange="toggleDone(this)"><label for="chk-lab0-3">Task 0.3: FQDN &amp; password saved on the hub</label></li>
+        <li class="progress-item" id="prog-chk-lab0-4"><input type="checkbox" id="chk-lab0-4" onchange="toggleDone(this)"><label for="chk-lab0-4">Task 0.4: Tenant &amp; SDC access understood</label></li>
+      </ul>
     </div>
 
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide uses the new navigation: open features from the Search menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The search box in the Experience Center top bar. Type a feature name (e.g. App Connector Groups) and pick the result; each result shows its menu path.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Formerly ZIdentity. Zscaler's authentication service, reached from the Experience Center menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's unique domain (e.g. zs000834.labtenant.com). Used in every login ID: student@, hvac@.</div></div>
+        <div class="qr-item"><div class="qr-term">CloudShare</div><div class="qr-def">The virtual lab platform that hosts your VMs. Use Actions › Send Text or Send Password to paste into a VM.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">A lightweight VM in the data center that makes outbound-only connections to ZPA, so private apps are reachable without inbound firewall ports.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Group</div><div class="qr-def">A set of App Connectors that share a location and settings. Server groups point to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token</div><div class="qr-def">The OAuth code shown by cat /etc/issue on a connector. Add it under App Connectors to enroll the connector; it expires after two hours.</div></div>
+        <div class="qr-item"><div class="qr-term">Application Segment</div><div class="qr-def">Defines a private app (domain or IP plus ports) and how it is reached: Client Connector, Browser Access or Privileged Remote Access.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment / Server Group</div><div class="qr-def">A segment group bundles segments for policy; a server group maps segments to App Connector groups.</div></div>
+        <div class="qr-item"><div class="qr-term">Browser Access</div><div class="qr-def">Clientless ZPA access to a web app through its External Domain, with no Client Connector or VPN.</div></div>
+        <div class="qr-item"><div class="qr-term">Access Policy</div><div class="qr-def">ZPA rules, default deny, that allow access to segments when criteria such as Applications and Client Types match.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Streaming Service (LSS)</div><div class="qr-def">Streams ZPA logs (e.g. User Activity) through an App Connector to a syslog receiver such as a SIEM.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Receiver</div><div class="qr-def">The LSS destination: host, TCP port, App Connector group, log type and template (e.g. CSV).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Remote Access (PRA)</div><div class="qr-def">Clientless, browser-based RDP and SSH to servers through a privileged portal, with session recording and credential vaulting.</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Portal / Console</div><div class="qr-def">The portal is the web page users open; each console on it is one server (protocol, host, port).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Credentials</div><div class="qr-def">Vaulted usernames and passwords that a credentials policy injects into a console, so users never see them.</div></div>
+        <div class="qr-item"><div class="qr-term">AppProtection</div><div class="qr-def">Inline web-application firewall in ZPA: OWASP CRS, ThreatLabZ, WebSocket and API controls on private app traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Paranoia level</div><div class="qr-def">How wide a net the OWASP controls cast: higher levels catch more but raise false positives.</div></div>
+        <div class="qr-item"><div class="qr-term">Isolation Profile</div><div class="qr-def">Settings for Browser Isolation of private apps, e.g. render-only with View Office Files in Isolation.</div></div>
+        <div class="qr-item"><div class="qr-term">End User Collection</div><div class="qr-def">A ZDX container that sets which users and devices run the probes of the applications inside it.</div></div>
+        <div class="qr-item"><div class="qr-term">Web / Cloud Path probe</div><div class="qr-def">A Web probe times page fetches to a URL; a Cloud Path probe traces hop-by-hop latency, loss and jitter to the host.</div></div>
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center: a shared, read-only tenant with pre-populated data, used for the reporting and Workflow Automation labs.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
@@ -478,7 +501,7 @@ function loadConfig(){
 function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass}));applyConfig();}catch(e){}}
 function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);document.getElementById('fqdn-input').value='';document.getElementById('pass-input').value='';applyConfig();}catch(e){}}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var sid=(fqdn.split('.')[0]||'');document.querySelectorAll('.var-sid').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var sidnum=sid.replace(/\D/g,'');document.querySelectorAll('.var-sidnum').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sidnum){el.textContent=sidnum;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var xyz=sid.replace(/\D/g,'').slice(-3);document.querySelectorAll('.var-xyz').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(xyz){el.textContent=xyz;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
 }
 function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
 function toggleConfig(){var panel=document.getElementById('config-panel');var body=document.getElementById('config-body');var btn=document.getElementById('config-toggle-btn');if(!panel)return;var collapsed=panel.classList.toggle('collapsed');localStorage.setItem(CONFIG_COLLAPSED_KEY,collapsed?'1':'0');if(btn){var chev=btn.querySelector('.chevron');if(chev)chev.textContent=collapsed?'▼':'▲';btn.innerHTML=(collapsed?'<span class="chevron">▼</span> Expand':'<span class="chevron">▲</span> Collapse');}
@@ -532,7 +555,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 </script>
 </body>
 </html>

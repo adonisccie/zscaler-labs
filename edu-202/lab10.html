@@ -7,7 +7,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 10: Automation using Zscaler APIs — EDU-202</title>
+<title>Lab 10: Analyze Data and View Integrated Reports — EDU-202</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,18 +24,30 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 .task-collapsible.open>.task-collapsible-body{display:block;}
 </style>
 <link rel="stylesheet" href="../lab-style.css">
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-202</a> › Lab 10</div>
   <div class="header-top">
-    <span class="eyebrow-chip">LAB 10 · AUTOMATION</span>
+    <span class="eyebrow-chip">LAB 10 · SDC</span>
     <div class="header-dot"></div>
   </div>
-  <h1>Automation using <em>Zscaler APIs</em></h1>
+  <h1>Analyze Data and View <em>Integrated Reports</em></h1>
   <div class="motivation-banner">
-    <p>Manual portal configuration doesn't scale. In this lab you use the Zscaler OneAPI platform to authenticate via OAuth 2.0, query live ZCC device data, and programmatically create an App Connector Group — the same workflow used by enterprise automation pipelines and infrastructure-as-code toolchains.</p>
+    <p>Raw telemetry only tells half the story. In this lab you use ZDX Data Explorer to build custom views of application performance, download Quarterly Business Review reports for trend insights, explore system-generated Cloud Path reports, and share a view-only ZDX Snapshot: the toolkit for communicating user-experience data to stakeholders.</p>
   </div>
 </header>
 
@@ -68,18 +80,42 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
   <div class="content-col">
 
     <div class="section-block" id="section-lab10">
-      <h2>Lab 10: Automation using Zscaler APIs</h2>
+      <h2>Lab 10: Analyze Data and View Integrated Reports</h2>
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 10</div>
-        <p><strong>Scenario:</strong> Your organisation is expanding its Zero Trust deployment and needs to automate provisioning tasks that would otherwise require manual portal access. You are tasked with integrating Zscaler into your automation pipeline using the OneAPI platform. In this lab you set up Postman as your API client, import the official Zscaler OneAPI collection, configure OAuth 2.0 authentication, validate live API calls against ZCC device data, and create a new App Connector Group via a POST request — demonstrating the full API-driven provisioning workflow.</p>
+        <p><strong>Scenario:</strong> You need to review Zscaler Digital Experience (ZDX) data to understand application and network performance, and to communicate trends to stakeholders. In this lab, you use Data Explorer, Quarterly Business Review (QBR) reports, system-generated reports, and ZDX Snapshots to analyse user experience and share findings.</p>
+        <ul style="margin-top:10px;">
+          <li>Analyse user experience and performance data using Data Explorer.</li>
+          <li>Download and review QBR reports for trend insights.</li>
+          <li>Review system-generated reports and create ZDX Snapshots to share view-only findings.</li>
+        </ul>
         <figure class="lab-hero">
-          <img src="images/lab10-hero.png" alt="Lab 10 — Automation using Zscaler APIs" loading="lazy">
+          <img src="images/lab10-hero.png" alt="Lab 10 — Analyze Data and View Integrated Reports" loading="lazy">
         </figure>
         <div class="lab-meta">
-          <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
-          <div class="lab-meta-item"><strong>Service:</strong> Zscaler OneAPI (ZIA · ZPA · ZCC · ZDX)</div>
-          <div class="lab-meta-item"><strong>Tool:</strong> Postman (web or desktop)</div>
+          <div class="lab-meta-item"><strong>Time:</strong> ~15 minutes</div>
+          <div class="lab-meta-item"><strong>Service:</strong> Zscaler Digital Experience (ZDX)</div>
+          <div class="lab-meta-item"><strong>Environment:</strong> Solutions Demo Center (SDC)</div>
+        </div>
+      </div>
+
+      <div class="callout callout-sdc">
+        <p><strong>Solutions Demo Center labs:</strong> The hands-on labs so far were read-write. This lab and the next run in read-only mode on the Solutions Demo Center (SDC) because of technical dependencies, such as report generation timelines (which can take 24 hours or more) and restricted student access to some integrated services. They expose you to key features and real-world dashboards for data analysis, integrated reports and snapshots, and incident management with Zscaler Workflow Automation (ZWA).</p>
+      </div>
+      <div class="task-block">
+        <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Access the Solutions Demo Center</h4>
+        <ol class="step-list">
+          <li>Go to <code>console.zscaler.com</code>.</li>
+          <li>Sign in with the SDC credentials from your lab access information (CloudShare <strong>Credentials</strong> › SDC Credentials):
+            <ul class="sub-steps">
+              <li>Username: <code>&lt;ZIA_Admin_User_ID&gt;</code></li>
+              <li>Password: <code>&lt;Session_Password&gt;</code></li>
+            </ul>
+          </li>
+        </ol>
+        <div class="callout callout-note">
+          <p><strong>Note:</strong> For each SDC lab, you can follow the step-by-step instructions or challenge yourself: review the problem statement and work out the root cause on your own before proceeding. This builds troubleshooting and critical-thinking skills.</p>
         </div>
       </div>
 
@@ -87,28 +123,54 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-10-1">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 10.1</span>
-          <span class="task-collapsible-title">Access and Set Up Postman</span>
+          <span class="task-collapsible-title">Analyze Application and Network Performance in Data Explorer</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Postman is the API client used in this lab. You can access it via the web browser or use the desktop application installed on your lab machine. A Postman account is required to save collections and variables between sessions.</p>
+            <p style="margin-bottom:12px;">In this task, you use Data Explorer to build and run custom views that analyse application and network performance and track user experience.</p>
             <ol class="step-list">
-              <li>On <strong>Corp: Client PC 1</strong>, open a web browser and navigate to <a href="https://www.postman.com" target="_blank" rel="noopener">postman.com</a>.
-                <div class="callout callout-note" style="margin-top:8px;">
-                  <p>Alternatively, use the <strong>Postman</strong> desktop application installed on the Corp: Client PC 1 desktop if it is available.</p>
+              <li>On Corp Client PC 1, open a browser and go to the Zscaler Experience Center. To open Data Explorer, type <code>Data Explorer</code> in the Search menu and select the matching option (Digital Experience &gt; Reports).
+                <div class="screenshot-embed">
+                  <img src="screenshots/lab10/lab10-p209-a.png" alt="ZDX Data Explorer list of configured views with data source, applications, metrics and owner columns highlighted" loading="lazy">
+                  <div class="screenshot-caption">Data Explorer lists the configured views.</div>
+                </div>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> You can see a list of configured views and their details.</p>
                 </div>
               </li>
-              <li>If you do not already have an account, select <strong>Sign Up for Free</strong> and create a free Postman account.</li>
-              <li>Sign in to Postman. Confirm you can see the Postman workspace home screen.
+              <li><strong>Create and run a query.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select <strong>View</strong> to organise customised views of applications and metrics.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p210-a.png" alt="Data Explorer view list with the view (eye) icon of one view highlighted" loading="lazy">
+                      <div class="screenshot-caption">Open a view with its <strong>View</strong> icon.</div>
+                    </div>
+                  </li>
+                  <li>In the left panel, configure the options you want to include, such as Data Source, Probes, Metrics, Filters, Operations, View Type or Overlays.</li>
+                  <li>Select <strong>Run Query</strong>.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p211-a.png" alt="Data Explorer view editor with the left panel of data source, applications, metrics, filters, operations and view type highlighted, and charts of DNS time and SSL handshake time by geolocation" loading="lazy">
+                      <div class="screenshot-caption">The query panel (left) and the resulting charts.</div>
+                    </div>
+                    <div class="callout callout-success">
+                      <p><strong>Verify:</strong> You can view graphs that display individual charts for the selected applications and metrics.</p>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li><strong>Explore chart details.</strong> Select and drag to zoom in on a specific area of a chart.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p197-img1.png" alt="Postman download page showing Windows x64 download button and Launch Postman option for web access" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab10/lab10-p212-a.png" alt="Maximum DNS Time chart with a dragged selection highlighting a time range" loading="lazy">
+                  <div class="screenshot-caption">Drag across a chart to zoom into that time range.</div>
+                </div>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> You can view details for the zoomed time range.</p>
                 </div>
               </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t10-1">
+          <div class="section-qa" data-section="t11-1">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 10.1</span>
               <span class="section-qa-chevron">▾</span>
@@ -117,15 +179,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t10-1" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t10-1',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t10-1"></div>
+                  <textarea class="section-qa-textarea" id="sq-t11-1" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t11-1',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t11-1"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t10-1" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t10-1',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t10-1"></div>
+                  <textarea class="section-qa-textarea" id="sn-t11-1" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t11-1',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t11-1"></div>
                 </div>
               </div>
             </div>
@@ -137,43 +199,47 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-10-2">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 10.2</span>
-          <span class="task-collapsible-title">Import the Zscaler OneAPI Postman Collection</span>
+          <span class="task-collapsible-title">View QBR Reports for Insight into ZDX Users</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">Zscaler publishes an official Postman collection for OneAPI that includes pre-built request templates for all product areas. You fork the verified public collection from the Postman Public API Network into your workspace.</p>
+            <p style="margin-bottom:12px;">In this task, you download and review QBR reports for trend insights.</p>
             <ol class="step-list">
-              <li>In Postman, select the <strong>Home</strong> icon, then select <strong>Public API Network</strong>.
+              <li><strong>Open the QBR reports list.</strong> In the left navigation bar, select <strong>ZDX QBR Reports</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p215-img1.png" alt="Postman Home menu with Public API Network highlighted" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab10/lab10-p213-a.png" alt="ZDX QBR Reports page with ZDX QBR Reports highlighted in the left navigation and a list of quarterly report files" loading="lazy">
+                  <div class="screenshot-caption">One QBR file per covered quarter.</div>
+                </div>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> You see a list of reports for the covered time periods.</p>
                 </div>
               </li>
-              <li>In the search bar, type <code>Zscaler OneAPI</code> and select the <strong>Verified</strong> public API collection from the drop-down.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p215-img2.png" alt="Postman Public API Network page with the search icon highlighted" onclick="openLightbox(this.src,this.alt)">
+              <li><strong>Download and review a report.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select the <strong>Download</strong> icon for the report you want to view.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p214-a.png" alt="QBR report download icon highlighted, with the downloaded .pptx file shown in the browser downloads bubble" loading="lazy">
+                      <div class="screenshot-caption">The report downloads as a PowerPoint file.</div>
+                    </div>
+                  </li>
+                  <li>Open the downloaded QBR PowerPoint file and review the details.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p215-a.png" alt="QBR PowerPoint open on the title slide, Quarterly Digital Experience Review for The Zero Trust Exchange, with the slide list highlighted" loading="lazy">
+                      <div class="screenshot-caption">The Quarterly Digital Experience Review deck.</div>
+                    </div>
+                    <div class="callout callout-success">
+                      <p><strong>Verify:</strong> You can open the file and view the report content.</p>
+                    </div>
+                  </li>
+                </ol>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> A new QBR report is generated on the first weekend of every month, and each report is stored securely as a PowerPoint file in the Zscaler cloud.</p>
                 </div>
-              </li>
-              <li>Right-click the <strong>Zscaler OneAPI</strong> collection and select <strong>Fork</strong>.</li>
-              <li>Enter a fork label name of your choice.</li>
-              <li>Under <strong>Environments to Fork</strong>, select <strong>Zscaler OneAPI</strong>.</li>
-              <li>Select <strong>Fork Collection</strong> to import the collection and its environment into your Postman workspace.</li>
-              <li>Verify that a collection named <strong>OneAPI</strong> appears in the <strong>Collections</strong> panel on the left, with sub-folders including:
-                <ul class="sub-steps">
-                  <li>ZIA (Zscaler Internet Access)</li>
-                  <li>ZPA (Zscaler Private Access)</li>
-                  <li>ZCC (Zscaler Client Connector)</li>
-                  <li>ZDX (Zscaler Digital Experience)</li>
-                  <li>ZIdentity</li>
-                </ul>
               </li>
             </ol>
-            <div class="callout callout-success">
-              <p><strong>Expected result:</strong> The OneAPI collection is visible in Postman Collections with all product sub-folders expanded and accessible.</p>
-            </div>
           </div>
-
-          <div class="section-qa" data-section="t10-2">
+          <div class="section-qa" data-section="t11-2">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 10.2</span>
               <span class="section-qa-chevron">▾</span>
@@ -182,15 +248,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t10-2" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t10-2',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t10-2"></div>
+                  <textarea class="section-qa-textarea" id="sq-t11-2" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t11-2',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t11-2"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t10-2" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t10-2',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t10-2"></div>
+                  <textarea class="section-qa-textarea" id="sn-t11-2" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t11-2',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t11-2"></div>
                 </div>
               </div>
             </div>
@@ -202,63 +268,79 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div class="task-collapsible open" id="task-10-3">
         <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
           <span class="task-num-badge">Task 10.3</span>
-          <span class="task-collapsible-title">Gather Variables for OneAPI Authentication</span>
+          <span class="task-collapsible-title">View System Integrated Reports and Generate Snapshots</span>
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
           <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">OAuth 2.0 authentication requires four variables: the Authentication Service (formerly ZIdentity) base URL, a Client ID, a Client Secret, and your ZPA Customer ID. You collect these from different areas of the administration portal.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:16px 0 8px;">Step A — Find the Authentication Service Base URL</h4>
+            <p style="margin-bottom:12px;">In this task, you review system-generated reports and create ZDX Snapshots to share view-only findings.</p>
             <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Administration &gt; Identity &gt; Authentication Service &gt; Service Portal (formerly ZIdentity)</strong>.</li>
-              <li>The Service Portal opens in a new browser tab. Find the BaseUrl in the browser address bar and copy it (e.g. <code>https://zs000149.zslogin.net</code>). This is your <strong><code>zIdentityBaseUrl</code></strong>. Note it for later.</li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step B — Create an API Client in the Service Portal</h4>
-            <ol class="step-list" start="3">
-              <li>In the Experience Center, navigate to <strong>Administration &gt; API Configuration &gt; OneAPI &gt; API Clients</strong>.</li>
-              <li>Select <strong>Add API Client</strong>. In the <strong>Add API Client</strong> dialog, enter:
-                <ul class="sub-steps">
-                  <li><strong>Name:</strong> <code>TestClient</code></li>
-                  <li><strong>Status:</strong> <strong>Enabled</strong></li>
-                  <li><strong>Access Token Validity:</strong> <strong>90 Minutes</strong></li>
-                </ul>
-              </li>
-              <li>Under <strong>Client Authentication</strong>, set:
-                <ul class="sub-steps">
-                  <li><strong>Validation Type:</strong> <strong>Secret</strong></li>
-                  <li>Select <strong>Add</strong>.</li>
-                </ul>
-              </li>
-              <li>Select the <strong>Resources</strong> tab. Grant the following permissions:
-                <ul class="sub-steps">
-                  <li><strong>ZCC:</strong> Super Admin</li>
-                  <li><strong>ZIA:</strong> Super Admin</li>
-                  <li><strong>ZPA:</strong> API Full Access</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong>.</li>
-              <li><strong>Immediately</strong> copy the displayed <strong>Client Secret</strong> and store it securely.
-                <div class="callout callout-warning" style="margin-top:8px;">
-                  <p><strong>Important:</strong> The Client Secret is shown only once. Once you close or navigate away from this dialog it cannot be retrieved. If you miss it, you must regenerate the secret.</p>
-                </div>
-              </li>
-              <li>Verify the <code>TestClient</code> API client appears in the API Clients list with its <strong>Client ID</strong> visible. Note the Client ID for later.
+              <li><strong>Open the system-generated reports.</strong> In the left navigation bar, go to <strong>Predefined Reports</strong>.
                 <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p202-img1.png" alt="API Clients page in Experience Center showing TestClient with Status Active and Client ID visible" onclick="openLightbox(this.src,this.alt)">
+                  <img src="screenshots/lab10/lab10-p216-a.png" alt="Predefined Reports page with Predefined Reports highlighted in the left navigation and the list of reports such as Cloud Path End-to-End and DNS Performance" loading="lazy">
+                  <div class="screenshot-caption">Predefined Reports.</div>
+                </div>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> You see a list of reports.</p>
                 </div>
               </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step C — Find the ZPA Customer ID</h4>
-            <ol class="step-list" start="10">
-              <li>Navigate to <strong>Administration &gt; Account Management &gt; Linked Services</strong>.</li>
-              <li>Locate the <strong>ZPA Tenant ID</strong> (also referred to as the Customer ID). Note this value for later.</li>
+              <li><strong>Open and interact with a report.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>Select the <strong>View</strong> icon for the report you want to analyse.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p217-a.png" alt="Predefined Reports list with the view icon of Cloud Path: End-to-End highlighted" loading="lazy">
+                      <div class="screenshot-caption">View <strong>Cloud Path: End-to-End</strong>.</div>
+                    </div>
+                  </li>
+                  <li>For <strong>Cloud Path End-to-End</strong>, filter by Departments, Zscaler Locations, Geolocations or Applications.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p218-a.png" alt="Cloud Path End-to-End report with the time range, Departments, Zscaler Locations, Geolocations and Applications filters highlighted above an average latency chart" loading="lazy">
+                      <div class="screenshot-caption">The report filters and the average end-to-end latency per location.</div>
+                    </div>
+                  </li>
+                  <li>Select a point in the graph to display a tooltip with latency metrics for the selected locations.</li>
+                  <li>Drag from left to right to select a time range.</li>
+                  <li>Select <strong>Zoom Out</strong> to reset the graph to the original view.</li>
+                </ol>
+                <div class="callout callout-success">
+                  <p><strong>Verify:</strong> The graph updates based on your selections.</p>
+                </div>
+                <div class="callout callout-note">
+                  <p><strong>Note:</strong> Up to 20 device locations are displayed at a time in the legend on the right of the graph, based on user device information.</p>
+                </div>
+              </li>
+              <li><strong>Create and share a ZDX Snapshot.</strong>
+                <ol class="sub-steps" style="list-style:lower-alpha;">
+                  <li>In the left navigation bar, select <strong>ZDX Snapshots</strong>.</li>
+                  <li>Select the <strong>Copy</strong> icon for an active snapshot.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p219-a.png" alt="Snapshots page with an Active snapshot's status and copy-link icon highlighted" loading="lazy">
+                      <div class="screenshot-caption">Copy the link of an <strong>Active</strong> snapshot.</div>
+                    </div>
+                  </li>
+                  <li>Paste the copied link into a new browser window.</li>
+                  <li>Verify that the page shows a green icon in the upper-left corner, indicating that you are viewing a ZDX Snapshot.
+                    <div class="screenshot-embed">
+                      <img src="screenshots/lab10/lab10-p220-a.png" alt="ZDX page opened from the snapshot URL, with the snapshot URL and the green snapshot indicator in the upper-left corner highlighted" loading="lazy">
+                      <div class="screenshot-caption">The green icon (upper left) marks a snapshot view.</div>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+              <li>Users can identify a ZDX Snapshot by the green icon in the upper-left corner of the page. A ZDX Snapshot captures the current state of a UI page and provides a URL that admins can share with ZDX users or other admins for view-only access. A snapshot allows limited interaction, depending on what data is obfuscated and which details are shared. For example, in a snapshot of the user details page, these features are disabled by default:
+                <ul class="sub-steps">
+                  <li>Time range filter</li>
+                  <li>Drop-down menu filters</li>
+                  <li>Device selection</li>
+                  <li>Applications other than the one already selected</li>
+                  <li>Root-cause-analysis data points other than the one already selected</li>
+                  <li>Web Probe Metrics</li>
+                  <li>Cloud Path</li>
+                </ul>
+              </li>
             </ol>
           </div>
-
-          <div class="section-qa" data-section="t10-3">
+          <div class="section-qa" data-section="t11-3">
             <button class="section-qa-header" onclick="toggleSectionQA(this)">
               <span class="section-qa-title">Questions &amp; Notes — Task 10.3</span>
               <span class="section-qa-chevron">▾</span>
@@ -267,206 +349,15 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
               <div class="section-qa-grid">
                 <div>
                   <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t10-3" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t10-3',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t10-3"></div>
+                  <textarea class="section-qa-textarea" id="sq-t11-3" placeholder="Questions about this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionQ('t11-3',this)">Save</button>
+                  <div class="section-qa-list" id="sq-list-t11-3"></div>
                 </div>
                 <div>
                   <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t10-3" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t10-3',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t10-3"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Task 10.4 -->
-      <div class="task-collapsible open" id="task-10-4">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 10.4</span>
-          <span class="task-collapsible-title">Authenticate and Test OneAPI Endpoints</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">You configure the collected variables in the Postman collection, obtain an OAuth 2.0 access token, and then test two live ZCC API endpoints to verify connectivity and access.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Step A — Set Collection Variables</h4>
-            <ol class="step-list">
-              <li>In Postman, open the <strong>Environments</strong> section and select <strong>Zscaler OneAPI</strong>.</li>
-              <li>Go to the <strong>Variables</strong> table.</li>
-              <li>Update the following variables with the values you collected in Task 10.3:
-                <ul class="sub-steps">
-                  <li><strong><code>zIdentityBaseUrl</code></strong> — your Service Portal base URL (e.g. <code>https://zs000149.zslogin.net</code>)</li>
-                  <li><strong><code>clientSecret</code></strong> — the Client Secret copied when you created <code>TestClient</code></li>
-                  <li><strong><code>clientID</code></strong> — the Client ID shown on the <code>TestClient</code> row</li>
-                  <li><strong><code>customerid</code></strong> — the ZPA Tenant/Customer ID from Linked Services</li>
-                </ul>
-              </li>
-              <li>Select <strong>Save</strong> (or press <kbd>Ctrl+S</kbd> / <kbd>Cmd+S</kbd>).
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p207-img1.png" alt="Postman OneAPI collection Variables tab showing zIdentityBaseUrl, clientID, clientSecret, and customerId fields filled in with student values" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step B — Obtain an Access Token</h4>
-            <ol class="step-list" start="5">
-              <li>With the <strong>OneAPI</strong> collection selected, select the <strong>Authorization</strong> tab.</li>
-              <li>Scroll down to the bottom of the Authorization panel and select <strong>Get New Access Token</strong>.</li>
-              <li>Postman performs the OAuth 2.0 flow against the Authentication Service. When complete, a dialog displays <strong>"Authentication complete"</strong>.</li>
-              <li>Select <strong>Use Token</strong> to apply the token to the collection.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p209-img1.png" alt="Postman Manage Access Tokens dialog showing ZIdentity Token with Use Token button highlighted, and Current Token panel showing expiry time" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step C — Verify the Active Token</h4>
-            <ol class="step-list" start="9">
-              <li>In the Experience Center, navigate to <strong>Administration &gt; API Configuration &gt; OneAPI &gt; Tokens</strong>.</li>
-              <li>Filter or search by your Client ID (or filter by <strong>Last 15 minutes</strong>). Confirm an active token appears for <code>TestClient</code>.</li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step D — Test ZCC Endpoints</h4>
-            <ol class="step-list" start="11">
-              <li>In Postman, navigate to <strong>OneAPI &gt; Zscaler Client Connector</strong>.</li>
-              <li>Select the request <strong>GET "Get all enrolled devices"</strong> and select <strong>Send</strong>.
-                <ul class="sub-steps">
-                  <li><strong>Expected response:</strong> <code>200 OK</code></li>
-                  <li>The response body contains a JSON array of enrolled devices.</li>
-                </ul>
-              </li>
-              <li>Select the request <strong>GET "Download device details as a CSV file"</strong> and select <strong>Send</strong>.
-                <ul class="sub-steps">
-                  <li><strong>Expected response:</strong> <code>200 OK</code></li>
-                  <li>The response body contains CSV-formatted device details including device name, OS version, ZCC version, and enrolled user.</li>
-                </ul>
-              </li>
-            </ol>
-            <div class="callout callout-success">
-              <p><strong>Expected result:</strong> Both requests return <code>200 OK</code> with valid response bodies. This confirms that OAuth 2.0 authentication is working and your API client has the correct ZCC Super Admin permissions.</p>
-            </div>
-          </div>
-
-          <div class="section-qa" data-section="t10-4">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 10.4</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t10-4" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t10-4',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t10-4"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t10-4" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t10-4',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t10-4"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Task 10.5 -->
-      <div class="task-collapsible open" id="task-10-5">
-        <div class="task-collapsible-header" onclick="toggleTask(this)" role="button" tabindex="0">
-          <span class="task-num-badge">Task 10.5</span>
-          <span class="task-collapsible-title">Create an App Connector Group via API</span>
-          <span class="task-collapsible-chevron">▾</span>
-        </div>
-        <div class="task-collapsible-body">
-          <div class="task-block">
-            <p style="font-size:0.93rem;color:var(--text-soft);margin-bottom:14px;">You use a POST request to programmatically create a new ZPA App Connector Group — the same resource you would normally configure by hand through the ZPA portal. This demonstrates the full create workflow: look up a dependency (enrollment certificate ID), then issue a create request that references it.</p>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Step A — Verify existing App Connector Groups</h4>
-            <ol class="step-list">
-              <li>In the Experience Center, navigate to <strong>Infrastructure &gt; Private Access &gt; App Connector Groups</strong>.</li>
-              <li>Note the App Connector Groups currently configured. After completing this task, a new group named <code>ZPALAB APPC Group</code> should appear in this list.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p213-img1.png" alt="ZPA App Connector Groups page showing no items — empty state before API-created group is added" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step B — Retrieve the Enrollment Certificate ID</h4>
-            <ol class="step-list" start="3">
-              <li>In Postman, navigate to <strong>OneAPI &gt; ZPA &gt; Enrollment Certificate Controller</strong>.</li>
-              <li>Select the request <strong>GET "Gets all configured enrollment certificate details for specified customer"</strong> and select <strong>Send</strong>.</li>
-              <li>In the JSON response body, locate the enrollment certificate and note its <strong><code>id</code></strong> value (e.g. <code>"id": "7651"</code>). You will use this as the <code>signingCertId</code> in the next step.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p214-img1.png" alt="Postman GET enrollment certificate request in ZPA Enrollment Certificate Controller, showing request URL with customerId path variable" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step C — Create the App Connector Group</h4>
-            <ol class="step-list" start="6">
-              <li>In Postman, navigate to <strong>OneAPI &gt; ZPA &gt; Connector Group Controller</strong>.</li>
-              <li>Select the request <strong>POST "Adds a new App Connector Group for specified customer"</strong>.</li>
-              <li>Select the <strong>Body</strong> tab. Replace the existing body with the following JSON, substituting the actual <code>id</code> value you retrieved in Step B for <code>signingCertId</code>:
-                <pre><code>{
-  "name": "ZPALAB APPC Group",
-  "description": "App Connector training Lab at San Jose",
-  "latitude": "37.3382032",
-  "longitude": "-121.886286",
-  "location": "San Jose, CA, USA",
-  "signingCertId": "7651"
-}</code></pre>
-                <div class="callout callout-note" style="margin-top:8px;">
-                  <p>Replace <code>"7651"</code> with the actual <code>id</code> value returned from the enrollment certificate GET request in Step B.</p>
-                </div>
-              </li>
-              <li>Select <strong>Send</strong>.</li>
-              <li>Verify the response code is <strong>201 Created</strong>. The response body contains the full JSON representation of the newly created App Connector Group.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p219-img1.png" alt="Postman POST App Connector Group request showing 201 Created response with ZPLABNEW APPC Group JSON body including name, location San Jose CA, and signingCertId" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <h4 style="font-size:0.9rem;font-weight:700;color:#1a1a2e;margin:20px 0 8px;">Step D — Confirm in the ZPA Portal</h4>
-            <ol class="step-list" start="10">
-              <li>Return to the Experience Center and navigate to <strong>Infrastructure &gt; Private Access &gt; App Connector Groups</strong>.</li>
-              <li>Confirm that <code>ZPALAB APPC Group</code> now appears in the list — created programmatically via the API without any portal interaction.
-                <div class="screenshot-embed">
-                  <img src="screenshots/lab10/lab10-p220-img1.png" alt="ZPA App Connector Groups portal showing ZPAAPPNEW APPC Group with Status Enabled — confirming the group was created via API" onclick="openLightbox(this.src,this.alt)">
-                </div>
-              </li>
-            </ol>
-
-            <div class="callout callout-success">
-              <p><strong>Expected result:</strong> The POST request returns <code>201 Created</code> and the new <code>ZPALAB APPC Group</code> is immediately visible in the ZPA App Connector Groups portal. This completes the full OneAPI provisioning workflow: authenticate → query dependencies → create resource.</p>
-            </div>
-          </div>
-
-          <div class="section-qa" data-section="t10-5">
-            <button class="section-qa-header" onclick="toggleSectionQA(this)">
-              <span class="section-qa-title">Questions &amp; Notes — Task 10.5</span>
-              <span class="section-qa-chevron">▾</span>
-            </button>
-            <div class="section-qa-body">
-              <div class="section-qa-grid">
-                <div>
-                  <div class="section-qa-label">My Questions</div>
-                  <textarea class="section-qa-textarea" id="sq-t10-5" placeholder="Questions about this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionQ('t10-5',this)">Save</button>
-                  <div class="section-qa-list" id="sq-list-t10-5"></div>
-                </div>
-                <div>
-                  <div class="section-qa-label">My Notes</div>
-                  <textarea class="section-qa-textarea" id="sn-t10-5" placeholder="Key takeaways from this section…"></textarea>
-                  <button class="section-qa-save" onclick="saveSectionN('t10-5',this)">Save</button>
-                  <div class="section-qa-list" id="sn-list-t10-5"></div>
+                  <textarea class="section-qa-textarea" id="sn-t11-3" placeholder="Key takeaways from this section…"></textarea>
+                  <button class="section-qa-save" onclick="saveSectionN('t11-3',this)">Save</button>
+                  <div class="section-qa-list" id="sn-list-t11-3"></div>
                 </div>
               </div>
             </div>
@@ -475,7 +366,7 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       </div>
 
     </div>
-  </div>
+  </div><!-- /.content-col -->
 
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -483,103 +374,84 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Lab Topology</div>
+      <div class="sidebar-label">LAB TOPOLOGY</div>
       <div class="sidebar-topology">
-        <img src="screenshots/lab0/lab0-p8-img1.png" alt="Lab topology diagram — click to expand" onclick="openLightbox(this.src,this.alt)" title="Click to expand">
+        <img src="screenshots/lab0/lab0-p8-img1.png" alt="EDU-202 lab topology: Corp Client PC 1 and the Remote Linux Client PC on 192.168.1.0/24 reach the Experience Center through the Zero Trust Exchange, which connects through the Corp ZPA Connector and Corp Log Streaming Connector to the Corporate Data Center 10.0.0.0/24. Click to expand." onclick="openLightbox(this.src,this.alt)" title="Click to expand">
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Virtual Machines</div>
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
       <div class="sidebar-cred-list">
-
         <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Client PC 1<span class="sidebar-cred-chevron">▾</span></button>
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin (CloudShare › Credentials)<span class="sidebar-cred-chevron">▾</span></button>
           <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student</code><button class="scr-copy" onclick="copySidebarCred('student',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.1</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.1',this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">&lt;SDC Admin Username&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;SDC Password&gt;</code></div>
           </div>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Win Svr 2025<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">administrator</code><button class="scr-copy" onclick="copySidebarCred('administrator',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.1</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.1',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Docker Server<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">zscaler</code><button class="scr-copy" onclick="copySidebarCred('zscaler',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler123!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.2</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: ZPA Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.3</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.3',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Corp: Log Streaming Connector<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Zscaler1!</code><button class="scr-copy" onclick="copySidebarCred('Zscaler1!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">10.0.0.20</code><button class="scr-copy" onclick="copySidebarCred('10.0.0.20',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Remote: Linux Client PC<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">admin</code><button class="scr-copy" onclick="copySidebarCred('admin',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">IP</span><code class="scr-value">192.168.1.2</code><button class="scr-copy" onclick="copySidebarCred('192.168.1.2',this)" title="Copy">⎘</button></div>
-          </div>
-        </div>
-
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Portal Credentials</div>
-      <div class="sidebar-cred-list">
+      <div class="sidebar-label">LAB PROGRESS</div>
+      <ul class="progress-list">
+        <li class="progress-item" id="prog-chk-lab10-0"><input type="checkbox" id="chk-lab10-0" onchange="toggleDone(this)"><label for="chk-lab10-0">Signed in to the SDC tenant</label></li>
+        <li class="progress-item" id="prog-chk-lab10-1"><input type="checkbox" id="chk-lab10-1" onchange="toggleDone(this)"><label for="chk-lab10-1">Task 10.1: Data Explorer query run</label></li>
+        <li class="progress-item" id="prog-chk-lab10-2"><input type="checkbox" id="chk-lab10-2" onchange="toggleDone(this)"><label for="chk-lab10-2">Task 10.2: QBR report downloaded</label></li>
+        <li class="progress-item" id="prog-chk-lab10-3"><input type="checkbox" id="chk-lab10-3" onchange="toggleDone(this)"><label for="chk-lab10-3">Task 10.3: Report explored, snapshot opened</label></li>
+      </ul>
+    </div>
 
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">student@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('student-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copyPortalCred('pass',this)" title="Copy">⎘</button></div>
-          </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 10.1 · Data Explorer</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/configuring-data-explorer-views" target="_blank" rel="noopener noreferrer" title="Data source, probes, metrics, filters and operations in a view">Configuring Data Explorer Views</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-data-explorer-views" target="_blank" rel="noopener noreferrer" title="Running a view and zooming into the charts">Monitoring Data Explorer Views</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">HVAC User<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">hvac@<span class="var-fqdn">&lt;FQDN&gt;</span></code><button class="scr-copy" onclick="copyPortalCred('hvac-user',this)" title="Copy">⎘</button></div>
-            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySidebarCred('Admin-123!',this)" title="Copy">⎘</button></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 10.2 · QBR reports</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/viewing-quarterly-business-review-reports" target="_blank" rel="noopener noreferrer" title="Where QBR reports come from and how to download them">Viewing Quarterly Business Review Reports</a>
         </div>
-
-        <div class="sidebar-cred-item">
-          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin<span class="sidebar-cred-chevron">▾</span></button>
-          <div class="sidebar-cred-body">
-            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">from SDC email</code></div>
-          </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 10.3 · Reports &amp; snapshots</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/viewing-predefined-reports" target="_blank" rel="noopener noreferrer" title="Filtering and zooming the Cloud Path End-to-End report">Viewing Predefined Reports</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/sharing-zdx-snapshots" target="_blank" rel="noopener noreferrer" title="How snapshot links give view-only access, and what they hide">Sharing ZDX Snapshots</a>
         </div>
-
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
       </div>
     </div>
 
+    <div class="quick-ref" id="quick-ref">
+      <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
+      <div class="qr-body">
+        <div class="qr-item"><div class="qr-term">Experience Center</div><div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide uses the new navigation: open features from the Search menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Search menu</div><div class="qr-def">The search box in the Experience Center top bar. Type a feature name (e.g. App Connector Groups) and pick the result; each result shows its menu path.</div></div>
+        <div class="qr-item"><div class="qr-term">Service Portal</div><div class="qr-def">Formerly ZIdentity. Zscaler's authentication service, reached from the Experience Center menu.</div></div>
+        <div class="qr-item"><div class="qr-term">Student FQDN</div><div class="qr-def">Your pod's unique domain (e.g. zs000834.labtenant.com). Used in every login ID: student@, hvac@.</div></div>
+        <div class="qr-item"><div class="qr-term">CloudShare</div><div class="qr-def">The virtual lab platform that hosts your VMs. Use Actions › Send Text or Send Password to paste into a VM.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector</div><div class="qr-def">A lightweight VM in the data center that makes outbound-only connections to ZPA, so private apps are reachable without inbound firewall ports.</div></div>
+        <div class="qr-item"><div class="qr-term">App Connector Group</div><div class="qr-def">A set of App Connectors that share a location and settings. Server groups point to it.</div></div>
+        <div class="qr-item"><div class="qr-term">Enrollment token</div><div class="qr-def">The OAuth code shown by cat /etc/issue on a connector. Add it under App Connectors to enroll the connector; it expires after two hours.</div></div>
+        <div class="qr-item"><div class="qr-term">Application Segment</div><div class="qr-def">Defines a private app (domain or IP plus ports) and how it is reached: Client Connector, Browser Access or Privileged Remote Access.</div></div>
+        <div class="qr-item"><div class="qr-term">Segment / Server Group</div><div class="qr-def">A segment group bundles segments for policy; a server group maps segments to App Connector groups.</div></div>
+        <div class="qr-item"><div class="qr-term">Browser Access</div><div class="qr-def">Clientless ZPA access to a web app through its External Domain, with no Client Connector or VPN.</div></div>
+        <div class="qr-item"><div class="qr-term">Access Policy</div><div class="qr-def">ZPA rules, default deny, that allow access to segments when criteria such as Applications and Client Types match.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Streaming Service (LSS)</div><div class="qr-def">Streams ZPA logs (e.g. User Activity) through an App Connector to a syslog receiver such as a SIEM.</div></div>
+        <div class="qr-item"><div class="qr-term">Log Receiver</div><div class="qr-def">The LSS destination: host, TCP port, App Connector group, log type and template (e.g. CSV).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Remote Access (PRA)</div><div class="qr-def">Clientless, browser-based RDP and SSH to servers through a privileged portal, with session recording and credential vaulting.</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Portal / Console</div><div class="qr-def">The portal is the web page users open; each console on it is one server (protocol, host, port).</div></div>
+        <div class="qr-item"><div class="qr-term">Privileged Credentials</div><div class="qr-def">Vaulted usernames and passwords that a credentials policy injects into a console, so users never see them.</div></div>
+        <div class="qr-item"><div class="qr-term">AppProtection</div><div class="qr-def">Inline web-application firewall in ZPA: OWASP CRS, ThreatLabZ, WebSocket and API controls on private app traffic.</div></div>
+        <div class="qr-item"><div class="qr-term">Paranoia level</div><div class="qr-def">How wide a net the OWASP controls cast: higher levels catch more but raise false positives.</div></div>
+        <div class="qr-item"><div class="qr-term">Isolation Profile</div><div class="qr-def">Settings for Browser Isolation of private apps, e.g. render-only with View Office Files in Isolation.</div></div>
+        <div class="qr-item"><div class="qr-term">End User Collection</div><div class="qr-def">A ZDX container that sets which users and devices run the probes of the applications inside it.</div></div>
+        <div class="qr-item"><div class="qr-term">Web / Cloud Path probe</div><div class="qr-def">A Web probe times page fetches to a URL; a Cloud Path probe traces hop-by-hop latency, loss and jitter to the host.</div></div>
+        <div class="qr-item"><div class="qr-term">SDC</div><div class="qr-def">Solutions Demo Center: a shared, read-only tenant with pre-populated data, used for the reporting and Workflow Automation labs.</div></div>
+      </div>
+    </div>
   </aside>
 </main>
 
@@ -589,17 +461,18 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 </div>
 
 <div class="page-nav">
-  <a class="page-nav-btn page-nav-prev" href="lab9.html">← Lab 9: ZDX Alerts &amp; Diagnostics</a>
-  <div class="page-nav-message">Two more SDC labs to go — you're in the home stretch!</div>
-  <a class="page-nav-btn page-nav-next" href="lab11.html">Lab 11: Analyze Data &amp; Reports →</a>
+  <a class="page-nav-btn page-nav-prev" href="lab9.html">← Lab 9: Automation using APIs</a>
+  <div class="page-nav-message">One more lab to go — you're nearly through the full EDU-202 curriculum!</div>
+  <a class="page-nav-btn page-nav-next" href="lab11.html">Lab 11: Workflow Automation →</a>
 </div>
 
 <script>
+// PAGE_KEY and SECTION_IDS carried over from the Rev 3.4 lab11.html (same lab content) so saved notes survive the renumbering
 const CONFIG_KEY='edu202-expc-lab-config';
 const CONFIG_COLLAPSED_KEY='edu202-config-collapsed';
 const FOOTER_KEY='edu202-footer-collapsed';
-const PAGE_KEY='edu202-lab-lab10';
-var SECTION_IDS=['t10-1','t10-2','t10-3','t10-4','t10-5'];
+const PAGE_KEY='edu202-lab-lab11';
+var SECTION_IDS=['t11-1','t11-2','t11-3'];
 
 function loadConfig(){
   try{applyConfig();}catch(e){}
@@ -607,7 +480,7 @@ function loadConfig(){
 function saveConfig(){try{var fqdn=document.getElementById('fqdn-input').value.trim();var pass=document.getElementById('pass-input').value.trim();localStorage.setItem(CONFIG_KEY,JSON.stringify({fqdn:fqdn,pass:pass}));applyConfig();}catch(e){}}
 function clearConfig(){try{localStorage.removeItem(CONFIG_KEY);document.getElementById('fqdn-input').value='';document.getElementById('pass-input').value='';applyConfig();}catch(e){}}
 function applyConfig(){
-  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var fqdn=d.fqdn||'';var pass=d.pass||'';var sid=(fqdn.split('.')[0]||'');document.querySelectorAll('.var-sid').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sid){el.textContent=sid;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var sidnum=sid.replace(/\D/g,'');document.querySelectorAll('.var-sidnum').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(sidnum){el.textContent=sidnum;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});var xyz=sid.replace(/\D/g,'').slice(-3);document.querySelectorAll('.var-xyz').forEach(function(el){if(!el.dataset.ph)el.dataset.ph=el.textContent;if(xyz){el.textContent=xyz;el.classList.add('filled');}else{el.textContent=el.dataset.ph;el.classList.remove('filled');}});document.querySelectorAll('.var-fqdn').forEach(function(el){if(fqdn){el.textContent=fqdn;el.classList.add('filled');}else{el.textContent='<Student FQDN>';el.classList.remove('filled');}});document.querySelectorAll('.var-pass').forEach(function(el){if(pass){el.textContent=pass;el.classList.add('filled');}else{el.textContent='<Session Password>';el.classList.remove('filled');}});}catch(e){}
 }
 function copyConfigField(id,btn){try{var v=document.getElementById(id).value;navigator.clipboard.writeText(v);btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}catch(e){}}
 function toggleConfig(){var panel=document.getElementById('config-panel');var body=document.getElementById('config-body');var btn=document.getElementById('config-toggle-btn');if(!panel)return;var collapsed=panel.classList.toggle('collapsed');localStorage.setItem(CONFIG_COLLAPSED_KEY,collapsed?'1':'0');if(btn){var chev=btn.querySelector('.chevron');if(chev)chev.textContent=collapsed?'▼':'▲';btn.innerHTML=(collapsed?'<span class="chevron">▼</span> Expand':'<span class="chevron">▲</span> Collapse');}
@@ -661,7 +534,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
-function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(val)navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 </script>
 </body>
 </html>
