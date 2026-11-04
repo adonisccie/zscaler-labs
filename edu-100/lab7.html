@@ -163,7 +163,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <li>Configure a Web probe to measure the availability and page fetch performance of the application.</li>
           <li>Configure a Cloud Path probe to measure hop-by-hop latency, packet loss, and path health to the application.</li>
         </ul>
-        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ End user collection <strong>Custom Application</strong> is listed.</li><li>☐ Application <strong>Mail Server</strong> sits under it and is now <strong>Enabled</strong>.</li><li>☐ Probes <strong>Mail Server_Web</strong> and <strong>Mail Server_Cloud</strong> are both listed under Mail Server.</li></ul></div>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ End user collection <strong>Custom Application</strong> is listed.</li><li>☐ Application <strong>Mail Server</strong> sits under it and is now <strong>Enabled</strong>.</li><li>☐ Probes <strong>Mail Server_Web</strong> and <strong>Mail Server_Cloud</strong> are both listed under Mail Server.</li><li>☐ <strong>Mail Server</strong> appears in <strong>Applications Overview</strong> once its first results arrive.</li></ul></div>
         <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ Create Mail Server as <strong>Disabled</strong>, and enable it only after you add the Web probe.</li><li>⚠ Metrics can take 15–30 minutes to appear. An empty dashboard right after setup is normal.</li><li>⚠ Some probe screens show <strong>OS</strong> where the guide says Devices. Set it to All (or None for exclusions).</li></ul></div>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
@@ -347,8 +347,6 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <li>Edit the application, set <strong>Status</strong> to <strong>Enabled</strong> in the <strong>Edit Application</strong> drawer, and then select <strong>Update</strong> to save your changes.
               <div class="screenshot-embed narrow"><img src="screenshots/lab7-16.png" alt="Actions menu for Mail Server with Edit highlighted" loading="lazy"><div class="screenshot-caption">Open <strong>Actions &gt; Edit</strong> on the Mail Server application.</div></div>
               <div class="screenshot-embed"><img src="screenshots/lab7-17.png" alt="Edit Application drawer with Status set to Enable and the Update button highlighted" loading="lazy"><div class="screenshot-caption">Edit Application: Status <strong>Enable</strong>, then <strong>Update</strong>.</div></div>
-              <div class="callout callout-note"><p><strong>Note:</strong> After you enable the custom application, ZDX enables the Web probe associated with it automatically. Depending on your organization's ZDX plan, it can take 15–30 minutes for metrics to appear for a newly configured application. <strong>Check back later to verify the metrics. In ZDX, open the Mail Server application to review the probe data.</strong></p></div>
-              <div class="screenshot-embed"><img src="screenshots/lab7-18.png" alt="Mail Server now Enabled with the Mail Server_Web probe Enabled, and the Add Probe button highlighted" loading="lazy"><div class="screenshot-caption">Mail Server and Mail Server_Web are now <strong>Enabled</strong>. Use <strong>Add Probe</strong> for the Cloud Path probe.</div></div>
             </li>
           </ul>
 
@@ -386,7 +384,16 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </li>
             <li>Confirm that the <strong>Mail Server_Web</strong> and <strong>Mail Server_Cloud</strong> probes appear under the <strong>Mail Server</strong> application.
               <div class="screenshot-embed"><img src="screenshots/lab7-24.png" alt="Mail Server application listing Mail Server_Web (GET) and Mail Server_Cloud (ICMP), both Enabled and running every 5 minutes" loading="lazy"><div class="screenshot-caption">Both probes are listed and <strong>Enabled</strong>: Mail Server_Web (GET) and Mail Server_Cloud (ICMP), every 5 minutes.</div></div>
+              <div class="callout callout-note"><p><strong>Note:</strong> After you enable the custom application, ZDX enables the Web probe associated with it automatically. Depending on your organization's ZDX plan, it can take 15–30 minutes for metrics to appear for a newly onboarded application. Check back later to verify the metrics.</p></div>
             </li>
+          </ul>
+
+          <h4 style="margin:18px 0 8px;">Verify in Applications Overview</h4>
+          <ul class="step-list">
+            <li>In the left panel, click <strong>Applications Overview</strong> (<strong>Digital Experience &gt; Applications &gt; Applications Overview</strong>) and verify that the <strong>Mail Server</strong> application is now included in the reports.
+              <div class="screenshot-embed"><img src="screenshots/lab7-25.png" alt="ZDX Applications Overview with Applications Overview highlighted in the left navigation and Mail Server listed with a ZDX Score of 90 and 1 active user" loading="lazy"><div class="screenshot-caption"><strong>Applications Overview</strong> lists <strong>Mail Server</strong> with its <strong>ZDX Score</strong> and active users. If it isn't listed yet, wait for the first probe results and refresh.</div></div>
+            </li>
+            <li>Click the application to view more detailed information related to the <strong>Web</strong> probe and the <strong>Cloud Path</strong> probe.</li>
           </ul>
         </div>
       </div>
@@ -395,7 +402,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Collection</strong> <code>Custom Application</code> (all users, no exclusions) → <strong>application</strong> <code>Mail Server</code> (Custom, created Disabled) → <strong>Web probe</strong> <code>Mail Server_Web</code> (<code>https://mail.google.com</code>, every 5 min) → <strong>enable the app</strong> → <strong>Cloud Path probe</strong> <code>Mail Server_Cloud</code> (<code>mail.google.com</code>, ICMP, follows the Web probe). Web probe = how the app responds; Cloud Path = where on the path time is lost. Allow 15–30 minutes for data.</div>
+          <div class="mental-note-block-text"><strong>Collection</strong> <code>Custom Application</code> (all users, no exclusions) → <strong>application</strong> <code>Mail Server</code> (Custom, created Disabled) → <strong>Web probe</strong> <code>Mail Server_Web</code> (<code>https://mail.google.com</code>, every 5 min) → <strong>enable the app</strong> → <strong>Cloud Path probe</strong> <code>Mail Server_Cloud</code> (<code>mail.google.com</code>, ICMP, follows the Web probe). Web probe = how the app responds; Cloud Path = where on the path time is lost. Allow 15–30 minutes for data, then find Mail Server in <strong>Applications Overview</strong>.</div>
         </div>
       </div>
 
@@ -450,6 +457,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab7c" onchange="toggleDone(this)"><label for="chk-lab7c">7.3 Mail Server_Web probe submitted</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab7d" onchange="toggleDone(this)"><label for="chk-lab7d">7.3 Mail Server application enabled</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab7e" onchange="toggleDone(this)"><label for="chk-lab7e">7.3 Mail Server_Cloud probe submitted, both listed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab7f" onchange="toggleDone(this)"><label for="chk-lab7f">7.3 Mail Server listed in Applications Overview</label></li>
       </ul>
     </div>
     <div class="sidebar-section">
@@ -462,8 +470,10 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
         <div class="ref-group">
           <div class="ref-group-label">Tasks 7.2–7.3 · Application and probes</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/adding-custom-application" target="_blank" rel="noopener noreferrer" title="Adding a custom application to a collection from Settings &amp; Configurations &gt; Probes">Adding a Custom Application</a>
           <a class="ref-link" href="https://help.zscaler.com/zdx/about-probes" target="_blank" rel="noopener noreferrer" title="What ZDX Web and Cloud Path probes measure">About Probes</a>
           <a class="ref-link" href="https://help.zscaler.com/zdx/configuring-probe" target="_blank" rel="noopener noreferrer" title="Adding Web and Cloud Path probes for custom applications">Configuring a Probe</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-applications-overview" target="_blank" rel="noopener noreferrer" title="The Applications Overview dashboard: application scores, users and filters">Monitoring the Applications Overview</a>
         </div>
         <div class="ref-group">
           <div class="ref-group-label">Beyond the lab</div>
@@ -483,6 +493,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-item"><div class="qr-term">Cloud Path probe</div><div class="qr-def">Measures hop-by-hop latency, packet loss and path health from the device to the app.</div></div>
         <div class="qr-item"><div class="qr-term">Follow Web Probe</div><div class="qr-def">Ties a Cloud Path probe to a Web probe for the same destination, so the two views line up.</div></div>
         <div class="qr-item"><div class="qr-term">Run frequency</div><div class="qr-def">How often each probe runs. The lab uses every 5 minutes.</div></div>
+        <div class="qr-item"><div class="qr-term">Applications Overview</div><div class="qr-def">ZDX dashboard (Digital Experience &gt; Applications) that lists each monitored application with its ZDX Score and active users.</div></div>
       </div>
     </div>
   </aside>

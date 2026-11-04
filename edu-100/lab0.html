@@ -168,7 +168,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <li>Sign in to the Corp Client PC and the Experience Center console, and locate features with the Search menu.</li>
         </ul>
         <div class="callout callout-info"><p><strong>Do this first:</strong> Enter your <strong>Student FQDN</strong> and <strong>Student Password</strong> in the <strong>Lab Configuration</strong> panel above and select Save. Add your first and last name too; Lab 1 uses them. Every EDU-100 lab page reads these values, so you only enter them once.</p></div>
-        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ You're logged in to CloudShare and the lab VMs show as running.</li><li>☐ You found the <strong>Lab Guide</strong> tab and the Zscaler tenant <strong>Credentials</strong>.</li><li>☐ Text sent with <strong>Send Text</strong> appears in Notepad++ on the Corp Client PC.</li><li>☐ You're signed in to <code>console.zscaler.com</code> as the student admin and can use the Search menu.</li></ul></div>
+        <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ You're logged in to CloudShare and the lab VMs show as running.</li><li>☐ You found <strong>Downloadable Lab</strong> and the Zscaler tenant <strong>Credentials</strong> in the CloudShare left panel.</li><li>☐ Text sent with <strong>Send Text</strong> appears in Notepad++ on the Corp Client PC.</li><li>☐ You're signed in to <code>console.zscaler.com</code> as the student admin and can use the Search menu.</li></ul></div>
         <div class="callout callout-warning"><p><strong>Watch out for</strong></p><ul class="criteria-list"><li>⚠ The VMs can take a few minutes to start. Wait for them before you continue.</li><li>⚠ Your Student FQDN is everything after the <strong>@</strong> in your student admin username.</li><li>⚠ Use <strong>Send Text</strong> instead of typing long values by hand; small typos cause confusing failures later.</li></ul></div>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Course:</strong> EDU-100</div>
@@ -318,22 +318,22 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <li><strong>Locate the CloudShare lab URL.</strong> Your unique <strong>CloudShare lab URL</strong> and <strong>passphrase</strong> will be displayed on the classroom screen at the start of the session. Note these credentials carefully, as they are required to access your lab environment. (Example: <code>https://use.cloudshare.com/…</code>)</li>
             <li><strong>Access the lab login page.</strong> Open a web browser and navigate to the CloudShare lab URL provided by the instructor.</li>
             <li><strong>Enter your credentials.</strong> On the login page, enter the email address and passphrase provided by the instructor.
-              <div class="screenshot-embed narrow"><img src="screenshots/lab0-01.png" alt="CloudShare class login page with email and passphrase fields and the Login button highlighted" loading="lazy"><div class="screenshot-caption">CloudShare class login: enter the email and passphrase from the instructor, then <strong>Login</strong>.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-01.png" alt="Zscaler Cyber Academy login page for EDU-100, powered by CloudShare, with Email and Passphrase fields and the Login button" loading="lazy"><div class="screenshot-caption">Zscaler Cyber Academy login (by CloudShare): enter your email and the passphrase shown on the classroom screen, then select <strong>Login</strong>.</div></div>
             </li>
             <li><strong>Review the lab overview.</strong> After a successful login, you are directed to the lab environment dashboard. Note that the virtual machines may take a few minutes to provision and become ready for use.
-              <div class="screenshot-embed"><img src="screenshots/lab0-02.png" alt="CloudShare environment Overview tab with a Preparing VMs progress indicator and the Go to my VM List button" loading="lazy"><div class="screenshot-caption">Overview: the VMs are still preparing. The class name in this example header differs from yours.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-02.png" alt="CloudShare Overview tab: Welcome to your CloudShare environment, with tabs for VM List, Corp Win Svr 2025, Corp App Connector and Corp Client PC, and a left panel with Credentials and Downloadable Lab" loading="lazy"><div class="screenshot-caption">Overview: the environment dashboard. The top bar shows the <strong>Remaining runtime</strong>, and the tabs open the VM List and each VM.</div></div>
             </li>
             <li><strong>Navigate to the VM list.</strong> In the <strong>Overview</strong> tab, select <strong>Go to My VM List</strong> to navigate to the Virtual Machines (VM) List tab. Alternatively, select the respective VM from the tabs at the top.
-              <div class="screenshot-embed"><img src="screenshots/lab0-03.png" alt="Overview tab with the Go to my VM List button and a VM tab at the top highlighted" loading="lazy"><div class="screenshot-caption">Use <strong>Go to my VM List</strong>, or a VM's tab across the top.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-03.png" alt="Overview tab with the Go to my VM List button and the Corp Win Svr 2025, Corp App Connector and Corp Client PC tabs highlighted" loading="lazy"><div class="screenshot-caption">Use <strong>Go to my VM List</strong>, or open a VM from its tab: <strong>Corp Win Svr 2025</strong>, <strong>Corp App Connector</strong> or <strong>Corp Client PC</strong>.</div></div>
             </li>
             <li><strong>Verify the VM is running.</strong> Once started, the virtual machine's tab will display its active running state, confirming that the environment is ready for use.
-              <div class="screenshot-embed"><img src="screenshots/lab0-04.png" alt="A Windows VM tab showing the lock screen, meaning the VM is running" loading="lazy"><div class="screenshot-caption">A running VM shows its desktop or lock screen in the tab.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-04.png" alt="Corp Client PC tab showing the Windows lock screen, with the Machine section (Actions, File Upload, Take Screenshot) in the left panel" loading="lazy"><div class="screenshot-caption">A running VM shows its desktop or lock screen. On a VM tab, the left panel also shows the <strong>Machine</strong> tools, including <strong>Actions</strong>.</div></div>
             </li>
-            <li><strong>Open the lab guide.</strong> Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. The guide will open in a new browser tab and will provide detailed instructions for completing the lab exercises.
-              <div class="screenshot-embed"><img src="screenshots/lab0-05.png" alt="CloudShare tab bar with the Lab Guide tab highlighted" loading="lazy"><div class="screenshot-caption">The <strong>Lab Guide</strong> tab opens the guide in a new browser tab.</div></div>
+            <li><strong>Open the lab guide.</strong> In the left panel, under <strong>Content</strong>, click <strong>Downloadable Lab</strong> to open the hands-on lab guide. The guide will open in a new browser tab and will provide detailed instructions for completing the lab exercises.
+              <div class="screenshot-embed"><img src="screenshots/lab0-05.png" alt="CloudShare left panel with Downloadable Lab highlighted under Content" loading="lazy"><div class="screenshot-caption">Under <strong>Content</strong>, <strong>Downloadable Lab</strong> opens the lab guide.</div></div>
             </li>
-            <li><strong>Access the Zscaler tenant credentials.</strong> Click the <strong>Credentials</strong> tab in the left panel to view the Zscaler tenant credentials used in the lab.
-              <div class="screenshot-embed"><img src="screenshots/lab0-06.png" alt="CloudShare Credentials panel showing the Zscaler Tenant section with the Admin Console URL, landing page and Student Admin username; the password is hidden" loading="lazy"><div class="screenshot-caption"><strong>Credentials</strong> &gt; Zscaler Tenant: the console URL, your student admin username and its password (hidden in this example). Copy your Student FQDN and password into the Lab Configuration panel.</div></div>
+            <li><strong>Access the Zscaler tenant credentials.</strong> In the left panel, under <strong>Content</strong>, click <strong>Credentials</strong> to view the Zscaler tenant credentials used in the lab.
+              <div class="screenshot-embed"><img src="screenshots/lab0-06.png" alt="CloudShare Credentials panel showing Tenant Credentials (admin account, hidden password and tenant URL) and SDC Credentials" loading="lazy"><div class="screenshot-caption"><strong>Credentials</strong> &gt; <strong>Tenant Credentials</strong>: your student admin account, its password (hidden in this example) and the tenant URL. Copy your Student FQDN and password into the Lab Configuration panel. EDU-100 doesn't use the <strong>SDC Credentials</strong> listed below.</div></div>
             </li>
           </ul>
         </div>
@@ -351,13 +351,15 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <ul class="step-list">
             <li>Use the lab clipboard to send text to a virtual machine. To use the VM clipboard, copy text from the lab guide on your host computer, then:
               <ul class="sub-steps">
-                <li>Click the <strong>Action</strong> tab and choose <strong>Send Text</strong>.</li>
+                <li>In the left panel, under <strong>Machine</strong>, click <strong>Actions</strong> and choose <strong>Send Text</strong>.</li>
               </ul>
-              <div class="screenshot-embed"><img src="screenshots/lab0-07.png" alt="CloudShare left panel with Actions open and Send Text highlighted in the Keyboard menu" loading="lazy"><div class="screenshot-caption"><strong>Actions &gt; Send Text</strong>. The same menu has <strong>Send Password</strong>, which you use in Task 0.3.</div></div>
+              <div class="callout callout-info"><p><strong>Tip:</strong> The <strong>Machine</strong> section, with <strong>Actions</strong>, appears only while a VM tab such as <strong>Corp Client PC</strong> is open. You won't see it on the Overview tab.</p></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-07.png" alt="Corp Client PC with Notepad++ open and the CloudShare Actions menu expanded, Send Text highlighted under Keyboard" loading="lazy"><div class="screenshot-caption"><strong>Actions</strong> &gt; <strong>Send Text</strong>. The same menu has <strong>Send Password</strong>, which you use in Task 0.3.</div></div>
               <ul class="sub-steps">
                 <li>Open <strong>Notepad++</strong> on the <strong>Corp Client PC</strong> and click inside it. Then paste text into the text box and click <strong>Send</strong>. Confirm that the text appears in Notepad++.</li>
               </ul>
-              <div class="screenshot-embed"><img src="screenshots/lab0-08.png" alt="Send Text dialog with an empty text box and the Send button highlighted" loading="lazy"><div class="screenshot-caption">Paste into the <strong>Send Text</strong> box and select <strong>Send</strong>. The text is typed into whatever window has focus in the VM.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-08.png" alt="Send Text dialog containing the words Clipboard test, with the Send button highlighted, next to an empty Notepad++ window" loading="lazy"><div class="screenshot-caption">Paste into the <strong>Send Text</strong> box and select <strong>Send</strong>. The text is typed into whichever window has focus in the VM.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab0-09.png" alt="Notepad++ on the Corp Client PC showing the text Clipboard test, highlighted" loading="lazy"><div class="screenshot-caption">The sent text appears in Notepad++.</div></div>
             </li>
           </ul>
         </div>
@@ -379,9 +381,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <li>Log in to the <strong>Corp Client PC</strong> as the local student user:
               <ul class="sub-steps">
                 <li>Launch the <strong>Corp Client PC</strong> from the CloudShare portal.</li>
-                <li>Verify that the login page appears, then go to the <strong>Action</strong> tab and click <strong>Send Password</strong>.</li>
+                <li>Verify that the login page appears, then click <strong>Actions</strong> and choose <strong>Send Password</strong> (the same <strong>Actions</strong> menu you used in Task 0.2).</li>
               </ul>
-              <div class="screenshot-embed"><img src="screenshots/lab0-09.png" alt="Windows 11 VM lock screen with the CloudShare Actions menu open and Send Password highlighted" loading="lazy"><div class="screenshot-caption">On the Corp Client PC (the Windows 11 tab), use <strong>Actions &gt; Send Password</strong> to sign in.</div></div>
             </li>
             <li>In a browser window, open <code>https://console.zscaler.com</code></li>
             <li>Authenticate with your student admin account:
@@ -407,7 +408,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>CloudShare:</strong> URL and passphrase from the classroom screen; wait for the VMs; <strong>Credentials</strong> holds your tenant details. <strong>Lab clipboard:</strong> Actions &gt; <strong>Send Text</strong> for values, <strong>Send Password</strong> for the Windows login. <strong>Student FQDN</strong> = everything after the @ in <code>student@&lt;Student FQDN&gt;</code>. <strong>Console:</strong> <code>https://console.zscaler.com</code>, and the Search menu is your shortcut in every lab. Save your FQDN and password in the Lab Configuration panel now.</div>
+          <div class="mental-note-block-text"><strong>CloudShare:</strong> URL and passphrase from the classroom screen; wait for the VMs; <strong>Downloadable Lab</strong> opens the guide and <strong>Credentials</strong> holds your tenant details. <strong>Lab clipboard:</strong> Actions &gt; <strong>Send Text</strong> for values, <strong>Send Password</strong> for the Windows login. <strong>Student FQDN</strong> = everything after the @ in <code>student@&lt;Student FQDN&gt;</code>. <strong>Console:</strong> <code>https://console.zscaler.com</code>, and the Search menu is your shortcut in every lab. Save your FQDN and password in the Lab Configuration panel now.</div>
         </div>
       </div>
 
@@ -496,7 +497,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab0a" onchange="toggleDone(this)"><label for="chk-lab0a">Lab Configuration panel filled in and saved</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab0b" onchange="toggleDone(this)"><label for="chk-lab0b">0.1 Logged in to CloudShare, VMs running</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab0c" onchange="toggleDone(this)"><label for="chk-lab0c">0.1 Lab Guide and Credentials tabs found</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0c" onchange="toggleDone(this)"><label for="chk-lab0c">0.1 Downloadable Lab and Credentials found</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab0d" onchange="toggleDone(this)"><label for="chk-lab0d">0.2 Text sent to Notepad++ with Send Text</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab0e" onchange="toggleDone(this)"><label for="chk-lab0e">0.3 Signed in to the Corp Client PC</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab0f" onchange="toggleDone(this)"><label for="chk-lab0f">0.3 Signed in to the Experience Center</label></li>
