@@ -34,13 +34,25 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
 <header>
   <div class="breadcrumb"><a href="../index.html">Zscaler Labs</a> › <a href="index.html">EDU-200</a> › Lab 15</div>
   <div class="header-top">
-    <span class="eyebrow-chip">Lab 15 · EDU-200 · SDC</span>
+    <span class="eyebrow-chip">Lab 15 · EDU-200</span>
     <span class="header-dot"></span>
   </div>
   <h1>Troubleshoot Poor Wi-Fi</h1>
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -123,7 +135,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="lab-header-card">
         <div class="lab-badge">LAB 15 · SDC</div>
         <p><strong>Scenario:</strong> As the Zscaler administrator, you are responsible for resolving a poor user experience reported by a specific employee. The user has had <strong>frequent disconnections</strong>, <strong>slow internet speeds</strong> and <strong>difficulty completing work tasks</strong>, which has hurt their productivity. <strong>Initial insights suggest that the issue may stem from poor Wi-Fi performance, but the details remain unclear.</strong> Using Zscaler Digital Experience (ZDX), your role is to analyze performance trends to pinpoint the root cause, troubleshoot the issue and restore the user's digital experience.</p>
-        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
           <li><strong>Filter</strong> ZDX dashboards to isolate <strong>user-specific device and Wi-Fi performance</strong> data during the incident window.</li>
           <li><strong>Use the ZDX Y-Engine Analyze Score feature</strong> to find the factors that contribute to ZDX score degradation.</li>
@@ -149,59 +161,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab15">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · WI-FI ROOT CAUSE</span>
-        </div>
-        <p class="socratic-insight">"My internet is slow" is the hardest ticket to close, because the problem could be anywhere from the laptop's radio to the SaaS data center. You'll collect evidence from four different angles before you conclude.</p>
-        <ul class="socratic-questions">
-          <li>Curtis's score swings between <strong>Good</strong> and <strong>Poor</strong> instead of being always bad. What does that on/off pattern hint at compared with a constantly poor score?
-            <div class="answer-area" data-section="lab15-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · WI-FI ROOT CAUSE</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">A constant problem suggests something fixed, such as a mis-configured DNS server or a congested ISP link (compare Lab 16). An <strong>intermittent</strong> pattern suggests something that <strong>changes state</strong>: roaming between access points or SSIDs, moving away from the router, interference or a flaky adapter. That's why the lab moves from "when is it bad?" to <strong>"what changed at that moment?"</strong>, using Compare to last known good and Device Events.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">"My internet is slow" is the hardest ticket to close, because the problem could be anywhere from the laptop's radio to the SaaS data center. You'll collect evidence from four different angles before you conclude.</p>
+              <ul class="socratic-questions">
+                <li>Curtis's score swings between <strong>Good</strong> and <strong>Poor</strong> instead of being always bad. What does that on/off pattern hint at compared with a constantly poor score?
+                  <div class="answer-area" data-section="lab15-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">A constant problem suggests something fixed, such as a mis-configured DNS server or a congested ISP link (compare Lab 16). An <strong>intermittent</strong> pattern suggests something that <strong>changes state</strong>: roaming between access points or SSIDs, moving away from the router, interference or a flaky adapter. That's why the lab moves from "when is it bad?" to <strong>"what changed at that moment?"</strong>, using Compare to last known good and Device Events.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The Y-Engine says <em>Low Wi-Fi Signal</em>, and the Hop View shows the latency on the <strong>first hop</strong> (device → local gateway). Why is that first-hop evidence so convincing, and what does it rule out?
+                  <div class="answer-area" data-section="lab15-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The first hop is the wireless link itself, before any ISP, Zscaler Service Edge or SaaS provider is involved. If the latency appears <em>there</em>, then the ISP, Zscaler and Salesforce are not the cause, and no amount of tuning in those places would help. Two independent sources (an ML score explanation and a measured hop latency) agreeing makes the conclusion defensible when you hand it to the user or the desktop team.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>Device Events show the score drops when Curtis joins <em>Columbus-OH-Office</em> and recovers on <em>Google_Nest</em>. What would you actually <strong>do</strong> with that finding?
+                  <div class="answer-area" data-section="lab15-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Tell the user specifically: "Stay on Google_Nest. Your laptop keeps hopping to the weaker Columbus-OH-Office network." Consider removing or deprioritizing that saved SSID on the device. If it's a corporate SSID, open a ticket with the network team about AP coverage or signal in that location, using the ZDX evidence. You could also check the Wi-Fi Dashboard for other users on that SSID or AP. ZDX <strong>Self-Service notifications</strong> can even warn users about poor Wi-Fi before they call.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>The Y-Engine says <em>Low Wi-Fi Signal</em>, and the Hop View shows the latency on the <strong>first hop</strong> (device → local gateway). Why is that first-hop evidence so convincing, and what does it rule out?
-            <div class="answer-area" data-section="lab15-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The first hop is the wireless link itself, before any ISP, Zscaler Service Edge or SaaS provider is involved. If the latency appears <em>there</em>, then the ISP, Zscaler and Salesforce are not the cause, and no amount of tuning in those places would help. Two independent sources (an ML score explanation and a measured hop latency) agreeing makes the conclusion defensible when you hand it to the user or the desktop team.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>Device Events show the score drops when Curtis joins <em>Columbus-OH-Office</em> and recovers on <em>Google_Nest</em>. What would you actually <strong>do</strong> with that finding?
-            <div class="answer-area" data-section="lab15-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Tell the user specifically: "Stay on Google_Nest. Your laptop keeps hopping to the weaker Columbus-OH-Office network." Consider removing or deprioritizing that saved SSID on the device. If it's a corporate SSID, open a ticket with the network team about AP coverage or signal in that location, using the ZDX evidence. You could also check the Wi-Fi Dashboard for other users on that SSID or AP. ZDX <strong>Self-Service notifications</strong> can even warn users about poor Wi-Fi before they call.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 15.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-15-1">
@@ -211,47 +223,42 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will look up a user's ZDX score data for an application over the period they have been having issues.</p>
+          <p>In this task, you will look up the ZDX score data for a user and an application over the period in which they've been having issues.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Open User / Device Search for the affected user</h4>
             <ol class="step-list">
-              <li>From the <strong>Experience Center</strong>, go to the <strong>Search</strong> option and type <code>User/Device Search</code> (<strong>Analytics &gt; Digital Experience Management &gt; User / Device Search</strong>).</li>
-              <li>In the drop-down, select <strong>User Search</strong>.</li>
+              <li>In the Experience Center, type <code>User Search</code> (<em>Digital Experience &gt; Users</em>) in the <strong>Search menu</strong>.</li>
+              <li>In the drop-down, select <strong>Users</strong>.</li>
               <li>In the search box, type: <code>Curtis Hardwick</code></li>
               <li>In the search results, click <strong>Curtis Hardwick</strong> to open the user page.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p218-a.png" alt="User/Device Search page with User selected and Curtis Hardwick in the search results">
-            <div class="screenshot-caption">User/Device Search → <strong>User</strong> → Curtis Hardwick.</div>
+            <img src="screenshots/lab15-p208-a.png" alt="User Search page with Users selected in the drop-down, Curtis Hardwick typed, and the Curtis Hardwick result highlighted">
+            <div class="screenshot-caption">User Search: <strong>Users</strong> → <code>Curtis Hardwick</code> → click the result.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab15-p209-a.png" alt="Curtis Hardwick user page for device PC-CURTIS-WIFI with Device Details, application score cards and the ZDX Score Over Time graph">
+            <div class="screenshot-caption">You land on Curtis Hardwick's <strong>Users</strong> page: device <strong>PC-CURTIS-WIFI</strong>, its details, and a score card per application.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">2</span> Reset any earlier filter</h4>
+            <h4><span class="task-num">2</span> Filter by time range and application</h4>
             <ol class="step-list">
-              <li>You are taken to Curtis Hardwick's <strong>Users</strong> page.</li>
-              <li>You need to <strong>Reset</strong> the filter you applied in Task 14.4 before viewing the user dashboard.</li>
+              <li>View the ZDX score for an application (e.g., <strong>Salesforce Lightning</strong>) for the period of the incident:
+                <ul class="sub-steps">
+                  <li>Select the time period of the incident (e.g., <strong>48 Hours</strong>).</li>
+                  <li>Select an application (<strong>Salesforce Lightning</strong>).</li>
+                  <li>View the <strong>ZDX Score Over Time</strong> graph.</li>
+                </ul>
+              </li>
+              <li>Notice that the ZDX score often swings between <strong>Good</strong> and <strong>Poor</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p219-a.png" alt="Curtis Hardwick user page header with the Reset button highlighted at the top right">
-            <div class="screenshot-caption">Click <strong>Reset</strong> (top right) to clear the Lab 14 application filter.</div>
-          </div>
-
-          <div class="task-block">
-            <h4><span class="task-num">3</span> Filter by time range and application</h4>
-            <ol class="step-list">
-              <li>View the ZDX score for an application (e.g., <strong>Salesforce Lightning</strong>) for the period of the incident.</li>
-              <li>Select the time period for the incident (e.g., <strong>48 Hours</strong>).</li>
-              <li>Select an application (<strong>Salesforce Lightning</strong>).</li>
-              <li>View the <strong>ZDX Score Over Time</strong> graph.</li>
-              <li>Notice that the ZDX score often fluctuates between <strong>Good</strong> and <strong>Poor</strong>.</li>
-            </ol>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab15-p220-a.png" alt="Curtis Hardwick user page with Salesforce Lightning selected and ZDX Score Over Time oscillating between good and poor">
-            <div class="screenshot-caption">Salesforce Lightning over 48 h: the score <strong>oscillates</strong> between Good and Poor.</div>
+            <img src="screenshots/lab15-p210-a.png" alt="Time range drop-down with 48 Hours selected, the Salesforce Lightning card selected, and the ZDX Score Over Time graph dropping from Good to Poor and back, all highlighted">
+            <div class="screenshot-caption"><strong>48 Hours</strong> + <strong>Salesforce Lightning</strong>: the score drops from Good to Poor and later recovers.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> You may have to pick custom options from the reporting timeframe to see meaningful data.</p>
@@ -267,44 +274,44 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will zoom in on a period where the ZDX score is Poor, and use the <strong>Analyze Score</strong> capability of the ZDX Y-Engine to find the key factors behind the degraded score.</p>
+          <p>In this task, you will zoom in on a period where the ZDX score is Poor and use the <strong>Analyze Score</strong> capability of the ZDX <strong>Y-Engine</strong> to find the key factors behind the degraded score.</p>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Your results will differ from the screenshots in the lab guide. Traffic in the lab is simulated, so the exact values and indicators vary with the time range and sample you select. Feel free to repeat these steps with different Poor score points to explore several scenarios.</p>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">1</span> Zoom in on a poor score interval</h4>
+            <h4><span class="task-num">1</span> Find a Poor score interval</h4>
             <ol class="step-list">
-              <li>In the <strong>ZDX Score Over Time</strong> graph, find a time period where the ZDX Score is <strong>Poor</strong> and drag across it.</li>
+              <li>In the <strong>ZDX Score Over Time</strong> graph, find a time period where the ZDX Score is <strong>Poor</strong>.</li>
             </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab15-p211-a.png" alt="ZDX Score Over Time graph with a point in the Poor range around 07:05 pm selected and highlighted">
+            <div class="screenshot-caption">Pick a point in the <strong>Poor</strong> band, here around 07:05 pm.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> For best results, make sure the selection includes time <strong>before and after</strong> the Poor score period.</p>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab15-p221-a.png" alt="ZDX Score Over Time graph for Salesforce Lightning ready for a zoom selection">
-            <div class="screenshot-caption">Select a window that spans Good → Poor → Good.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Run the Y-Engine Analyze Score</h4>
             <ol class="step-list">
-              <li>Click a <strong>point on the graph with a Poor score</strong> to set the cursor there.</li>
-              <li>Look at the <strong>ZDX Score</strong> shown for that sample.</li>
+              <li>Click to set the cursor on a point in the graph with a <strong>Poor</strong> score.</li>
+              <li>View the ZDX Score displayed for that sample.</li>
               <li>Click <strong>Analyze Score</strong>. The analysis takes a few seconds.</li>
-              <li>View the analysis results table titled <em>The following factors might have impacted the ZDX score</em>.</li>
+              <li>Review the results table, titled <em>The following factors might have impacted the ZDX score</em>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p222-a.png" alt="Zoomed ZDX Score graph with a poor point selected and the Analyze Score button highlighted">
-            <div class="screenshot-caption">Cursor on a Poor sample → <strong>Analyze Score</strong>.</div>
+            <img src="screenshots/lab15-p212-a.png" alt="Sample pop-up showing Salesforce Lightning smooth ZDX score 10/100 with the Analyze Score button highlighted">
+            <div class="screenshot-caption">The sample scores <strong>10/100</strong>. Click <strong>Analyze Score</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p223-a.png" alt="Selected poor sample tooltip with Analyze Score and Compare to buttons">
-            <div class="screenshot-caption">The sample tooltip offers <strong>Analyze Score</strong> and <strong>Compare to</strong> (used in the next task).</div>
+            <img src="screenshots/lab15-p213-a.png" alt="Analysis results table listing Suboptimal WiFi: degraded user performance detected after connecting to Wi-Fi SSID Columbus-OH-Office, with 100 percent confidence, highlighted">
+            <div class="screenshot-caption">Y-Engine verdict: <strong>Suboptimal WiFi</strong>, performance degraded after connecting to SSID <em>Columbus-OH-Office</em> (100% confidence).</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> In this example, the score of <strong>10/100</strong> most likely came from a <strong>Low Wi-Fi Signal</strong>, and the <strong>Suboptimal Wi-Fi</strong> hurt the user's performance after connecting to the <strong>3Com_Wifi</strong> SSID.</p>
+            <p><strong>Note:</strong> In this example, the score of <strong>10/100</strong> most likely came from a <strong>Low Wi-Fi Signal</strong>, and the <strong>Suboptimal Wi-Fi</strong> hurt the user's performance after the device connected to a new SSID. (The guide text names <em>3Com_Wifi</em>; the screenshot shows <em>Columbus-OH-Office</em>. Your SSID and values may differ.)</p>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-15-2 -->
@@ -317,29 +324,29 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will compare a Poor ZDX score sample with the last known Good sample using the ZDX comparison tool.</p>
+          <p>In this task, you will compare a Poor ZDX score sample with the last known Good score sample using the ZDX comparison tool.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Compare Poor vs last known Good</h4>
             <ol class="step-list">
               <li>Click <strong>Compare to</strong> for the selected point on the ZDX Score Over Time graph.</li>
               <li>Select <strong>Last known good score</strong>.</li>
-              <li>Review the comparison panel that appears, focusing on the differences in:
+              <li>Review the comparison panel, focusing on the differences between:
                 <ul class="sub-steps">
-                  <li><strong>ZDX Score</strong> for the Analyzed Point vs the Comparison Point</li>
-                  <li><strong>Wi-Fi identifier</strong></li>
+                  <li>The ZDX Score for the <strong>Analyzed Point</strong> vs the <strong>Comparison Point</strong></li>
+                  <li>The <strong>Wi-Fi</strong> identifier</li>
                   <li><strong>Client-Egress Latency</strong></li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p224-a.png" alt="Compare to drop-down open with Last known good score highlighted">
-            <div class="screenshot-caption">Compare to → <strong>Last known good score</strong>.</div>
+            <img src="screenshots/lab15-p214-a.png" alt="Compare to drop-down open with Last known good score highlighted, alongside options for same time 1, 2 or 7 days ago and custom time">
+            <div class="screenshot-caption"><strong>Compare to</strong> → <strong>Last known good score</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p225-a.png" alt="Compare ZDX Scores panel showing Analyzed Point vs Comparison Point with key differences in Wi-Fi SSID and client-egress latency highlighted">
-            <div class="screenshot-caption">Compare ZDX Scores: the <strong>Key Differences</strong> show a different <strong>Wi-Fi SSID</strong> and much higher <strong>Client-Egress Latency</strong> at the poor point.</div>
+            <img src="screenshots/lab15-p215-a.png" alt="Compare ZDX Scores page with Analyzed Point score 10 and Comparison Point score 90, and Key Differences: Wi-Fi Columbus-OH-Office vs Google_Nest, DNS resolution latency 364 ms vs 0.57 ms, client-egress latency 331 ms vs 14 ms">
+            <div class="screenshot-caption">Key Differences: Wi-Fi <strong>Columbus-OH-Office</strong> vs <strong>Google_Nest</strong>, Client-Egress latency <strong>331 ms vs 14 ms</strong>, and DNS latency far higher too.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-15-3 -->
@@ -352,27 +359,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will use the Cloud Path <strong>Hop View</strong> to pinpoint where high latency occurs along the path between the user's device and the application.</p>
+          <p>In this task, you will use the Cloud Path <strong>Hop View</strong> to pinpoint where high latency occurs on the path between the user's device and the application.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Return to the user report and select the application</h4>
             <ol class="step-list">
-              <li>Select the <strong>Back</strong> option next to <strong>Compare ZDX Scores</strong> to return to the user report.</li>
+              <li>Click the user <strong>Curtis Hardwick</strong> in the breadcrumb of the Compare ZDX Scores page to return to the user report.</li>
               <li>Confirm you are still viewing the affected user: <strong>Curtis Hardwick</strong>.</li>
               <li>Select the application <strong>Salesforce Lightning</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p226-a.png" alt="Compare ZDX Scores header with the Back arrow highlighted">
-            <div class="screenshot-caption">Use the back arrow next to <strong>Compare ZDX Scores</strong>.</div>
+            <img src="screenshots/lab15-p216-a.png" alt="Compare ZDX Scores breadcrumb with the Curtis Hardwick link highlighted">
+            <div class="screenshot-caption">Click <strong>Curtis Hardwick</strong> in the breadcrumb to go back.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Focus on a Poor interval and review Cloud Path latency</h4>
             <ol class="step-list">
-              <li>In the <strong>ZDX Score Over Time</strong> graph, zoom in again on a time period where the ZDX Score is <strong>Poor</strong>.</li>
-              <li>Scroll down to the <strong>Cloud Path</strong> graph and the latency values at the selected data point.</li>
+              <li>In the <strong>ZDX Score Over Time</strong> graph, zoom in again on a period where the ZDX Score is Poor.</li>
+              <li>Scroll down to the <strong>Cloud Path</strong> graph and look at the latency values at the selected data point.</li>
             </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab15-p217-a.png" alt="Curtis Hardwick user report with the Salesforce Lightning card selected and a Poor point selected on the ZDX Score Over Time graph, highlighted">
+            <div class="screenshot-caption">Back on the user report: <strong>Salesforce Lightning</strong>, a Poor point selected.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab15-p217-b.png" alt="Cloud Path latency graph for the Salesforce Lightning CloudPath probe with a sample pop-up showing end-to-end and per-leg latency, highlighted">
+            <div class="screenshot-caption">Cloud Path at the selected point: end-to-end latency jumps to several hundred ms.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Results vary, but you'll most likely see low latency at the start of the selected period, when the ZDX score was Good, changing to <strong>high latency</strong> when the score drops to Poor.</p>
@@ -381,16 +396,16 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">3</span> Examine the Hop View to find the problem hop</h4>
             <ol class="step-list">
-              <li>Below the Cloud Path graph, find the <strong>Hop View</strong> visualization. It shows each detected hop between the client and the server for the selected application and sample, with the latency measured at each hop.</li>
-              <li>Examine the hops and find the one contributing the most to <strong>end-to-end latency</strong>.</li>
+              <li>Below the Cloud Path graph, find the <strong>Hop View</strong>. It shows each detected hop between the client and the server for the selected application and sample, with the latency measured at each hop.</li>
+              <li>Examine the hops and find the one that contributes most to the end-to-end latency.</li>
             </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab15-p218-a.png" alt="Hop View from PC-Curtis-Wifi through the Wi-Fi access point and gateway to the ZIA Public Service Edge and Salesforce, with the 324 ms first hop highlighted in orange">
+            <div class="screenshot-caption">Hop View: the first hop, device → <strong>Wi-Fi Access Point</strong>, takes <strong>324 ms</strong>. Every later leg is small.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> If the network connection was lost, there is no data to report and the Hop View can't be displayed. Pick another point in time where the graph shows data.</p>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab15-p227-a.png" alt="Cloud Path latency graph and Hop View with the first hop from PC-Curtis-Wifi to the gateway highlighted">
-            <div class="screenshot-caption">Hop View: the highlighted <strong>first hop</strong> (PC-Curtis-Wi-Fi → local gateway) carries the latency.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> In this example, the Hop View isolates the slow end-to-end latency to the <strong>first hop</strong>, between the user's device and their local gateway.</p>
@@ -411,20 +426,20 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Open the User Device Events timeline</h4>
             <ol class="step-list">
-              <li>In the same user view and time window as the previous tasks, <strong>scroll down</strong> to the bottom of the page to find the <strong>User Device Events</strong> timelines.</li>
+              <li>From the same user view and time window you used in the previous tasks, scroll to the bottom of the page to find the <strong>User Device Events</strong> timelines.</li>
             </ol>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Correlate device events with the Poor score transition</h4>
             <ol class="step-list">
-              <li>In the <strong>Network</strong> timeline, find the point in time where the <strong>ZDX Score changed to Poor</strong> (based on the ZDX Score Over Time graph you analyzed earlier).</li>
+              <li>In the <strong>Network</strong> timeline, find the point in time where the ZDX Score changed to Poor (based on the ZDX Score Over Time graph you analyzed earlier).</li>
               <li>Mouse over the dot on the Network timeline at that time. A pop-up shows the Network Interface data recorded for that sample.</li>
-              <li>Review the details in the pop-up and scroll through the <strong>Network Interface</strong> fields. Find what changed at that time by looking at the <strong>New Value</strong> field.</li>
+              <li>Scroll through the Network Interface fields and identify what changed by looking at the values in the <strong>New Value</strong> field.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p229-a.png" alt="User Device Events Network timeline with a pop-up showing SSID Change to Columbus-OH-Office highlighted">
+            <img src="screenshots/lab15-p220-a.png" alt="User Device Events Network timeline pop-up at 06:50 PM showing SSID Change to Columbus-OH-Office on the TP-Link wireless adapter, highlighted">
             <div class="screenshot-caption">At the drop: <strong>SSID Change</strong> → <em>Columbus-OH-Office</em>.</div>
           </div>
           <div class="callout callout-note">
@@ -434,13 +449,13 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">3</span> Correlate device events with the recovery back to Good</h4>
             <ol class="step-list">
-              <li>In the same <strong>Network</strong> timeline, find the dot that matches when the <strong>ZDX Score returned to Good</strong>.</li>
+              <li>In the same Network timeline, find the dot that matches when the ZDX Score went back to <strong>Good</strong>.</li>
               <li>Mouse over that dot to view the Network Interface data for the recovery point.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab15-p230-a.png" alt="User Device Events Network timeline with a pop-up showing SSID Change back to Google_Nest highlighted">
-            <div class="screenshot-caption">At the recovery: <strong>SSID Change</strong> back to <em>Google_Nest</em>.</div>
+            <img src="screenshots/lab15-p221-a.png" alt="User Device Events Network timeline pop-up at 07:50 PM showing SSID Change back to Google_Nest, highlighted">
+            <div class="screenshot-caption">At the recovery: <strong>SSID Change</strong> → <em>Google_Nest</em>.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> In the example scenario, switching back to the <strong>Google_Nest SSID</strong> is associated with a Good ZDX score, which shows the user's experience improved when they returned to the original Wi-Fi network.</p>
@@ -449,8 +464,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">4</span> Interpret the impact of device events</h4>
             <ol class="step-list">
-              <li>Identify which <strong>Wi-Fi or network events</strong> (such as SSID changes, disconnects or signal changes) happened at the same time as the score degradation or recovery.</li>
-              <li>Use this correlation to support your root-cause conclusion (e.g., <strong>“SSID changes and poor Wi-Fi signal on PC-Curtis-Wi-Fi caused the user's poor experience”</strong>).</li>
+              <li>Identify which Wi-Fi or network events (such as SSID changes, disconnects or signal changes) happened at the same time as the score degradation or recovery.</li>
+              <li>Use this correlation to support your root-cause conclusion (e.g., <em>"SSID changes and poor Wi-Fi signal on PC-Curtis-Wi-Fi caused the user's poor experience"</em>).</li>
             </ol>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -460,7 +475,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Four pieces of evidence, one conclusion.</strong> (1) <em>Analyze Score</em> → Low Wi-Fi Signal. (2) <em>Compare to last known good</em> → different SSID, higher client-egress latency. (3) <em>Hop View</em> → latency on the <strong>first hop</strong>. (4) <em>Device Events</em> → SSID change at the drop and back at the recovery. Intermittent score = look for <strong>what changed</strong>. Reset old filters first.</div>
+          <div class="mental-note-block-text"><strong>Four pieces of evidence, one conclusion.</strong> (1) <em>Analyze Score</em> → Suboptimal / Low Wi-Fi. (2) <em>Compare to last known good</em> → different SSID, much higher client-egress latency. (3) <em>Hop View</em> → latency on the <strong>first hop</strong> (device → Wi-Fi access point). (4) <em>Device Events</em> → SSID change at the drop and back at the recovery. Intermittent score = look for <strong>what changed</strong>.</div>
         </div>
       </div>
 
@@ -488,6 +503,26 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">SDC Admin (CloudShare → Credentials)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value">&lt;Student Admin User Name&gt;</code></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">&lt;One Time Password&gt;</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab15a" onchange="toggleDone(this)"><label for="chk-lab15a">Task 15.1–15.2: Poor interval analyzed</label></li>
@@ -496,17 +531,37 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab15d" onchange="toggleDone(this)"><label for="chk-lab15d">Task 15.5: SSID events correlated</label></li>
       </ul>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Tasks 15.1–15.3 · Score, Analyze &amp; Compare</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/evaluating-user-details" target="_blank" rel="noopener noreferrer" title="ZDX Score Over Time, Analyze Score (Y-Engine) and Compare to → Last known good score">Evaluating User Details</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/understanding-zdx-score" target="_blank" rel="noopener noreferrer" title="What drives a Good, Okay or Poor score">Understanding the ZDX Score</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 15.4 · Cloud Path</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/evaluating-cloud-path" target="_blank" rel="noopener noreferrer" title="Reading the Cloud Path graph and Hop View to find the slow hop">Evaluating the Cloud Path</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 15.5 · Device events &amp; Wi-Fi</div>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/viewing-device-events-reports" target="_blank" rel="noopener noreferrer" title="Network, hardware and software events such as SSID changes">Viewing Device Events Reports</a>
+          <a class="ref-link" href="https://help.zscaler.com/zdx/monitoring-wi-fi-dashboard" target="_blank" rel="noopener noreferrer" title="Wi-Fi signal and access point performance across devices">Monitoring the Wi-Fi Dashboard</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
 
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -538,7 +593,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -577,8 +632,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -602,7 +657,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 15: Poor Wi-Fi</span>
 </footer>
 
@@ -693,8 +748,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -1020,6 +1075,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

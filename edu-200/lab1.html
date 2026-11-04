@@ -45,7 +45,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Connect to the Virtual Lab Environment</h1>
   <div class="motivation-banner">
-    <p>Log in to CloudShare, start your lab VMs, learn the Send Text and Send Password clipboard actions, and sign in to the Experience Center for the first time.</p>
+    <p>Get into CloudShare, wake up your VMs, learn the clipboard tricks you'll use all course long, and sign in to the Experience Center for the first time.</p>
   </div>
 </header>
 
@@ -82,8 +82,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,11 +122,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 1</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, you need a working, pre-configured environment (the Virtual Lab) that mirrors Labtenant's likely production setup. You'll use it to validate the platform and reach its core management console, the <strong>Experience Center</strong>, before you start configuration tasks.</p>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, you need to establish a functional, pre-configured environment (the <strong>Virtual Lab</strong>) that mirrors Labtenant's potential production setup, so you can validate the platform and reach its core management console (the <strong>Experience Center</strong>) before you begin configuration tasks.</p>
         <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
-          <li><strong>Connect to CloudShare</strong> and your lab virtual machines (VMs).</li>
-          <li><strong>Familiarize</strong> yourself <strong>with</strong> the login options and <strong>clipboard copy/paste functions</strong>.</li>
+          <li><strong>Connect</strong> to CloudShare and your lab virtual machines (VMs).</li>
+          <li>Get familiar with the <strong>login options</strong> and the <strong>clipboard copy/paste</strong> functions.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~10 minutes</div>
@@ -138,59 +138,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab1">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · REACHING THE LAB</span>
-        </div>
-        <p class="socratic-insight">You are about to work inside a remote Windows desktop streamed to your browser. A few small habits now will save you a lot of frustration later.</p>
-        <ul class="socratic-questions">
-          <li>CloudShare gives you <strong>Send Text</strong> instead of a normal Ctrl+V into the VM. Why can't your host clipboard simply be shared with the VM, and when will Send Text matter most in these labs?
-            <div class="answer-area" data-section="lab1-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · REACHING THE LAB</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The VM is a separate machine whose screen and keystrokes are streamed through the browser. Your local clipboard never reaches its operating system unless the console explicitly sends it. <strong>Send Text</strong> types your text into the VM as keystrokes. It matters most for long, error-prone values: FQDN-based login IDs, URLs, provisioning keys and CLI commands for the App Connector later in the course. One typo in a provisioning key costs far more time than a paste.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">You are about to work inside a remote Windows desktop streamed to your browser. A few small habits now will save you a lot of frustration later.</p>
+              <ul class="socratic-questions">
+                <li>CloudShare gives you <strong>Send Text</strong> instead of a normal Ctrl+V into the VM. Why can't your host clipboard simply be shared with the VM, and when will Send Text matter most in these labs?
+                  <div class="answer-area" data-section="lab1-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The VM is a separate machine whose screen and keystrokes are streamed through the browser. Your local clipboard never reaches its operating system unless the console explicitly sends it. <strong>Send Text</strong> types your text into the VM as keystrokes. It matters most for long, error-prone values: FQDN-based login IDs, URLs, provisioning keys and CLI commands for the App Connector later in the course. One typo in a provisioning key costs far more time than a paste.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>From here on, the guide rarely gives a click path. It says <em>"type <strong>Firewall Control</strong> in the Search menu"</em> and puts the Nav 2.0 location in parentheses. Why lead with search, and why still show the menu path?
+                  <div class="answer-area" data-section="lab1-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Menu trees move. The jump from Nav 1.0 to Nav 2.0 relocated almost every page, but feature <strong>names</strong> (Firewall Control, Application Segments, DNS Insights) stayed the same, so search keeps working across releases. The path in parentheses tells you <strong>where the feature belongs</strong>: Firewall Control sits under <em>Internet Access &gt; Policy</em> next to URL Filtering and DNS Control. Knowing that structure helps you find related settings and explain the product, not just reach a single page.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The Corp App Connector VM has no desktop, only an SSH console. What does that tell you about the role this machine plays compared with the Corp Client PC?
+                  <div class="answer-area" data-section="lab1-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The App Connector is <strong>infrastructure</strong>, not a user device. It's a headless Linux service that sits next to the private applications and brokers ZPA connections outbound to the cloud. Nobody browses from it, so it needs no GUI. You'll only use its console to enroll it (Lab 9) and check its health. The Client PC is where a <em>user</em> works and where ZCC enforces policy.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>On your first sign-in as <code>student@&lt;Student FQDN&gt;</code>, you are forced to change the password. Why does the Service Portal do this for a brand-new admin account, and why should you write the new one down now?
-            <div class="answer-area" data-section="lab1-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The initial password was set by someone else and delivered through a shared channel (here, the CloudShare Credentials tab), so it should be treated as already exposed. Forcing a change means only you know the working credential from then on. Lab 3 and later labs ask for "the password you configured at initial login in Lab 1" for both the console and Zscaler Client Connector, so losing it now blocks you later.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The Corp App Connector VM has no desktop, only an SSH console. What does that tell you about the role this machine plays compared with the Corp Client PC?
-            <div class="answer-area" data-section="lab1-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The App Connector is <strong>infrastructure</strong>, not a user device. It's a headless Linux service that sits next to the private applications and brokers ZPA connections outbound to the cloud. Nobody browses from it, so it needs no GUI. You'll only use its console to enroll it (Lab 9) and check its health. The Client PC is where a <em>user</em> works and where ZCC enforces policy.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 1.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-1-1">
@@ -204,106 +204,88 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Locate the CloudShare lab URL</h4>
             <ol class="step-list">
-              <li>Your unique <strong>CloudShare lab URL</strong> and <strong>passphrase</strong> will be shown on the classroom screen at the start of the session. Note these credentials carefully, because you need them to access your lab environment (example: <code>https://use.cloudshare.com/…</code>).</li>
+              <li>Your unique CloudShare lab URL and passphrase are shown on the classroom screen at the start of the session. Note them carefully, because you need them to access your lab environment (example: <code>https://use.cloudshare.com/…</code>).</li>
             </ol>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">2</span> Access the Lab Login Page</h4>
+            <h4><span class="task-num">2</span> Access the lab login page</h4>
             <ol class="step-list">
               <li>Open a web browser and go to the CloudShare lab URL shown on the classroom screen.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p013-a.png" alt="CloudShare login page asking for an email address and passphrase">
-            <div class="screenshot-caption">CloudShare login page.</div>
+            <img src="screenshots/lab1-p012-a.png" alt="CloudShare Class Login page with empty Email and Passphrase fields and a Login button">
+            <div class="screenshot-caption">The CloudShare <strong>Class Login</strong> page asks for an email address and a passphrase.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">3</span> Enter Your Credentials</h4>
+            <h4><span class="task-num">3</span> Enter your credentials</h4>
             <ol class="step-list">
               <li>On the login page, enter the <strong>email address</strong> and <strong>passphrase</strong> provided in your invitation email, then click <strong>Login</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p013-b.png" alt="CloudShare login page with an email address and passphrase entered">
-            <div class="screenshot-caption">Enter your email and the class passphrase, then click Login.</div>
+            <img src="screenshots/lab1-p013-a.png" alt="CloudShare Class Login page with the email and passphrase filled in and the Login button highlighted">
+            <div class="screenshot-caption">Email and passphrase filled in. Click <strong>Login</strong>.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">4</span> Review the Lab Overview</h4>
+            <h4><span class="task-num">4</span> Review the lab overview</h4>
             <ol class="step-list">
-              <li>After you log in, you are taken to the lab environment dashboard. The screen you see matches the specific lab you've been assigned.</li>
+              <li>After you log in, you land on the lab environment dashboard. The virtual machines may take a few minutes to provision and become ready.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p014-a.png" alt="CloudShare environment Overview tab for the EDU-200 Zscaler for Users - Administrator lab">
+            <img src="screenshots/lab1-p013-b.png" alt="CloudShare environment Overview tab for the EDU-200 Zscaler for Users - Administrator lab">
             <div class="screenshot-caption">The environment Overview tab for <em>EDU-200 · Zscaler for Users - Administrator</em>.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">5</span> Navigate to the VM List</h4>
+            <h4><span class="task-num">5</span> Navigate to the VM list</h4>
             <ol class="step-list">
-              <li>In the <strong>Overview</strong> tab, click <strong>Go to My VM List</strong> to open the <strong>VM List</strong> tab. This tab shows all virtual machines assigned to your lab session.</li>
+              <li>On the <strong>Overview</strong> tab, select <strong>Go to My VM List</strong> to open the <strong>VM List</strong> tab. Or select the VM you need from the tabs at the top.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p015-a.png" alt="Overview tab with the Go to My VM List button highlighted">
-            <div class="screenshot-caption">Click <strong>Go to My VM List</strong>.</div>
+            <img src="screenshots/lab1-p014-a.png" alt="CloudShare Overview tab with the Go to my VM List button and a Windows VM tab at the top highlighted">
+            <div class="screenshot-caption"><strong>Go to my VM List</strong>, or jump straight to a VM with its tab at the top (here, the Windows VM).</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">6</span> Run the Virtual Machine</h4>
-            <ol class="step-list">
-              <li>In the <strong>VM List</strong> tab, click the <strong>Run</strong> button next to the virtual machine name to start the VM.</li>
-            </ol>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab1-p015-b.png" alt="VM List showing three virtual machines (Windows 11 x64, Windows Server 2025 Standard, zpa-connector) with the Run button highlighted">
-            <div class="screenshot-caption">Three VMs: the Windows client, Windows Server 2025 and the ZPA connector. Click <strong>Run</strong> on each VM you need.</div>
-          </div>
-
-          <div class="task-block">
-            <h4><span class="task-num">7</span> Verify the VM is Running</h4>
+            <h4><span class="task-num">6</span> Verify the VM is running</h4>
             <ol class="step-list">
               <li>Once started, the virtual machine's tab shows it running, which confirms the environment is ready to use.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p016-a.png" alt="Windows 11 VM tab showing the lock screen with Press Ctrl+Alt+Delete to unlock">
+            <img src="screenshots/lab1-p015-a.png" alt="Windows VM tab showing the lock screen with Press Ctrl+Alt+Delete to unlock">
             <div class="screenshot-caption">A running Windows VM shows its lock screen in its own tab.</div>
-          </div>
-          <div class="callout callout-note">
-            <p><strong>Note:</strong> For the <strong>Corp App Connector</strong> VM, click the VM, then click the <strong>SSH</strong> icon to see the VM running.</p>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab1-p017-a.png" alt="zpa-connector VM tab with the SSH icon highlighted and a Linux console with a Zscaler ASCII banner">
-            <div class="screenshot-caption">The App Connector VM has no desktop. The <strong>SSH</strong> icon opens its Linux console.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">8</span> Open the Lab Guide</h4>
+            <h4><span class="task-num">7</span> Open the Lab Guide</h4>
             <ol class="step-list">
-              <li>Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. It opens in a new browser tab and gives detailed instructions for the lab exercises.</li>
+              <li>Click the <strong>Lab Guide</strong> tab to open the hands-on lab guide. It opens in a new browser tab with detailed instructions for the lab exercises.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p017-b.png" alt="CloudShare environment with the Lab Guide tab highlighted">
+            <img src="screenshots/lab1-p015-b.png" alt="CloudShare environment with the Lab Guide tab highlighted">
             <div class="screenshot-caption">The <strong>Lab Guide</strong> tab, next to the VM tabs.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">9</span> View your Zscaler tenant and SDC credentials</h4>
+            <h4><span class="task-num">8</span> View your Zscaler tenant and SDC credentials</h4>
             <ol class="step-list">
-              <li>To find your <strong>Zscaler tenant</strong> and <strong>Solutions Demo Center (SDC)</strong> credentials, click the <strong>Credentials</strong> tab in the left panel. These are the credentials you'll use in the lab.</li>
+              <li>Click the <strong>Credentials</strong> tab in the left panel to view the <strong>Zscaler tenant</strong> and <strong>Solutions Demo Center (SDC)</strong> credentials you will use in the lab.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p018-a.png" alt="Credentials panel with the Zscaler Tenant section showing the admin console link, student admin username and one-time password">
-            <div class="screenshot-caption"><strong>Credentials → Zscaler Tenant</strong>: console link, your <code>student@&lt;Student FQDN&gt;</code> admin username and its one-time password.</div>
+            <img src="screenshots/lab1-p016-a.png" alt="Credentials panel with the Zscaler Tenant section showing the admin console link, student admin username and one-time password">
+            <div class="screenshot-caption"><strong>Credentials → Zscaler Tenant</strong>: console link, your <code>student@&lt;Student FQDN&gt;</code> admin username and its password.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p018-b.png" alt="Credentials panel with the SDC Credentials section showing Solutions Demo Center usernames">
+            <img src="screenshots/lab1-p016-b.png" alt="Credentials panel with the SDC Credentials section showing Solutions Demo Center usernames">
             <div class="screenshot-caption"><strong>Credentials → SDC Credentials</strong>: the Solutions Demo Center logins used for the ZDX labs (14–16).</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -318,20 +300,24 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </div>
         <div class="task-collapsible-body">
           <p>During these labs, you will often copy commands, URLs and configuration values from the lab guide into the virtual machines.</p>
+
           <div class="task-block">
             <h4><span class="task-num">1</span> Send text to the VM</h4>
             <ol class="step-list">
-              <li>To use the VM clipboard, first copy the text from your host / lab guide.</li>
-              <li>Click the <strong>Actions</strong> tab and choose <strong>Send Text</strong>.</li>
-              <li>Paste the text into the text box and click <strong>Send</strong>.</li>
+              <li>Use the clipboard function in the lab interface. Copy the text from your host or the lab guide, then:
+                <ul class="sub-steps">
+                  <li>Click the <strong>Action</strong> tab and choose <strong>Send Text</strong>.</li>
+                  <li>Paste the text into the text box and click <strong>Send</strong>.</li>
+                </ul>
+              </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p019-a.png" alt="Actions menu expanded with Keyboard > Send Text highlighted">
+            <img src="screenshots/lab1-p017-a.png" alt="Actions menu expanded with Keyboard > Send Text highlighted">
             <div class="screenshot-caption"><strong>Actions → Send Text</strong>. The same menu also has Send Password and Send Ctrl+Alt+Del.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p020-a.png" alt="Send Text dialog with a text box and the Send button highlighted">
+            <img src="screenshots/lab1-p018-a.png" alt="Send Text dialog with a text box and the Send button highlighted">
             <div class="screenshot-caption">Paste into the Send Text box and click <strong>Send</strong>. The text is typed into whichever field has focus in the VM.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -345,46 +331,58 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
+          <p>In this task, you sign in to the <strong>Corp Client PC</strong> and authenticate to the <strong>Experience Center</strong> console (<code>https://console.zscaler.com</code>).</p>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> Throughout this lab guide, <strong>&lt;Student FQDN&gt;</strong> means the domain assigned to your tenant. For example, if your student admin username is <strong>student@zs9901.labtenant.com</strong>, your Student FQDN is <strong>zs9901.labtenant.com</strong>. Enter it in the Lab Configuration panel above to fill in every login on these pages.</p>
+            <p><strong>Note:</strong> Throughout this lab guide, <strong>&lt;Student FQDN&gt;</strong> is the domain assigned to your tenant. For example, if your student admin username is <code>student@zs9901.labtenant.com</code>, your Student FQDN is <code>zs9901.labtenant.com</code>. Enter it in the <strong>Lab Configuration</strong> panel above and every login on these pages fills in automatically.</p>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Log in to the Corp Client PC as the local Student user</h4>
             <ol class="step-list">
               <li>Launch the <strong>Corp Client PC</strong> from the CloudShare portal.</li>
-              <li>Go to the <strong>Actions</strong> tab and click <strong>Send Password</strong>.</li>
+              <li>Check that the login page appears, then go to the <strong>Action</strong> tab and click <strong>Send Password</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab1-p021-a.png" alt="Corp Client PC lock screen with the Actions menu open and Send Password highlighted">
+            <img src="screenshots/lab1-p019-a.png" alt="Corp Client PC lock screen with the Actions menu open and Send Password highlighted">
             <div class="screenshot-caption"><strong>Actions → Send Password</strong> types the local <code>student</code> password for you, so there's no need to type it.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Sign in to the Experience Center</h4>
             <ol class="step-list">
-              <li>In a browser window, open the Experience Center landing page: <code>https://console.zscaler.com/</code></li>
-            </ol>
-          </div>
-          <div class="callout callout-note">
-            <p><strong>Note:</strong> You will be redirected to the <strong>Service Portal</strong> (formerly ZIdentity) login page to validate your identity.</p>
-          </div>
-          <div class="task-block">
-            <ol class="step-list">
+              <li>In a browser window, open <code>https://console.zscaler.com</code></li>
               <li>Authenticate with your student admin account:
                 <ul class="sub-steps">
                   <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
-                  <li>Password: as provided in the Lab Access Instructions <span class="var var-pass">&lt;Session Password&gt;</span></li>
-                  <li>Click <strong>Sign in</strong>.</li>
+                  <li>Password: as provided in the Lab Access Instructions.</li>
+                  <li>Select <strong>Sign in</strong>.</li>
                 </ul>
               </li>
-              <li>You will be prompted to <strong>change your password</strong> after you authenticate successfully. Remember the new password, because later labs ask for it.</li>
             </ol>
           </div>
           <div class="screenshot-embed dialog">
-            <img src="screenshots/lab1-p022-a.png" alt="Zscaler Success page stating the password has been reset successfully, with a Re-Login link">
-            <div class="screenshot-caption">Password changed. Use <strong>Re-Login</strong> to sign in again with your new password.</div>
+            <img src="screenshots/lab1-p020-a.png" alt="Zscaler Welcome sign-in page with the student Login ID and Password fields and the Sign In button highlighted">
+            <div class="screenshot-caption">Zscaler sign-in: your <code>student@</code> Login ID, the password, then <strong>Sign In</strong>.</div>
+          </div>
+
+          <div class="task-block">
+            <h4><span class="task-num">3</span> Explore the Experience Center</h4>
+            <ol class="step-list">
+              <li>Once logged in, explore the Experience Center dashboard by opening the different options and products listed in the left menu.</li>
+              <li>Use the <strong>Search menu</strong> at the top to go straight to the feature you need in your assigned Experience Center tenant.</li>
+            </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p021-a.png" alt="Experience Center Nav 2.0 home page with the left menu highlighted: Analytics, Administration, Internet Access, Private Access, Cyberthreat Protection, Digital Experience, Data Security, Infrastructure, Zero Trust Cloud, Zero Trust Browser, Data Explorer, AI Security and Service Portal">
+            <div class="screenshot-caption">The Nav 2.0 Experience Center. The left menu groups every product by outcome: Internet Access, Private Access, Cyberthreat Protection, Digital Experience, Data Security, Infrastructure, Data Explorer and more.</div>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab1-p021-b.png" alt="Experience Center top bar with the Search menu field highlighted">
+            <div class="screenshot-caption">The <strong>Search menu</strong> at the top of every page. Type a feature name (for example, <em>Departments</em>) and pick the result.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Use the Search menu to quickly reach the features you need in the upcoming lab tasks.</p>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-1-3 -->
@@ -393,7 +391,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>CloudShare:</strong> Overview → VM List → Run. <strong>Credentials</strong> tab = tenant + SDC logins. <strong>Actions → Send Text</strong> pastes into a VM, and <strong>Send Password</strong> unlocks the Client PC. First console login at <code>console.zscaler.com</code> forces a password change, so keep the new one because Lab 3 and ZCC need it.</div>
+          <div class="mental-note-block-text"><strong>CloudShare tabs</strong>: Overview, VM List, one tab per VM, Lab Guide, and <strong>Credentials</strong> (tenant + SDC logins). Use <strong>Action → Send Text</strong> to paste and <strong>Send Password</strong> to unlock Windows. The console is <code>console.zscaler.com</code>, and its <strong>Search menu</strong> is how you'll reach every feature from now on.</div>
         </div>
       </div>
 
@@ -425,7 +423,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab1" onchange="toggleDone(this)"><label for="chk-lab1">Task 1.1: CloudShare VMs running</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab1b" onchange="toggleDone(this)"><label for="chk-lab1b">Task 1.2: Send Text tried</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab1c" onchange="toggleDone(this)"><label for="chk-lab1c">Task 1.3: Signed in + password changed</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab1c" onchange="toggleDone(this)"><label for="chk-lab1c">Task 1.3: Signed in + Search menu found</label></li>
       </ul>
     </div>
 
@@ -434,11 +432,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -470,7 +468,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -509,8 +507,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -526,15 +524,15 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="page-nav-label">← PREVIOUS</span>
     <span class="page-nav-title">Lab 0: About</span>
   </a>
-  <div class="page-nav-message">First connection made. The rest is just configuration.</div>
+  <div class="page-nav-message">Connection established. The real work begins now.</div>
   <a class="page-nav-btn page-nav-next" href="lab2.html">
     <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 2: Users</span>
+    <span class="page-nav-title">Lab 2: Users &amp; Entitlements</span>
   </a>
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 1: Connect</span>
 </footer>
 
@@ -625,8 +623,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});

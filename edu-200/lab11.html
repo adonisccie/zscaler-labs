@@ -6,7 +6,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 11: Troubleshoot Access to an Internal Application — EDU-200</title>
+<title>Lab 11: Troubleshoot Access to an Internal Application for a Specific User — EDU-200</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -43,7 +55,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 11 · EDU-200</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Troubleshoot ZPA Access for Joe</h1>
+  <h1>Troubleshoot Access to an Internal Application for a Specific User</h1>
   <div class="motivation-banner">
     <p>Joe can't reach the intranet. Reproduce it, trace the cause to a missing ZPA service entitlement, fix it, and prove the fix from Joe's own ZCC.</p>
   </div>
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,13 +134,13 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 11</div>
-        <p><strong>Scenario:</strong> The Zscaler platform administrator has configured the internal application <code>intranet.patraining.safemarch.com</code> using <strong>Zscaler Private Access (ZPA)</strong> to secure user access to company resources. <strong>Joe</strong>, a user, <strong>cannot access the application</strong> because he is <strong>missing the ZPA service entitlement</strong>. In this lab, you will <strong>troubleshoot</strong> and <strong>resolve the access</strong> issue by granting Joe the ZPA service entitlement he needs.</p>
-        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <p><strong>Scenario:</strong> The Zscaler platform administrator has configured the internal application <code>intranet.patraining.safemarch.com</code> using <strong>Zscaler Private Access (ZPA)</strong> to secure user access to company resources. <strong>Joe</strong>, a user, can't access the application because he is <strong>missing the ZPA service entitlement</strong>. In this lab, you will troubleshoot and resolve the access issue by granting Joe the ZPA service entitlement he needs.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
-          <li><strong>Identify</strong> the root cause of <strong>Joe’s access issue</strong> using <strong>ZPA</strong> administrative tools.</li>
-          <li><strong>Analyze</strong> the <strong>configuration</strong> and <strong>perform</strong> key <strong>troubleshooting</strong> steps to diagnose the issue.</li>
-          <li><strong>Assign</strong> the <strong>missing ZPA service entitlement</strong> to remove the access restriction.</li>
-          <li><strong>Evaluate</strong> the <strong>solution</strong> and confirm that Joe can access the internal application.</li>
+          <li><strong>Identify</strong> the root cause of Joe's access issue using ZPA administrative tools.</li>
+          <li><strong>Analyze</strong> the configuration and perform key troubleshooting steps to diagnose the issue.</li>
+          <li><strong>Assign</strong> the missing ZPA service entitlement to remove the access restriction.</li>
+          <li><strong>Evaluate</strong> the solution and confirm that Joe can successfully access the internal application.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
@@ -140,59 +152,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab11">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · TROUBLESHOOTING ACCESS</span>
-        </div>
-        <p class="socratic-insight">"I can't reach the app" has many possible causes: the connector, the segment, the access policy, or the user. A good troubleshooter starts with the layer that is cheapest to check and rules things out in order.</p>
-        <ul class="socratic-questions">
-          <li>The Student user reaches the intranet fine with the same connector, segment and PC. Which layers does that <strong>rule out</strong> for Joe's problem, and where should you look first?
-            <div class="answer-area" data-section="lab11-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · TROUBLESHOOTING ACCESS</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">If Student works from the same PC, then the <strong>App Connector</strong>, <strong>server group</strong>, <strong>DNS/network path</strong> and the <strong>app itself</strong> are healthy. What differs is the <strong>identity</strong>, so check what's tied to Joe: his <strong>service entitlements</strong> (does he even get ZPA?), then the <strong>access policy</strong> criteria (does any rule allow Joe or his group for that segment?). A missing Private Access tab in Joe's ZCC already points straight at the entitlement.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">"I can't reach the app" has many possible causes: the connector, the segment, the access policy, or the user. A good troubleshooter starts with the layer that is cheapest to check and rules things out in order.</p>
+              <ul class="socratic-questions">
+                <li>The Student user reaches the intranet fine with the same connector, segment and PC. Which layers does that <strong>rule out</strong> for Joe's problem, and where should you look first?
+                  <div class="answer-area" data-section="lab11-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">If Student works from the same PC, then the <strong>App Connector</strong>, <strong>server group</strong>, <strong>DNS/network path</strong> and the <strong>app itself</strong> are healthy. What differs is the <strong>identity</strong>, so check what's tied to Joe: his <strong>service entitlements</strong> (does he even get ZPA?), then the <strong>access policy</strong> criteria (does any rule allow Joe or his group for that segment?). A missing Private Access tab in Joe's ZCC already points straight at the entitlement.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The fix assigns ZPA to Joe <strong>directly</strong> on the Users tab. Thinking back to Lab 2, what would be the more scalable fix, and what would it change for other helpdesk staff?
+                  <div class="answer-area" data-section="lab11-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Assign ZPA to the <strong>Helpdesk L1 group</strong> on the Groups tab. Then every current and future Tier-1 engineer inherits private access the same way they inherit ZIA, and removing someone from the group cleans it all up. A direct user assignment fixes Joe today but creates a one-off exception that is easy to forget during audits or offboarding. Fine for a lab, but in production prefer the group.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>After assigning the entitlement, the guide has you <strong>Update Policy</strong> in ZCC before testing. What would you see if you skipped that step, and why?
+                  <div class="answer-area" data-section="lab11-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">ZCC learns its enabled services when it fetches policy at login or on its refresh schedule. Until then it still behaves as if Joe has no ZPA: no <strong>Private Access</strong> tab, no ZPA tunnel, and the intranet still fails. You might wrongly conclude the fix didn't work. Forcing <strong>Update Policy</strong> (or signing out and back in) makes the client pick up the change immediately, the same pull model you saw in Lab 3.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>The fix assigns ZPA to Joe <strong>directly</strong> on the Users tab. Thinking back to Lab 2, what would be the more scalable fix, and what would it change for other helpdesk staff?
-            <div class="answer-area" data-section="lab11-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Assign ZPA to the <strong>Helpdesk L1 group</strong> on the Groups tab. Then every current and future Tier-1 engineer inherits private access the same way they inherit ZIA, and removing someone from the group cleans it all up. A direct user assignment fixes Joe today but creates a one-off exception that is easy to forget during audits or offboarding. Fine for a lab, but in production prefer the group.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>After assigning the entitlement, the guide has you <strong>Update Policy</strong> in ZCC before testing. What would you see if you skipped that step, and why?
-            <div class="answer-area" data-section="lab11-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">ZCC learns its enabled services when it fetches policy at login or on its refresh schedule. Until then it still behaves as if Joe has no ZPA: no <strong>Private Access</strong> tab, no ZPA tunnel, and the intranet still fails. You might wrongly conclude the fix didn't work. Forcing <strong>Update Policy</strong> (or signing out and back in) makes the client pick up the change immediately, the same pull model you saw in Lab 3.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 11.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-11-1">
@@ -209,15 +221,15 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <ol class="step-list">
               <li>Log in to <strong>Zscaler Client Connector</strong> on the <strong>Corp Client PC</strong>:
                 <ul class="sub-steps">
-                  <li>Username: <code class="d-username-joe">JoeSupport@&lt;Student FQDN&gt;</code> (see Lab 2 for Joe's credentials).</li>
+                  <li>Username: <code class="d-username-joe">joe@&lt;Student FQDN&gt;</code> (see Lab 2 for Joe's credentials).</li>
                 </ul>
               </li>
               <li>Open a browser and try to reach the internal application: <code>http://intranet.patraining.safemarch.com</code></li>
             </ol>
           </div>
           <div class="screenshot-embed dialog">
-            <img src="screenshots/lab11-p152-a.png" alt="Zscaler Client Connector login window with Joe's login ID entered">
-            <div class="screenshot-caption">Sign in to ZCC as <strong>Joe</strong>. (The screenshot shows <em>joe@</em>. Use the Login ID you created in Lab 2.)</div>
+            <img src="screenshots/lab11-p144-a.png" alt="Zscaler Client Connector login window with Joe's login ID entered">
+            <div class="screenshot-caption">Sign in to ZCC as <strong>Joe</strong> (<code>joe@…</code>, the user you set up in Lab 2).</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Joe cannot access the application.</p>
@@ -226,17 +238,21 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">2</span> Troubleshoot user entitlements</h4>
             <ol class="step-list">
-              <li>From the Experience Center, go to <strong>Administration &gt; Identity &gt; Authentication Service &gt; User Management &gt; Users</strong>.</li>
-              <li>Find <strong>Joe</strong> and click <strong>Edit</strong>.</li>
+              <li>On the Experience Center home page, type <code>Users</code> in the <strong>Search menu</strong> and select the result (<em>Administration &gt; Authentication &gt; Directory</em>).</li>
+              <li>Find <strong>Joe</strong> and click his name to <strong>View User Details</strong>.</li>
               <li>Go to the <strong>Entitlements</strong> tab and check which services are assigned.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p153-a.png" alt="Identity Users list showing Bev, Joe, student and other users with edit icons">
-            <div class="screenshot-caption">Users list. Click <strong>Edit</strong> on Joe's row.</div>
+            <img src="screenshots/lab11-p145-a.png" alt="Search menu with Users typed and the first result Users, Administration > Authentication > Directory, highlighted">
+            <div class="screenshot-caption">Search menu → <strong>Users</strong> (<em>Administration &gt; Authentication &gt; Directory</em>). Several results share the name, so pick this one.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p154-a.png" alt="Edit User Entitlements tab showing admin entitlements ZDX Read-only Admin and ZIA Executive Insights App, and only Zscaler Internet Access under Service Entitlements">
+            <img src="screenshots/lab11-p145-b.png" alt="Users directory list showing HVAC, Instructor and Joe with their login IDs, groups and Active status">
+            <div class="screenshot-caption">The Users directory. Click <strong>Joe</strong> to open his details.</div>
+          </div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab11-p146-a.png" alt="View User Details Entitlements tab showing administrative entitlements Zscaler Digital Experience and Zscaler Internet Access, and only Zscaler Internet Access under Service Entitlements">
             <div class="screenshot-caption">Root cause: under <strong>Service Entitlements</strong> Joe only has <strong>Zscaler Internet Access</strong>. There's <strong>no Zscaler Private Access</strong>.</div>
           </div>
           <div class="callout callout-note">
@@ -258,7 +274,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div class="task-block">
             <h4><span class="task-num">1</span> Assign the Zscaler Private Access (ZPA) service entitlement</h4>
             <ol class="step-list">
-              <li>Go to <strong>Administration &gt; Entitlements &gt; Service Entitlements &gt; End User Entitlements</strong>.</li>
+              <li>On the Experience Center home page, type <code>End User Entitlements</code> in the <strong>Search menu</strong> and select the result (<em>Administration &gt; Subscription</em>).</li>
               <li>Select the <strong>Zscaler Private Access</strong> service from the list.</li>
               <li>Go to the <strong>Users</strong> tab and click <strong>Assign Users</strong>.</li>
               <li>Select the user <strong>Joe</strong> from the list.</li>
@@ -267,27 +283,27 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p155-a.png" alt="Service Entitlements list with Zscaler Private Access highlighted">
-            <div class="screenshot-caption">Service Entitlements → <strong>Zscaler Private Access</strong>.</div>
+            <img src="screenshots/lab11-p147-a.png" alt="Service Entitlements list under End User Entitlements with Deception, Zscaler Digital Experience, Zscaler Internet Access and Zscaler Private Access, the last one highlighted">
+            <div class="screenshot-caption">End User Entitlements → <strong>Zscaler Private Access</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p156-a.png" alt="Zscaler Private Access - Service page with the Users tab and Assign Users button highlighted">
-            <div class="screenshot-caption"><strong>Users</strong> tab → <strong>Assign Users</strong>.</div>
+            <img src="screenshots/lab11-p148-a.png" alt="Zscaler Private Access - Service page with the Users tab and the Assign Users button highlighted, no users yet">
+            <div class="screenshot-caption"><strong>Users</strong> tab (empty for now) → <strong>Assign Users</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p157-a.png" alt="Assign Users Select Users step with Joe checked and Next highlighted">
-            <div class="screenshot-caption">Tick <strong>Joe</strong> and click Next.</div>
+            <img src="screenshots/lab11-p148-b.png" alt="Assign Users Select Users step with Joe checked and the Next button highlighted">
+            <div class="screenshot-caption">Tick <strong>Joe</strong> and click <strong>Next</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p158-a.png" alt="Assign Users Summary step listing Joe with the Assign button highlighted">
+            <img src="screenshots/lab11-p149-a.png" alt="Assign Users Summary step listing Joe with the Assign button highlighted">
             <div class="screenshot-caption">Summary: Joe. Click <strong>Assign</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p159-a.png" alt="Zscaler Private Access - Service Users tab now listing Joe">
-            <div class="screenshot-caption">Joe now appears under ZPA service <strong>Users</strong>.</div>
+            <img src="screenshots/lab11-p150-a.png" alt="Zscaler Private Access - Service Users tab now listing Joe">
+            <div class="screenshot-caption">Joe now appears under the ZPA service's <strong>Users (1)</strong>.</div>
           </div>
           <div class="callout callout-info">
-            <p><strong>Heads-up:</strong> The lab guide says to confirm Joe has ZPA "via the HelpDesk L1 User Group", but these steps assign ZPA to Joe <strong>directly</strong> on the <strong>Users</strong> tab. Either works for the lab. To give it to the whole group instead, use the <strong>Groups</strong> tab and assign <strong>Helpdesk L1</strong> (see Think First Q2).</p>
+            <p><strong>Heads-up:</strong> The lab guide says to confirm Joe has ZPA "via the HelpDesk L1 User Group", but these steps assign ZPA to Joe <strong>directly</strong> on the <strong>Users</strong> tab. Either works for the lab. To give it to the whole group instead, use the <strong>User Groups</strong> tab and assign <strong>Helpdesk L1</strong> (see Think First Q2).</p>
           </div>
 
           <div class="task-block">
@@ -300,7 +316,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab11-p160-a.png" alt="The Zero Trust Exchange intranet Welcome page loading in the browser">
+            <img src="screenshots/lab11-p151-a.png" alt="The Zero Trust Exchange intranet Welcome page loading in the browser">
             <div class="screenshot-caption">Fixed: the intranet loads for Joe.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -310,7 +326,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Works for Student, fails for Joe = look at identity.</strong> Check the user's <strong>Entitlements</strong> tab first: no <em>Zscaler Private Access</em> service = no ZPA tunnel, whatever the policy says. Fix: Service Entitlements → ZPA → assign the user (or better, the group). Then <strong>Update Policy</strong> in ZCC, check that the <em>Private Access</em> tab appears, and retest.</div>
+          <div class="mental-note-block-text"><strong>Works for Student, fails for Joe = look at identity.</strong> Search <em>Users</em> → Joe → <strong>Entitlements</strong> tab: no <em>Zscaler Private Access</em> service = no ZPA tunnel, whatever the policy says. Fix: <em>End User Entitlements</em> → ZPA → assign the user (or better, the group). Then <strong>Update Policy</strong> in ZCC, check that the <em>Private Access</em> tab appears, and retest.</div>
         </div>
       </div>
 
@@ -338,11 +354,56 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Joe (Helpdesk L1)<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-joe">joe@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value">Admin-123!</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab11a" onchange="toggleDone(this)"><label for="chk-lab11a">Task 11.1: Root cause found (no ZPA)</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab11b" onchange="toggleDone(this)"><label for="chk-lab11b">Task 11.2: ZPA assigned, Joe reaches intranet</label></li>
       </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 11.1 · Find the root cause</div>
+          <a class="ref-link" href="https://help.zscaler.com/authentication-service/viewing-entitlements-assigned-users" target="_blank" rel="noopener noreferrer" title="Check which administrative and service entitlements a user such as Joe has">Viewing Entitlements Assigned to Users</a>
+          <a class="ref-link" href="https://help.zscaler.com/authentication-service/about-service-entitlements" target="_blank" rel="noopener noreferrer" title="Which users and groups can use each subscribed service, ZPA included">About Service Entitlements</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 11.2 · Fix and retest</div>
+          <a class="ref-link" href="https://help.zscaler.com/authentication-service/assigning-entitlements-users-and-user-groups" target="_blank" rel="noopener noreferrer" title="Assign a user or group to the Zscaler Private Access service">Assigning Entitlements to Users and User Groups</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="The ZCC More page, where Update Policy refreshes the user&#x27;s entitlements">Update Policy in ZCC</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-private-access-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="What the ZCC Private Access page shows once ZPA is entitled">Viewing Private Access Status (ZCC)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/verifying-access-applications-classic-ui" target="_blank" rel="noopener noreferrer" title="How a user checks that private applications are reachable from ZCC">Verifying Access to Applications</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
     </div>
 
     <div class="quick-ref" id="quick-ref">
@@ -350,11 +411,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -386,7 +447,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -425,8 +486,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -445,12 +506,12 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   <div class="page-nav-message">Troubleshooting is just learning in reverse. Keep going.</div>
   <a class="page-nav-btn page-nav-next" href="lab12.html">
     <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 12: SIPA Forwarding</span>
+    <span class="page-nav-title">Lab 12: SIPA</span>
   </a>
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 11: Troubleshoot Access</span>
 </footer>
 
@@ -541,8 +602,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -868,6 +929,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -45,7 +57,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Configure DNS Security</h1>
   <div class="motivation-banner">
-    <p>Steer every DNS query through ZCC, block gambling domains with a DNS Control rule (even against 8.8.8.8), and prove it in DNS Insights.</p>
+    <p>Every connection starts with a lookup. Steer all DNS through Zscaler, block gambling domains before a single connection is made, and prove it in DNS Insights.</p>
   </div>
 </header>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,12 +134,12 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 7</div>
-        <p><strong>Scenario:</strong> Safemarch wants to protect its users by blocking access to malicious domains and enforcing acceptable use policies that prohibit gambling websites. As a Zscaler administrator, you will configure <strong>DNS security controls</strong>, enforce these policies, and validate them with the <strong>DNS Insight logs</strong>.</p>
+        <p><strong>Scenario:</strong> Safemarch aims to protect its users by blocking access to <strong>malicious domains</strong> and enforcing acceptable-use policies that prohibit access to <strong>gambling websites</strong>. As a Zscaler administrator, you will configure DNS security controls, enforce these policies, and validate them using the <strong>DNS Insight logs</strong>.</p>
         <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
-          <li><strong>Configure</strong> an <strong>App Profile</strong> so that all DNS traffic flows through the Zero Trust Exchange.</li>
-          <li><strong>Create and test</strong> a <strong>DNS Control Policy</strong> that blocks gambling sites while legitimate domains still resolve.</li>
-          <li><strong>Verify</strong> the <strong>DNS Control Policy enforcement</strong> using <strong>DNS Insight Logs</strong> to confirm that gambling-related DNS requests are being blocked.</li>
+          <li><strong>Configure an App Profile</strong> so that all DNS traffic flows through the Zero Trust Exchange.</li>
+          <li><strong>Create and test a DNS Control Policy</strong> that blocks gambling sites while legitimate domains still resolve.</li>
+          <li><strong>Verify</strong> DNS Control Policy enforcement in the DNS Insight logs, confirming that gambling-related DNS requests are blocked.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
@@ -139,59 +151,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab7">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · DNS AS A CONTROL POINT</span>
-        </div>
-        <p class="socratic-insight">Almost every connection starts with a DNS lookup. If you can see and control DNS, you can stop many threats before a single TCP packet is sent.</p>
-        <ul class="socratic-questions">
-          <li>Why does the guide add a wildcard <code>*</code> to <strong>Domain Inclusion</strong> in the App Profile before creating any DNS rule? What would a user be able to do without it?
-            <div class="answer-area" data-section="lab7-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · DNS AS A CONTROL POINT</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The wildcard tells ZCC to <strong>steer every DNS request</strong> through the Zero Trust Exchange, whichever resolver the client targets. Without it, a query sent straight to a public resolver such as <code>8.8.8.8</code> could leave the PC outside ZIA's DNS inspection. That's exactly the bypass the <code>nslookup www.gambling.com 8.8.8.8</code> test checks. Steering first, then policy, means there's no "side door".</div>
-                </div>
-              </div>
+              <p class="socratic-insight">Almost every connection starts with a DNS lookup. If you can see and control DNS, you can stop many threats before a single TCP packet is sent.</p>
+              <ul class="socratic-questions">
+                <li>Why does the guide add a wildcard <code>*</code> to <strong>Domain Inclusion</strong> in the App Profile before creating any DNS rule? What would a user be able to do without it?
+                  <div class="answer-area" data-section="lab7-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The wildcard tells ZCC to <strong>steer every DNS request</strong> through the Zero Trust Exchange, whichever resolver the client targets. Without it, a query sent straight to a public resolver such as <code>8.8.8.8</code> could leave the PC outside ZIA's DNS inspection. Look at the <code>nslookup</code> output in Task 7.2: the Corp Client PC's resolver <em>is</em> <code>dns.google</code> (8.8.8.8), yet the gambling lookup still times out, because ZCC steered it to Zscaler first. Steering first, then policy, means there's no "side door".</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The rule matches Gambling in both <strong>Request</strong> categories and <strong>Response</strong> categories. What's the difference, and why might checking only the request name miss something?
+                  <div class="answer-area" data-section="lab7-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The <strong>request</strong> category is based on the domain name being asked for. The <strong>response</strong> category is based on what the answer resolves to, such as a CNAME target or IP addresses. An innocent-looking or brand-new domain can CNAME or point to infrastructure that is categorized as gambling (or malicious). Checking both sides catches look-alike domains, redirectors and fast-changing hosts that the name alone wouldn't reveal.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>Lab 6 already blocks the Gambling URL category for web traffic. What extra value does blocking it at the <strong>DNS</strong> layer add?
+                  <div class="answer-area" data-section="lab7-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">URL filtering only acts on HTTP/HTTPS requests. A DNS block stops resolution <strong>for every protocol</strong>: native apps, non-web ports, malware beacons and DNS tunneling. It also acts <em>earlier</em>, before any connection, and gives a separate log source (DNS Insights) for spotting infected hosts querying bad domains. Defense in depth: the same policy enforced at two layers.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>The rule matches Gambling in both <strong>Request</strong> categories and <strong>Response</strong> categories. What's the difference, and why might checking only the request name miss something?
-            <div class="answer-area" data-section="lab7-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The <strong>request</strong> category is based on the domain name being asked for. The <strong>response</strong> category is based on what the answer resolves to, such as a CNAME target or IP addresses. An innocent-looking or brand-new domain can CNAME or point to infrastructure that is categorized as gambling (or malicious). Checking both sides catches look-alike domains, redirectors and fast-changing hosts that the name alone wouldn't reveal.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>Lab 6 already blocks the Gambling URL category for web traffic. What extra value does blocking it at the <strong>DNS</strong> layer add?
-            <div class="answer-area" data-section="lab7-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">URL filtering only acts on HTTP/HTTPS requests. A DNS block stops resolution <strong>for every protocol</strong>: native apps, non-web ports, malware beacons and DNS tunneling. It also acts <em>earlier</em>, before any connection, and gives a separate log source (DNS Insights) for spotting infected hosts querying bad domains. Defense in depth: the same policy enforced at two layers.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 7.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-7-1">
@@ -201,43 +213,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will update the <strong>App Profile</strong> to steer all DNS traffic through Zscaler for inspection, so no DNS request bypasses monitoring.</p>
+          <p>In this task, you will update the App Profile to steer <strong>all DNS traffic</strong> through Zscaler for inspection, so no DNS request bypasses monitoring.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Edit the HandsOnLab Windows App Profile</h4>
             <ol class="step-list">
-              <li>From the <strong>Experience Center</strong>, go to <strong>Infrastructure &gt; Connectors &gt; Client &gt; Platform Settings &gt; Windows</strong>.</li>
-              <li>Click the <strong>Edit</strong> icon on the <strong>HandsOnLab</strong> policy.</li>
+              <li>On the Experience Center home page, type <code>Windows</code> in the <strong>Search menu</strong> and select the result (<em>Infrastructure &gt; Client Connector &gt; App Profile &amp; Platform Settings</em>).</li>
+              <li>Click the <strong>Edit</strong> icon for the <strong>HandsOnLab</strong> policy.</li>
               <li>Under <strong>Traffic Steering</strong>, click the <strong>DNS</strong> tab.</li>
               <li>In the <strong>Domain Inclusion</strong> text box, enter the wildcard <code>*</code></li>
-              <li>Click <strong>Create “*”</strong> and <strong>Save</strong>.</li>
+              <li>Click <strong>Create “*”</strong>, then <strong>Save</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p098-a.png" alt="Infrastructure > Connectors with Client selected and Platform Settings > Windows highlighted">
-            <div class="screenshot-caption">Infrastructure → Connectors → Client → Platform Settings → <strong>Windows</strong>.</div>
+            <img src="screenshots/lab7-p095-a.png" alt="Windows App Profiles list with the HandsOnLab policy at rule 1 and its Edit icon highlighted">
+            <div class="screenshot-caption">App Profiles → Windows: click the <strong>Edit</strong> (pencil) icon on <strong>HandsOnLab</strong>, the policy you created in Lab 3.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p098-b.png" alt="Windows App Profiles list with the Edit icon on the HandsOnLab policy highlighted">
-            <div class="screenshot-caption">Edit the <strong>HandsOnLab</strong> policy you created in Lab 3.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab7-p099-a.png" alt="Edit Windows Policy Traffic Steering section with the DNS tab highlighted">
+            <img src="screenshots/lab7-p096-a.png" alt="Edit Windows Policy Traffic Steering section with the DNS tab highlighted">
             <div class="screenshot-caption">Traffic Steering → <strong>DNS</strong> tab.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p099-b.png" alt="Domain Inclusion field with * entered and the Create * option, and the Save button highlighted">
+            <img src="screenshots/lab7-p096-b.png" alt="Domain Inclusion field with * entered and the Create * option, and the Save button highlighted">
             <div class="screenshot-caption">Domain Inclusion: type <code>*</code>, choose <strong>Create “*”</strong>, then Save.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">2</span> Save and update the policy</h4>
+            <h4><span class="task-num">2</span> Update the policy on the client</h4>
             <ol class="step-list">
-              <li>In <strong>Zscaler Client Connector (ZCC)</strong> on the <strong>Corp Client PC</strong>, select <strong>More</strong> and click <strong>Update Policy</strong>.</li>
+              <li>Open <strong>Zscaler Client Connector</strong> on the Corp Client PC, select <strong>More</strong> and click <strong>Update Policy</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p100-a.png" alt="ZCC More page with the More icon and the Update Policy link highlighted, App Policy HandsOnLab">
+            <img src="screenshots/lab7-p097-a.png" alt="ZCC More page with the More icon and the Update Policy link highlighted, App Policy HandsOnLab">
             <div class="screenshot-caption">ZCC → More → <strong>Update Policy</strong> pulls the new DNS steering immediately.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -251,7 +259,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will create and test a DNS Control rule that blocks gambling domains while allowing legitimate traffic.</p>
+          <p>In this task, you will create and test a <strong>DNS Control</strong> rule that blocks gambling domains while allowing legitimate traffic.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Test DNS resolution before configuration</h4>
@@ -259,90 +267,77 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
               <li>Open a command prompt on the <strong>Corp Client PC</strong> and run: <code>nslookup www.gambling.com</code></li>
             </ol>
           </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab7-p098-a.png" alt="Command prompt showing nslookup www.gambling.com returning addresses">
+            <div class="screenshot-caption">Before the rule: <code>www.gambling.com</code> resolves to real addresses.</div>
+          </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> The DNS request resolves successfully because no policy has been configured yet.</p>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab7-p101-a.png" alt="Command prompt showing nslookup www.gambling.com returning addresses">
-            <div class="screenshot-caption">Before the rule: <code>www.gambling.com</code> resolves to real addresses.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Create a DNS Control Policy</h4>
             <ol class="step-list">
-              <li>From the <strong>Experience Center</strong>, go to <strong>Policies &gt; Firewall &gt; DNS Control</strong>.</li>
-              <li>Look at the existing predefined <strong>DNS Control Rules</strong>, which are based on best practice recommendations.</li>
-              <li>Click <strong>Add DNS Filtering Rule</strong>.</li>
+              <li>On the Experience Center home page, type <code>DNS Control</code> in the search bar and select the result (<em>Internet Access &gt; Policy</em>).</li>
+              <li>View the existing predefined DNS Control rules, which are based on best-practice recommendations.</li>
+              <li>Click <strong>Add Rule</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p102-a.png" alt="Policies menu with Firewall selected and DNS Control highlighted">
-            <div class="screenshot-caption">Policies → Firewall → <strong>DNS Control</strong>.</div>
+            <img src="screenshots/lab7-p099-a.png" alt="DNS Control page listing predefined rules: Office 365 One Click Rule (Allow), Critical risk DNS categories, Critical risk DNS tunnels, High risk DNS categories and High risk DNS tunnels (Block)">
+            <div class="screenshot-caption">The predefined rules already block <strong>critical- and high-risk DNS categories and tunnels</strong>. Gambling isn't a risk category, so it needs its own rule.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p102-b.png" alt="DNS Control page with the Add DNS Filtering Rule button highlighted">
-            <div class="screenshot-caption">Click <strong>Add DNS Filtering Rule</strong>.</div>
+            <img src="screenshots/lab7-p099-b.png" alt="DNS Control page with the Add Rule button highlighted">
+            <div class="screenshot-caption">Click <strong>Add Rule</strong> (top right).</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Define the rule attributes</h4>
             <ol class="step-list">
-              <li>Rule Order: <strong>1</strong></li>
+              <li>Under <strong>Actions</strong>, set <strong>Network Traffic</strong> to <strong>Block</strong>.</li>
               <li>Rule Name: <code>Block Gambling</code></li>
+              <li>Rule Order: <strong>1</strong></li>
               <li>Rule Status: <strong>Enabled</strong></li>
             </ol>
           </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab7-p103-a.png" alt="Add DNS Filtering Rule with Rule Order 1, Rule Name Block Gambling and Rule Status Enabled">
-            <div class="screenshot-caption">Order <strong>1</strong>, name <strong>Block Gambling</strong>, Enabled.</div>
-          </div>
 
           <div class="task-block">
-            <h4><span class="task-num">4</span> Define the DNS Application parameters</h4>
+            <h4><span class="task-num">4</span> Define the criteria</h4>
             <ol class="step-list">
-              <li>Click the <strong>DNS Application</strong> tab.</li>
-              <li>Under <strong>Request</strong> Categories, select <strong>Gambling</strong>. Click <strong>Done</strong>.</li>
-              <li>Under <strong>Response</strong> Categories, select <strong>Gambling</strong>. Click <strong>Done</strong>.</li>
-              <li>Scroll down. Under <strong>Action</strong>, set <strong>Network Traffic</strong> to <strong>Block</strong>.</li>
-              <li>Click <strong>Save</strong> and <strong>Activate</strong> the changes with the Activation icon (cloud with arrow) in the top-right corner.</li>
+              <li>Click <strong>Add Criteria</strong> and select the following options:
+                <ul class="sub-steps">
+                  <li>Under <strong>Request Categories</strong>, select <strong>Gambling</strong>. Click <strong>Done</strong>.</li>
+                  <li>Under <strong>Response Categories</strong>, select <strong>Gambling</strong>. Click <strong>Done</strong>.</li>
+                </ul>
+              </li>
+              <li>Click <strong>Save</strong>, then <strong>Activate</strong> the changes from the Activation icon (cloud with arrow) in the top-right corner.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p103-b.png" alt="DNS Application tab with Request Categories and Response Categories both set to Gambling">
-            <div class="screenshot-caption">DNS Application tab: <strong>Request</strong> and <strong>Response</strong> Categories = Gambling.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab7-p104-a.png" alt="DNS rule Action section with Network Traffic set to Block and Save highlighted">
-            <div class="screenshot-caption">Action → Network Traffic: <strong>Block</strong>, then Save.</div>
-          </div>
-          <div class="screenshot-embed menu">
-            <img src="screenshots/lab7-p104-b.png" alt="Pending Activation panel with Activate highlighted">
-            <div class="screenshot-caption"><strong>Activate</strong> to push the DNS rule live.</div>
+            <img src="screenshots/lab7-p100-a.png" alt="DNS Control Add Rule page with the DNS Application criteria Request Categories Gambling and Response Categories Gambling, Network Traffic Block, Rule Name Block Gambling, Rule Order 1 and Save highlighted">
+            <div class="screenshot-caption">Criteria → DNS Application: <strong>Request Categories</strong> and <strong>Response Categories</strong> = Gambling. Actions: Network Traffic <strong>Block</strong>. Name <strong>Block Gambling</strong>, order 1.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">5</span> Test the new DNS settings</h4>
             <ol class="step-list">
-              <li>In the Command Prompt window, test: <code>nslookup www.google.com</code>
-                <div class="callout callout-note"><p><strong>Note:</strong> Expected result: the DNS request resolves successfully.</p></div>
-              </li>
-              <li>Type: <code>ipconfig /flushdns</code></li>
-              <li>Type: <code>nslookup www.gambling.com 8.8.8.8</code>
-                <div class="callout callout-note"><p><strong>Note:</strong> Expected result: the DNS request times out, which confirms that gambling domains are blocked.</p></div>
-              </li>
+              <li>In the Command Prompt window, run: <code>nslookup www.google.com</code>. Expected result: the request <strong>resolves</strong> successfully.</li>
+              <li>Run: <code>ipconfig /flushdns</code></li>
+              <li>Run: <code>nslookup www.gambling.com</code>. Expected result: the request <strong>times out</strong>, confirming that gambling domains are blocked.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p105-a.png" alt="Command prompt showing nslookup www.google.com resolving successfully">
+            <img src="screenshots/lab7-p101-a.png" alt="Command prompt showing nslookup www.google.com resolving successfully">
             <div class="screenshot-caption">Legitimate domains such as <code>www.google.com</code> still resolve.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p105-b.png" alt="Command prompt showing ipconfig /flushdns success message">
+            <img src="screenshots/lab7-p102-a.png" alt="Command prompt showing ipconfig /flushdns success message">
             <div class="screenshot-caption">Flush the local DNS cache so the next lookup can't use a cached answer.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p106-a.png" alt="Command prompt showing nslookup www.gambling.com 8.8.8.8 with DNS request timed out messages">
-            <div class="screenshot-caption"><code>nslookup www.gambling.com 8.8.8.8</code> → <strong>timed out</strong>, even when you point at Google's public resolver.</div>
+            <img src="screenshots/lab7-p102-b.png" alt="Command prompt showing nslookup www.gambling.com against server dns.google 8.8.8.8 with DNS request timed out and Request to dns.google timed-out">
+            <div class="screenshot-caption"><code>www.gambling.com</code> now <strong>times out</strong>, even though the PC asks <code>dns.google</code> (8.8.8.8): ZCC steers the query to Zscaler, which blocks it.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-7-2 -->
@@ -355,12 +350,12 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will review the <strong>DNS Insight Logs</strong> to confirm that the <strong>DNS Control Policy</strong> is applied and blocking gambling domains as expected.</p>
+          <p>In this task, you will confirm that the DNS Control Policy is applied and blocking gambling domains by reviewing the <strong>DNS Insight logs</strong>.</p>
 
           <div class="task-block">
-            <h4><span class="task-num">1</span> Access the DNS Insight logs</h4>
+            <h4><span class="task-num">1</span> Open DNS Insights</h4>
             <ol class="step-list">
-              <li>In the <strong>Experience Center</strong> landing page, go to <strong>Logs &gt; Internet &amp; SaaS &gt; DNS Insights &gt; Logs</strong>.</li>
+              <li>On the Experience Center home page, type <code>DNS Insights</code> in the search bar and select the result (<em>Data Explorer &gt; Internet &amp; SaaS</em>).</li>
             </ol>
           </div>
 
@@ -368,27 +363,27 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             <h4><span class="task-num">2</span> Configure the log settings</h4>
             <ol class="step-list">
               <li>Set the <strong>Timeframe</strong> to <strong>Current Day</strong>.</li>
-              <li>Click <strong>Add Filter</strong> and add the filter: <strong>Rule Name</strong> = <code>Block Gambling</code></li>
+              <li>Click <strong>Add Filter</strong> and add the filter <strong>Rule Name</strong>: <code>Block Gambling</code></li>
               <li>Click <strong>Run Query</strong>.</li>
             </ol>
           </div>
-          <div class="callout callout-note">
-            <p><strong>Note:</strong> Allow about 15 minutes for logs to become available. You can move on to the next steps and come back to the log data once it's populated.</p>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab7-p104-a.png" alt="Data Explorer DNS Insights Logs tab with Timeframe Current Day, Rule Name filter Block Gambling, Display selected and Run Query highlighted">
+            <div class="screenshot-caption">DNS Insights → <strong>Logs</strong>: Timeframe <strong>Current Day</strong>, filter <strong>Rule Name = Block Gambling</strong>, then <strong>Run Query</strong>.</div>
           </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab7-p108-a.png" alt="DNS Insights Logs filter panel with Timeframe Current Day, Rule Name Block Gambling and Run Query highlighted">
-            <div class="screenshot-caption">DNS Insights → Logs: Timeframe <strong>Current Day</strong>, filter Rule Name = <strong>Block Gambling</strong>, Run Query.</div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Allow about <strong>15 minutes</strong> for logs to become available. You can continue with the next steps and come back to the log data once it's populated.</p>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Verify the Block Gambling activity</h4>
             <ol class="step-list">
-              <li>Confirm that DNS requests for gambling-related domains show hits on the <strong>Block Gambling</strong> DNS Control rule and that the action shows <strong>blocking</strong>.</li>
+              <li>Confirm that DNS requests for gambling-related domains show hits on the <strong>Block Gambling</strong> DNS Control rule and that the action shows blocking behavior.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab7-p108-b.png" alt="DNS Insights log results showing www.gambling.com requests in the Gambling category with action Block">
-            <div class="screenshot-caption">Each <code>www.gambling.com</code> lookup is logged against <strong>Block Gambling</strong> with a Block action.</div>
+            <img src="screenshots/lab7-p104-b.png" alt="DNS Insights Logs showing requests from the student user for www.gambling.com with request category Gambling and request action Block">
+            <div class="screenshot-caption">Each <code>www.gambling.com</code> lookup is logged for the student user with category <strong>Gambling</strong> and action <strong>Block</strong>.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-7-3 -->
@@ -397,7 +392,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Steer, then control.</strong> App Profile → DNS → Domain Inclusion <code>*</code> sends every query through Zscaler (then ZCC Update Policy). DNS Control rule <strong>Block Gambling</strong> matches <em>request</em> and <em>response</em> categories. Proof: <code>google.com</code> resolves, but <code>gambling.com</code> times out even via <code>8.8.8.8</code>, and DNS Insights shows the hits (allow ~15 min).</div>
+          <div class="mental-note-block-text"><strong>Steer first, then police</strong>: Domain Inclusion <code>*</code> in the App Profile sends every lookup through Zscaler, whichever resolver the PC uses. <strong>DNS Control</strong> (<em>Internet Access &gt; Policy</em>) → <code>Block Gambling</code> on Request <em>and</em> Response categories. Test with <code>ipconfig /flushdns</code> then <code>nslookup</code>. Verify in <strong>DNS Insights</strong> (<em>Data Explorer</em>), and allow ~15 minutes for logs.</div>
         </div>
       </div>
 
@@ -425,6 +420,26 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab7a" onchange="toggleDone(this)"><label for="chk-lab7a">Task 7.1: DNS steering (*) added</label></li>
@@ -432,17 +447,41 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab7c" onchange="toggleDone(this)"><label for="chk-lab7c">Task 7.3: DNS Insights reviewed</label></li>
       </ul>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.1 · DNS through ZCC</div>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/configuring-zscaler-client-connector-app-profiles" target="_blank" rel="noopener noreferrer" title="Where Domain Inclusion for DNS requests is set in the Windows app profile">Configuring App Profiles (DNS steering)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/handling-dns-resolution-various-traffic-forwarding-methods" target="_blank" rel="noopener noreferrer" title="How DNS requests are resolved for each forwarding method, including Domain Inclusions">Handling DNS Resolution</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="The ZCC More page, where Update Policy pulls the new DNS settings">Update Policy in ZCC</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.2 · DNS Control policy</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-dns-control" target="_blank" rel="noopener noreferrer" title="How DNS Control rules inspect and act on DNS requests and responses">About DNS Control</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-dns-control-policy" target="_blank" rel="noopener noreferrer" title="Adding a DNS Control rule: criteria such as URL categories, and the Block action">Configuring the DNS Control Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/best-practices-dns-control-rules" target="_blank" rel="noopener noreferrer" title="Rule ordering and design tips for DNS Control">Best Practices for DNS Control Rules</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.3 · DNS Insights</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/dns-insights-logs-filters" target="_blank" rel="noopener noreferrer" title="The filters you set to find the Block Gambling activity">DNS Insights Logs: Filters</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/dns-insights-logs-columns" target="_blank" rel="noopener noreferrer" title="What each column in the DNS Insights logs means">DNS Insights Logs: Columns</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-insights-logs" target="_blank" rel="noopener noreferrer" title="How the Insights logs views work across Web, Firewall and DNS">About Insights Logs</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
 
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -474,7 +513,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -513,8 +552,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -530,15 +569,15 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="page-nav-label">← PREVIOUS</span>
     <span class="page-nav-title">Lab 6: Content Filtering</span>
   </a>
-  <div class="page-nav-message">DNS is where the battle often starts. You&rsquo;re defending it.</div>
+  <div class="page-nav-message">Stop it at the lookup and it never becomes a connection.</div>
   <a class="page-nav-btn page-nav-next" href="lab8.html">
     <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 8: DLP</span>
+    <span class="page-nav-title">Lab 8: Unified DLP</span>
   </a>
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 7: DNS Security</span>
 </footer>
 
@@ -629,8 +668,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -956,6 +995,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

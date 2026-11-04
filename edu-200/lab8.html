@@ -6,7 +6,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lab 8: Enforce Policy with Unified DLP — EDU-200</title>
+<title>Lab 8: Enforce Policy with Unified DLP across Multi-Channel — EDU-200</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -43,9 +55,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 8 · EDU-200</span>
     <span class="header-dot"></span>
   </div>
-  <h1>Enforce Policy with Unified DLP</h1>
+  <h1>Enforce Policy with Unified DLP across Multi-Channel</h1>
   <div class="motivation-banner">
-    <p>Build a Sensitive Data DLP engine on the Credit Cards dictionary, block it with a high-severity DLP rule, and watch an upload of credit-card data get stopped.</p>
+    <p>Build a Sensitive Data DLP engine on a predefined dictionary, enforce it with a high-severity rule, and watch a test upload get stopped mid-flight.</p>
   </div>
 </header>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,11 +134,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 8</div>
-        <p><strong>Scenario:</strong> In this lab, you will configure and test policies that protect sensitive data in motion and at rest, ensuring compliance with privacy regulations such as <strong>PCI-DSS</strong> (Payment Card Industry Data Security Standard). Using Zscaler's <strong>Unified DLP</strong> policies, you will secure multi-channel data by analyzing endpoint and SaaS application security logs.</p>
-        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <p><strong>Scenario:</strong> In this lab you will configure and test policies that protect <strong>sensitive data in motion and at rest</strong>, keeping you compliant with privacy regulations such as <strong>PCI-DSS</strong> (Payment Card Industry Data Security Standard). Using Zscaler's <strong>Unified DLP</strong> policies, you will secure multi-channel data by analyzing endpoint and SaaS application security logs.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
-          <li><strong>Verify and enable SSL/TLS inspection</strong> for visibility into and control of data traffic.</li>
-          <li><strong>Configure DLP Dictionaries</strong>, <strong>DLP Engines</strong> and <strong>DLP Rules</strong> to detect and block sensitive data, such as credit card information.</li>
+          <li><strong>Verify and enable</strong> SSL/TLS inspection for visibility and control of data traffic.</li>
+          <li><strong>Configure</strong> DLP Dictionaries, DLP Engines and DLP Rules to detect and block sensitive data, such as payment card information.</li>
           <li><strong>Test policy enforcement</strong> to confirm that DLP rules block sensitive information in data transfers.</li>
         </ul>
         <div class="lab-meta">
@@ -139,59 +151,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab8">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · DATA LOSS PREVENTION</span>
-        </div>
-        <p class="socratic-insight">DLP has three layers: a <em>dictionary</em> recognizes a pattern, an <em>engine</em> combines dictionaries into a detection, and a <em>rule</em> decides what happens when the engine fires.</p>
-        <ul class="socratic-questions">
-          <li>Step 1 of this lab just checks that <strong>SSL Inspect All</strong> is still enabled. Why can't DLP work without it on a site like <code>dlptoolbox.com</code>?
-            <div class="answer-area" data-section="lab8-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · DATA LOSS PREVENTION</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The upload goes over <strong>HTTPS</strong>. Without decryption, ZIA only sees the encrypted TLS stream: the domain from SNI and the byte counts, never the file contents. The DLP engine needs the <strong>plaintext body</strong> to find credit-card patterns. So SSL inspection (Lab 5) is the prerequisite that makes content-aware controls like DLP, sandboxing and file-type control possible at all.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">DLP has three layers: a <em>dictionary</em> recognizes a pattern, an <em>engine</em> combines dictionaries into a detection, and a <em>rule</em> decides what happens when the engine fires.</p>
+              <ul class="socratic-questions">
+                <li>Step 1 of this lab just checks that <strong>SSL Inspect All</strong> is still enabled. Why can't DLP work without it on a site like <code>dlptoolbox.com</code>?
+                  <div class="answer-area" data-section="lab8-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The upload goes over <strong>HTTPS</strong>. Without decryption, ZIA only sees the encrypted TLS stream: the domain from SNI and the byte counts, never the file contents. The DLP engine needs the <strong>plaintext body</strong> to find credit-card patterns. So SSL inspection (Lab 5) is the prerequisite that makes content-aware controls like DLP, sandboxing and file-type control possible at all.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>Why separate the <strong>DLP Engine</strong> ("what sensitive data looks like") from the <strong>DLP Rule</strong> ("what to do about it")? Give an example where you'd reuse one engine in several rules.
+                  <div class="answer-area" data-section="lab8-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Detection logic changes slowly and should be defined once. Enforcement varies by context. For example, the same <strong>Sensitive Data</strong> engine could <strong>Block</strong> uploads to unsanctioned file-sharing sites for everyone, only <strong>Allow + notify the auditor</strong> for the Finance group sending to the corporate SharePoint, and also feed an endpoint or SaaS (data-at-rest) policy. If you tune the engine once, every rule improves. That's the "unified" in Unified DLP.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The engine's violation threshold is <strong>1</strong>, so a single card number triggers it. What are the risks of such a low threshold, and how could you reduce false positives without missing real leaks?
+                  <div class="answer-area" data-section="lab8-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">One match can come from a test number, a receipt or a random 16-digit string, so legitimate work gets blocked and users lose trust in the tool. Mitigations: raise the threshold (e.g. 5+ cards suggests a bulk export), raise the dictionary's <strong>confidence score</strong> (the Luhn check plus nearby keywords), combine dictionaries with AND (card + name/expiry), exclude known BINs, or start with <strong>Allow + auditor notification</strong> to measure before you block.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>Why separate the <strong>DLP Engine</strong> ("what sensitive data looks like") from the <strong>DLP Rule</strong> ("what to do about it")? Give an example where you'd reuse one engine in several rules.
-            <div class="answer-area" data-section="lab8-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Detection logic changes slowly and should be defined once. Enforcement varies by context. For example, the same <strong>Sensitive Data</strong> engine could <strong>Block</strong> uploads to unsanctioned file-sharing sites for everyone, only <strong>Allow + notify the auditor</strong> for the Finance group sending to the corporate SharePoint, and also feed an endpoint or SaaS (data-at-rest) policy. If you tune the engine once, every rule improves. That's the "unified" in Unified DLP.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The engine's violation threshold is <strong>1</strong>, so a single card number triggers it. What are the risks of such a low threshold, and how could you reduce false positives without missing real leaks?
-            <div class="answer-area" data-section="lab8-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">One match can come from a test number, a receipt or a random 16-digit string, so legitimate work gets blocked and users lose trust in the tool. Mitigations: raise the threshold (e.g. 5+ cards suggests a bulk export), raise the dictionary's <strong>confidence score</strong> (the Luhn check plus nearby keywords), combine dictionaries with AND (card + name/expiry), exclude known BINs, or start with <strong>Allow + auditor notification</strong> to measure before you block.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 8.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-8-1">
@@ -201,41 +213,41 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will create and test <strong>PII (Personally Identifiable Information)</strong> policies that safeguard data in motion, such as credit card numbers embedded in unsearchable PDFs or other documents.</p>
+          <p>In this task, you will create and test <strong>PII (Personally Identifiable Information)</strong> policies that safeguard data in motion, such as payment card data embedded in unsearchable PDFs or other documents.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Verify SSL Inspection</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Common Configuration &gt; SSL/TLS Inspection &gt; SSL/TLS Inspection Policy</strong>.
+              <li>On the Experience Center home page, type <code>SSL/TLS Inspection</code> in the <strong>Search menu</strong> and select the result (<em>Internet Access &gt; Policy</em>).
                 <ul class="sub-steps">
-                  <li>Search for <strong>SSL Inspect All</strong>, which you created earlier.</li>
-                  <li>Verify that its status is set to <strong>Enabled</strong>.</li>
+                  <li>Find <strong>SSL Inspect All</strong>, which you created in Lab 5.</li>
+                  <li>Verify that its status is <strong>Enabled</strong>.</li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p110-a.png" alt="SSL Inspection Policy list showing the SSL Inspect All rule with action Inspect">
-            <div class="screenshot-caption">SSL Inspection Policy: <strong>SSL Inspect All</strong> from Lab 5 is still there with action <strong>Inspect</strong>.</div>
+            <img src="screenshots/lab8-p106-a.png" alt="SSL/TLS Inspection Policy list with the SSL Inspect All rule and its Inspect action highlighted, below an Office 365 One Click Do Not Inspect rule">
+            <div class="screenshot-caption"><strong>SSL Inspect All</strong> is listed with action <strong>Inspect</strong>. Bypass rules such as Office 365 One Click sit above it.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Create a DLP Engine</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Data Protection &gt; Common Resources &gt; Dictionaries and Engines</strong>.</li>
-              <li>In the <strong>DLP Dictionaries</strong> tab:
+              <li>On the Experience Center home page, type <code>Dictionaries &amp; Engines</code> in the <strong>Search menu</strong> and select the result (<em>Data Security &gt; Common Resources</em>).</li>
+              <li>On the <strong>DLP Dictionaries</strong> tab:
                 <ul class="sub-steps">
                   <li>Search for the <strong>Credit Cards</strong> dictionary.</li>
                   <li>Click the <strong>Edit</strong> button to explore its configuration.</li>
                 </ul>
               </li>
-              <li>In <strong>DLP Dictionaries &amp; Engines</strong>, go to the <strong>DLP Engine</strong> tab.</li>
-              <li>Click <strong>Add DLP Engines</strong> and configure the engine as follows:
+              <li>In <strong>DLP Dictionaries &amp; Engines</strong>, go to the <strong>DLP Engines</strong> tab.</li>
+              <li>Click <strong>Add DLP Engine</strong> and configure the engine:
                 <ul class="sub-steps">
                   <li>Name: <code>Sensitive Data</code></li>
                   <li>Expression: <strong>All</strong></li>
-                  <li>Select a Predefined Dictionary: <strong>Credit cards</strong></li>
-                  <li>Violations Thresholds: <strong>1</strong> (empty field)</li>
+                  <li>Select a Predefined Dictionary: <strong>Credit Cards</strong></li>
+                  <li>Violation Threshold: <code>1</code> (empty field)</li>
                   <li>Description: <code>Credit Card Number and Sensitive Data Violation</code></li>
                 </ul>
               </li>
@@ -243,80 +255,80 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed dialog">
-            <img src="screenshots/lab8-p111-a.png" alt="Edit DLP Dictionary dialog for the predefined Credit Cards dictionary with confidence score threshold">
+            <img src="screenshots/lab8-p107-a.png" alt="Edit DLP Dictionary dialog for the predefined Credit Cards dictionary with confidence score threshold">
             <div class="screenshot-caption">The predefined <strong>Credit Cards</strong> dictionary: note the confidence score threshold and the BIN include/exclude options.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p111-b.png" alt="DLP Dictionaries and Engines page with the DLP Engines tab and Add DLP Engine button highlighted">
-            <div class="screenshot-caption"><strong>DLP Engines</strong> tab → <strong>+ Add DLP Engine</strong>.</div>
+            <img src="screenshots/lab8-p108-a.png" alt="DLP Dictionaries and Engines page with the DLP Engines tab selected and the Add DLP Engine button highlighted, listing predefined engines such as GLBA, HIPAA and PCI">
+            <div class="screenshot-caption"><strong>DLP Engines</strong> tab → <strong>+ Add DLP Engine</strong>. Predefined engines (GLBA, HIPAA, PCI…) show the same dictionary + threshold pattern.</div>
           </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab8-p112-a.png" alt="DLP Engine form with name Sensitive Data, expression ALL with Credit Cards dictionary, and description, Save highlighted">
-            <div class="screenshot-caption">Engine <strong>Sensitive Data</strong>: ALL → <strong>Credit Cards</strong> (threshold 1). The preview reads <em>(Credit Cards &gt; 0)</em>.</div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab8-p109-a.png" alt="Add DLP Engine dialog with Name Sensitive Data, channels Endpoint DLP, Inline Web, SaaS Security and Outbound Email DLP checked, expression ALL with the Credit Cards dictionary greater than 1, and the description filled in, Save highlighted">
+            <div class="screenshot-caption">Engine <strong>Sensitive Data</strong>: expression <strong>ALL</strong> → <em>Credit Cards &gt; 1</em>. The <strong>Channels</strong> (Endpoint, Inline Web, SaaS, Email) are what make it <em>unified</em>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Create a DLP Rule</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Data Protection &gt; Policy &gt; Data Loss Prevention</strong>.</li>
-              <li>Click <strong>+Add DLP Rule</strong> and configure the following:
+              <li>In the <strong>Search menu</strong>, type <code>Data Loss Prevention</code> and select the result.</li>
+              <li>Click <strong>+ Add DLP Rule</strong> and configure:
                 <ul class="sub-steps">
                   <li>Rule Order: <strong>1</strong></li>
                   <li>Severity: <strong>High</strong></li>
                   <li>Rule Name: <code>Data Violation Rule</code></li>
                   <li>Rule Status: <strong>Enabled</strong></li>
-                  <li>Content Matching: <strong>Select DLP Engine</strong></li>
+                  <li>Content Matching: <strong>Select DLP Engines</strong></li>
                   <li>DLP Engines: <strong>Sensitive Data</strong></li>
-                  <li>Leave all other options in <strong>Criteria</strong> and <strong>DLP Incident Receiver</strong> at their defaults.</li>
-                  <li>Action, Data Traffic: <strong>Block</strong></li>
+                  <li>Leave all other options in Criteria and DLP Incident Receiver at their defaults.</li>
+                  <li>Action → Data Traffic: <strong>Block</strong></li>
                   <li>End User Notification: <strong>Show</strong></li>
                 </ul>
               </li>
-              <li>Click <strong>Save</strong> and <strong>Activate</strong> the changes with the Activation icon (cloud with arrow) in the top-right corner.</li>
+              <li>Click <strong>Save</strong>, then <strong>Activate</strong> the changes from the Activation icon (cloud with arrow) in the top-right corner.</li>
             </ol>
           </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab8-p113-a.png" alt="Add DLP Rule form with Rule Order 1, Severity High, Rule Name Data Violation Rule, Enabled, Content Matching Select DLP Engines and DLP Engine Sensitive Data">
-            <div class="screenshot-caption">Rule order <strong>1</strong>, Severity <strong>High</strong>, <strong>Data Violation Rule</strong>, Content Matching → DLP Engine <strong>Sensitive Data</strong>.</div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab8-p110-a.png" alt="Add DLP Rule dialog with Rule Order 1, Severity High, Rule Name Data Violation Rule, Rule Status Enabled, Content Matching Select DLP Engines and DLP Engines Sensitive Data highlighted">
+            <div class="screenshot-caption">Add DLP Rule: order 1, severity <strong>High</strong>, <strong>Data Violation Rule</strong>, Content Matching = <strong>Select DLP Engines</strong> → <strong>Sensitive Data</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p114-a.png" alt="DLP rule Incident Receiver, Action Data Traffic Block and End User Notification Show">
+            <img src="screenshots/lab8-p111-a.png" alt="DLP rule Incident Receiver, Action Data Traffic Block and End User Notification Show">
             <div class="screenshot-caption">Action → Data Traffic: <strong>Block</strong>, End User Notification: <strong>Show</strong>.</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> You can optionally add a custom notification message: select the <strong>Notification Message</strong> drop-down, click the <strong>+</strong> (plus) icon, name it <code>CreditCard Block</code>, and customize the Allow and Block messages as needed.</p>
+            <p><strong>Note:</strong> You can optionally add a custom notification message: open the <strong>Notification Message</strong> drop-down, click the <strong>+</strong> (plus) icon, name it <code>CreditCard Block</code>, and customize the Allow and Block messages as needed.</p>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p115-a.png" alt="Add Custom Message dialog with additional information checkboxes and an Allow message preview">
+            <img src="screenshots/lab8-p112-a.png" alt="Add Custom Message dialog with additional information checkboxes and an Allow message preview">
             <div class="screenshot-caption">Optional custom notification: choose which details (file name, rule name, URL category…) the user sees.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p115-b.png" alt="Data Loss Prevention policy list showing rule 1 Data Violation Rule with DLP engine Sensitive Data and action Block">
-            <div class="screenshot-caption">The DLP policy now lists <strong>Data Violation Rule</strong> → Sensitive Data → <strong>Block</strong>.</div>
+            <img src="screenshots/lab8-p112-b.png" alt="Data Loss Prevention policy page showing Data Violation Rule at order 1 with DLP engine Sensitive Data and action Block">
+            <div class="screenshot-caption">The Data Loss Prevention policy now lists <strong>Data Violation Rule</strong> → engine <em>Sensitive Data</em> → <strong>Block</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">4</span> Test the policy as a user</h4>
             <ol class="step-list">
               <li>Verify ZIA activation: in <strong>Zscaler Client Connector</strong>, make sure the status for <strong>Internet Security</strong> is enabled.</li>
-              <li>Test blocking of sensitive data:
+              <li>Test blocking sensitive data:
                 <ul class="sub-steps">
                   <li>Open a browser window on the <strong>Corp Client PC</strong>.</li>
                   <li>Go to: <code>https://dlptoolbox.com/</code></li>
                   <li>From the left navigation pane, select <strong>File Audit</strong>.</li>
-                  <li>Click <strong>Choose file</strong> and locate the file <strong>“Sensitive Data.txt”</strong> in the <strong>DLP Test Files</strong> folder on the <strong>Desktop</strong>.</li>
+                  <li>Click <strong>Choose file</strong> and pick the file <strong>Sensitive Data.txt</strong> in the <strong>DLP Test Files</strong> folder on the Desktop.</li>
                   <li>Click <strong>Upload</strong>.</li>
                 </ul>
               </li>
-              <li>Verify the blocking behavior: confirm that a <strong>Block Notification</strong> appears during the upload attempt, which shows the DLP rule stopped the sensitive data from being sent.</li>
+              <li>Verify the blocking behavior: confirm that a <strong>Block Notification</strong> appears during the upload, showing that the DLP rule has stopped the sensitive data from being sent.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p117-a.png" alt="dlptoolbox.com DLP File Testing page with File Audit selected and the Choose File and Upload controls highlighted">
+            <img src="screenshots/lab8-p113-a.png" alt="dlptoolbox.com DLP File Testing page with File Audit selected and the Choose File and Upload controls highlighted">
             <div class="screenshot-caption">dlptoolbox.com → <strong>File Audit</strong> → choose <em>Sensitive Data.txt</em> → Upload.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab8-p117-b.png" alt="Zscaler block notification reading Sorry, posting content to this website is not allowed, Violates Compliance Category Sensitive Data">
+            <img src="screenshots/lab8-p114-a.png" alt="Zscaler block notification reading Sorry, posting content to this website is not allowed, Violates Compliance Category Sensitive Data">
             <div class="screenshot-caption">Blocked: <strong>"posting content to this website is not allowed"</strong>, violates compliance category <strong>Sensitive Data</strong>.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -326,7 +338,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>No SSL inspection, no DLP.</strong> <strong>Dictionary</strong> (Credit Cards) → <strong>Engine</strong> (<code>Sensitive Data</code>, threshold 1) → <strong>Rule</strong> (<code>Data Violation Rule</code>, High, Block, notify user). Test with <em>Sensitive Data.txt</em> on <code>dlptoolbox.com</code> → File Audit, and expect the block notification.</div>
+          <div class="mental-note-block-text"><strong>Dictionary</strong> (Credit Cards) → <strong>Engine</strong> (<code>Sensitive Data</code>, under <em>Data Security &gt; Common Resources</em>) → <strong>Rule</strong> (<code>Data Violation Rule</code>, High, Block + notify). No <strong>SSL inspection</strong>, no DLP: the upload is HTTPS. One engine can serve web, endpoint, SaaS and email channels.</div>
         </div>
       </div>
 
@@ -354,6 +366,26 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab8a" onchange="toggleDone(this)"><label for="chk-lab8a">SSL Inspect All verified</label></li>
@@ -361,17 +393,39 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab8c" onchange="toggleDone(this)"><label for="chk-lab8c">Upload blocked on dlptoolbox.com</label></li>
       </ul>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 8.1 · SSL inspection first</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-ssltls-inspection-policy" target="_blank" rel="noopener noreferrer" title="Why content inspection needs the SSL Inspect All rule from Lab 5">Configuring SSL/TLS Inspection Policy</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 8.1 · Dictionaries &amp; engines</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-dlp-dictionaries" target="_blank" rel="noopener noreferrer" title="What dictionaries detect and how they are used by engines">About DLP Dictionaries</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/understanding-predefined-dlp-dictionaries" target="_blank" rel="noopener noreferrer" title="The predefined dictionaries you explore in this task">Understanding Predefined DLP Dictionaries</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-dlp-engines" target="_blank" rel="noopener noreferrer" title="How an engine combines dictionaries with an expression and threshold">About DLP Engines</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/understanding-dlp-engines" target="_blank" rel="noopener noreferrer" title="Predefined and custom engines, and how expressions are evaluated">Understanding DLP Engines</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 8.1 · DLP rule</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-data-loss-prevention" target="_blank" rel="noopener noreferrer" title="How DLP policy rules use engines to monitor or block data in motion">About Data Loss Prevention</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-dlp-policy-rules-content-inspection" target="_blank" rel="noopener noreferrer" title="Adding a rule with content inspection: severity, engines, action and user notification">Configuring DLP Policy Rules</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
 
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -403,7 +457,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -442,8 +496,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -467,7 +521,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 8: Unified DLP</span>
 </footer>
 
@@ -558,8 +612,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -885,6 +939,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

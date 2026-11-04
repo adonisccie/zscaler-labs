@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -43,9 +55,9 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="eyebrow-chip">Lab 3 · EDU-200</span>
     <span class="header-dot"></span>
   </div>
-  <h1>ZCC Traffic Forwarding</h1>
+  <h1>Forward Traffic with the Zscaler Client Connector</h1>
   <div class="motivation-banner">
-    <p>Build a HandsOnLab Forwarding Profile (Packet Filter driver, Z-Tunnel 2.0) and a Windows App Profile, then sign in to ZCC and confirm Private Access, Internet Security and Digital Experience are all ON.</p>
+    <p>Tell Client Connector how to send every packet, not just web traffic, to Zscaler, then prove ZPA, ZIA and ZDX are all switched on for the Corp Client PC.</p>
   </div>
 </header>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,13 +134,13 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 3</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, your next goal is to configure the <strong>Zscaler Client Connector (ZCC)</strong> to securely forward all user traffic to Zscaler for inspection and protection, whatever the protocol. This enables firewall functionality and secure internet access, and keeps users covered on any platform, both on and off trusted networks.</p>
-        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab you will:</p>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, your goal is to configure the <strong>Zscaler Client Connector (ZCC)</strong> to securely forward <strong>all user traffic, regardless of protocol</strong>, to Zscaler for inspection and protection. This enables firewall functionality and secure Internet access, and keeps users protected across platforms both on and off trusted networks.</p>
+        <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
           <li><strong>Configure forwarding options</strong> to send all user traffic securely to Zscaler.</li>
-          <li><strong>Set up forwarding profiles</strong> and platform settings for Windows devices.</li>
-          <li><strong>Confirm</strong> that features such as <strong>Private Access</strong>, <strong>Internet Security</strong> and <strong>Digital Experience</strong> are enabled and working.</li>
-          <li><strong>Confirm the Corp Client PC traffic is forwarded</strong> to Zscaler and verify entitlements and settings.</li>
+          <li><strong>Set up</strong> forwarding profiles and platform settings for Windows devices.</li>
+          <li><strong>Confirm</strong> that Private Access, Internet Security and Digital Experience are enabled and working.</li>
+          <li><strong>Confirm</strong> that the Corp Client PC's traffic is forwarded to Zscaler, and verify entitlements and settings.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~20 minutes</div>
@@ -140,59 +152,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab3">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · FORWARDING PROFILES</span>
-        </div>
-        <p class="socratic-insight">A forwarding profile answers one question for every network the laptop might be on: <em>how</em> should traffic get to Zscaler, if at all? The app profile then decides <em>who</em> gets that forwarding profile.</p>
-        <ul class="socratic-questions">
-          <li>The guide insists on <strong>Z-Tunnel 2.0</strong> instead of Z-Tunnel 1.0. What traffic would a 1.0 tunnel miss, and which later lab would break because of it?
-            <div class="answer-area" data-section="lab3-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · FORWARDING PROFILES</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Z-Tunnel 1.0 is essentially a web (HTTP/HTTPS) tunnel. Z-Tunnel 2.0 captures traffic at the network layer, so it carries <strong>all ports and protocols</strong>, including SSH, ICMP, DNS and non-web apps. Without it, the Cloud Firewall never sees non-web flows, so <strong>Lab 4</strong> (allowing SSH/ICMP, blocking WhatsApp) and the DNS controls in <strong>Lab 7</strong> would have nothing to act on. That traffic would leave the PC directly and bypass policy.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">A forwarding profile answers one question for every network the laptop might be on: <em>how</em> should traffic get to Zscaler, if at all? The app profile then decides <em>who</em> gets that forwarding profile.</p>
+              <ul class="socratic-questions">
+                <li>The guide insists on <strong>Z-Tunnel 2.0</strong> instead of Z-Tunnel 1.0. What traffic would a 1.0 tunnel miss, and which later lab would break because of it?
+                  <div class="answer-area" data-section="lab3-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Z-Tunnel 1.0 is essentially a web (HTTP/HTTPS) tunnel. Z-Tunnel 2.0 captures traffic at the network layer, so it carries <strong>all ports and protocols</strong>, including SSH, ICMP, DNS and non-web apps. Without it, the Cloud Firewall never sees non-web flows, so <strong>Lab 4</strong> (allowing SSH/ICMP, blocking WhatsApp) and the DNS controls in <strong>Lab 7</strong> would have nothing to act on. That traffic would leave the PC directly and bypass policy.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>You set VPN-Trusted and Off-Trusted to <strong>Same as "On-Trusted Network"</strong>. In a real company, why might you <em>not</em> want to tunnel everything when the laptop is already on the corporate (trusted) network?
+                  <div class="answer-area" data-section="lab3-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">An office often already forwards traffic to Zscaler through a GRE/IPsec tunnel from the branch router. Tunnelling from ZCC as well would <strong>double-tunnel</strong>, adding overhead and latency. For ZPA, a user sitting next to the app on the LAN may be better off reaching it directly. That's why trusted-network detection exists: each network context can have a different action. The lab uses one action everywhere because the Client PC is always "off" a real corporate network and you want consistent behavior for testing.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>After you click <strong>Add</strong> on the Windows App Profile, ZCC might still show the old policy. What's actually happening between the console and the client, and how do you speed it up?
+                  <div class="answer-area" data-section="lab3-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Saving in the console only updates the cloud's copy of the policy. ZCC <strong>pulls</strong> its app profile on a schedule (or at login), so there's a short window where the client still runs the previous one. In ZCC, open <strong>More → Update Policy</strong> to force an immediate fetch, then check that <strong>App Policy</strong> reads <code>HandsOnLab</code>. Knowing about this pull model also explains many "I changed it but nothing happened" support tickets.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>You set VPN-Trusted and Off-Trusted to <strong>Same as "On-Trusted Network"</strong>. In a real company, why might you <em>not</em> want to tunnel everything when the laptop is already on the corporate (trusted) network?
-            <div class="answer-area" data-section="lab3-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">An office often already forwards traffic to Zscaler through a GRE/IPsec tunnel from the branch router. Tunnelling from ZCC as well would <strong>double-tunnel</strong>, adding overhead and latency. For ZPA, a user sitting next to the app on the LAN may be better off reaching it directly. That's why trusted-network detection exists: each network context can have a different action. The lab uses one action everywhere because the Client PC is always "off" a real corporate network and you want consistent behavior for testing.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>After you click <strong>Add</strong> on the Windows App Profile, ZCC might still show the old policy. What's actually happening between the console and the client, and how do you speed it up?
-            <div class="answer-area" data-section="lab3-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Saving in the console only updates the cloud's copy of the policy. ZCC <strong>pulls</strong> its app profile on a schedule (or at login), so there's a short window where the client still runs the previous one. In ZCC, open <strong>More → Update Policy</strong> to force an immediate fetch, then check that <strong>App Policy</strong> reads <code>HandsOnLab</code>. Knowing about this pull model also explains many "I changed it but nothing happened" support tickets.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 3.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-3-1">
@@ -202,64 +214,47 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will configure traffic forwarding so that all users send their traffic to Zscaler, whatever the protocol.</p>
+          <p>In this task, you will configure traffic forwarding so that all users send traffic to Zscaler, regardless of protocol.</p>
 
           <div class="task-block">
-            <h4><span class="task-num">1</span> Log in to the Experience Center</h4>
+            <h4><span class="task-num">1</span> Create the Forwarding Profile</h4>
             <ol class="step-list">
-              <li>Go to <code>https://console.zscaler.com</code> and authenticate with the student account:
-                <ul class="sub-steps">
-                  <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
-                  <li>Password: the password you set at your first login in Lab 1.</li>
-                </ul>
-              </li>
-              <li>Click <strong>Sign in</strong>.</li>
-            </ol>
-          </div>
-
-          <div class="task-block">
-            <h4><span class="task-num">2</span> Create the Forwarding Profile</h4>
-            <ol class="step-list">
-              <li>Go to <strong>Infrastructure &gt; Connectors &gt; Client &gt; Forwarding Profile for Platforms</strong>.</li>
+              <li>Type <code>Forwarding Profile</code> in the <strong>Search menu</strong> and select the result (<em>Infrastructure &gt; Client Connector &gt; Traffic Forwarding Policy</em>).</li>
               <li>Click <strong>Add Forwarding Profile</strong>.</li>
               <li>Name the profile: <code>HandsOnLab</code></li>
               <li>Scroll down. In the <strong>Windows Driver Selection</strong> section, select <strong>Packet Filter Based</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p047-a.png" alt="Infrastructure > Connectors tab with Client selected and Forwarding Profile for Platforms highlighted">
-            <div class="screenshot-caption">Infrastructure → Connectors → Client → <strong>Forwarding Profile for Platforms</strong>.</div>
-          </div>
-          <div class="screenshot-embed dialog">
-            <img src="screenshots/lab3-p048-a.png" alt="Forwarding Profile page with the Add Forwarding Profile button highlighted">
-            <div class="screenshot-caption">Click <strong>+ Add Forwarding Profile</strong>.</div>
+            <img src="screenshots/lab3-p046-a.png" alt="Search menu with Forwarding Profile typed and the Forwarding Profile result under Infrastructure > Client Connector > Traffic Forwarding Policy highlighted, and the Add Forwarding Profile button">
+            <div class="screenshot-caption">Search → <strong>Forwarding Profile</strong> (<em>Infrastructure &gt; Client Connector &gt; Traffic Forwarding Policy</em>), then <strong>Add Forwarding Profile</strong>. Pick the plain result, not the VDI one.</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> If Zscaler Client Connector version 4.8 or higher is installed on Windows, the app defaults to the packet filter-based driver and ignores the Route-Based configuration option.</p>
+            <p><strong>Note:</strong> If Zscaler Client Connector version 4.8 or later is installed on Windows, the app defaults to the packet filter-based driver and ignores the Route-Based configuration option.</p>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">3</span> Set the ZIA forwarding action</h4>
+            <h4><span class="task-num">2</span> Set the ZIA forwarding action</h4>
             <ol class="step-list">
               <li>In the <strong>FORWARDING PROFILE ACTION FOR ZIA</strong> section:
                 <ul class="sub-steps">
                   <li>For <strong>On-Trusted Network</strong>, select <strong>Tunnel</strong>.</li>
-                  <li>For the <strong>Tunnel version selection</strong>, use <strong>Z-Tunnel 2.0</strong>.</li>
+                  <li>For the tunnel version, use <strong>Z-Tunnel 2.0</strong>.</li>
                 </ul>
               </li>
               <li>For <strong>VPN Trusted Network</strong> and <strong>Off-Trusted Network</strong>, tick the box next to <strong>Same as “On-Trusted Network”</strong>.</li>
             </ol>
           </div>
-          <div class="callout callout-note">
-            <p><strong>Note:</strong> Tunnel 2.0 is needed to capture all traffic and tunnel it to ZIA for Firewall functionality.</p>
-          </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p049-a.png" alt="Add Forwarding Profile form with name HandsOnLab, Packet Filter-Based driver, ZIA On-Trusted Network set to Tunnel and Z-Tunnel 2.0 selected">
+            <img src="screenshots/lab3-p047-a.png" alt="Add Forwarding Profile form with name HandsOnLab, Packet Filter-Based driver, ZIA On-Trusted Network set to Tunnel and Z-Tunnel 2.0 selected">
             <div class="screenshot-caption">Profile name <strong>HandsOnLab</strong>, driver <strong>Packet Filter-Based</strong>, ZIA On-Trusted = <strong>Tunnel</strong> with <strong>Z-Tunnel 2.0</strong>.</div>
+          </div>
+          <div class="callout callout-note">
+            <p><strong>Note:</strong> Z-Tunnel 2.0 is required to intercept <strong>all</strong> traffic and tunnel it to ZIA for firewall functionality.</p>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">4</span> Set the ZPA forwarding action and save</h4>
+            <h4><span class="task-num">3</span> Set the ZPA forwarding action and save</h4>
             <ol class="step-list">
               <li>In the <strong>FORWARDING PROFILE ACTION FOR ZPA</strong> section:
                 <ul class="sub-steps">
@@ -271,20 +266,20 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p050-a.png" alt="Forwarding profile lower section with Same as On-Trusted Network ticked for ZIA and ZPA VPN-Trusted and Off-Trusted networks, ZPA On-Trusted set to Tunnel, and Save highlighted">
+            <img src="screenshots/lab3-p048-a.png" alt="Forwarding profile lower section with Same as On-Trusted Network ticked for ZIA and ZPA VPN-Trusted and Off-Trusted networks, ZPA On-Trusted set to Tunnel, and Save highlighted">
             <div class="screenshot-caption"><strong>Same as “On-Trusted Network”</strong> ticked for VPN-Trusted and Off-Trusted (ZIA and ZPA), ZPA On-Trusted = <strong>Tunnel</strong>, then Save.</div>
           </div>
 
           <div class="task-block">
-            <h4><span class="task-num">5</span> Add the Windows App Profile</h4>
+            <h4><span class="task-num">4</span> Add the Windows App Profile</h4>
             <ol class="step-list">
-              <li>In the left navigation panel, go to <strong>Platform Settings &gt; Windows</strong>.</li>
-              <li>Click <strong>Add Windows Policy</strong> under the <strong>App Profile</strong> section.</li>
-              <li>Configure the following settings (leave any field not listed at its default):
+              <li>In the left navigation panel, go to <strong>App Profile &amp; Platform Settings &gt; Windows</strong>.</li>
+              <li>Click <strong>Add Windows Policy</strong> under the <strong>App Profiles</strong> tab.</li>
+              <li>Configure the following settings (leave anything not listed at its default):
                 <ul class="sub-steps">
                   <li>Name: <code>HandsOnLab</code></li>
                   <li>Rule Order: <strong>1</strong></li>
-                  <li>Status: <strong>Enable</strong></li>
+                  <li>Status: <strong>Enabled</strong></li>
                   <li>Forwarding Profile: select the <strong>HandsOnLab</strong> profile you created earlier.</li>
                   <li>Install Zscaler SSL Certificate: <strong>On</strong></li>
                   <li>User Groups: <strong>Select All</strong>.</li>
@@ -294,11 +289,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p051-a.png" alt="Platform Settings > Windows page with the Add Windows Policy button highlighted on the App Profiles tab">
-            <div class="screenshot-caption">Platform Settings → <strong>Windows</strong> → App Profiles → <strong>+ Add Windows Policy</strong>.</div>
+            <img src="screenshots/lab3-p049-a.png" alt="Infrastructure menu with App Profile and Platform Settings > Windows selected and the Add Windows Policy button highlighted on the App Profiles tab">
+            <div class="screenshot-caption"><em>App Profile &amp; Platform Settings</em> → <strong>Windows</strong> → <strong>Add Windows Policy</strong>. Only the Default policy exists so far.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p052-a.png" alt="Add Windows Policy form with Name HandsOnLab, Forwarding Profile HandsOnLab, Install Zscaler SSL Certificate on, User Groups All Selected, and Add highlighted">
+            <img src="screenshots/lab3-p050-a.png" alt="Add Windows Policy form with Name HandsOnLab, Forwarding Profile HandsOnLab, Install Zscaler SSL Certificate on, User Groups All Selected, and Add highlighted">
             <div class="screenshot-caption">Name and Forwarding Profile <strong>HandsOnLab</strong>, Install Zscaler SSL Certificate <strong>On</strong>, User Groups <strong>All Selected</strong>, then Add. Installing the certificate here prepares the PC for SSL inspection in Lab 5.</div>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -312,119 +307,111 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will log in to the Zscaler Client Connector to confirm that the Corp Client PC is now protected by the app.</p>
+          <p>In this task, you will log in to Zscaler Client Connector to confirm that the Corp Client PC is now protected by the app.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Open the Zscaler Client Connector</h4>
             <ol class="step-list">
-              <li>On the <strong>Corp Client PC</strong>, in the Windows taskbar (bottom-right corner), click the <strong>Show hidden icons</strong> option.</li>
+              <li>On the <strong>Corp Client PC</strong>, in the Windows taskbar (bottom-right corner), click <strong>Show hidden icons</strong>.</li>
               <li>Select the <strong>Zscaler Client Connector</strong> icon and click <strong>Open Zscaler</strong>.</li>
               <li>In the Zscaler Client Connector console, log in with the student credentials:
                 <ul class="sub-steps">
                   <li>Username: <code class="d-username-student">student@&lt;Student FQDN&gt;</code></li>
-                  <li>Password: the one you set in Lab 1.</li>
+                  <li>Password: your student admin password (the one you used in Lab 1).</li>
                 </ul>
               </li>
               <li>Click <strong>Sign in</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed menu">
-            <img src="screenshots/lab3-p053-a.png" alt="Windows hidden icons tray with the Zscaler icon and Open Zscaler menu item highlighted">
+            <img src="screenshots/lab3-p051-a.png" alt="Windows hidden icons tray with the Zscaler icon and Open Zscaler menu item highlighted">
             <div class="screenshot-caption">Hidden icons → Zscaler icon → <strong>Open Zscaler</strong>.</div>
           </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab3-p054-a.png" alt="ZCC Welcome login screen with the student Login ID and password fields and the Sign In button highlighted">
-            <div class="screenshot-caption">Sign in to ZCC as the student admin.</div>
+          <div class="screenshot-embed dialog">
+            <img src="screenshots/lab3-p052-a.png" alt="Zscaler Client Connector Welcome login with the student Login ID and Password filled and Sign In highlighted">
+            <div class="screenshot-caption">ZCC sign-in as <strong>student@&lt;Student FQDN&gt;</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Verify Private Access settings</h4>
             <ol class="step-list">
-              <li>On the <strong>Private Access</strong> page, confirm the following:
+              <li>On the <strong>Private Access</strong> page, confirm:
                 <ul class="sub-steps">
-                  <li>Service Status: <strong>ON</strong>.</li>
-                  <li><strong>Client</strong> and <strong>Broker IP</strong> addresses: populated.</li>
+                  <li>Service Status: <strong>ON</strong></li>
+                  <li>Client and Broker IP addresses: <strong>populated</strong></li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p055-a.png" alt="ZCC Private Access page showing Service Status ON, Authenticated, and Broker and Client IP addresses populated">
+            <img src="screenshots/lab3-p053-a.png" alt="ZCC Private Access page showing Service Status ON, Authenticated, and Broker and Client IP addresses populated">
             <div class="screenshot-caption">Private Access: Service Status <strong>ON</strong>, Broker and Client IPs populated. That means ZPA is connected.</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> If you don't see ZPA or ZDX in Zscaler Client Connector, your user may not have the correct service entitlements. To check entitlements for the Student Admin user, go to <strong>Administration &gt; Users</strong> in the portal, select the Student Admin user account and click the <strong>Edit</strong> icon. In the Edit User pane, go to the <strong>Entitlements</strong> section and confirm that ZPA and ZDX are assigned. The Broker IP address highlighted in the screenshot is only an example and may differ from the one in your own Zscaler Client Connector.</p>
+            <p><strong>Note:</strong> If you don't see ZPA or ZDX in Zscaler Client Connector, your user may not have the correct service entitlements. To check them for the Student Admin user, open <strong>Users</strong> in the portal, select the Student Admin user account and click the <strong>Edit</strong> icon. In the <strong>Edit User</strong> pane, go to the <strong>Entitlements</strong> section and confirm that ZPA and ZDX are assigned. The Broker IP address in the screenshot is an example and may not match what you see in your own Client Connector.</p>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Verify Internet Security settings</h4>
             <ol class="step-list">
-              <li>On the <strong>Internet Security</strong> page, confirm the following:
+              <li>On the <strong>Internet Security</strong> page, confirm:
                 <ul class="sub-steps">
-                  <li>Service Status: <strong>ON</strong>.</li>
+                  <li>Service Status: <strong>ON</strong></li>
                   <li>Username: displays correctly.</li>
-                  <li><strong>Total Bytes Sent / Received</strong>: these values go up as you load web pages.</li>
+                  <li>Total Bytes Sent / Received: these values increase as you load web pages.</li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p056-a.png" alt="ZCC Internet Security page showing Service Status ON and Total Bytes Sent and Received highlighted">
+            <img src="screenshots/lab3-p054-a.png" alt="ZCC Internet Security page showing Service Status ON and Total Bytes Sent and Received highlighted">
             <div class="screenshot-caption">Internet Security <strong>ON</strong>. Bytes Sent/Received increasing is your proof that web traffic now goes through ZIA.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">4</span> Verify Digital Experience settings</h4>
             <ol class="step-list">
-              <li>On the <strong>Digital Experience</strong> page, confirm that:
+              <li>On the <strong>Digital Experience</strong> page, confirm:
                 <ul class="sub-steps">
-                  <li>Service Status: <strong>ON</strong>.</li>
-                  <li>Authentication Status: <strong>Authenticated</strong>.</li>
+                  <li>Service Status: <strong>ON</strong></li>
+                  <li>Authentication Status: <strong>Authenticated</strong></li>
                   <li>Username: displays correctly.</li>
                 </ul>
               </li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p057-a.png" alt="ZCC Digital Experience page showing Service Status ON and Authentication Status Authenticated">
+            <img src="screenshots/lab3-p055-a.png" alt="ZCC Digital Experience page showing Service Status ON and Authentication Status Authenticated">
             <div class="screenshot-caption">Digital Experience <strong>ON</strong> and <strong>Authenticated</strong>. ZDX probes can now report on this user.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">5</span> Verify the applied App Policy</h4>
             <ol class="step-list">
-              <li>On the <strong>More</strong> page, confirm that:
-                <ul class="sub-steps">
-                  <li>App Policy: <strong>HandsOnLab</strong></li>
-                </ul>
-              </li>
+              <li>On the <strong>More</strong> page, confirm that the applied app profile is <strong>HandsOnLab</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p057-b.png" alt="ZCC More page with the About section showing App Policy HandsOnLab highlighted and the Update Policy link">
+            <img src="screenshots/lab3-p056-a.png" alt="ZCC More page with the About section showing App Policy HandsOnLab highlighted and the Update Policy link">
             <div class="screenshot-caption">More → About: <strong>App Policy: HandsOnLab</strong>. The <strong>Update Policy</strong> link is in the same section.</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> If the updated policy <strong>HandsOnLab</strong> doesn't show in Zscaler Client Connector (ZCC), click <strong>Update Policy</strong> under the <strong>More</strong> tab in ZCC to force a policy refresh. Wait a few seconds and check again.</p>
+            <p><strong>Note:</strong> If the updated policy, <strong>HandsOnLab</strong>, isn't reflected in Zscaler Client Connector, click <strong>Update Policy</strong> under the <strong>More</strong> tab to force a policy refresh. Wait a few seconds, then check again.</p>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">6</span> Verify traffic forwarding</h4>
             <ol class="step-list">
               <li>Go to <code>https://ip.zscaler.com</code></li>
-              <li>Confirm that you are reaching the Internet through a service edge geographically close to the user.</li>
+              <li>Confirm that you are reaching the Internet through a <strong>service edge</strong> geographically close to the user.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab3-p058-a.png" alt="ip.zscaler.com page stating you are accessing the Internet via Zscaler Cloud, with the service edge location and IP address highlighted">
+            <img src="screenshots/lab3-p057-a.png" alt="ip.zscaler.com page stating you are accessing the Internet via Zscaler Cloud, with the service edge location and IP address highlighted">
             <div class="screenshot-caption"><code>ip.zscaler.com</code> confirms you're "accessing the Internet via Zscaler Cloud" and names the service edge in use.</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> The Service Edge location in the results will usually be one geographically close to the user.</p>
-          </div>
-          <div class="callout callout-troubleshoot">
-            <strong>Troubleshoot — ZCC still shows the old policy or a service is OFF</strong>
-            <p>First use <strong>More → Update Policy</strong> and wait a few seconds. If App Policy still isn't <strong>HandsOnLab</strong>, check that the Windows policy is <strong>Enabled</strong>, has Rule Order <strong>1</strong>, uses the <strong>HandsOnLab</strong> forwarding profile and targets <strong>All</strong> user groups. If Private Access or Digital Experience is missing, check the Student Admin user's ZPA/ZDX service entitlements as described in the note above.</p>
+            <p><strong>Note:</strong> The Service Edge location shown in the results is usually one geographically close to the user.</p>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-3-2 -->
@@ -433,7 +420,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Forwarding Profile = how</strong> (Packet Filter driver, Tunnel + <strong>Z-Tunnel 2.0</strong> so all protocols reach the firewall). <strong>App Profile = who + which profile</strong> (Windows policy <code>HandsOnLab</code>, rule 1, all groups, install the SSL cert). Proof it works: ZCC shows Private Access / Internet Security / Digital Experience <strong>ON</strong>, App Policy <strong>HandsOnLab</strong>, and <code>ip.zscaler.com</code> says you're behind Zscaler.</div>
+          <div class="mental-note-block-text"><strong>Forwarding Profile</strong> = <em>how</em> traffic reaches Zscaler (Tunnel + <strong>Z-Tunnel 2.0</strong> for all protocols). <strong>App Profile</strong> (Windows Policy) = <em>who</em> gets it, plus extras such as the Zscaler SSL certificate. Both live under <em>Infrastructure &gt; Client Connector</em>. Verify in ZCC: ZPA, ZIA and ZDX <strong>ON</strong>, App Policy <code>HandsOnLab</code>, and <code>ip.zscaler.com</code> shows a Zscaler service edge.</div>
         </div>
       </div>
 
@@ -461,11 +448,56 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab3a" onchange="toggleDone(this)"><label for="chk-lab3a">Task 3.1: Forwarding Profile + Windows Policy</label></li>
         <li class="progress-item"><input type="checkbox" id="chk-lab3b" onchange="toggleDone(this)"><label for="chk-lab3b">Task 3.2: ZCC verified (ZPA/ZIA/ZDX ON)</label></li>
       </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 3.1 · Forwarding profile</div>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/about-forwarding-profiles" target="_blank" rel="noopener noreferrer" title="How forwarding profiles treat traffic on trusted, VPN-trusted and off-trusted networks">About Forwarding Profiles</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/configuring-forwarding-profiles-zscaler-client-connector" target="_blank" rel="noopener noreferrer" title="Every field on the Add Forwarding Profile form, including the driver and the ZIA/ZPA forwarding actions">Configuring Forwarding Profiles</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/about-z-tunnel-1.0-z-tunnel-2.0" target="_blank" rel="noopener noreferrer" title="Proxy-style Z-Tunnel 1.0 versus Z-Tunnel 2.0, which carries all ports and protocols">About Z-Tunnel 1.0 &amp; Z-Tunnel 2.0</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 3.1 · App profile</div>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/about-zscaler-client-connector-app-profiles" target="_blank" rel="noopener noreferrer" title="How app profile rules and rule order decide which profile a device gets">About App Profiles</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/configuring-zscaler-client-connector-app-profiles" target="_blank" rel="noopener noreferrer" title="Adding an app profile for Windows and linking it to a forwarding profile">Configuring App Profiles</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 3.2 · Verify in ZCC</div>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-private-access-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="What the fields on the ZCC Private Access page mean">Viewing Private Access Status (ZCC)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-internet-security-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="What Service Status and the other fields on the Internet Security page mean">Viewing Internet Security Status (ZCC)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-digital-experience-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="What the fields on the ZCC Digital Experience page mean">Viewing Digital Experience Status (ZCC)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zscaler-client-connector/viewing-information-about-zscaler-client-connector-classic-ui" target="_blank" rel="noopener noreferrer" title="The More page: the applied App Policy and the Update Policy button">Viewing ZCC Information (App Policy)</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/verifying-users-traffic-being-forwarded-zscaler-service" target="_blank" rel="noopener noreferrer" title="Reading the ip.zscaler.com results to confirm traffic goes through Zscaler">Verifying Traffic Reaches Zscaler</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
     </div>
 
     <div class="quick-ref" id="quick-ref">
@@ -473,11 +505,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -509,7 +541,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -548,8 +580,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -563,17 +595,17 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <div class="page-nav">
   <a class="page-nav-btn page-nav-prev" href="lab2.html">
     <span class="page-nav-label">← PREVIOUS</span>
-    <span class="page-nav-title">Lab 2: Users</span>
+    <span class="page-nav-title">Lab 2: Users &amp; Entitlements</span>
   </a>
-  <div class="page-nav-message">Every packet you see is a packet you control.</div>
+  <div class="page-nav-message">Traffic is flowing. Now it's yours to shape.</div>
   <a class="page-nav-btn page-nav-next" href="lab4.html">
     <span class="page-nav-label">NEXT →</span>
-    <span class="page-nav-title">Lab 4: Firewall</span>
+    <span class="page-nav-title">Lab 4: Firewall Filtering</span>
   </a>
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 3: ZCC Forwarding</span>
 </footer>
 
@@ -664,8 +696,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -991,6 +1023,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>

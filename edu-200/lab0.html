@@ -13,6 +13,16 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 <style>html.pt-init body{opacity:0;}</style>
 <link rel="stylesheet" href="../lab-style.css">
 <style>
+.task-collapsible{border:1px solid #dde1e7;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.task-collapsible-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:#f7f8fa;border:none;border-bottom:1px solid transparent;text-align:left;font-family:inherit;transition:background 0.15s;}
+.task-collapsible.open>.task-collapsible-header{border-bottom-color:#dde1e7;background:#eef0f5;}
+.task-collapsible-header:hover{background:#eaecf2;}
+.task-num-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#1a1a2e;color:#fff;border-radius:5px;padding:3px 9px;flex-shrink:0;white-space:nowrap;}
+.task-collapsible-title{font-size:0.97rem;font-weight:600;color:#1a1a2e;flex:1;margin:0;}
+.task-collapsible-chevron{font-size:0.9rem;color:#888;transition:transform 0.2s;flex-shrink:0;}
+.task-collapsible.open>.task-collapsible-header .task-collapsible-chevron{transform:rotate(180deg);}
+.task-collapsible-body{display:none;padding:20px 20px 12px;}
+.task-collapsible.open>.task-collapsible-body{display:block;}
 /* Screenshot thumbnails */
 .screenshot-embed img{max-height:160px!important;width:auto!important;cursor:zoom-in;transition:opacity 0.15s;}
 .screenshot-embed img:hover{opacity:0.8;}
@@ -35,7 +45,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>About the EDU-200 Hands-On Lab</h1>
   <div class="motivation-banner">
-    <p>Get to know the lab topology, the three VMs, and how credentials are structured. Then switch the Experience Center to Nav 1.0 before you start configuring.</p>
+    <p>Get to know the lab topology, the three VMs and how credentials are structured, then learn how this guide navigates the Nav 2.0 Experience Center before you start configuring.</p>
   </div>
 </header>
 
@@ -72,8 +82,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -120,7 +130,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Course:</strong> EDU-200</div>
-          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Sep 2026</div>
+          <div class="lab-meta-item"><strong>Rev:</strong> 2.0 · Oct 2026 (Nav 2.0)</div>
           <div class="lab-meta-item"><strong>Platform:</strong> CloudShare + Zscaler Experience Center</div>
         </div>
         <figure class="lab-hero">
@@ -129,59 +139,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab0">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · THE LAB ENVIRONMENT</span>
-        </div>
-        <p class="socratic-insight">Before you touch the console, think about how this small pod stands in for a real enterprise: one user endpoint, one data center, and a cloud service in between.</p>
-        <ul class="socratic-questions">
-          <li>The Corp Client PC sits at <code>192.168.1.1</code> and the data center is <code>10.0.0.0/24</code>, yet there is no VPN between them. How do you expect the client to reach intranet apps on the Windows Server?
-            <div class="answer-area" data-section="lab0-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · THE LAB ENVIRONMENT</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Through <strong>ZPA</strong>. The Client Connector on the PC builds an outbound tunnel to the Zero Trust Exchange, and the <strong>Corp App Connector</strong> (<code>10.0.0.4</code>) builds its own outbound tunnel from inside the data center. The ZTE stitches the two together per application. Neither side accepts inbound connections, so the data center never has to expose a listening VPN concentrator to the Internet.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">Before you touch the console, think about how this small pod stands in for a real enterprise: one user endpoint, one data center, and a cloud service in between.</p>
+              <ul class="socratic-questions">
+                <li>The Corp Client PC sits at <code>192.168.1.1</code> and the data center is <code>10.0.0.0/24</code>, yet there is no VPN between them. How do you expect the client to reach intranet apps on the Windows Server?
+                  <div class="answer-area" data-section="lab0-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Through <strong>ZPA</strong>. The Client Connector on the PC builds an outbound tunnel to the Zero Trust Exchange, and the <strong>Corp App Connector</strong> (<code>10.0.0.4</code>) builds its own outbound tunnel from inside the data center. The ZTE stitches the two together per application. Neither side accepts inbound connections, so the data center never has to expose a listening VPN concentrator to the Internet.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>Every admin and test account in your pod shares the same session password, and all login IDs end in your Student FQDN. Why would a training environment be designed this way, and why would you never do it in production?
+                  <div class="answer-area" data-section="lab0-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The FQDN makes each pod a separate, isolated tenant identity, so dozens of students can work in parallel without clashing. One shared password removes friction so the class can focus on Zscaler concepts. In production, shared credentials remove accountability (you can't tell who did what in the audit logs) and turn one leaked password into a breach of every account. That's why real tenants use SSO, unique credentials and MFA.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The <strong>Corp Win Svr 2025</strong> is the DNS server for the data center, but the Corp Client PC sits outside it and uses public DNS. When the client asks for <code>intranet.patraining.safemarch.com</code>, which side should resolve that name, and why?
+                  <div class="answer-area" data-section="lab0-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">The <strong>data-center side</strong>. Public DNS has no idea what the intranet host is, and you wouldn't want internal names published there anyway. Once the domain is defined in a ZPA application segment, the Client Connector recognizes the request and hands back a placeholder (synthetic) address, while the <strong>App Connector</strong> resolves the real name with the internal DNS server (the Win Svr). Internal addresses never leak to the endpoint or the Internet, and the user still just types the hostname.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>Every admin and test account in your pod shares the same session password, and all login IDs end in your Student FQDN. Why would a training environment be designed this way, and why would you never do it in production?
-            <div class="answer-area" data-section="lab0-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The FQDN makes each pod a separate, isolated tenant identity, so dozens of students can work in parallel without clashing. One shared password removes friction so the class can focus on Zscaler concepts. In production, shared credentials remove accountability (you can't tell who did what in the audit logs) and turn one leaked password into a breach of every account. That's why real tenants use SSO, unique credentials and MFA.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The lab is written for the Experience Center <strong>Nav 1.0</strong> interface. What could go wrong if you stayed on Nav 2.0 and tried to follow the menu paths in this guide?
-            <div class="answer-area" data-section="lab0-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">The settings are the same, but the navigation tree is different. Paths like <em>Administration &gt; Identity &gt; Departments</em> may not exist in that form, so you'd waste time hunting for menus or end up on the wrong page. Switching once to Nav 1.0 keeps every step and screenshot in the guide in line with what you see. The <strong>search</strong> option (magnifier icon) is a good fallback in either interface.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <h3>Lab Description and Scenario</h3>
       <p>For these lab exercises, consider the scenario where your organization (<strong>Labtenant</strong>) has deployed the <strong>Zscaler Zero Trust Exchange</strong> to protect against Internet security threats, control Internet access, and provide secure access to private resources. Your organization is also interested in the end-user experience, which can be reported on with the Zero Trust Exchange.</p>
@@ -196,7 +206,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </ul>
 
       <h3>Lab Setup</h3>
-      <p>You will have access to the <strong>Zscaler Zero Trust Exchange (Service Portal (formerly ZIdentity) / ZIA / ZPA / ZDX)</strong> and a lab ‘Pod’. For your lab exercises, you will configure the <strong>Service Portal</strong>, <strong>ZIA</strong>, <strong>ZPA</strong>, and <strong>ZDX</strong> services and explore the end-user experience. You will use a <strong>Windows 10 Client PC</strong> to connect to the Zero Trust Exchange.</p>
+      <p>You will have access to the <strong>Zscaler Zero Trust Exchange (Service Portal (formerly ZIdentity) / ZIA / ZPA / ZDX)</strong> and a lab ‘Pod’. For your lab exercises, you will configure the <strong>Service Portal</strong>, <strong>ZIA</strong>, <strong>ZPA</strong>, and <strong>ZDX</strong> services and explore the end-user experience. You will use a <strong>Windows 10 Client PC</strong> in the pod to connect to the Zero Trust Exchange.</p>
 
       <h3>Lab Topology</h3>
       <div class="screenshot-embed">
@@ -207,15 +217,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <h4>Virtual Machines</h4>
       <div class="task-block">
         <ul class="step-list">
-          <li><strong>Windows Client PC: Corp Client PC</strong>. Joined to the Active Directory domain <code>patraining.safemarch.com</code>.
+          <li><strong>Windows Client PC: Corp Client PC</strong>
             <ul class="sub-steps"><li>Username | Password: <code>student</code> | <code>Admin-123!</code></li></ul>
           </li>
           <li><strong>Windows Server: Corp Win Svr 2025</strong>
             <ul class="sub-steps">
               <li>Provides local directory services through Active Directory.</li>
-              <li>Hosts the Active Directory domain <code>patraining.safemarch.com</code>, which the Corp Client PC is joined to.</li>
               <li>Runs HTTP/HTTPS intranet applications and file services.</li>
-              <li>Acts as the DNS server for hosts in the data center.</li>
+              <li>Functions as the DNS server for hosts in the data center.</li>
               <li>Username | Password: <code>administrator</code> | <code>Admin-123!</code></li>
             </ul>
           </li>
@@ -245,46 +254,23 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li>Your <strong>Student FQDN</strong>, a unique domain for your pod (e.g., <code>zs9901.labtenant.com</code>).</li>
         <li>Your admin login credentials for the Zscaler portals:
           <ul>
-            <li>The login name uses the format <code class="d-username-student">student@&lt;Student FQDN&gt;</code>, where &lt;Student FQDN&gt; is the domain assigned to your pod.</li>
+            <li>The login name uses the format <code class="d-username-student">student@&lt;Student FQDN&gt;</code>, where &lt;Student FQDN&gt; is the domain assigned to your pod (for example, <code>student@zsxxxx.labtenant.com</code>).</li>
             <li>The password is unique to your session and is the same on every configured admin and user account in the pod.</li>
           </ul>
         </li>
       </ul>
-      <div class="callout callout-note">
-        <p><strong>Note:</strong> To navigate to any specific feature, you can use the search option available in the Experience Center tenant.</p>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab0-p009-a.png" alt="Experience Center top bar with the search icon and Search menu field highlighted">
-        <div class="screenshot-caption">The search icon (top right) opens the <em>Search menu</em> field. Type a feature name to jump straight to it instead of drilling through menus.</div>
-      </div>
 
-      <h3>Navigating to the Experience Center Nav 1.0 User Interface</h3>
-      <p>After you log in to your assigned Zscaler lab tenant or Solutions Demo Center tenant, you should see the <strong>Experience Center Nav 1.0</strong> user interface. If you see <strong>Experience Center Nav 2.0</strong> instead, switch to Nav 1.0, because this lab is designed around it:</p>
-      <div class="task-block">
-        <h4><span class="task-num">NAV</span> Switch from Nav 2.0 to Nav 1.0</h4>
-        <ol class="step-list">
-          <li>In the Experience Center Nav 2.0 tenant, click the <strong>account settings</strong> icon in the top-right corner and go to <strong>Account Settings</strong>.</li>
-          <li>Under <strong>Settings &gt; New Navigation Experience</strong>, select <strong>Original</strong>, then click <strong>Save</strong> at the bottom to switch to the Experience Center Nav 1.0 user interface.</li>
-        </ol>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab0-p010-a.png" alt="Experience Center Nav 2.0 home page with the account settings icon highlighted in the top-right corner">
-        <div class="screenshot-caption">Nav 2.0 home page. The account settings icon is in the top-right corner.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab0-p011-a.png" alt="Account menu dropdown open with Account Settings highlighted">
-        <div class="screenshot-caption">Step 1: open the account menu and choose <strong>Account Settings</strong>.</div>
-      </div>
-      <div class="screenshot-embed">
-        <img src="screenshots/lab0-p011-b.png" alt="Settings page with New Navigation Experience set to Original and the Save button highlighted">
-        <div class="screenshot-caption">Step 2: set <strong>New Navigation Experience</strong> to <strong>Original</strong> and click <strong>Save</strong>. The console reloads in Nav 1.0.</div>
+      <h3>How This Guide Navigates the Experience Center</h3>
+      <p>This revision of the guide is written for the <strong>Experience Center Nav 2.0</strong> interface. Instead of long click paths, each step tells you to type a feature name into the <strong>Search menu</strong> at the top of the console and select the matching result. The Nav 2.0 menu location follows in parentheses, so you also learn where the feature lives. For example: type <code>Firewall Control</code> in the Search menu (<em>Internet Access &gt; Policy</em>).</p>
+      <div class="callout callout-note">
+        <p><strong>Note:</strong> The main Nav 2.0 menu groups features by outcome: <strong>Analytics</strong>, <strong>Administration</strong>, <strong>Internet Access</strong>, <strong>Private Access</strong>, <strong>Cyberthreat Protection</strong>, <strong>Digital Experience</strong>, <strong>Data Security</strong>, <strong>Infrastructure</strong> and <strong>Data Explorer</strong>. If a menu path in this guide doesn't match your console exactly, search for the feature name instead.</p>
       </div>
 
       <div class="mental-note-block">
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text">Three VMs: <strong>Corp Client PC</strong> (the user), <strong>Corp Win Svr 2025</strong> (AD, DNS, intranet apps), <strong>Corp App Connector</strong> (ZPA's foothold in the data center). Every login ends in <code>@&lt;Student FQDN&gt;</code>. App Connector password is now <code>Zscaler1!</code>. Use <strong>Nav 1.0 (Original)</strong> so the menus match this guide.</div>
+          <div class="mental-note-block-text">Three VMs: <strong>Corp Client PC</strong> (the user), <strong>Corp Win Svr 2025</strong> (AD, DNS, intranet apps), <strong>Corp App Connector</strong> (ZPA's foothold in the data center, password <code>Zscaler1!</code>). Every Zscaler login ends in <code>@&lt;Student FQDN&gt;</code>. In Nav 2.0, the <strong>Search menu</strong> is your fastest route to any feature.</div>
         </div>
       </div>
 
@@ -315,7 +301,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab0" onchange="toggleDone(this)"><label for="chk-lab0">Lab 0: Environment reviewed</label></li>
-        <li class="progress-item"><input type="checkbox" id="chk-lab0b" onchange="toggleDone(this)"><label for="chk-lab0b">Lab 0: Switched to Nav 1.0</label></li>
+        <li class="progress-item"><input type="checkbox" id="chk-lab0b" onchange="toggleDone(this)"><label for="chk-lab0b">Lab 0: Credentials and Search menu noted</label></li>
       </ul>
     </div>
 
@@ -324,11 +310,11 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -360,7 +346,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -399,8 +385,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -424,7 +410,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 0: About</span>
 </footer>
 
@@ -515,8 +501,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});

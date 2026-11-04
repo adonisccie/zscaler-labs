@@ -34,6 +34,18 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .img-lightbox-close:hover{background:rgba(255,255,255,0.3);}
 @keyframes lb-in{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
 </style>
+<style>
+/* Reference links (sidebar section, sits under Lab Progress) */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+</style>
 </head>
 <body>
 
@@ -45,7 +57,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
   </div>
   <h1>Configure Content Filtering &amp; Access Control</h1>
   <div class="motivation-banner">
-    <p>Review the threat-protection baseline, block risky URL categories, then use Cloud App Control to carve out YouTube while Netflix stays blocked.</p>
+    <p>Threat protection stops what's malicious; content filtering decides what's appropriate. Review the first, then build the second: block risky categories and carve out YouTube with Cloud App Control.</p>
   </div>
 </header>
 
@@ -82,8 +94,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
     <div class="config-derived" id="config-derived">
       <span><strong>Student admin:</strong> <code id="d-student">student@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Joe:</strong> <code id="d-joe">JoeSupport@&lt;Student FQDN&gt;</code></span>
-      <span><strong>Bev:</strong> <code id="d-bev">BevIT@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Joe:</strong> <code id="d-joe">joe@&lt;Student FQDN&gt;</code></span>
+      <span><strong>Bev:</strong> <code id="d-bev">bev@&lt;Student FQDN&gt;</code></span>
       <span><strong>Student ID:</strong> <code id="d-id">&lt;Student ID&gt;</code></span>
     </div>
   </div>
@@ -122,13 +134,13 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 
       <div class="lab-header-card">
         <div class="lab-badge">LAB 6</div>
-        <p><strong>Scenario:</strong> As the Zscaler administrator, your goal is to improve users' browsing experience by making sure they only reach safe and appropriate content. You will explore how <strong>Zscaler Internet Access (ZIA)</strong> enforces content filtering and access control to protect against threats such as phishing, malware and data leakage. You will also check existing threat protection configurations, analyze risk reports, and test policy behavior to see how ZIA enforces organizational baselines for URL filtering, content categories and cloud application controls.</p>
+        <p><strong>Scenario:</strong> As the Zscaler administrator, your goal is to improve users' browsing experience by making sure they only reach <strong>safe and appropriate content</strong>. You will explore how <strong>Zscaler Internet Access (ZIA)</strong> enforces content filtering and access control to protect against threats such as phishing, malware and data leakage. You will also verify existing threat protection configurations, analyze risk reports, and test policy behavior to see how ZIA enforces organizational baselines for URL filtering, content categories and cloud application controls.</p>
         <p style="margin-top:10px;"><strong>Objectives:</strong> By the end of this lab, you will:</p>
         <ul style="margin-top:6px;">
-          <li><strong>Explore ZIA’s threat protection configurations</strong> and analyze risk reporting.</li>
-          <li><strong>Configure and validate</strong> a <strong>URL Filtering Policy</strong> to block risky websites (e.g., gambling, adult and shopping sites).</li>
-          <li><strong>Test</strong> the effect of <strong>URL Filtering</strong> on the end-user experience.</li>
-          <li><strong>Create and verify</strong> a <strong>Cloud App Control policy</strong> to allow access to specific apps (e.g., YouTube) while restricting others in the same category.</li>
+          <li><strong>Explore</strong> ZIA's threat protection configurations and analyze risk reporting.</li>
+          <li><strong>Configure and validate a URL Filtering Policy</strong> that blocks risky websites (e.g., gambling, adult and shopping sites).</li>
+          <li><strong>Test</strong> the effect of URL Filtering control on the end-user experience.</li>
+          <li><strong>Create and verify a Cloud App Control policy</strong> that allows specific apps (e.g., YouTube) while restricting others in the same category.</li>
         </ul>
         <div class="lab-meta">
           <div class="lab-meta-item"><strong>Time:</strong> ~25 minutes</div>
@@ -140,59 +152,59 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
 
       <div class="socratic-block" id="soc-lab6">
-        <div class="socratic-header">
-          <span class="socratic-icon">💭</span>
-          <span class="socratic-label">THINK FIRST · URL FILTERING vs CLOUD APP CONTROL</span>
-        </div>
-        <p class="socratic-insight">You'll block the whole <em>Video Streaming</em> URL category, then allow YouTube with a different policy type. Both decisions apply to the same HTTP request, so one of them has to win.</p>
-        <ul class="socratic-questions">
-          <li>The URL Filtering rule blocks Video Streaming, and the Cloud App Control rule allows YouTube. Why does YouTube end up <strong>allowed</strong> while Netflix stays blocked?
-            <div class="answer-area" data-section="lab6-q1">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+              <div class="socratic-header">
+                <span class="socratic-icon">💭</span>
+                <span class="socratic-label">THINK FIRST · URL FILTERING vs CLOUD APP CONTROL</span>
               </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q1 — MODEL ANSWER</div>
-                  <div class="model-answer-text">ZIA evaluates <strong>Cloud App Control (SaaS application) policies before URL category policies</strong>. A request to YouTube matches the "Allow YouTube" Streaming Media rule first and is allowed. With <em>Cascade to URL Filtering</em> left off, the URL category block is never consulted. Netflix has no Cloud App Control rule, so it falls through to URL Filtering and is blocked as Video Streaming. A coarse category block plus a precise app-level exception is a common, maintainable pattern.</div>
-                </div>
-              </div>
+              <p class="socratic-insight">You'll block whole URL categories, including <em>Entertainment/Recreation</em> (which covers video streaming), then allow YouTube with a different policy type. Both decisions apply to the same HTTP request, so one of them has to win.</p>
+              <ul class="socratic-questions">
+                <li>The URL Filtering rule blocks Video Streaming, and the Cloud App Control rule allows YouTube. Why does YouTube end up <strong>allowed</strong> while Netflix stays blocked?
+                  <div class="answer-area" data-section="lab6-q1">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q1 — MODEL ANSWER</div>
+                        <div class="model-answer-text">ZIA evaluates <strong>Cloud App Control (SaaS application) policies before URL category policies</strong>. A request to YouTube matches the "Allow YouTube" Streaming Media rule first and is allowed. With <em>Cascade to URL Filtering</em> left off, the URL category block is never consulted. Netflix has no Cloud App Control rule, so it falls through to URL Filtering and is blocked as Video Streaming. A coarse category block plus a precise app-level exception is a common, maintainable pattern.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>Malware Protection and Advanced Threat Protection are already on, yet 888.com loaded fine at the start of Task 6.2. Why is a gambling site not a "threat" in that sense, and what kind of control <em>does</em> stop it?
+                  <div class="answer-area" data-section="lab6-q2">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q2 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Threat protection looks for <strong>malicious behavior or content</strong>: malware, C2 callbacks, phishing, cryptomining, XSS and a high Page Risk score. A legitimate gambling site is clean, so it passes. Whether employees <em>should</em> visit it is an <strong>acceptable-use</strong> question, answered by <strong>URL Filtering</strong> on the site's category. Security controls and acceptable-use controls are separate layers, and you usually need both.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>The URL rule blocks <strong>Shopping and Auctions</strong> for everyone. What business problems could that cause, and how could you soften it without dropping the control?
+                  <div class="answer-area" data-section="lab6-q3">
+                    <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
+                    <div class="answer-buttons">
+                      <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
+                      <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
+                    </div>
+                    <div class="model-answers" style="display:none;">
+                      <div class="model-answer-item">
+                        <div class="model-answer-q">Q3 — MODEL ANSWER</div>
+                        <div class="model-answer-text">Procurement may need supplier sites, marketing may research competitors, and some SaaS vendors are categorized as shopping. A blanket block generates tickets and workarounds. Options: use <strong>Caution</strong> (warn and log) instead of Block, scope the rule to specific <strong>groups or departments</strong>, add <strong>time-of-day</strong> conditions, allow <strong>override</strong> for approved users, or add allow rules for specific sites above the block. The aim is the least disruptive control that still meets the policy.</div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-          <li>Malware Protection and Advanced Threat Protection are already on, yet 888.com loaded fine at the start of Task 6.2. Why is a gambling site not a "threat" in that sense, and what kind of control <em>does</em> stop it?
-            <div class="answer-area" data-section="lab6-q2">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q2 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Threat protection looks for <strong>malicious behavior or content</strong>: malware, C2 callbacks, phishing, cryptomining, XSS and a high Page Risk score. A legitimate gambling site is clean, so it passes. Whether employees <em>should</em> visit it is an <strong>acceptable-use</strong> question, answered by <strong>URL Filtering</strong> on the site's category. Security controls and acceptable-use controls are separate layers, and you usually need both.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>The URL rule blocks <strong>Shopping and Auctions</strong> for everyone. What business problems could that cause, and how could you soften it without dropping the control?
-            <div class="answer-area" data-section="lab6-q3">
-              <textarea class="answer-textarea" placeholder="Write your thoughts before revealing the model answer..." rows="3"></textarea>
-              <div class="answer-buttons">
-                <button class="btn-add-answer" onclick="saveSocAnswer(this)">+ Add My Answer</button>
-                <button class="btn-see-answer" onclick="revealSocAnswer(this)" disabled>🔒 See Model Answer</button>
-              </div>
-              <div class="model-answers" style="display:none;">
-                <div class="model-answer-item">
-                  <div class="model-answer-q">Q3 — MODEL ANSWER</div>
-                  <div class="model-answer-text">Procurement may need supplier sites, marketing may research competitors, and some SaaS vendors are categorized as shopping. A blanket block generates tickets and workarounds. Options: use <strong>Caution</strong> (warn and log) instead of Block, scope the rule to specific <strong>groups or departments</strong>, add <strong>time-of-day</strong> conditions, allow <strong>override</strong> for approved users, or add allow rules for specific sites above the block. The aim is the least disruptive control that still meets the policy.</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <!-- ─────────────────────────── TASK 6.1 ─────────────────────────── -->
       <div class="task-collapsible open" id="task-6-1">
@@ -202,44 +214,44 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will review the current threat protection settings in the <strong>ZIA Admin Portal</strong>: Malware Protection, Advanced Threat Protection and the Page Risk Score Index.</p>
+          <p>In this task, you will review the current threat protection settings in the ZIA admin portal: <strong>Malware Protection</strong>, <strong>Advanced Threat Protection</strong> and the <strong>Page Risk Score Index</strong>.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> View Malware Protection settings</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Cybersecurity &gt; Malware Protection</strong>.</li>
+              <li>In the portal, type <code>Malware Protection</code> in the <strong>Search menu</strong> and select the result (<em>Cyberthreat Protection &gt; Policy</em>).</li>
               <li>Compare the current settings with the <strong>Recommended Policy</strong> settings.</li>
-              <li>Note that the <strong>Malware Protections</strong> are <strong>enabled</strong>.</li>
+              <li>Note that the Malware Protections are enabled.</li>
             </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab6-p083-a.png" alt="Cyberthreat Protection > Policy > Malware Protection page with the Malware Policy tab, Traffic Inspection and Protocol Inspection toggles enabled and the Recommended Policy link highlighted">
+            <div class="screenshot-caption">Malware Protection → <strong>Malware Policy</strong> tab: inbound/outbound traffic and HTTP/FTP inspection are on. <strong>Recommended Policy</strong> (top right) shows Zscaler's baseline for comparison.</div>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Malware protection defends against spyware, botnets, malicious active content and more.</p>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab6-p087-a.png" alt="Policies > Cybersecurity > Malware Protection page with traffic inspection toggles enabled and the Recommended Policy link highlighted">
-            <div class="screenshot-caption">Malware Protection: inspection toggles are on. Use <strong>Recommended Policy</strong> (top right) to compare against Zscaler's baseline.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> View Advanced Threat Protection settings</h4>
             <ol class="step-list">
-              <li>Use the left navigation panel to go to <strong>Advanced Threat Protection</strong>, or go to <strong>Policies &gt; Cybersecurity &gt; Advanced Threat Protection</strong>.</li>
-              <li>Compare the current settings with the <strong>Recommended Policy settings</strong>, and note which <strong>Advanced Threat Protections are enabled</strong>.</li>
+              <li>In the left navigation panel, go to <strong>Advanced Threat Protection</strong>.</li>
+              <li>Compare the current settings with the <strong>Recommended Policy</strong> settings and note which Advanced Threat Protections are enabled.</li>
             </ol>
           </div>
           <div class="callout callout-note">
             <p><strong>Note:</strong> Advanced protections include settings against Command and Control traffic, Phishing, Cryptomining, Tunneling, Cross-Site Scripting (XSS) and more.</p>
           </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab6-p088-a.png" alt="Advanced Threat Protection page showing the Suspicious Content Protection (Page Risk) slider and Recommended Policy link">
-            <div class="screenshot-caption">Advanced Threat Protection, with the <strong>Suspicious Content Protection (Page Risk™)</strong> slider at the top.</div>
-          </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Review the Page Risk Score Index</h4>
             <ol class="step-list">
-              <li>Review the Page Risk Score Index (<strong>SUSPICIOUS CONTENT PROTECTION (PAGE RISK™)</strong>). It calculates a score when the user accesses a page, analyzing the page's threat level dynamically.</li>
+              <li>Review the <strong>Suspicious Content Protection (Page Risk™)</strong> setting. It calculates a score when the user accesses a page, analyzing the page's threat level dynamically.</li>
             </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab6-p084-a.png" alt="Advanced Threat Protection page with the Advanced Threats Policy tab, Suspicious Content Protection (Page Risk) slider, Botnet Protection settings and the Recommended Policy link highlighted">
+            <div class="screenshot-caption">Advanced Threat Protection: the <strong>Page Risk</strong> slider sets the score above which pages are blocked (Low → Moderate → High risk). Botnet Protection blocks C&amp;C servers and traffic.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-6-1 -->
@@ -252,7 +264,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you will create a <strong>URL Filtering Policy</strong> to block risky URL categories such as gambling, adult content and video streaming. You will also check how content filtering controls in ZIA manage user access.</p>
+          <p>In this task, you will create a <strong>URL Filtering Policy</strong> that blocks risky URL categories such as gambling, adult content and video streaming, and see how content filtering controls manage user access in ZIA.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Test high-risk URL access (before configuration)</h4>
@@ -262,38 +274,35 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p089-a.png" alt="888.com gambling site loading normally in the browser">
+            <img src="screenshots/lab6-p085-a.png" alt="888.com gambling site loading normally in the browser">
             <div class="screenshot-caption">Before the rule: <code>888.com</code> loads normally.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Create a URL Filtering Policy</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Access Control &gt; Internet and SaaS &gt; URL Control &gt; URL Filtering</strong>.</li>
-              <li>On the <strong>URL Filtering Policy</strong> tab, click <strong>Add URL Filtering Rule</strong>.</li>
-              <li>Configure the rule as follows:
+              <li>In the Experience Center, type <code>URL Filtering</code> in the <strong>Search menu</strong> and select the result (<em>Internet Access &gt; Policy</em>).</li>
+              <li>Click <strong>Add Rule</strong>.</li>
+              <li>Configure the rule:
                 <ul class="sub-steps">
-                  <li>Rule Order: <strong>1</strong></li>
+                  <li>Action: <strong>Block</strong></li>
                   <li>Rule Name: <code>Risky URL Categories</code></li>
-                  <li>URL Categories: <strong>Adult Materials</strong>, <strong>Shopping and Auctions</strong>, <strong>Gambling</strong>, <strong>Video Streaming</strong></li>
-                  <li>Request Methods and Protocols: make sure all options are selected.</li>
-                  <li>Action: select <strong>Block</strong>.</li>
+                  <li>Click <strong>Edit</strong> and change Rule Order to <strong>1</strong> if required.</li>
+                  <li>Rule Status: <strong>Enabled</strong></li>
+                  <li>In <strong>Criteria</strong>, under <strong>URL Categories</strong>, search for and add: <strong>Adult Materials</strong>, <strong>Shopping and Auctions</strong>, <strong>Gambling</strong>, <strong>Entertainment/Recreation</strong>.</li>
+                  <li>Make sure all options are selected for <strong>Request Methods</strong> and <strong>Protocols</strong>.</li>
                 </ul>
               </li>
               <li>Click <strong>Save</strong> and <strong>Activate</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p090-a.png" alt="URL and Cloud App Control page with URL Filtering selected and the Add URL Filtering Rule button highlighted">
-            <div class="screenshot-caption">URL Control → <strong>URL Filtering</strong> → Add URL Filtering Rule.</div>
+            <img src="screenshots/lab6-p086-a.png" alt="URL Filtering Policy page with an existing isolate-outbound-socialsite rule and the Add Rule button highlighted">
+            <div class="screenshot-caption">URL Filtering Policy → <strong>Add Rule</strong>.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p090-b.png" alt="Add URL Filtering Rule form with Rule Order 1, Rule Name Risky URL Categories and URL Categories Adult, Shopping, Gambling, Video Streaming">
-            <div class="screenshot-caption">Rule Order <strong>1</strong>, name <strong>Risky URL Categories</strong>, with the four categories selected.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab6-p091-a.png" alt="URL rule Action section with Web Traffic set to Block and the Save button highlighted">
-            <div class="screenshot-caption">Action → Web Traffic: <strong>Block</strong> (other options: Allow, Caution, Isolate). Save and Activate.</div>
+            <img src="screenshots/lab6-p087-a.png" alt="URL Filtering Policy Add Rule page with URL Categories and Request Methods criteria, Web Traffic Block, Rule Name Risky URL Categories, Rule Order 1, Rule Status Enabled and Save highlighted">
+            <div class="screenshot-caption">Criteria: <strong>URL Categories</strong> (the super-categories expand into many sub-categories) and all <strong>Request Methods</strong>. Actions: Web Traffic <strong>Block</strong>, name <strong>Risky URL Categories</strong>, order 1, Enabled.</div>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-6-2 -->
@@ -306,44 +315,44 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>In this task, you'll test user access to various websites now that the URL Filtering Policy is in place.</p>
+          <p>In this task, you'll test user access to various websites after applying the URL Filtering Policy.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Test blocked URLs</h4>
             <ol class="step-list">
-              <li>Open a browser and try to visit a site that worked before, such as:
+              <li>Open a browser and try to visit sites that were previously accessible, such as:
                 <ul class="sub-steps">
                   <li><code>888.com</code> (Gambling category)</li>
                   <li><code>ebay.com</code> (Shopping and Auctions category)</li>
                 </ul>
               </li>
-              <li>Verify that these sites are now blocked by the URL Filtering Policy you configured.</li>
+              <li>Verify that these sites are now blocked by the URL Filtering Policy.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p092-a.png" alt="Zscaler block page for 888.com reading Not allowed to browse Gambling category">
+            <img src="screenshots/lab6-p088-a.png" alt="Zscaler block page for 888.com reading Not allowed to browse Gambling category">
             <div class="screenshot-caption">Zscaler block page: <strong>"Not allowed to browse Gambling category"</strong>.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Test access to video streaming sites</h4>
             <ol class="step-list">
-              <li>Try to open Video Streaming websites such as <code>YouTube.com</code> or <code>Netflix.com</code>.</li>
+              <li>Try to access video streaming websites such as <code>YouTube.com</code> or <code>Netflix.com</code>.</li>
               <li>Verify that these websites are also blocked by the rule.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p093-a.png" alt="Zscaler block page for youtube.com reading Not allowed to browse Video Streaming category">
-            <div class="screenshot-caption">YouTube is blocked too, as <strong>Video Streaming</strong>. You'll carve out an exception in Task 6.4.</div>
+            <img src="screenshots/lab6-p089-a.png" alt="Zscaler block page for youtube.com reading Not allowed to browse Video Streaming category">
+            <div class="screenshot-caption">YouTube is blocked too, as <strong>Video Streaming</strong> (part of Entertainment/Recreation). You'll carve out an exception in Task 6.4.</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> If testing doesn't work, try Incognito Mode in the browser.</p>
+            <p><strong>Note:</strong> If testing doesn't work, try using Incognito mode in the browser.</p>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> If testing fails, verify the URL Filtering Policy status</h4>
             <ol class="step-list">
-              <li>Go to <strong>URL Filtering Policy</strong> and click <strong>Edit</strong> to confirm that the <strong>Rule Status</strong> is set to <strong>Enabled</strong>.</li>
+              <li>Go to the <strong>URL Filtering Policy</strong> and click <strong>Edit</strong> to confirm that the Rule Status is <strong>Enabled</strong>.</li>
             </ol>
           </div>
         </div><!-- /task-collapsible-body -->
@@ -357,57 +366,58 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <span class="task-collapsible-chevron">▾</span>
         </div>
         <div class="task-collapsible-body">
-          <p>The <strong>Cloud App Control Policy</strong> gives granular control over how users reach specific cloud applications and websites. In this task, you will create a rule that <strong>allows access to YouTube</strong> while <strong>other entertainment and recreation websites stay restricted</strong>.</p>
+          <p>The <strong>Cloud App Control Policy</strong> gives you granular control over how users access specific cloud applications and websites. In this task, you will create a rule that allows YouTube while other entertainment and recreation websites stay restricted.</p>
 
           <div class="task-block">
             <h4><span class="task-num">1</span> Add a Cloud App Control Policy</h4>
             <ol class="step-list">
-              <li>Go to <strong>Policies &gt; Access Control &gt; Internet &amp; SaaS &gt; SaaS Application Control &gt; Cloud App Control</strong>, or use the <strong>left navigation panel</strong> to go to SaaS Application Control &gt; Cloud App Control.</li>
-              <li>Click the <strong>Add</strong> drop-down and select <strong>Streaming Media</strong>.</li>
+              <li>In the Experience Center, type <code>SaaS/Cloud App Policy</code> in the <strong>Search menu</strong> and select the result (<em>Data Security &gt; Inline CASB &gt; Configuration</em>).</li>
+              <li>Scroll down the left-hand panel and select <strong>Streaming Media</strong>.</li>
+              <li>Click <strong>Add Rule</strong>.</li>
             </ol>
+          </div>
+          <div class="screenshot-embed">
+            <img src="screenshots/lab6-p090-a.png" alt="Search menu with SaaS/Cloud App Policy typed, the Cloud App Control Policy page viewed by Application Category with Streaming Media selected and the Add Rule button highlighted">
+            <div class="screenshot-caption">Cloud App Control Policy, viewed by <strong>Application Category</strong> → <strong>Streaming Media</strong> → <strong>Add Rule</strong>. No rules exist yet.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">2</span> Create the Cloud App Control rule</h4>
             <ol class="step-list">
-              <li>Rule Order: <strong>1</strong></li>
+              <li>Set the <strong>Viewing/Listening</strong> action to <strong>Allow</strong>.</li>
               <li>Rule Name: <code>Allow YouTube</code></li>
-              <li>In the <strong>Criteria</strong> section, open the <strong>Cloud Applications</strong> drop-down, select <strong>YouTube</strong>, then click <strong>Done</strong>.</li>
-              <li>Action, Application Access: <strong>Allow</strong></li>
-              <li>Add Description: <code>Allow only YouTube</code></li>
+              <li>Rule Order: <strong>1</strong></li>
+              <li>Rule Status: <strong>Enabled</strong></li>
+              <li>Under the <strong>Criteria</strong> section, open the <strong>Cloud Applications</strong> drop-down, select <strong>YouTube</strong> and click <strong>Done</strong>.</li>
               <li>Click <strong>Save</strong> and <strong>Activate</strong>.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p094-a.png" alt="Add Streaming Media Rule form with Rule Order 1, Rule Name Allow YouTube, Rule Status Enabled and Cloud Applications YouTube">
-            <div class="screenshot-caption">Add Streaming Media Rule: order <strong>1</strong>, <strong>Allow YouTube</strong>, Cloud Applications = <strong>YouTube</strong>.</div>
-          </div>
-          <div class="screenshot-embed">
-            <img src="screenshots/lab6-p095-a.png" alt="Streaming Media rule Action section with Viewing/Listening Allow, description Allow only YouTube and Save highlighted">
-            <div class="screenshot-caption">Action: Viewing/Listening <strong>Allow</strong>, description "Allow only YouTube", then Save and Activate.</div>
+            <img src="screenshots/lab6-p091-a.png" alt="Cloud App Control Policy > Streaming Media > Add Rule with Cloud Applications YouTube, Viewing/Listening Allow and Rule Name Allow YouTube highlighted">
+            <div class="screenshot-caption">Criteria: Cloud Applications = <strong>YouTube</strong>. Actions: Viewing/Listening <strong>Allow</strong>. Details: name <strong>Allow YouTube</strong>, order 1. Leave <em>Cascade to URL Filtering</em> off.</div>
           </div>
 
           <div class="task-block">
             <h4><span class="task-num">3</span> Verify the Cloud App Control Policy</h4>
             <ol class="step-list">
               <li>Make sure the new rule appears in the <strong>Streaming Media</strong> rules list.</li>
-              <li>On the <strong>Corp Client PC</strong>, confirm that you can <strong>access YouTube.com</strong>, but access to other streaming websites like <strong>Netflix.com is blocked</strong>.</li>
+              <li>On the <strong>Corp Client PC</strong>, confirm that you can access <code>YouTube.com</code>, but access to other streaming websites such as <code>Netflix.com</code> is blocked.</li>
             </ol>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p095-b.png" alt="Streaming Media rules list showing rule 1 Allow YouTube">
-            <div class="screenshot-caption">The <strong>Streaming Media</strong> rules list now shows <strong>Allow YouTube</strong>.</div>
+            <img src="screenshots/lab6-p092-a.png" alt="Streaming Media rules list showing rule 1 Allow YouTube with action Allow for Viewing/Listening and Uploading">
+            <div class="screenshot-caption">Rule 1, <strong>Allow YouTube</strong>, is listed under Streaming Media.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p096-a.png" alt="YouTube loading normally in the browser">
+            <img src="screenshots/lab6-p092-b.png" alt="YouTube loading normally in the browser">
             <div class="screenshot-caption">YouTube now loads, because the Cloud App Control allow wins.</div>
           </div>
           <div class="screenshot-embed">
-            <img src="screenshots/lab6-p096-b.png" alt="Zscaler block page for netflix.com reading Not allowed to browse Video Streaming category">
+            <img src="screenshots/lab6-p093-a.png" alt="Zscaler block page for netflix.com reading Not allowed to browse Video Streaming category">
             <div class="screenshot-caption">Netflix is still blocked by the URL Filtering rule (Video Streaming category).</div>
           </div>
           <div class="callout callout-note">
-            <p><strong>Note:</strong> SaaS Application policies are enforced with <strong>higher priority</strong> than URL category-based policies.</p>
+            <p><strong>Note:</strong> SaaS application policies are enforced with <strong>higher priority</strong> than URL category-based policies.</p>
           </div>
         </div><!-- /task-collapsible-body -->
       </div><!-- /task-6-4 -->
@@ -416,7 +426,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Threat protection ≠ acceptable use.</strong> Malware/ATP/Page Risk stop <em>malicious</em> content, while URL Filtering stops <em>inappropriate categories</em>. <strong>Cloud App Control is evaluated before URL Filtering</strong>, so "Allow YouTube" beats the Video Streaming block, and Netflix stays blocked. Always <strong>Save + Activate</strong>, and retest in Incognito.</div>
+          <div class="mental-note-block-text"><strong>Threat protection</strong> (<em>Cyberthreat Protection &gt; Policy</em>) stops what's malicious; <strong>URL Filtering</strong> (<em>Internet Access &gt; Policy</em>) enforces what's acceptable. <code>Risky URL Categories</code> blocks Adult, Shopping, Gambling and Entertainment/Recreation. <strong>Cloud App Control</strong> (<em>Data Security &gt; Inline CASB</em>) is evaluated <strong>first</strong>, so <code>Allow YouTube</code> wins over the category block while Netflix stays blocked.</div>
         </div>
       </div>
 
@@ -425,7 +435,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <div>
             <div class="tool-label">ASK A QUESTION</div>
             <textarea class="tool-textarea" id="q-lab6" placeholder="What are you unsure about?" rows="3"></textarea>
-            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab6','Lab 6: Content Filtering')">Add Question</button></div>
+            <div class="tool-row"><button class="btn-add-q" onclick="addQuestion('lab6','Lab 6: Content Filtering &amp; Access Control')">Add Question</button></div>
           </div>
           <div>
             <div class="tool-label">ADD A NOTE</div>
@@ -444,6 +454,26 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/lab0-p007-a.png" alt="EDU-200 lab topology: the Corp Client PC connects through the Zero Trust Exchange to the Internet and, through the Corp ZPA Connector, to the Corporate Data Center 10.0.0.0/24 hosting Corp Win Svr 2025" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Student Admin<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-username-student">student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value var-pass">&lt;Session Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
         <li class="progress-item"><input type="checkbox" id="chk-lab6a" onchange="toggleDone(this)"><label for="chk-lab6a">Task 6.1: Threat protection reviewed</label></li>
@@ -452,17 +482,42 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab6d" onchange="toggleDone(this)"><label for="chk-lab6d">Task 6.4: YouTube allowed, Netflix blocked</label></li>
       </ul>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Task 6.1 · Threat protection</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-malware-protection-policy" target="_blank" rel="noopener noreferrer" title="The Malware Protection settings you review in this task">Configuring the Malware Protection Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-advanced-threat-protection" target="_blank" rel="noopener noreferrer" title="What Advanced Threat Protection covers: botnets, malicious content, phishing and more">About Advanced Threat Protection</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-advanced-threat-protection-policy" target="_blank" rel="noopener noreferrer" title="Every ATP setting, including the Page Risk (Suspicious Content Protection) slider">Configuring Advanced Threat Protection</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Tasks 6.2–6.3 · URL filtering</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-url-filtering" target="_blank" rel="noopener noreferrer" title="How URL Filtering rules, criteria and rule order work">About URL Filtering</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/configuring-url-filtering-policy" target="_blank" rel="noopener noreferrer" title="Adding a URL Filtering rule: categories, actions, rule order and status">Configuring the URL Filtering Policy</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-url-categories" target="_blank" rel="noopener noreferrer" title="Classes, super categories and categories such as Gambling and Entertainment/Recreation">About URL Categories</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/looking-up-urls-zscaler-admin-console" target="_blank" rel="noopener noreferrer" title="Check how Zscaler categorizes a URL when a block isn&#x27;t working as expected">Looking Up URLs</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 6.4 · Cloud App Control</div>
+          <a class="ref-link" href="https://help.zscaler.com/zia/about-cloud-app-control" target="_blank" rel="noopener noreferrer" title="How Cloud App Control allows or blocks individual SaaS apps, ahead of URL Filtering">About Cloud App Control</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/adding-rules-cloud-app-control-policy" target="_blank" rel="noopener noreferrer" title="Creating a rule for an application category">Adding Cloud App Control Rules</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/adding-streaming-media-rule-cloud-app-control" target="_blank" rel="noopener noreferrer" title="The Streaming Media category rule used to allow YouTube">Adding a Streaming Media Rule</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
 
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
       <div class="qr-item">
         <div class="qr-term">Student FQDN</div>
-        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, JoeSupport@, BevIT@).</div>
+        <div class="qr-def">Your unique tenant domain, e.g. zs9901.labtenant.com. Used in all login IDs (student@, joe@, bev@).</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Experience Center</div>
-        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This lab uses the Nav 1.0 (Original) layout.</div>
+        <div class="qr-def">console.zscaler.com, the unified admin console for ZIA, ZPA, ZDX and the Service Portal. This guide follows the Nav 2.0 layout: open features from the Search menu.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">Service Portal</div>
@@ -494,7 +549,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
       </div>
       <div class="qr-item">
         <div class="qr-term">Cloud App Control</div>
-        <div class="qr-def">Application-layer policy that identifies apps by DPI (e.g., WhatsApp) regardless of port. Separate from Firewall Filtering.</div>
+        <div class="qr-def">SaaS/Cloud App Policy that allows or blocks individual cloud apps (e.g., allow YouTube). It is enforced ahead of URL category rules.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">SSL Inspection</div>
@@ -533,8 +588,8 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="qr-def">ZDX root-cause engine. Click a point on ZDX Score Over Time → Analyze Score to see the ranked factors (Wi-Fi, DNS, latency…) and their confidence.</div>
       </div>
       <div class="qr-item">
-        <div class="qr-term">ZDX Copilot</div>
-        <div class="qr-def">AI assistant in ZDX that answers natural-language questions and summarizes root cause for a user's experience issue.</div>
+        <div class="qr-term">ZAgent</div>
+        <div class="qr-def">AI assistant in the Experience Center (top-right icon). With the Digital Experience agent and Troubleshooting skill, it explains the root cause of a user's poor experience.</div>
       </div>
       <div class="qr-item">
         <div class="qr-term">ZDX Probe</div>
@@ -550,7 +605,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <span class="page-nav-label">← PREVIOUS</span>
     <span class="page-nav-title">Lab 5: SSL Inspection</span>
   </a>
-  <div class="page-nav-message">Policy is power. You&rsquo;re learning to wield it.</div>
+  <div class="page-nav-message">Good policy is invisible to good users. That's the goal.</div>
   <a class="page-nav-btn page-nav-next" href="lab7.html">
     <span class="page-nav-label">NEXT →</span>
     <span class="page-nav-title">Lab 7: DNS Security</span>
@@ -558,7 +613,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 </div>
 
 <footer>
-  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0</span>
+  <span>EDU-200 · Zscaler for Users — Administrator · Hands-On Lab Guide · Rev 2.0 · Oct 2026</span>
   <span>Lab 6: Content Filtering</span>
 </footer>
 
@@ -649,8 +704,8 @@ function applyConfig(){
 
   // Derived usernames
   var studentUser=fqdn?'student@'+fqdn:'student@<Student FQDN>';
-  var joeUser=fqdn?'JoeSupport@'+fqdn:'JoeSupport@<Student FQDN>';
-  var bevUser=fqdn?'BevIT@'+fqdn:'BevIT@<Student FQDN>';
+  var joeUser=fqdn?'joe@'+fqdn:'joe@<Student FQDN>';
+  var bevUser=fqdn?'bev@'+fqdn:'bev@<Student FQDN>';
 
   document.querySelectorAll('.d-username-student').forEach(function(el){el.textContent=studentUser;});
   document.querySelectorAll('.d-username-joe').forEach(function(el){el.textContent=joeUser;});
@@ -976,6 +1031,12 @@ document.addEventListener('DOMContentLoaded',function(){
   sessionStorage.setItem('pt','1');
 });
 
+</script>
+<script>
+// Sidebar: Portal Credentials accordion + copy, and topology click-to-expand
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||v.indexOf('<')>-1){btn.textContent='!';setTimeout(function(){btn.textContent='\u2398';},1200);return;}copyToClipboard(v,btn);}
+document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb)return;var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
 </script>
 </body>
 </html>
