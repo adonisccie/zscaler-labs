@@ -279,7 +279,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <ul class="step-list">
             <li>Click <strong>Next</strong>.</li>
           </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab1-03.png" alt="Add User General Information step for the example user Joe Web, with SyncZPA set to 123 and the Next button highlighted" loading="lazy"><div class="screenshot-caption">General Information for the example user. The <strong>Department</strong> value shown (Support) comes from the example and isn't a step in this lab. If the form won't continue without a department, ask your instructor.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-03.png" alt="Add User General Information step with the Login ID, email and name fields hidden, Status and Same As Login ID on, Department left at Select, and Additional Attributes SyncZPA set to 123" loading="lazy"><div class="screenshot-caption">General Information: the example user's Login ID, email and names are hidden. <strong>Same As Login ID</strong> is on, <strong>Department</strong> is left empty, and <strong>Additional Attributes</strong> &gt; <strong>SyncZPA</strong> is <code>123</code>.</div></div>
           <ul class="step-list">
             <li>On the <strong>Security Settings</strong> step, configure the following:</li>
           </ul>
@@ -340,7 +340,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
                 <li>Navigate to the <strong>Entitlements</strong> tab.</li>
                 <li>Verify that the <strong>Zscaler Internet Access</strong> service entitlement is assigned to your user.</li>
               </ul>
-              <div class="screenshot-embed"><img src="screenshots/lab1-09.png" alt="View User Details pane for an example user showing Administrative Entitlements and Service Entitlements, with Zscaler Internet Access listed under Service Entitlements" loading="lazy"><div class="screenshot-caption">User details: look for <strong>Zscaler Internet Access</strong> under <strong>Service Entitlements</strong>. The example account also has administrative entitlements; your new user gets only the service entitlement in this lab.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab1-09.png" alt="Users list with the example user selected and the View User Details pane showing No administrative entitlements assigned and Service Entitlements (1): Zscaler Internet Access" loading="lazy"><div class="screenshot-caption">User details: <strong>No administrative entitlements assigned</strong>, and one service entitlement, <strong>Zscaler Internet Access</strong>, which the user inherits from Helpdesk L1.</div></div>
               <ul class="sub-steps">
                 <li>Click the <strong>X</strong> button to close the <strong>User</strong> pane.</li>
               </ul>
@@ -380,7 +380,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
           <ul class="step-list">
             <li>Verify your user's service entitlement access for <strong>Zscaler Internet Access</strong>: in the Zscaler Client Connector console, verify that Zscaler Internet Access is <strong>ON</strong> for your user.</li>
           </ul>
-          <div class="screenshot-embed"><img src="screenshots/lab1-12.png" alt="Zscaler Client Connector Internet Security page showing the example user's username and Service Status ON" loading="lazy"><div class="screenshot-caption">Zscaler Client Connector shows ZIA on the <strong>Internet Security</strong> page. Your username and <strong>Service Status: ON</strong> confirm the entitlement works.</div></div>
+          <div class="screenshot-embed"><img src="screenshots/lab1-12.png" alt="Zscaler Client Connector Internet Security page with the username hidden, Service Status ON, Network Type Off-Trusted Network and Tunnel Version v1.0" loading="lazy"><div class="screenshot-caption">Zscaler Client Connector shows ZIA on the <strong>Internet Security</strong> page. Your username and <strong>Service Status: ON</strong> confirm the entitlement works. <strong>Tunnel Version v1.0</strong> is expected for now; you configure Z-Tunnel 2.0 in Lab 2.</div></div>
           <ul class="step-list">
             <li>After verifying your user's service entitlement, <strong>log out of Zscaler Client Connector</strong>.</li>
           </ul>

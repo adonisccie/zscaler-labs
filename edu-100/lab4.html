@@ -159,7 +159,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <p style="margin-top:10px;"><strong>By the end of this lab, you will be able to:</strong></p>
         <ul style="margin-top:6px;">
           <li>Confirm that a high-risk website is reachable before the policy is applied.</li>
-          <li>Create and activate a URL Filtering rule that blocks the Adult Materials, Shopping and Auctions, Gambling, and Video Streaming categories.</li>
+          <li>Create and activate a URL Filtering rule that blocks the Adult Materials, Shopping and Auctions, Gambling, and Entertainment/Recreation categories.</li>
           <li>Test the end-user experience, and troubleshoot the rule if a site is still reachable.</li>
         </ul>
         <div class="callout callout-success"><p><strong>Success criteria</strong></p><ul class="criteria-list"><li>☐ <code>888.com</code> loads before the rule exists.</li><li>☐ Rule <strong>Risky URL Categories</strong> is at Rule Order 1, Block, Enabled, with all four categories, and the change is activated.</li><li>☐ <code>888.com</code> and <code>ebay.com</code> show a Zscaler block page that names the category.</li><li>☐ You checked a streaming site and know how to look up a site's category if it isn't blocked.</li></ul></div>
@@ -258,7 +258,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
                 <tr><td class="values-field">Rule Name</td><td><code>Risky URL Categories</code></td></tr>
                 <tr><td class="values-field">Rule Order</td><td>Click <strong>Edit</strong> and change it to <code>1</code> if required</td></tr>
                 <tr><td class="values-field">Rule Status</td><td><strong>Enabled</strong></td></tr>
-                <tr><td class="values-field">Criteria · URL Categories</td><td>Search for and add:<br><strong>Adult Materials</strong><br><strong>Shopping and Auctions</strong><br><strong>Gambling</strong><br><strong>Video Streaming</strong></td></tr>
+                <tr><td class="values-field">Criteria · URL Categories</td><td>Search for and add:<br><strong>Adult Materials</strong><br><strong>Shopping and Auctions</strong><br><strong>Gambling</strong><br><strong>Entertainment/Recreation</strong></td></tr>
                 <tr><td class="values-field">Request Methods and Protocols</td><td>Ensure <strong>all options</strong> are selected</td></tr>
               </tbody></table></div>
               <div class="screenshot-embed"><img src="screenshots/lab4-03.png" alt="URL Filtering Add Rule page with URL Categories and Request Methods criteria, Web Traffic action Block, Rule Name Risky URL Categories, Rule Order 1, Rule Status Enabled, and the Save button" loading="lazy"><div class="screenshot-caption">Add Rule: the Block action is under <strong>Actions &gt; Web Traffic</strong>. The category box lists the selected categories and shows "+11" for the rest that don't fit.</div></div>
@@ -297,7 +297,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
                 <li>Attempt to access streaming websites such as <code>YouTube.com</code> or <code>Netflix.com</code>.</li>
                 <li>Verify whether these websites are blocked. If a site is still reachable, look up its URL category in ZIA; streaming sites may be classified under a category that is not included in the rule.</li>
               </ul>
-              <div class="screenshot-embed"><img src="screenshots/lab4-05.png" alt="Zscaler block page for youtube.com: Not allowed to browse Video Streaming category" loading="lazy"><div class="screenshot-caption">YouTube is blocked as <strong>Video Streaming</strong>, one of the four categories in the rule.</div></div>
+              <div class="screenshot-embed"><img src="screenshots/lab4-05.png" alt="Zscaler block page for youtube.com: Not allowed to browse Video Streaming category" loading="lazy"><div class="screenshot-caption">In this example, YouTube is blocked and the block page names the category it matched: <strong>Video Streaming</strong>. If a streaming site still loads in your pod, look up its URL category; it may not fall under the four categories in the rule.</div></div>
               <div class="callout callout-note"><p><strong>Note:</strong> If testing does not work, try using Incognito Mode in the browser.</p></div>
             </li>
             <li>If the testing fails, verify the URL Filtering policy status:
@@ -313,7 +313,7 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <div class="mental-note-block-icon">🧠</div>
         <div class="mental-note-block-inner">
           <div class="mental-note-block-label">MENTAL NOTE</div>
-          <div class="mental-note-block-text"><strong>Rule:</strong> <code>Risky URL Categories</code>, Rule Order 1, <strong>Block</strong>, Enabled: Adult Materials, Shopping and Auctions, Gambling, Video Streaming. <strong>Result:</strong> a Zscaler block page that names the category. <strong>Still reachable?</strong> Look up the site's category, confirm the rule is Enabled and activated, and retest in Incognito.</div>
+          <div class="mental-note-block-text"><strong>Rule:</strong> <code>Risky URL Categories</code>, Rule Order 1, <strong>Block</strong>, Enabled: Adult Materials, Shopping and Auctions, Gambling, Entertainment/Recreation. <strong>Result:</strong> a Zscaler block page that names the category. <strong>Still reachable?</strong> Look up the site's category, confirm the rule is Enabled and activated, and retest in Incognito.</div>
         </div>
       </div>
 
