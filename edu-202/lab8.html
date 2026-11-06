@@ -36,6 +36,58 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
 .ref-link:hover::after{color:var(--blue);}
 .ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
 </style>
+<style id="export-css">
+/* EXPORT MY WORK: download the student's questions and notes, or print the whole lab with them */
+.export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 32px;background:var(--surface);border-bottom:1px solid var(--border);}
+.export-bar-label{font-size:11px;font-weight:600;letter-spacing:0.14em;color:var(--text);}
+.export-bar-hint{font-size:11px;color:var(--text-muted);}
+.export-bar-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.export-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--blue);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;letter-spacing:0.04em;cursor:pointer;font-family:'Epilogue',sans-serif;transition:background 0.15s,border-color 0.15s,color 0.15s;white-space:nowrap;}
+.export-btn:hover{background:var(--blue-glow);border-color:var(--blue);}
+.export-btn[disabled]{opacity:0.6;cursor:progress;}
+.export-btn.flash-ok{color:var(--green);border-color:var(--green-border);background:var(--green-light);}
+.export-btn.flash-warn{color:var(--amber);border-color:var(--amber-border);background:var(--amber-light);}
+.export-btn-danger{color:var(--red);}
+.export-btn-danger:hover{background:var(--red-light);border-color:var(--red-border);}
+.export-btn-danger-solid{background:var(--red);border-color:var(--red);color:#fff;}
+.export-btn-danger-solid:hover{background:#991b1b;border-color:#991b1b;}
+.export-confirm{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.export-confirm-text{font-size:11.5px;font-weight:600;color:var(--red);}
+.export-bar-actions[hidden],.export-confirm[hidden],.export-bar.confirming .export-bar-hint{display:none;}
+/* print-only blocks: added just before printing, removed afterwards, never shown on screen */
+.pr-only{display:none;}
+.pr-head{border-bottom:2px solid var(--blue);padding-bottom:10px;margin-bottom:18px;}
+.pr-course{font-size:10.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);}
+.pr-meta{font-size:12px;color:var(--text-muted);margin-top:4px;}
+.pr-meta strong{color:var(--text);}
+.pr-mywork{margin-top:24px;}
+.pr-task{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin:10px 0 2px;}
+.pr-list{padding-left:22px;margin:4px 0 10px;}
+.pr-list li{font-size:13.5px;line-height:1.6;margin-bottom:6px;white-space:pre-wrap;color:var(--text-soft);}
+.pr-empty{font-size:13px;color:var(--text-muted);font-style:italic;margin:4px 0 14px;}
+.pr-ref-group{margin:8px 0 10px;}
+.pr-ref-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2px;}
+.pr-ref{font-size:13px;line-height:1.45;margin:3px 0;}
+.pr-ref a{color:var(--blue);font-weight:600;}
+.pr-ref span{display:block;color:var(--text-muted);font-size:11px;word-break:break-all;}
+@media print{
+  @page{size:A4;margin:14mm 14mm 16mm;}
+  html,body{background:#fff!important;}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:1!important;}
+  header,.top-panels,.export-bar,.sidebar,.page-nav,footer,.lightbox-overlay,.section-qa,.copy-inline,.task-collapsible-chevron,.quick-ref{display:none!important;}
+  .pr-only{display:block;}
+  main{display:block;max-width:none;margin:0;padding:0;}
+  .section-block{margin-bottom:0;}
+  .section-block h2,.section-block h3,.task-collapsible-header,.lab-badge,.pr-task{break-after:avoid;}
+  .task-collapsible{overflow:visible;}
+  .task-collapsible-header{cursor:default;}
+  .task-collapsible-body{display:block!important;}
+  .screenshot-embed,.callout,.lab-meta,.lab-hero,.pr-list li,.pr-ref-group{break-inside:avoid;}
+  .screenshot-embed img{max-height:270px!important;cursor:default;}
+  .lab-hero img{max-height:200px;width:auto!important;margin:0 auto;}
+  a{text-decoration:none;}
+}
+</style>
 </head>
 <body>
 
@@ -73,6 +125,20 @@ function copyAllNs(){try{var all=[];SECTION_IDS.forEach(function(id){try{var ns=
       <div id="n-list" style="margin-top:10px;"></div>
     </div>
     <button class="copy-all-btn" onclick="copyAllNs()" title="Copy all notes">⎘ Copy All</button>
+  </div>
+</div>
+<div class="export-bar">
+  <span class="export-bar-label">EXPORT MY WORK</span>
+  <span class="export-bar-hint">Download the questions and notes you saved on this lab's tasks, or print the whole lab with them included</span>
+  <div class="export-bar-actions">
+    <button type="button" class="export-btn" onclick="downloadMyWork(this)" title="Download your questions and notes from every task on this lab as a text file">&#10515; Download .txt</button>
+    <button type="button" class="export-btn" onclick="printFullLab(this)" title="Print the whole lab with your questions and notes. Pick Save as PDF in the print dialog to get a PDF.">&#128424; Print lab + my notes / PDF</button>
+    <button type="button" class="export-btn export-btn-danger" id="clear-work-btn" onclick="askClearMyWork(this)" title="Delete the questions and notes you saved on this lab">&#128465; Clear my work</button>
+  </div>
+  <div class="export-confirm" id="export-confirm" role="alert" hidden>
+    <span class="export-confirm-text" id="export-confirm-text"></span>
+    <button type="button" class="export-btn export-btn-danger-solid" onclick="clearMyWork()">Yes, clear</button>
+    <button type="button" class="export-btn" id="export-confirm-cancel" onclick="cancelClearMyWork()">Cancel</button>
   </div>
 </div>
 
@@ -507,6 +573,64 @@ document.addEventListener('DOMContentLoaded',function(){
 function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
 function copySidebarCred(val,btn){try{navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
 function copyPortalCred(type,btn){try{var d=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');var val='';if(type==='student-user')val=d.fqdn?'student@'+d.fqdn:'';else if(type==='hvac-user')val=d.fqdn?'hvac@'+d.fqdn:'';else if(type==='pass')val=d.pass||'';if(!val){if(btn){btn.textContent='!';setTimeout(function(){btn.textContent='⎘';},1200);}return;}navigator.clipboard.writeText(val);if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent='⎘';},1200);}}catch(e){}}
+/* EXPORT MY WORK: .txt = the student's questions and notes from every task; Print / PDF (and Ctrl+P) = the whole lab with them included.
+   EDU-202 keeps questions and notes per task (PAGE_KEY-sq-<id> / PAGE_KEY-sn-<id>, ids in SECTION_IDS). Renumbered pages keep their old
+   PAGE_KEY and task ids, so labels come from the page itself and the file name uses the lab number in the page title. */
+var COURSE_NAME='EDU-202 · Zscaler for Users — Engineer';
+function labTitle(){return document.title.replace(/\s+—\s+EDU-202\s*$/,'');}
+function labNumber(){var m=document.title.match(/^Lab\s+(\d+)/);return m?m[1]:PAGE_KEY.replace(/^.*-lab/,'');}
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function tenantFqdn(){try{var c=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');return c&&c.fqdn?String(c.fqdn):'';}catch(e){return '';}}
+function exportIds(){return typeof SECTION_IDS!=='undefined'&&SECTION_IDS?SECTION_IDS:[];}
+function readTaskList(kind,id){try{var a=JSON.parse(localStorage.getItem(PAGE_KEY+'-'+kind+'-'+id)||'[]');return Array.isArray(a)?a.map(String).filter(function(s){return s.trim();}):[];}catch(e){return [];}}
+function taskLabel(id){var qa=document.querySelector('.section-qa[data-section="'+id+'"]'),tc=qa&&qa.closest('.task-collapsible');
+  if(tc){var b=tc.querySelector('.task-num-badge'),t=tc.querySelector('.task-collapsible-title');if(b)return b.textContent.trim()+(t?' · '+t.textContent.trim():'');}
+  var st=qa&&qa.querySelector('.section-qa-title');return st?st.textContent.replace(/^.*—\s*/,'').trim():id;}
+function collectMyWork(){var groups=[],nq=0,nn=0;exportIds().forEach(function(id){var qs=readTaskList('sq',id),ns=readTaskList('sn',id);nq+=qs.length;nn+=ns.length;if(qs.length||ns.length)groups.push({id:id,label:taskLabel(id),qs:qs,ns:ns});});return {groups:groups,nq:nq,nn:nn};}
+function hasMyWork(w){return w.nq+w.nn>0;}
+function flashExport(btn,msg,ok){if(!btn)return;if(!btn.hasAttribute('data-label'))btn.setAttribute('data-label',btn.innerHTML);btn.textContent=msg;btn.classList.remove('flash-ok','flash-warn');btn.classList.add(ok?'flash-ok':'flash-warn');clearTimeout(btn._flashT);btn._flashT=setTimeout(function(){btn.innerHTML=btn.getAttribute('data-label');btn.classList.remove('flash-ok','flash-warn');},1800);}
+function buildMyWorkText(w){var NL='\r\n',rule='----------------------------------------',L=[],who=tenantFqdn();function ind(s,pad){return String(s).replace(/\r?\n/g,NL+pad);}
+  L.push(COURSE_NAME,labTitle());if(who)L.push('Tenant: '+who);L.push('Exported: '+new Date().toLocaleString(),'========================================','');
+  function section(title,key,total){L.push(title+' ('+total+')',rule);if(!total){L.push('None saved.','');return;}var n=0;
+    w.groups.forEach(function(g){if(!g[key].length)return;L.push(g.label);g[key].forEach(function(t){n++;var p='  '+n+'. ';L.push(p+ind(t,new Array(p.length+1).join(' ')));});L.push('');});}
+  section('MY QUESTIONS','qs',w.nq);section('MY NOTES','ns',w.nn);
+  return L.join(NL);}
+function myWorkFileName(){var d=new Date(),p=function(n){return (n<10?'0':'')+n;};return 'EDU-202_Lab'+labNumber()+'_my-work_'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.txt';}
+function downloadMyWork(btn){var w=collectMyWork();if(!hasMyWork(w)){flashExport(btn,'Nothing saved yet',false);return;}try{var blob=new Blob(['﻿'+buildMyWorkText(w)],{type:'text/plain;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=myWorkFileName();document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1000);flashExport(btn,'✓ Downloaded',true);}catch(e){flashExport(btn,'Download failed',false);}}
+/* print: add the student's work into the page just before printing, take it out again afterwards */
+function removePrintBlocks(){document.querySelectorAll('.pr-only').forEach(function(el){el.remove();});document.querySelectorAll('[data-pr-pass]').forEach(function(el){el.textContent=el.getAttribute('data-pr-pass');el.removeAttribute('data-pr-pass');el.classList.add('filled');});}
+function buildPrintBlocks(){removePrintBlocks();var w=collectMyWork(),who=tenantFqdn(),col=document.querySelector('.content-col');if(!col)return;
+  /* never print the student's session password: show the placeholder while printing */
+  col.querySelectorAll('.var-pass.filled').forEach(function(el){el.setAttribute('data-pr-pass',el.textContent);el.textContent='<Session Password>';el.classList.remove('filled');});
+  var head=document.createElement('div');head.className='pr-only pr-head';
+  head.innerHTML='<div class="pr-course">'+escHTML(COURSE_NAME)+'</div><div class="pr-meta">'+(who?'Tenant: <strong>'+escHTML(who)+'</strong> · ':'')+'Printed: '+escHTML(new Date().toLocaleString())+'</div>';
+  col.insertBefore(head,col.firstChild);
+  function section(title,key,total){var h='<h3>'+title+' ('+total+')</h3>';if(!total)return h+'<p class="pr-empty">None saved.</p>';var n=0;
+    w.groups.forEach(function(g){if(!g[key].length)return;h+='<div class="pr-task">'+escHTML(g.label)+'</div><ol class="pr-list" start="'+(n+1)+'">';g[key].forEach(function(t){n++;h+='<li>'+escHTML(t)+'</li>';});h+='</ol>';});return h;}
+  var html=section('My Questions','qs',w.nq)+section('My Notes','ns',w.nn);
+  var groups=document.querySelectorAll('.sidebar .ref-group');
+  if(groups.length){html+='<h3>Reference Links</h3>';groups.forEach(function(g){var lab=g.querySelector('.ref-group-label');html+='<div class="pr-ref-group">'+(lab?'<div class="pr-ref-label">'+escHTML(lab.textContent)+'</div>':'');g.querySelectorAll('a.ref-link').forEach(function(a){html+='<div class="pr-ref"><a href="'+escHTML(a.href)+'">'+escHTML(a.textContent)+'</a><span>'+escHTML(a.href)+'</span></div>';});html+='</div>';});}
+  var mw=document.createElement('div');mw.className='pr-only pr-mywork';mw.innerHTML=html;col.appendChild(mw);
+  document.querySelectorAll('img[loading="lazy"]').forEach(function(img){img.loading='eager';});}
+window.addEventListener('beforeprint',buildPrintBlocks);
+window.addEventListener('afterprint',removePrintBlocks);
+/* the button waits for every screenshot to load first, so none print blank */
+function waitForImages(ms){var imgs=[].slice.call(document.querySelectorAll('.content-col img'));imgs.forEach(function(img){img.loading='eager';});return Promise.race([Promise.all(imgs.map(function(img){return img.complete?0:new Promise(function(r){img.addEventListener('load',r,{once:true});img.addEventListener('error',r,{once:true});});})),new Promise(function(r){setTimeout(r,ms);})]);}
+function printFullLab(btn){if(btn){if(!btn.hasAttribute('data-label'))btn.setAttribute('data-label',btn.innerHTML);btn.disabled=true;btn.textContent='Preparing…';}waitForImages(8000).then(function(){if(btn){btn.disabled=false;btn.innerHTML=btn.getAttribute('data-label');}window.print();});}
+/* clear: removes this lab's questions and notes (and any unsaved text in the task Q&A boxes) after a confirm step.
+   The saved Lab Configuration, Lab Progress ticks, task open/closed state and other labs are not touched. */
+function plural(n,word){return n+' '+word+(n===1?'':'s');}
+function unsavedTyped(){return [].slice.call(document.querySelectorAll('.section-qa-textarea')).some(function(t){return t.value.trim();});}
+function askClearMyWork(btn){var w=collectMyWork(),parts=[];if(w.nq)parts.push(plural(w.nq,'question'));if(w.nn)parts.push(plural(w.nn,'note'));
+  if(!parts.length&&!unsavedTyped()){flashExport(btn,'Nothing to clear',false);return;}
+  var what=parts.length?parts.join(' and '):'the text you typed';
+  document.getElementById('export-confirm-text').textContent='Delete '+what+' from this lab? This can\'t be undone.';
+  document.querySelector('.export-bar').classList.add('confirming');document.querySelector('.export-bar-actions').hidden=true;document.getElementById('export-confirm').hidden=false;document.getElementById('export-confirm-cancel').focus();}
+function cancelClearMyWork(){document.getElementById('export-confirm').hidden=true;document.querySelector('.export-bar-actions').hidden=false;document.querySelector('.export-bar').classList.remove('confirming');}
+function clearMyWork(){exportIds().forEach(function(id){try{localStorage.removeItem(PAGE_KEY+'-sq-'+id);localStorage.removeItem(PAGE_KEY+'-sn-'+id);}catch(e){}renderSectionQ(id);renderSectionN(id);});
+  document.querySelectorAll('.section-qa-textarea').forEach(function(t){t.value='';});
+  loadQList();loadNList();cancelClearMyWork();flashExport(document.getElementById('clear-work-btn'),'✓ Cleared',true);}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.getElementById('export-confirm').hidden)cancelClearMyWork();});
 </script>
 </body>
 </html>
