@@ -1,0 +1,182 @@
+{
+ "_about": "Sidebar data for EDU-280. Render with: python <lab-guide-builder>/scripts/add_sidebar.py edu-280. Every Reference Link was rendered in headless Chrome (check_links.py) on 2026-11-08.",
+ "ref_base": "https://help.zscaler.com",
+ "ref_foot": "Zscaler Help Portal · opens in a new tab",
+ "topology": {
+  "src": "screenshots/intro-s01.png",
+  "alt": "EDU-280 pod topology: ZTB-1 (gw-01, Active) and ZTB-2 (gw-02, Standby) linked by ge4 HA (VRRP), each with WAN ge1 10.120.1.x and ge2 10.130.1.x to two ISPs and the Zscaler Zero Trust Exchange; LAN VLAN 10 Servers (Windows Server 10.1.10.10), VLAN 20 IoT (10.1.20.10) and VLAN 30 OT (OT1 10.1.30.10, OT2 DHCP /32); the Corp Client PC connects with Client Connector; the Data Center 10.73.50.0/24 hosts dcweb.ztwan.lab, App Connectors and DNS 10.73.50.20/.21"
+ },
+ "environment": [
+  {"id": "ztb-1", "name": "ZTB-1 (gw-01) · Active", "rows": [
+   {"label": "WAN1", "value": "10.120.1.1"},
+   {"label": "WAN2", "value": "10.130.1.1"},
+   {"label": "GW", "value": "10.120.1.254"}]},
+  {"id": "ztb-2", "name": "ZTB-2 (gw-02) · Standby", "rows": [
+   {"label": "WAN1", "value": "10.120.1.2"},
+   {"label": "WAN2", "value": "10.130.1.2"},
+   {"label": "GW", "value": "10.130.1.254"}]},
+  {"id": "server", "name": "Server · Subnet10", "rows": [
+   {"label": "IP", "value": "10.1.10.10"},
+   {"label": "GW", "value": "10.1.10.1"}]},
+  {"id": "iot", "name": "IoT · Subnet20", "rows": [
+   {"label": "IP", "value": "10.1.20.10"},
+   {"label": "GW", "value": "10.1.20.1"}]},
+  {"id": "ot", "name": "OT1 / OT2 · Subnet30", "rows": [
+   {"label": "OT1", "value": "10.1.30.10"},
+   {"label": "OT2", "value": "DHCP (/32)", "copy": false},
+   {"label": "GW", "value": "10.1.30.1"}]},
+  {"id": "dc", "name": "Data Center · 10.73.50.0/24", "rows": [
+   {"label": "DNS", "value": "10.73.50.20"},
+   {"label": "DNS", "value": "10.73.50.21"},
+   {"label": "Web", "value": "dcweb.ztwan.lab"}]}
+ ],
+ "accounts": {
+  "cloudshare": {"name": "CloudShare (lab VMs)", "rows": [
+   {"label": "User", "value": "<email from your invitation>", "copy": false},
+   {"label": "Pass", "value": "<CloudShare Passphrase>", "input": "cs-input"}]},
+  "portal": {"name": "Experience Center", "rows": [
+   {"label": "URL", "value": "https://console.zscaler.com"},
+   {"label": "User", "value": "pod##-student@<Student FQDN>", "class": "d-login"},
+   {"label": "Pass", "value": "<Portal Password>", "input": "pass-input"}]},
+  "zcc": {"name": "Client Connector (Corp Client PC)", "rows": [
+   {"label": "User", "value": "pod##-student@<Student FQDN>", "class": "d-login"},
+   {"label": "Pass", "value": "<Portal Password>", "input": "pass-input"}]},
+  "gw-console": {"name": "ZTB-1 / ZTB-2 console (first login)", "rows": [
+   {"label": "User", "value": "admin"},
+   {"label": "Pass", "value": "a!rg@p"},
+   {"label": "Note", "note": "Default password. You must set a new one at first login, so write it down."}]},
+  "admin-console": {"name": "Appliance Admin Console", "rows": [
+   {"label": "User", "value": "admin"},
+   {"label": "Pass", "value": "<the password you set in Lab 1>", "copy": false}]},
+  "winserver-rdp": {"name": "Server (RDP through ZPA)", "rows": [
+   {"label": "Host", "html": "<span class=\"var var-podL\">pod##</span>-winserver.ztwan.lab"},
+   {"label": "User", "value": "administrator"},
+   {"label": "Pass", "value": "Zscaler123!"}]},
+  "ot1-ssh": {"name": "OT1 (SSH from the Server)", "rows": [
+   {"label": "Host", "value": "10.1.30.10"},
+   {"label": "User", "value": "student"},
+   {"label": "Pass", "value": "Zscaler123!"}]}
+ },
+ "pages": {
+  "lab0": {"topology": true, "environment": true, "accounts": ["cloudshare", "portal"]},
+  "lab1": {"topology": true, "accounts": ["portal", "gw-console", "admin-console"], "refs": [
+   {"label": "Task 1.1 · Sites and templates", "links": [
+    {"href": "/zero-trust-branch/managing-sites", "text": "Managing Sites", "tip": "How a site is added from a template, with its Internet & SaaS location and WAN settings"},
+    {"href": "/zero-trust-branch/managing-templates", "text": "Managing Templates", "tip": "What a site template pre-loads, like the vm-ha-edu280 template you build from"}]},
+   {"label": "Tasks 1.2–1.3 · Activating the gateways", "links": [
+    {"href": "/zero-trust-branch/deploying-zero-trust-branch-appliance", "text": "Deploying a Zero Trust Branch Appliance", "tip": "Changing the default admin password on the console and activating with the activation code"},
+    {"href": "/zero-trust-branch/resolving-zero-trust-branch-configuration-activation-issues", "text": "Resolving Configuration and Activation Issues", "tip": "What to check when activation fails: the WAN interface must reach the internet and the code must be valid"}]},
+   {"label": "Task 1.5 · High availability", "links": [
+    {"href": "/zero-trust-branch/creating-zero-trust-branch-high-availability-cluster", "text": "Creating a ZTB High Availability Cluster", "tip": "How the primary node takes the Active role and the secondary node the Standby role, and how they fail over"},
+    {"href": "/zero-trust-branch/configuring-ha-site-vrrp", "text": "Configuring an HA Site with VRRP", "tip": "The High Availability settings of a VRRP site, such as Track Interface and Preempt"}]},
+   {"label": "Task 1.6 · App Connector", "links": [
+    {"href": "/zero-trust-branch/adding-app-connector-site", "text": "Adding App Connectors to a Site", "tip": "Adding an App Connector to the site with a provisioning key, as in Task 1.6"},
+    {"href": "/zpa/about-connector-provisioning-keys", "text": "About App Connector Provisioning Keys (ZPA)", "tip": "What the provisioning key you copy from Private Access controls"}]},
+   {"label": "Tasks 1.7–1.8 · VLANs and WAN links", "links": [
+    {"href": "/zero-trust-branch/configuring-vlan", "text": "Configuring a VLAN", "tip": "The VLAN form: LAN or WAN zone, interface IPs, virtual IP and the Private DNS servers for the VLAN"},
+    {"href": "/zero-trust-branch/configuring-dhcp-options-site", "text": "Configuring DHCP Options for a Site", "tip": "The DHCP options a site hands out to hosts in its LAN VLANs"}]}
+  ]},
+  "lab2": {"topology": true, "accounts": ["portal"], "refs": [
+   {"label": "Tasks 2.1–2.2 · Security policy", "links": [
+    {"href": "/zero-trust-branch/understanding-security-policies", "text": "Understanding Security Policies", "tip": "The evaluation order: site policies are checked first, then template policies; the first match stops evaluation"},
+    {"href": "/zero-trust-branch/configuring-security-policies", "text": "Configuring Security Policies", "tip": "The Add Policy form and its actions: Accept, Reject, Drop and Skip"}]},
+   {"label": "Tasks 2.3–2.4 · Skip, global and site rules", "links": [
+    {"href": "/zero-trust-branch/managing-security-policies", "text": "Managing Security Policies", "tip": "Editing, cloning and ordering rules at global, template and site level; system rules can't be reordered"}]}
+  ]},
+  "lab3": {"topology": true, "accounts": ["portal", "zcc", "winserver-rdp"], "refs": [
+   {"label": "Task 3.1 · DTLS tunnels and forwarding", "links": [
+    {"href": "/zero-trust-branch/configuring-custom-internet-saas-gateway-zero-trust-branch", "text": "Configuring a Custom Internet & SaaS Gateway", "tip": "Switch to Z-Tunnel: DTLS/TLS tunnels to the nearest primary and secondary data centers"},
+    {"href": "/zero-trust-branch/understanding-forwarding-policies", "text": "Understanding Forwarding Policies", "tip": "The default rule that sends internet and SaaS traffic to ZIA, which you point at ZIA-DTLS"}]},
+   {"label": "Task 3.2 · Validate in ZIA", "links": [
+    {"href": "/zia/tunnel-insights-logs-filters", "text": "Tunnel Insights Logs: Filters (ZIA)", "tip": "The filters, such as Location, that you use in Tunnel Insights to find your pod's tunnels"},
+    {"href": "/zia/about-url-filtering", "text": "About URL Filtering (ZIA)", "tip": "Why the gambling test site shows the Zscaler block page"}]},
+   {"label": "Task 3.3 · Client Connector", "links": [
+    {"href": "/zscaler-client-connector/enrolling-zscaler-service-zscaler-client-connector-classic-ui", "text": "Enrolling in the Zscaler Service (ZCC)", "tip": "Signing in to Client Connector on the Corp Client PC"},
+    {"href": "/zscaler-client-connector/about-trusted-networks", "text": "About Trusted Networks (ZCC)", "tip": "How Client Connector decides it is Off-Trusted Network and sends private traffic through ZPA"}]},
+   {"label": "Task 3.4 · Internal DNS policy", "links": [
+    {"href": "/zero-trust-branch/configuring-site-dns-policies", "text": "Configuring Site DNS Policies", "tip": "Adding the DNS policy that redirects lookups for the server name to the private DNS servers"}]},
+   {"label": "Tasks 3.5–3.6 · ZPA access and diagnostics", "links": [
+    {"href": "/zero-trust-branch/understanding-private-app-connectivity-branches", "text": "Private App Connectivity for Branches", "tip": "How Zero Trust Branch and Private Access give users access to branch servers like the RDP target"},
+    {"href": "/zpa/accessing-user-activity-diagnostics", "text": "Accessing User Activity Diagnostics (ZPA)", "tip": "Finding your RDP session in User Activity under Private Diagnostics"}]}
+  ]},
+  "lab4": {"topology": true, "accounts": ["portal"], "refs": [
+   {"label": "Task 4.1 · Assets and /32 segmentation", "links": [
+    {"href": "/zero-trust-branch/managing-your-assets", "text": "Managing Your Assets", "tip": "Dashboard > Asset Intelligence, where you find OT2's DHCP address"},
+    {"href": "/zero-trust-branch/understanding-micro-subnets", "text": "Understanding Micro-Subnets", "tip": "Why /32 device segmentation sends every OT flow through the gateway and limits lateral movement"}]},
+   {"label": "Task 4.2 · Blocking traffic between OT devices", "links": [
+    {"href": "/zero-trust-branch/configuring-security-policies", "text": "Configuring Security Policies", "tip": "The Add Policy form you use for the Reject rule between OT devices"}]}
+  ]},
+  "lab5": {"topology": true, "accounts": ["portal", "admin-console"], "refs": [
+   {"label": "Task 5.2 · SaaS application object", "links": [
+    {"href": "/zero-trust-branch/about-objects", "text": "About Objects", "tip": "What objects are and how policies reuse them as sources and destinations"},
+    {"href": "/zero-trust-branch/adding-objects", "text": "Adding Objects", "tip": "How to create an object under Resources > Objects, as you do for the Adobe group"}]},
+   {"label": "Task 5.3 · PBR forwarding rule", "links": [
+    {"href": "/zero-trust-branch/configuring-forwarding-policies", "text": "Configuring Forwarding Policies", "tip": "The forwarding rule form: primary and secondary interfaces, next-hop IPs and Traffic Distribution"},
+    {"href": "/zero-trust-branch/understanding-forwarding-policies", "text": "Understanding Forwarding Policies", "tip": "How policy-based routing overrides the default route for selected traffic"}]},
+   {"label": "Task 5.4 · Proving the steering", "links": [
+    {"href": "/zero-trust-branch/interface-monitoring", "text": "Interface Monitoring", "tip": "The 0–30 link score from jitter, latency and loss that Best uses to pick a WAN link"},
+    {"href": "/zero-trust-branch/testing-routing-policies", "text": "Testing Forwarding Policies", "tip": "Capturing with tcpdump on the primary and secondary interfaces to prove where traffic leaves"}]}
+  ]},
+  "lab6": {"topology": true, "accounts": ["portal"], "refs": [
+   {"label": "Task 6.2 · Domain objects", "links": [
+    {"href": "/zero-trust-branch/adding-objects", "text": "Adding Objects", "tip": "Creating the Domains objects that your DNS policies use as destinations"}]},
+   {"label": "Tasks 6.3–6.4 · Site DNS policies", "links": [
+    {"href": "/zero-trust-branch/what-site-dns-policies", "text": "What Are Site DNS Policies?", "tip": "What site DNS policies are for and the actions they can take"},
+    {"href": "/zero-trust-branch/configuring-site-dns-policies", "text": "Configuring Site DNS Policies", "tip": "Adding the Override and Reject rules for google.com and WhatsApp"}]}
+  ]},
+  "lab7": {"topology": true, "accounts": ["portal"], "refs": [
+   {"label": "Tasks 7.1–7.2 · Packet and flow logs", "links": [
+    {"href": "/zero-trust-branch/understanding-log-types-levels-and-formats", "text": "Understanding Log Types, Levels, and Formats", "tip": "Packet logs and flow logs under Data Explorer > Zero Trust Branch, and the log levels"},
+    {"href": "/zero-trust-branch/understanding-logging-and-monitoring", "text": "Understanding Logging and Monitoring", "tip": "An overview of the logs, dashboards and alerts this lab tours"}]},
+   {"label": "Task 7.3 · Alarms and Web Insights", "links": [
+    {"href": "/zero-trust-branch/understanding-alarms-and-notifications", "text": "Understanding Alarms and Notifications", "tip": "The alarms Zero Trust Branch raises, which you filter under Alerts"},
+    {"href": "/zia/web-insights-logs-filters", "text": "Web Insights Logs: Filters (ZIA)", "tip": "The Location filter you add in Web Insights to see your branch's web traffic"}]},
+   {"label": "Task 7.4 · Health monitoring", "links": [
+    {"href": "/zero-trust-branch/interface-monitoring", "text": "Interface Monitoring", "tip": "Health probes and link scores behind the WAN health you review for ge1 and ge2"},
+    {"href": "/zero-trust-branch/viewing-traffic-flow-charts", "text": "Viewing Traffic Flow Charts", "tip": "The traffic charts that help you visualize the branch alongside the health views"}]}
+  ]},
+  "lab8": {"topology": true, "accounts": ["portal", "admin-console"], "refs": [
+   {"label": "Tasks 8.1–8.4 · Console diagnostics", "links": [
+    {"href": "/zero-trust-branch/using-zero-trust-branch-debug-console-for-troubleshooting", "text": "Using the ZTB Debug Console for Troubleshooting", "tip": "The docker, show vrrp, tcpdump, iptables PBR-RULES and ip rule ls commands you run in this lab"},
+    {"href": "/zero-trust-branch/resolving-zero-trust-branch-configuration-activation-issues", "text": "Resolving Configuration and Activation Issues", "tip": "A checklist for gateway and WAN problems when the console shows something wrong"}]},
+   {"label": "Task 8.4 · Policy hits at the data plane", "links": [
+    {"href": "/zero-trust-branch/testing-routing-policies", "text": "Testing Forwarding Policies", "tip": "Confirming that traffic really follows your Lab 5 forwarding rule"},
+    {"href": "/zero-trust-branch/understanding-forwarding-policies", "text": "Understanding Forwarding Policies", "tip": "Policy-based routing, the feature behind the PBR-RULES counters you read"}]}
+  ]},
+  "lab9": {"topology": true, "accounts": ["portal", "ot1-ssh"], "refs": [
+   {"label": "Tasks 9.1–9.2 · Staging the rules", "links": [
+    {"href": "/zero-trust-branch/understanding-ransomware-kill-switch", "text": "Understanding the Ransomware Kill Switch", "tip": "How rules tagged with a threat level apply only when the site is at that level"},
+    {"href": "/zero-trust-branch/managing-security-policies", "text": "Managing Security Policies", "tip": "Cloning and reordering rules, as you do to place the block rule under the allow rule"}]},
+   {"label": "Task 9.3 · Switching to Orange", "links": [
+    {"href": "/zero-trust-branch/configuring-ransomware-kill-switch-site", "text": "Configuring the Kill Switch for a Site", "tip": "The Green, Yellow, Orange and Red levels, confirmed by typing the level name"}]}
+  ]},
+  "lab10": {"topology": true, "accounts": ["portal", "admin-console"], "refs": [
+   {"label": "Task 10.1 · HA settings", "links": [
+    {"href": "/zero-trust-branch/configuring-ha-site-vrrp", "text": "Configuring an HA Site with VRRP", "tip": "Track Interface, Preempt and Advertisement Interval, the settings you review"},
+    {"href": "/zero-trust-branch/creating-zero-trust-branch-high-availability-cluster", "text": "Creating a ZTB High Availability Cluster", "tip": "How the Active and Standby nodes take over from each other"}]},
+   {"label": "Tasks 10.2–10.4 · WAN link failover", "links": [
+    {"href": "/zero-trust-branch/configuring-forwarding-policies", "text": "Configuring Forwarding Policies", "tip": "Why your PBR rule's primary and secondary interfaces let Adobe traffic move to ge2"},
+    {"href": "/zero-trust-branch/interface-monitoring", "text": "Interface Monitoring", "tip": "How interface health probes detect a failed link and change routing decisions"}]}
+  ]},
+  "lab11": {"topology": true, "accounts": ["portal", "admin-console"], "refs": [
+   {"label": "Task 11.1 · Gateway health and HA role", "links": [
+    {"href": "/zero-trust-branch/using-zero-trust-branch-debug-console-for-troubleshooting", "text": "Using the ZTB Debug Console for Troubleshooting", "tip": "The gateway commands, including show vrrp, for checking health and the HA role"},
+    {"href": "/zero-trust-branch/configuring-ha-site-vrrp", "text": "Configuring an HA Site with VRRP", "tip": "How VRRP decides which unit is MASTER and which BACKUP"}]},
+   {"label": "Task 11.2 · Path selection", "links": [
+    {"href": "/zero-trust-branch/understanding-forwarding-policies", "text": "Understanding Forwarding Policies", "tip": "Policy-based routing and the default rule, the policies behind the marks you read in Task 11.2"},
+    {"href": "/zero-trust-branch/testing-routing-policies", "text": "Testing Forwarding Policies", "tip": "Verifying the path a forwarding rule picks"}]},
+   {"label": "Task 11.3 · Links and tunnels", "links": [
+    {"href": "/zero-trust-branch/interface-monitoring", "text": "Interface Monitoring", "tip": "Link Status and the link score from latency, loss and jitter that you check for ge1 and ge2"},
+    {"href": "/zero-trust-branch/configuring-custom-internet-saas-gateway-zero-trust-branch", "text": "Configuring a Custom Internet & SaaS Gateway", "tip": "Why there is one DTLS tunnel per WAN link to the primary and secondary data centers"}]}
+  ]},
+  "wrapup": {"topology": true, "refs": [
+   {"label": "Go further · Zero Trust Branch", "links": [
+    {"href": "/zero-trust-branch/what-zero-trust-branch", "text": "What Is Zero Trust Branch?", "tip": "The product overview, to place what you built in the bigger picture"},
+    {"href": "/zero-trust-branch/step-step-configuration-guide-zero-trust-branch", "text": "Step-by-Step Configuration Guide", "tip": "The end-to-end configuration flow for a real branch rollout"},
+    {"href": "/zero-trust-branch/understanding-protection-solutions", "text": "Understanding Protection Solutions", "tip": "The segmentation modes beyond this lab, such as Airgap-Lite and micro-subnets"}]},
+   {"label": "Operations · after the lab", "links": [
+    {"href": "/zero-trust-branch/viewing-managing-security-insights", "text": "Viewing and Managing Security Insights", "tip": "Security insights for the branch, the next step after the monitoring lab"},
+    {"href": "/zero-trust-branch/upgrading-zero-trust-branch-appliances-ha-cluster", "text": "Upgrading Appliances in an HA Cluster", "tip": "How to upgrade an Active/Standby pair like the one you built"}]}
+  ]}
+ }
+}

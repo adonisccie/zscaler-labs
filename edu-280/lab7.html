@@ -54,6 +54,23 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
 .hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
 </style>
+<style id="sidebar-css">
+/* SIDEBAR (add_sidebar.py): Reference Links, credential notes, and keep the whole sidebar reachable */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+.scr-note{font-family:'Epilogue',sans-serif;font-size:0.74rem;line-height:1.4;color:var(--text-muted);flex:1;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+</style>
 <style id="export-css">
 /* EXPORT MY WORK: download the student's questions, notes and Think First answers, or print the whole lab with them */
 .export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 32px;background:var(--surface);border-bottom:1px solid var(--border);}
@@ -446,6 +463,28 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <a href="index.html" class="hub-link">← EDU-280 Lab Hub</a>
     </div>
+    <!-- sidebar:begin top -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/intro-s01.png" alt="EDU-280 pod topology: ZTB-1 (gw-01, Active) and ZTB-2 (gw-02, Standby) linked by ge4 HA (VRRP), each with WAN ge1 10.120.1.x and ge2 10.130.1.x to two ISPs and the Zscaler Zero Trust Exchange; LAN VLAN 10 Servers (Windows Server 10.1.10.10), VLAN 20 IoT (10.1.20.10) and VLAN 30 OT (OT1 10.1.30.10, OT2 DHCP /32); the Corp Client PC connects with Client Connector; the Data Center 10.73.50.0/24 hosts dcweb.ztwan.lab, App Connectors and DNS 10.73.50.20/.21" title="Click to expand">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">PORTAL CREDENTIALS</div>
+      <div class="sidebar-cred-list">
+        <div class="sidebar-cred-item">
+          <button class="sidebar-cred-header" onclick="toggleSCred(this)">Experience Center<span class="sidebar-cred-chevron">▾</span></button>
+          <div class="sidebar-cred-body">
+            <div class="sidebar-cred-row"><span class="scr-label">URL</span><code class="scr-value">https://console.zscaler.com</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">User</span><code class="scr-value d-login">pod##-student@&lt;Student FQDN&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+            <div class="sidebar-cred-row"><span class="scr-label">Pass</span><code class="scr-value" data-sb-input="pass-input">&lt;Portal Password&gt;</code><button class="scr-copy" onclick="copySCred(this)" title="Copy">⎘</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- sidebar:end top -->
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
@@ -454,6 +493,29 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-lab7c" onchange="toggleDone(this)"><label for="chk-lab7c">WAN score, loss, latency and jitter recorded for ge1 and ge2.</label></li>
         </ul>
     </div>
+    <!-- sidebar:begin refs -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Tasks 7.1–7.2 · Packet and flow logs</div>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/understanding-log-types-levels-and-formats" target="_blank" rel="noopener noreferrer" title="Packet logs and flow logs under Data Explorer > Zero Trust Branch, and the log levels">Understanding Log Types, Levels, and Formats</a>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/understanding-logging-and-monitoring" target="_blank" rel="noopener noreferrer" title="An overview of the logs, dashboards and alerts this lab tours">Understanding Logging and Monitoring</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.3 · Alarms and Web Insights</div>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/understanding-alarms-and-notifications" target="_blank" rel="noopener noreferrer" title="The alarms Zero Trust Branch raises, which you filter under Alerts">Understanding Alarms and Notifications</a>
+          <a class="ref-link" href="https://help.zscaler.com/zia/web-insights-logs-filters" target="_blank" rel="noopener noreferrer" title="The Location filter you add in Web Insights to see your branch's web traffic">Web Insights Logs: Filters (ZIA)</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Task 7.4 · Health monitoring</div>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/interface-monitoring" target="_blank" rel="noopener noreferrer" title="Health probes and link scores behind the WAN health you review for ge1 and ge2">Interface Monitoring</a>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/viewing-traffic-flow-charts" target="_blank" rel="noopener noreferrer" title="The traffic charts that help you visualize the branch alongside the health views">Viewing Traffic Flow Charts</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
+    <!-- sidebar:end refs -->
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
@@ -596,6 +658,24 @@ function clearMyWork(){try{localStorage.removeItem(PAGE_KEY+'-questions');localS
   document.querySelectorAll('.lesson-tools .tool-textarea').forEach(function(t){t.value='';});
   renderQPanel();renderNotesPanel();cancelClearMyWork();flashExport(document.getElementById('clear-work-btn'),'✓ Cleared',true);}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.getElementById('export-confirm').hidden)cancelClearMyWork();});
+</script>
+<script id="sidebar-js">
+/* SIDEBAR (add_sidebar.py): credential accordion + copy, config-linked values, topology click-to-zoom */
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function sbFlash(btn,ok){btn.textContent=ok?'\u2713':'\u2014';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';clearTimeout(btn._sbT);btn._sbT=setTimeout(function(){btn.textContent='\u2398';btn.title='Copy';},1400);}
+function sbFallbackCopy(v){try{var ta=document.createElement('textarea');ta.value=v;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||/[<>]|##/.test(v)){sbFlash(btn,false);return;}var fb=function(){sbFlash(btn,sbFallbackCopy(v));};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(v).then(function(){sbFlash(btn,true);},fb);}else{fb();}}
+(function(){
+  function cfgVal(id){var el=document.getElementById(id);if(el&&'value' in el)return (el.value||'').trim();try{var c=JSON.parse(localStorage.getItem(typeof CONFIG_KEY!=='undefined'?CONFIG_KEY:'')||'{}');return String(c[id.replace(/-input$/,'')]||'').trim();}catch(e){return '';}}
+  function sync(){document.querySelectorAll('.sidebar [data-sb-input]').forEach(function(el){if(el.dataset.sbPh===undefined)el.dataset.sbPh=el.textContent;var v=cfgVal(el.getAttribute('data-sb-input'));el.textContent=v||el.dataset.sbPh;el.classList.toggle('filled',!!v);});document.querySelectorAll('.sidebar .scr-value').forEach(function(el){el.title=el.textContent;});}
+  window.sbSyncSidebar=sync;
+  if(typeof window.applyConfig==='function'){var orig=window.applyConfig;window.applyConfig=function(){var r=orig.apply(this,arguments);sync();return r;};}
+  var ids={};document.querySelectorAll('.sidebar [data-sb-input]').forEach(function(el){ids[el.getAttribute('data-sb-input')]=1;});
+  Object.keys(ids).forEach(function(id){var inp=document.getElementById(id);if(inp)inp.addEventListener('input',sync);});
+  window.addEventListener('storage',sync);
+  sync();
+  document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb){window.open(img.src,'_blank','noopener');return;}var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
+})();
 </script>
 </body>
 </html>

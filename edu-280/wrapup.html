@@ -54,6 +54,23 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
 .criteria-list{list-style:none;padding:0;margin:6px 0 0;}.criteria-list li{padding:3px 0;font-size:13px;color:var(--text-soft);}
 .hero-lead{font-size:14px;color:var(--text-soft);margin-bottom:10px;line-height:1.7;}
 </style>
+<style id="sidebar-css">
+/* SIDEBAR (add_sidebar.py): Reference Links, credential notes, and keep the whole sidebar reachable */
+.ref-links{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px 10px;}
+.ref-group{padding:8px 0;border-bottom:1px solid var(--border-dim);}
+.ref-group:last-of-type{border-bottom:none;}
+.ref-group-label{font-size:9.5px;letter-spacing:0.12em;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.ref-link{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.4;color:var(--blue);padding:3px 0;}
+.ref-link::after{content:'\2197';margin-left:auto;font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.ref-link:hover{text-decoration:underline;}
+.ref-link:hover::after{color:var(--blue);}
+.ref-foot{font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:8px;border-top:1px solid var(--border-dim);line-height:1.5;}
+.scr-note{font-family:'Epilogue',sans-serif;font-size:0.74rem;line-height:1.4;color:var(--text-muted);flex:1;}
+/* keep the whole sidebar reachable below the sticky config panel and above the fixed page nav */
+@media(min-width:901px){
+  .sidebar{top:var(--config-h,16px);max-height:calc(100vh - var(--config-h,16px) - 64px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;}
+}
+</style>
 </head>
 <body>
 
@@ -189,6 +206,14 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
     <div class="sidebar-section">
       <a href="index.html" class="hub-link">← EDU-280 Lab Hub</a>
     </div>
+    <!-- sidebar:begin top -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">LAB TOPOLOGY</div>
+      <div class="sidebar-topology">
+        <img src="screenshots/intro-s01.png" alt="EDU-280 pod topology: ZTB-1 (gw-01, Active) and ZTB-2 (gw-02, Standby) linked by ge4 HA (VRRP), each with WAN ge1 10.120.1.x and ge2 10.130.1.x to two ISPs and the Zscaler Zero Trust Exchange; LAN VLAN 10 Servers (Windows Server 10.1.10.10), VLAN 20 IoT (10.1.20.10) and VLAN 30 OT (OT1 10.1.30.10, OT2 DHCP /32); the Corp Client PC connects with Client Connector; the Data Center 10.73.50.0/24 hosts dcweb.ztwan.lab, App Connectors and DNS 10.73.50.20/.21" title="Click to expand">
+      </div>
+    </div>
+    <!-- sidebar:end top -->
     <div class="sidebar-section">
       <div class="sidebar-label">LAB PROGRESS</div>
       <ul class="progress-list">
@@ -196,6 +221,25 @@ function copyAllNs(){try{var ns=getNotesArr();navigator.clipboard.writeText(ns.m
         <li class="progress-item"><input type="checkbox" id="chk-wrapupb" onchange="toggleDone(this)"><label for="chk-wrapupb">Evidence collected</label></li>
         </ul>
     </div>
+    <!-- sidebar:begin refs -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">REFERENCE LINKS</div>
+      <div class="ref-links">
+        <div class="ref-group">
+          <div class="ref-group-label">Go further · Zero Trust Branch</div>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/what-zero-trust-branch" target="_blank" rel="noopener noreferrer" title="The product overview, to place what you built in the bigger picture">What Is Zero Trust Branch?</a>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/step-step-configuration-guide-zero-trust-branch" target="_blank" rel="noopener noreferrer" title="The end-to-end configuration flow for a real branch rollout">Step-by-Step Configuration Guide</a>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/understanding-protection-solutions" target="_blank" rel="noopener noreferrer" title="The segmentation modes beyond this lab, such as Airgap-Lite and micro-subnets">Understanding Protection Solutions</a>
+        </div>
+        <div class="ref-group">
+          <div class="ref-group-label">Operations · after the lab</div>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/viewing-managing-security-insights" target="_blank" rel="noopener noreferrer" title="Security insights for the branch, the next step after the monitoring lab">Viewing and Managing Security Insights</a>
+          <a class="ref-link" href="https://help.zscaler.com/zero-trust-branch/upgrading-zero-trust-branch-appliances-ha-cluster" target="_blank" rel="noopener noreferrer" title="How to upgrade an Active/Standby pair like the one you built">Upgrading Appliances in an HA Cluster</a>
+        </div>
+        <div class="ref-foot">Zscaler Help Portal · opens in a new tab</div>
+      </div>
+    </div>
+    <!-- sidebar:end refs -->
     <div class="quick-ref" id="quick-ref">
       <div class="quick-ref-title" onclick="document.getElementById('quick-ref').classList.toggle('open')">QUICK REFERENCE <span class="qr-chevron">▲</span></div>
       <div class="qr-body">
@@ -278,6 +322,24 @@ document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('.answer-area').forEach(function(area){var key=PAGE_KEY+'-socans-'+area.dataset.section;try{var saved=localStorage.getItem(key);if(saved){var ta=area.querySelector('.answer-textarea');ta.value=saved;ta.disabled=true;var ab=area.querySelector('.btn-add-answer');ab.textContent='✓ Answer saved';ab.disabled=true;var sb=area.querySelector('.btn-see-answer');sb.disabled=false;sb.textContent='💡 See Model Answer';}}catch(e){}});
   document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='1';sessionStorage.setItem('pt','1');
 });
+</script>
+<script id="sidebar-js">
+/* SIDEBAR (add_sidebar.py): credential accordion + copy, config-linked values, topology click-to-zoom */
+function toggleSCred(btn){var item=btn.closest('.sidebar-cred-item');var list=item.closest('.sidebar-cred-list');var isOpen=item.classList.contains('open');list.querySelectorAll('.sidebar-cred-item').forEach(function(el){el.classList.remove('open');});if(!isOpen)item.classList.add('open');}
+function sbFlash(btn,ok){btn.textContent=ok?'\u2713':'\u2014';btn.title=ok?'Copied':'Fill in the Lab Configuration panel first';clearTimeout(btn._sbT);btn._sbT=setTimeout(function(){btn.textContent='\u2398';btn.title='Copy';},1400);}
+function sbFallbackCopy(v){try{var ta=document.createElement('textarea');ta.value=v;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+function copySCred(btn){var code=btn.parentElement.querySelector('code');var v=code?code.textContent.trim():'';if(!v||/[<>]|##/.test(v)){sbFlash(btn,false);return;}var fb=function(){sbFlash(btn,sbFallbackCopy(v));};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(v).then(function(){sbFlash(btn,true);},fb);}else{fb();}}
+(function(){
+  function cfgVal(id){var el=document.getElementById(id);if(el&&'value' in el)return (el.value||'').trim();try{var c=JSON.parse(localStorage.getItem(typeof CONFIG_KEY!=='undefined'?CONFIG_KEY:'')||'{}');return String(c[id.replace(/-input$/,'')]||'').trim();}catch(e){return '';}}
+  function sync(){document.querySelectorAll('.sidebar [data-sb-input]').forEach(function(el){if(el.dataset.sbPh===undefined)el.dataset.sbPh=el.textContent;var v=cfgVal(el.getAttribute('data-sb-input'));el.textContent=v||el.dataset.sbPh;el.classList.toggle('filled',!!v);});document.querySelectorAll('.sidebar .scr-value').forEach(function(el){el.title=el.textContent;});}
+  window.sbSyncSidebar=sync;
+  if(typeof window.applyConfig==='function'){var orig=window.applyConfig;window.applyConfig=function(){var r=orig.apply(this,arguments);sync();return r;};}
+  var ids={};document.querySelectorAll('.sidebar [data-sb-input]').forEach(function(el){ids[el.getAttribute('data-sb-input')]=1;});
+  Object.keys(ids).forEach(function(id){var inp=document.getElementById(id);if(inp)inp.addEventListener('input',sync);});
+  window.addEventListener('storage',sync);
+  sync();
+  document.querySelectorAll('.sidebar-topology img').forEach(function(img){img.addEventListener('click',function(){var lb=document.querySelector('.img-lightbox');if(!lb){window.open(img.src,'_blank','noopener');return;}var li=lb.querySelector('img');li.src=img.src;li.alt=img.alt;lb.classList.add('active');document.body.style.overflow='hidden';});});
+})();
 </script>
 </body>
 </html>
